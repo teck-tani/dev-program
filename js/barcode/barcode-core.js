@@ -50,7 +50,12 @@ function generateBarcode(value, type, container) {
         // 바코드 SVG 크기 및 비율 조정
         container.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     } catch (error) {
-        document.getElementById('error').textContent = `Error: ${error.message}`;
+        // 다국어 지원 에러 메시지
+        if (typeof showError === 'function') {
+            showError(error.message);
+        } else {
+            document.getElementById('error').textContent = `Error: ${error.message}`;
+        }
     }
 }
 
@@ -61,7 +66,12 @@ function addBarcode() {
     const barcodeInput = document.getElementById('barcodeValue');
     
     if (!value) {
-        errorDiv.textContent = '바코드 값을 입력해주세요';
+        // 다국어 지원 에러 메시지
+        if (typeof showError === 'function') {
+            showError('errorEmptyInput');
+        } else {
+            errorDiv.textContent = '바코드 값을 입력해주세요';
+        }
         return;
     }
 
@@ -69,25 +79,45 @@ function addBarcode() {
     if (type === 'EAN' || type === 'EAN8') {
         const numericValue = value.replace(/\D/g, '');
         if (type === 'EAN' && (numericValue.length !== 12 && numericValue.length !== 13)) {
-            errorDiv.textContent = 'EAN 바코드는 12자리 또는 13자리 숫자여야 합니다';
+            // 다국어 지원 에러 메시지
+            if (typeof showError === 'function') {
+                showError('errorEAN');
+            } else {
+                errorDiv.textContent = 'EAN 바코드는 12자리 또는 13자리 숫자여야 합니다';
+            }
             return;
         }
         if (type === 'EAN8' && (numericValue.length !== 7 && numericValue.length !== 8)) {
-            errorDiv.textContent = 'EAN-8 바코드는 7자리 또는 8자리 숫자여야 합니다';
+            // 다국어 지원 에러 메시지
+            if (typeof showError === 'function') {
+                showError('errorEAN8');
+            } else {
+                errorDiv.textContent = 'EAN-8 바코드는 7자리 또는 8자리 숫자여야 합니다';
+            }
             return;
         }
         value = numericValue;
     } else if (type === 'UPC') {
         const numericValue = value.replace(/\D/g, '');
         if (numericValue.length !== 11 && numericValue.length !== 12) {
-            errorDiv.textContent = 'UPC 바코드는 11자리 또는 12자리 숫자여야 합니다';
+            // 다국어 지원 에러 메시지
+            if (typeof showError === 'function') {
+                showError('errorUPC');
+            } else {
+                errorDiv.textContent = 'UPC 바코드는 11자리 또는 12자리 숫자여야 합니다';
+            }
             return;
         }
         value = numericValue;
     }
 
     if (barcodeCount >= maxBarcodes) {
-        errorDiv.textContent = `최대 바코드 개수 (${maxBarcodes}개)에 도달했습니다`;
+        // 다국어 지원 에러 메시지
+        if (typeof showError === 'function') {
+            showError('errorMaxBarcodes');
+        } else {
+            errorDiv.textContent = `최대 바코드 개수 (${maxBarcodes}개)에 도달했습니다`;
+        }
         return;
     }
 

@@ -1,58 +1,384 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#74ebd5">
-    <title>바코드/QR코드 생성기</title>
+    <title>바코드생성기 | QR코드 생성기 - 무료 바코드 생성 | Tani DevTool</title>
+    <meta name="description" content="무료 온라인 바코드생성기, QR코드 생성기. 다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하세요. 엑셀 데이터 일괄 변환 지원.">
+    <meta name="keywords" content="바코드생성기, QR코드 생성기, 바코드, QR코드, 무료, 온라인, CODE128, CODE39, EAN, UPC, barcode generator, QR code generator, free barcode">
+    <meta property="og:title" content="바코드생성기 | QR코드 생성기 - 무료 바코드 생성 | Tani DevTool">
+    <meta property="og:description" content="무료 온라인 바코드생성기. 다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하세요.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/barcode.html">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/barcode-preview.png">
+    <meta property="og:site_name" content="Tani DevTool">
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/barcode.html">
+    
+    <!-- 다국어 대체 페이지 링크 -->
+    <link rel="alternate" hreflang="ko" href="https://tani-devtool.netlify.app/pages/barcode.html" />
+    <link rel="alternate" hreflang="en" href="https://tani-devtool.netlify.app/en/pages/barcode.html" />
+    <link rel="alternate" hreflang="ja" href="https://tani-devtool.netlify.app/ja/pages/barcode.html" />
+    <link rel="alternate" hreflang="zh" href="https://tani-devtool.netlify.app/zh/pages/barcode.html" />
+    <link rel="alternate" hreflang="x-default" href="https://tani-devtool.netlify.app/pages/barcode.html" />
+    
+    <!-- 영문 메타 태그 -->
+    <meta name="description" lang="en" content="Free online barcode and QR code generator. Create various types of barcodes and QR codes quickly and easily. Supports Excel data batch conversion.">
+    <meta name="keywords" lang="en" content="barcode generator, QR code generator, CODE128, CODE39, EAN, UPC, free, online, 바코드생성기">
+    
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/barcode.css">
+    <style>
+        .seo-description {
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #666;
+            font-size: 0.85rem;
+            max-width: 95%;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+            padding: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .language-selector select {
+            padding: 5px 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        /* 영어 번역 텍스트 (SEO용, 시각적으로 숨김) */
+        .alt-lang-text {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* SEO 푸터 스타일 */
+        .seo-footer {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .seo-footer summary {
+            cursor: pointer;
+            color: #666;
+            padding: 8px 0;
+            font-weight: 500;
+            outline: none;
+            text-align: center;
+        }
+        
+        .seo-footer summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .seo-footer summary::after {
+            content: "▼";
+            font-size: 0.75rem;
+            margin-left: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .seo-footer details[open] summary::after {
+            transform: rotate(180deg);
+        }
+        
+        .seo-details {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .seo-details p {
+            margin: 10px 0;
+            line-height: 1.5;
+            color: #666;
+        }
+        
+        /* 방명록 스타일 */
+        .guestbook-section {
+            margin: 40px 0;
+            padding: 30px 0;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .guestbook-title {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .guestbook-description {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .guestbook-form {
+            max-width: 700px;
+            margin: 0 auto 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.95rem;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .guestbook-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .guestbook-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .guestbook-entries {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .guestbook-entry {
+            background: #fff;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .guestbook-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .guest-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .guest-date {
+            color: #999;
+            font-size: 0.85rem;
+        }
+        
+        .guest-message {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            color: #444;
+        }
+        
+        .admin-reply {
+            background-color: #f5f9ff;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border-left: 3px solid #ACB6E5;
+        }
+        
+        .admin-reply-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .admin-name {
+            font-weight: 500;
+            color: #3d5cb9;
+        }
+        
+        .admin-date {
+            color: #999;
+            font-size: 0.85rem;
+        }
+        
+        .admin-message {
+            margin: 0;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        /* 관리자 전용 스타일 */
+        .admin-reply-form {
+            margin-top: 15px;
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        
+        .admin-reply-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 80px;
+            resize: vertical;
+            font-family: 'Noto Sans KR', sans-serif;
+            margin-bottom: 10px;
+        }
+        
+        .admin-reply-button {
+            background: #3d5cb9;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .admin-controls {
+            margin-top: 15px;
+            text-align: right;
+        }
+        
+        .delete-entry-button {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        
+        .no-entries {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="../js/common.js"></script>
-    <script src="../js/barcode.js"></script>
+    <script src="../js/barcode/barcode-translations.js"></script>
+    <script src="../js/barcode/barcode-core.js"></script>
+    <script src="../js/barcode/barcode-guestbook.js"></script>
 </head>
 <body class="barcode-page">
     <div id="top-container"></div>
 
+    <!-- 언어 선택기 추가 -->
+    <div class="language-selector">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="zh">中文</option>
+        </select>
+    </div>
+
     <div class="container">
-        <h1>바코드/QR코드 생성기</h1>
+        <h2 data-i18n="title">무료 바코드생성기 & QR코드 생성</h2>
+        
+        <p class="seo-description" data-i18n="description">다양한 형식의 바코드와 QR코드를 무료로 생성하고 엑셀 데이터 일괄 변환을 지원합니다.</p>
+        
+        <!-- 영어 대체 콘텐츠 (SEO용, 시각적으로 숨김) -->
+        <div class="alt-lang-text">
+            <h2 lang="en">Free Barcode Generator & QR Code Creator</h2>
+            <p lang="en">Create various types of barcodes and QR codes online for free. Support for CODE128, CODE39, EAN, UPC formats and Excel data batch conversion.</p>
+        </div>
         
         <div class="barcode-wrapper">
             <div class="controls-container">
                 <div class="input-group">
-                    <label for="barcodeType">바코드 종류:</label>
+                    <label for="barcodeType" data-i18n="barcodeType">바코드 종류:</label>
                     <select id="barcodeType">
-                        <option value="CODE128">CODE128 (기본)</option>
-                        <option value="CODE39">CODE39</option>
-                        <option value="EAN">EAN-13</option>
-                        <option value="EAN8">EAN-8</option>
-                        <option value="UPC">UPC</option>
-                        <option value="ITF14">ITF-14</option>
-                        <option value="ITF">ITF</option>
-                        <option value="MSI">MSI</option>
-                        <option value="MSI10">MSI10</option>
-                        <option value="MSI11">MSI11</option>
-                        <option value="MSI1010">MSI1010</option>
-                        <option value="MSI1110">MSI1110</option>
-                        <option value="pharmacode">Pharmacode</option>
-                        <option value="QR">QR 코드</option>
+                        <option value="CODE128" data-i18n="code128">CODE128 (기본)</option>
+                        <option value="CODE39" data-i18n="code39">CODE39</option>
+                        <option value="EAN" data-i18n="ean13">EAN-13</option>
+                        <option value="EAN8" data-i18n="ean8">EAN-8</option>
+                        <option value="UPC" data-i18n="upc">UPC</option>
+                        <option value="ITF14" data-i18n="itf14">ITF-14</option>
+                        <option value="ITF" data-i18n="itf">ITF</option>
+                        <option value="MSI" data-i18n="msi">MSI</option>
+                        <option value="MSI10" data-i18n="msi10">MSI10</option>
+                        <option value="MSI11" data-i18n="msi11">MSI11</option>
+                        <option value="MSI1010" data-i18n="msi1010">MSI1010</option>
+                        <option value="MSI1110" data-i18n="msi1110">MSI1110</option>
+                        <option value="pharmacode" data-i18n="pharmacode">Pharmacode</option>
+                        <option value="QR" data-i18n="qrcode">QR 코드</option>
                     </select>
                 </div>
                 
                 <div class="input-group">
-                    <label for="barcodeValue">바코드 값:</label>
-                    <input type="text" id="barcodeValue" placeholder="바코드/QR코드 값을 입력하세요">
-                    <button onclick="addBarcode()" class="action-button add-button">추가</button>
+                    <label for="barcodeValue" data-i18n="barcodeValue">바코드 값:</label>
+                    <input type="text" id="barcodeValue" data-i18n-placeholder="barcodeValuePlaceholder" placeholder="바코드/QR코드 값을 입력하세요">
+                    <button onclick="addBarcode()" class="action-button add-button" data-i18n="addButton">추가</button>
                 </div>
                 
                 <div class="input-group excel-input">
-                    <label for="excelData">Excel 데이터 (한 줄에 하나의 값):</label>
-                    <textarea id="excelData" placeholder="엑셀에서 복사한 데이터를 붙여넣으세요"></textarea>
-                    <button onclick="generateFromExcel()" class="action-button generate-button">일괄 생성</button>
-                    <button onclick="clearAll()" class="action-button clear-button">모두 지우기</button>
+                    <label for="excelData" data-i18n="excelData">Excel 데이터 (한 줄에 하나의 값):</label>
+                    <textarea id="excelData" data-i18n-placeholder="excelDataPlaceholder" placeholder="엑셀에서 복사한 데이터를 붙여넣으세요"></textarea>
+                    <button onclick="generateFromExcel()" class="action-button generate-button" data-i18n="generateButton">일괄 생성</button>
+                    <button onclick="clearAll()" class="action-button clear-button" data-i18n="clearButton">모두 지우기</button>
                 </div>
                 
                 <div id="error" class="error"></div>
@@ -64,7 +390,69 @@
         </div>
     </div>
 
+    <!-- 방명록 섹션 추가 -->
+    <section class="guestbook-section">
+        <div class="container">
+            <h3 class="guestbook-title" data-i18n="guestbookTitle">방명록</h3>
+            <p class="guestbook-description" data-i18n="guestbookDescription">바코드생성기 사용 후기나 의견을 남겨주세요!</p>
+            
+            <div class="guestbook-form">
+                <div class="form-group">
+                    <input type="text" id="guestName" data-i18n-placeholder="guestName" placeholder="이름" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="guestMessage" data-i18n-placeholder="guestMessage" placeholder="메시지를 남겨주세요" required></textarea>
+                </div>
+                <button id="submitGuestbook" class="guestbook-button" data-i18n="submitGuestbook">등록하기</button>
+            </div>
+            
+            <div class="guestbook-entries" id="guestbookEntries">
+                <!-- 방명록 항목들이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+    </section>
+
     <!-- footer 컨테이너 추가 -->
     <div id="footer-container"></div>
+
+    <!-- 추가 SEO 콘텐츠 (시각적으로는 간결하게 표시) -->
+    <footer class="seo-footer">
+        <div class="container">
+            <details>
+                <summary data-i18n="moreInfo">바코드 생성 도구 더 알아보기</summary>
+                <div class="seo-details">
+                    <div lang="ko">
+                        <p>무료 바코드생성기를 사용하면 CODE128, CODE39, EAN, UPC 등 다양한 바코드와 QR코드를 쉽게 생성할 수 있습니다. 생성된 바코드는 상품 관리, 재고 관리, 이벤트 등 다양한 용도로 활용 가능합니다.</p>
+                        <p>Excel 데이터를 활용한 일괄 생성 기능으로 대량의 바코드를 빠르게 생성할 수 있어 효율적입니다.</p>
+                    </div>
+                    <div lang="en">
+                        <p>With this free barcode generator, you can easily create various types of barcodes such as CODE128, CODE39, EAN, UPC, and QR codes. The generated barcodes can be used for product management, inventory control, events, and more.</p>
+                        <p>Efficiently generate multiple barcodes at once with the Excel data batch conversion feature.</p>
+                    </div>
+                </div>
+            </details>
+        </div>
+    </footer>
+
+    <script>
+        // 페이지 로드 시 언어 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 브라우저 언어 감지
+            const userLang = navigator.language || navigator.userLanguage;
+            const langCode = userLang.split('-')[0]; // ko-KR -> ko
+            
+            // 지원하는 언어인지 확인
+            const supportedLangs = ['ko', 'en', 'ja', 'zh'];
+            const defaultLang = 'ko';
+            
+            let selectedLang = supportedLangs.includes(langCode) ? langCode : defaultLang;
+            
+            // 언어 선택기 초기값 설정
+            document.getElementById('languageSelect').value = selectedLang;
+            
+            // 언어 적용
+            changeLanguage(selectedLang);
+        });
+    </script>
 </body>
 </html> 
