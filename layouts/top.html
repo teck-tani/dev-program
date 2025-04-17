@@ -22,6 +22,9 @@
                     </div>
                 </div>
             </div>
+            <div class="header-right">
+                <!-- 미래 확장을 위한 공간 -->
+            </div>
         </div>
     </header>
     
@@ -44,19 +47,22 @@
         // 드롭다운 클릭 이벤트 처리
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownBtn = document.querySelector('.dropdown-btn');
-            dropdownBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const dropdown = this.parentElement;
-                dropdown.classList.toggle('active');
-            });
+            if (dropdownBtn) {
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const dropdown = this.parentElement;
+                    dropdown.classList.toggle('active');
+                });
 
-            // 다른 곳을 클릭하면 드롭다운 닫기
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.dropdown')) {
-                    document.querySelector('.dropdown').classList.remove('active');
-                }
-            });
+                // 다른 곳을 클릭하면 드롭다운 닫기
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.dropdown')) {
+                        const dropdown = document.querySelector('.dropdown');
+                        if (dropdown) dropdown.classList.remove('active');
+                    }
+                });
+            }
         });
     </script>
 </body>

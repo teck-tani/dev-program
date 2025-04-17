@@ -90,7 +90,7 @@ textarea {
 
 .barcode-item {
     border: 1px solid #ddd;
-    padding: 20px;
+    padding: 15px 10px;
     text-align: center;
     position: relative;
     background-color: white;
@@ -98,6 +98,11 @@ textarea {
     cursor: move;
     user-select: none;
     transition: all 0.2s ease;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
 }
 
 .barcode-item.dragging {
@@ -119,6 +124,22 @@ textarea {
 .barcode-item svg {
     max-width: 100%;
     height: auto;
+    width: 100% !important;
+    height: 80px !important;
+    display: block;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+/* SVG 내부 바코드 요소 높이 조정 */
+.barcode-item svg rect,
+.barcode-item svg g {
+    height: 100% !important;
+}
+
+/* 바코드 내부의 텍스트 숨김 처리 (추가 안전장치) */
+.barcode-item svg text {
+    display: none !important;
 }
 
 .barcode-number {
@@ -127,12 +148,23 @@ textarea {
     left: 5px;
     font-size: 12px;
     color: #666;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 2px 5px;
+    border-radius: 3px;
+    z-index: 5;
 }
 
 .barcode-value {
-    margin-top: 5px;
+    margin-top: 15px;
     font-size: 12px;
     word-break: break-all;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    position: relative;
+    bottom: 0;
 }
 
 .remove-barcode {
@@ -146,23 +178,26 @@ textarea {
     font-size: 0 !important;
     padding: 0 !important;
     line-height: 1 !important;
-    width: 18px !important;
-    height: 18px !important;
+    width: 20px !important;
+    height: 20px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     margin: 0 !important;
+    z-index: 10 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
 }
 
 .remove-barcode::before {
     content: '×';
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1;
 }
 
 .remove-barcode:hover {
     background: #cc0000 !important;
+    transform: scale(1.1) !important;
 }
 
 .print-button {
@@ -261,6 +296,17 @@ textarea {
     width: 100%;
     max-width: 100%;
     padding: 0;
+}
+
+/* 헤더 container는 global 스타일 유지 */
+.barcode-page header .container {
+    width: 92%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .barcode-page h1 {

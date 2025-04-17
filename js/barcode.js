@@ -5,11 +5,13 @@ function generateBarcode(value, type, container) {
     try {
         let options = {
             width: 2,
-            height: 100,
+            height: 60,
             displayValue: true,
-            fontSize: 20,
-            textMargin: 10,
-            margin: 10
+            fontSize: 14,
+            textMargin: 4,
+            margin: 0,
+            background: "#ffffff",
+            lineColor: "#000000"
         };
 
         // Add specific options for different barcode types
@@ -44,6 +46,9 @@ function generateBarcode(value, type, container) {
         }
 
         JsBarcode(container, value, options);
+        
+        // 바코드 SVG 크기 및 비율 조정
+        container.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     } catch (error) {
         document.getElementById('error').textContent = `Error: ${error.message}`;
     }
@@ -118,7 +123,7 @@ function addBarcode() {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     const barcodeValue = document.createElement('div');
     barcodeValue.className = 'barcode-value';
-    barcodeValue.textContent = '';
+    barcodeValue.textContent = value;
 
     barcodeItem.appendChild(barcodeNumber);
     barcodeItem.appendChild(removeButton);
@@ -336,7 +341,7 @@ function generateFromExcel() {
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         const barcodeValue = document.createElement('div');
         barcodeValue.className = 'barcode-value';
-        barcodeValue.textContent = '';
+        barcodeValue.textContent = value;
         
         barcodeItem.appendChild(barcodeNumber);
         barcodeItem.appendChild(removeButton);

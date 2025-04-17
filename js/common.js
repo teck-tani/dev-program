@@ -1,6 +1,7 @@
 // 레이아웃 로드 함수
 async function loadLayout() {
     try {
+        console.log('loadLayout 실행');
         // 현재 페이지 경로에 따라 레이아웃 경로 조정
         const pathPrefix = getPathPrefix();
         
@@ -32,10 +33,20 @@ function getPathPrefix() {
 
 // Top 레이아웃 로드
 async function loadTopLayout(pathPrefix) {
+    console.log('loadTopLayout 호출됨');
     const topContainer = document.getElementById('top-container');
-    if (!topContainer) return;
+    if (!topContainer) {
+        console.error('top-container element not found');
+        return;
+    }
     
     try {
+        // pathPrefix가 없으면 자동으로 결정
+        if (pathPrefix === undefined) {
+            pathPrefix = getPathPrefix();
+        }
+        
+        console.log('Loading layout from:', pathPrefix + 'layouts/top.html');
         const response = await fetch(pathPrefix + 'layouts/top.html');
         const html = await response.text();
         
@@ -44,22 +55,27 @@ async function loadTopLayout(pathPrefix) {
         const doc = parser.parseFromString(html, 'text/html');
         const header = doc.querySelector('header');
         
-        topContainer.innerHTML = '';
-        topContainer.appendChild(header);
-        
-        // 스크립트 실행
-        const script = doc.querySelector('script');
-        if (script) {
-            const newScript = document.createElement('script');
-            newScript.textContent = script.textContent;
-            document.body.appendChild(newScript);
+        if (header) {
+            // 헤더 요소를 추가하기 전에 컨테이너를 비웁니다
+            topContainer.innerHTML = '';
+            topContainer.appendChild(header);
+            
+            // 스크립트 실행
+            const script = doc.querySelector('script');
+            if (script) {
+                const newScript = document.createElement('script');
+                newScript.textContent = script.textContent;
+                document.body.appendChild(newScript);
+            }
+            
+            // 현재 활성 페이지 메뉴 강조
+            highlightCurrentPage();
+            
+            // 드롭다운 메뉴 초기화 - 약간의 지연을 주어 DOM이 완전히 로드된 후 실행
+            setTimeout(initDropdownMenu, 10);
+        } else {
+            console.error('Header element not found in top.html');
         }
-        
-        // 현재 활성 페이지 메뉴 강조
-        highlightCurrentPage();
-        
-        // 드롭다운 메뉴 초기화
-        initDropdownMenu();
     } catch (error) {
         console.error('Top 레이아웃 로드 중 오류 발생:', error);
     }

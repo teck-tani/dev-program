@@ -2,10 +2,13 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#74ebd5">
     <title>바코드/QR코드 생성기</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/barcode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="../js/common.js"></script>
@@ -63,13 +66,5 @@
 
     <!-- footer 컨테이너 추가 -->
     <div id="footer-container"></div>
-
-    <script>
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            // 공통 레이아웃 로드 함수 호출
-            loadLayout();
-        });
-    </script>
 </body>
 </html> 
