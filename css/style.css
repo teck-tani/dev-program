@@ -37,11 +37,17 @@ header .container {
     flex-wrap: wrap;
 }
 
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
 header h1 {
     font-size: 1.4rem;
     color: #fff;
     margin-bottom: 0;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    margin-left: 10px;
 }
 
 .header-right {
@@ -100,12 +106,107 @@ nav ul li.active {
     align-items: center;
     color: #fff;
     font-size: 1.3rem;
-    margin-left: 20px;
     transition: transform 0.3s;
 }
 
 .home-icon:hover {
     transform: scale(1.1);
+}
+
+/* 드롭다운 메뉴 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.dropdown-btn {
+    color: #1e3a8a;
+    padding: 8px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    min-width: 140px;
+    justify-content: center;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.dropdown-btn::after {
+    content: '\f107'; /* FontAwesome 화살표 아이콘 */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-left: 5px;
+    transition: transform 0.3s;
+}
+
+.dropdown.active .dropdown-btn::after {
+    transform: rotate(180deg);
+}
+
+.dropdown-btn:hover {
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.dropdown.active .dropdown-btn {
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.dropdown-btn i {
+    color: #3d5cb9;
+    font-size: 0.8rem;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.15);
+    z-index: 1;
+    border-radius: 4px;
+    margin-top: 5px;
+    overflow: hidden;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.dropdown-content a {
+    color: #4b5563;
+    padding: 8px 16px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-content a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-content a:hover {
+    background-color: #f8f9fa;
+    color: #3d5cb9;
+    padding-left: 20px;
+}
+
+/* 드롭다운 클릭 기능으로 변경 - 호버 기능 제거 */
+/* .dropdown:hover .dropdown-content {
+    display: block;
+} */
+
+.dropdown.active .dropdown-content {
+    display: block;
 }
 
 /* 모바일 메뉴 토글 버튼 */
@@ -166,6 +267,20 @@ footer p {
     .header-right {
         display: flex;
         align-items: center;
+    }
+
+    .dropdown-btn {
+        padding: 7px 16px;
+        font-size: 0.9rem;
+        min-width: 120px;
+    }
+    
+    .dropdown-content {
+        width: 160px;
+    }
+    
+    .dropdown-content a {
+        padding: 6px 12px;
     }
 
     nav {
@@ -242,7 +357,25 @@ footer p {
 
     .home-icon {
         font-size: 1.2rem;
-        margin-left: 15px;
+    }
+    
+    .dropdown {
+        margin-left: 10px;
+    }
+    
+    .dropdown-btn {
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        min-width: 100px;
+    }
+    
+    .dropdown-content {
+        min-width: 150px;
+    }
+    
+    .dropdown-content a {
+        padding: 5px 10px;
+        font-size: 0.85rem;
     }
 
     main h2 {

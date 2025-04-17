@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>바코드/QR코드 생성기</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/barcode.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/barcode.js"></script>
+</head>
+<body class="barcode-page">
+    <div id="top-container"></div>
+
+    <div class="container">
+        <h1>바코드/QR코드 생성기</h1>
+        
+        <div class="barcode-wrapper">
+            <div class="controls-container">
+                <div class="input-group">
+                    <label for="barcodeType">바코드 종류:</label>
+                    <select id="barcodeType">
+                        <option value="CODE128">CODE128 (기본)</option>
+                        <option value="CODE39">CODE39</option>
+                        <option value="EAN">EAN-13</option>
+                        <option value="EAN8">EAN-8</option>
+                        <option value="UPC">UPC</option>
+                        <option value="ITF14">ITF-14</option>
+                        <option value="ITF">ITF</option>
+                        <option value="MSI">MSI</option>
+                        <option value="MSI10">MSI10</option>
+                        <option value="MSI11">MSI11</option>
+                        <option value="MSI1010">MSI1010</option>
+                        <option value="MSI1110">MSI1110</option>
+                        <option value="pharmacode">Pharmacode</option>
+                        <option value="QR">QR 코드</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="barcodeValue">바코드 값:</label>
+                    <input type="text" id="barcodeValue" placeholder="바코드/QR코드 값을 입력하세요">
+                    <button onclick="addBarcode()" class="action-button add-button">추가</button>
+                </div>
+                
+                <div class="input-group excel-input">
+                    <label for="excelData">Excel 데이터 (한 줄에 하나의 값):</label>
+                    <textarea id="excelData" placeholder="엑셀에서 복사한 데이터를 붙여넣으세요"></textarea>
+                    <button onclick="generateFromExcel()" class="action-button generate-button">일괄 생성</button>
+                    <button onclick="clearAll()" class="action-button clear-button">모두 지우기</button>
+                </div>
+                
+                <div id="error" class="error"></div>
+            </div>
+            
+            <div class="barcode-container">
+                <div id="barcodeGrid" class="barcode-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer 컨테이너 추가 -->
+    <div id="footer-container"></div>
+
+    <script>
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // 공통 레이아웃 로드 함수 호출
+            loadLayout();
+        });
+    </script>
+</body>
+</html> 

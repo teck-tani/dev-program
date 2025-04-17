@@ -57,6 +57,9 @@ async function loadTopLayout(pathPrefix) {
         
         // 현재 활성 페이지 메뉴 강조
         highlightCurrentPage();
+        
+        // 드롭다운 메뉴 초기화
+        initDropdownMenu();
     } catch (error) {
         console.error('Top 레이아웃 로드 중 오류 발생:', error);
     }
@@ -119,6 +122,32 @@ function initMobileMenu() {
         } else {
             icon.classList.remove('fa-times');
             icon.classList.add('fa-bars');
+        }
+    });
+}
+
+// 드롭다운 메뉴 초기화
+function initDropdownMenu() {
+    const dropdownBtn = document.querySelector('.dropdown-btn');
+    if (!dropdownBtn) return;
+    
+    // 이미 이벤트가 등록되어 있는지 확인하기 위한 마커
+    if (dropdownBtn.getAttribute('data-initialized') === 'true') return;
+    
+    dropdownBtn.setAttribute('data-initialized', 'true');
+    
+    dropdownBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const dropdown = this.parentElement;
+        dropdown.classList.toggle('active');
+    });
+
+    // 다른 곳을 클릭하면 드롭다운 닫기
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+            const dropdown = document.querySelector('.dropdown');
+            if (dropdown) dropdown.classList.remove('active');
         }
     });
 }

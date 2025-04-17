@@ -11,28 +11,23 @@
 <body>
     <header>
         <div class="container">
-            <h1>적정인</h1>
-            <div class="header-right">
-                <nav id="mainNav">
-                    <ul>
-                        <li><a href="../index.html">홈</a></li>
-                        <li><a href="../pages/about.html">소개</a></li>
-                        <li><a href="../pages/contact.html">연락처</a></li>
-                    </ul>
-                </nav>
+            <div class="header-left">
                 <a href="../index.html" class="home-icon">
                     <i class="fas fa-home"></i>
                 </a>
-                <button class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <div class="dropdown">
+                    <button class="dropdown-btn">웹도구</button>
+                    <div class="dropdown-content">
+                        <a href="../pages/barcode.html">바코드생성기</a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
     
     <script>
         // 모바일 메뉴 토글 기능
-        document.getElementById('menuToggle').addEventListener('click', function() {
+        document.getElementById('menuToggle')?.addEventListener('click', function() {
             const nav = document.getElementById('mainNav');
             nav.classList.toggle('active');
             
@@ -44,6 +39,24 @@
                 icon.classList.remove('fa-times');
                 icon.classList.add('fa-bars');
             }
+        });
+
+        // 드롭다운 클릭 이벤트 처리
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            dropdownBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const dropdown = this.parentElement;
+                dropdown.classList.toggle('active');
+            });
+
+            // 다른 곳을 클릭하면 드롭다운 닫기
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelector('.dropdown').classList.remove('active');
+                }
+            });
         });
     </script>
 </body>
