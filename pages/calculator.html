@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#74ebd5">
+    <title>공학용 계산기 | Tani DevTool</title>
+    <meta name="description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다.">
+    <meta name="keywords" content="공학용 계산기, 계산기, 온라인 계산기, 무료 계산기, scientific calculator, online calculator">
+    <meta property="og:title" content="공학용 계산기 | Tani DevTool">
+    <meta property="og:description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/calculator.html">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/calculator-preview.png">
+    <meta property="og:site_name" content="Tani DevTool">
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/calculator.html">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/calculator.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="calculator-page">
+    <div id="top-container"></div>
+
+    <div class="container">
+        <h2>공학용 계산기</h2>
+        
+        <div class="calculator-wrapper">
+            <div class="calculator">
+                <div class="display">
+                    <div class="history"></div>
+                    <div class="current-input">0</div>
+                </div>
+                <div class="buttons">
+                    <button class="function" data-action="deg">Deg</button>
+                    <button class="function" data-action="leftParen">(</button>
+                    <button class="function" data-action="rightParen">)</button>
+                    <button class="function" data-action="percent">%</button>
+                    <button class="memory" data-action="mc">MC</button>
+                    <button class="memory" data-action="mplus">M+</button>
+                    <button class="memory" data-action="mminus">M-</button>
+                    <button class="memory" data-action="mr">MR</button>
+
+                    <button class="scientific" data-action="inverse">1/x</button>
+                    <button class="scientific" data-action="square">x²</button>
+                    <button class="scientific" data-action="cube">x³</button>
+                    <button class="scientific" data-action="power">y^x</button>
+                    <button class="function" data-action="clear">C</button>
+                    <button class="function" data-action="plusminus">±</button>
+                    <button class="operator" data-action="divide">÷</button>
+                    <button class="operator" data-action="multiply">×</button>
+
+                    <button class="scientific" data-action="factorial">x!</button>
+                    <button class="scientific" data-action="sqrt">√</button>
+                    <button class="scientific" data-action="cuberoot">∛</button>
+                    <button class="scientific" data-action="log">log</button>
+                    <button class="number" data-action="7">7</button>
+                    <button class="number" data-action="8">8</button>
+                    <button class="number" data-action="9">9</button>
+                    <button class="operator" data-action="subtract">-</button>
+
+                    <button class="scientific" data-action="sin">sin</button>
+                    <button class="scientific" data-action="cos">cos</button>
+                    <button class="scientific" data-action="tan">tan</button>
+                    <button class="scientific" data-action="ln">ln</button>
+                    <button class="number" data-action="4">4</button>
+                    <button class="number" data-action="5">5</button>
+                    <button class="number" data-action="6">6</button>
+                    <button class="operator" data-action="add">+</button>
+
+                    <button class="scientific" data-action="sinh">sinh</button>
+                    <button class="scientific" data-action="cosh">cosh</button>
+                    <button class="scientific" data-action="tanh">tanh</button>
+                    <button class="scientific" data-action="exp">eˣ</button>
+                    <button class="number" data-action="1">1</button>
+                    <button class="number" data-action="2">2</button>
+                    <button class="number" data-action="3">3</button>
+                    <button class="function equals" data-action="equals" rowspan="2">=</button>
+
+                    <button class="scientific" data-action="1st">1st</button>
+                    <button class="scientific" data-action="pi">π</button>
+                    <button class="scientific" data-action="e">e</button>
+                    <button class="scientific" data-action="rand">rnd</button>
+                    <button class="number zero" data-action="0">0</button>
+                    <button class="number" data-action="decimal">.</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 방명록 섹션 -->
+    <section class="comments-section">
+        <div class="container">
+            <div class="comments-container">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- footer 컨테이너 추가 -->
+    <div id="footer-container"></div>
+
+    <!-- 스크립트 -->
+    <script src="../js/common.js"></script>
+    <script src="../js/calculator/calculator.js"></script>
+    
+    <!-- Disqus 스크립트 -->
+    <script>
+        var disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = 'calculator';
+            this.page.title = document.title;
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://tani-devtool.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+</body>
+</html> 
