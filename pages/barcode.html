@@ -4,16 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#74ebd5">
-    <title>바코드생성기 | QR코드 생성기 - 무료 바코드 생성 | Tani DevTool</title>
-    <meta name="description" content="무료 온라인 바코드생성기, QR코드 생성기. 다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하세요. 엑셀 데이터 일괄 변환 지원.">
-    <meta name="keywords" content="바코드생성기, QR코드 생성기, 바코드, QR코드, 무료, 온라인, CODE128, CODE39, EAN, UPC, barcode generator, QR code generator, free barcode">
-    <meta property="og:title" content="바코드생성기 | QR코드 생성기 - 무료 바코드 생성 | Tani DevTool">
-    <meta property="og:description" content="무료 온라인 바코드생성기. 다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하세요.">
+    <title>무료 바코드생성기 | QR코드 생성기 | 엑셀 일괄 변환 | Tani DevTool</title>
+    <meta name="description" content="완전 무료 온라인 바코드생성기, QR코드 생성기. CODE128, CODE39, EAN, UPC 등 다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하세요. 엑셀 데이터 일괄 변환 기능을 지원합니다.">
+    <meta name="keywords" content="바코드생성기, QR코드 생성기, 바코드, QR코드, 무료, 온라인, CODE128, CODE39, EAN, UPC, 엑셀 일괄 변환, barcode generator, QR code generator, free barcode">
+    <meta property="og:title" content="무료 바코드생성기 | QR코드 생성기 | 엑셀 일괄 변환 | Tani DevTool">
+    <meta property="og:description" content="완전 무료 온라인 바코드생성기. 다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하고 엑셀 데이터를 일괄 변환할 수 있습니다.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tani-devtool.netlify.app/pages/barcode.html">
     <meta property="og:image" content="https://tani-devtool.netlify.app/images/barcode-preview.png">
     <meta property="og:site_name" content="Tani DevTool">
     <link rel="canonical" href="https://tani-devtool.netlify.app/pages/barcode.html">
+    
+    <!-- 추가 SEO 메타 태그 -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Tani DevTool">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="무료 바코드생성기 | QR코드 생성기 | 엑셀 일괄 변환">
+    <meta name="twitter:description" content="다양한 형식의 바코드와 QR코드를 무료로 생성하고 엑셀 데이터 일괄 변환을 지원합니다.">
+    <meta name="twitter:image" content="https://tani-devtool.netlify.app/images/barcode-preview.png">
     
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/barcode.css">
@@ -29,10 +37,11 @@
             text-align: center;
         }
         
-        h2 {
+        h1 {
             margin-bottom: 10px;
             color: #333;
             text-align: center;
+            font-size: 1.8rem;
         }
         
         /* SEO 푸터 스타일 */
@@ -111,11 +120,103 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
+        
+        /* 새 SEO 콘텐츠 스타일 */
+        .barcode-features {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin: 40px auto;
+            max-width: 800px;
+        }
+        
+        .barcode-features h2 {
+            color: #3d5cb9;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #e8f0fe;
+            padding-bottom: 10px;
+            text-align: left;
+        }
+        
+        .barcode-features ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .barcode-features li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .barcode-usage {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin: 0 auto 40px;
+            max-width: 800px;
+        }
+        
+        .barcode-usage h2 {
+            color: #3d5cb9;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #e8f0fe;
+            padding-bottom: 10px;
+            text-align: left;
+        }
+        
+        .barcode-usage p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        #disqus_thread {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .barcode-features, .barcode-usage {
+                padding: 15px;
+                margin: 30px 15px;
+            }
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    
+    <!-- 구조화된 데이터 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "무료 바코드생성기 & QR코드 생성기",
+        "url": "https://tani-devtool.netlify.app/pages/barcode.html",
+        "description": "다양한 형식의 바코드와 QR코드를 무료로 생성하고 엑셀 데이터 일괄 변환을 지원합니다.",
+        "applicationCategory": "UtilityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "operatingSystem": "Web Browser",
+        "browserRequirements": "모든 최신 웹 브라우저 지원",
+        "featureList": "CODE128, CODE39, EAN-13, EAN-8, UPC, ITF-14, ITF, MSI, QR코드, 엑셀 일괄 변환"
+    }
+    </script>
+    
     <script src="../js/common.js"></script>
     <script src="../js/barcode/barcode-core.js"></script>
 </head>
@@ -123,7 +224,7 @@
     <div id="top-container"></div>
 
     <div class="container">
-        <h2>무료 바코드생성기 & QR코드 생성</h2>
+        <h1>무료 바코드생성기 & QR코드 생성</h1>
         
         <p class="seo-description">다양한 형식의 바코드와 QR코드를 무료로 생성하고 엑셀 데이터 일괄 변환을 지원합니다.</p>
         
@@ -169,34 +270,59 @@
                 <div id="barcodeGrid" class="barcode-grid"></div>
             </div>
         </div>
+
+        <!-- SEO 콘텐츠 추가 -->
+        <div class="barcode-features">
+            <h2>바코드 생성기 주요 기능</h2>
+            <ul>
+                <li><strong>다양한 바코드 형식 지원</strong>: CODE128, CODE39, EAN-13, EAN-8, UPC, ITF-14, ITF, MSI 등</li>
+                <li><strong>QR 코드 생성</strong>: 텍스트, URL, 연락처 정보 등을 QR 코드로 변환</li>
+                <li><strong>엑셀 데이터 일괄 변환</strong>: 여러 데이터를 한 번에 바코드로 생성</li>
+                <li><strong>직관적인 인터페이스</strong>: 사용하기 쉬운 UI로 누구나 쉽게 사용 가능</li>
+                <li><strong>무료 사용</strong>: 모든 기능을 무료로 제공</li>
+                <li><strong>회원가입 필요 없음</strong>: 별도의 가입 절차 없이 즉시 사용 가능</li>
+                <li><strong>고품질 바코드 생성</strong>: 스캐너로 쉽게 인식 가능한 고품질 바코드 제공</li>
+            </ul>
+        </div>
+        
+        <div class="barcode-usage">
+            <h2>바코드/QR코드 생성 방법</h2>
+            <p><strong>1. 바코드 형식 선택</strong>: 드롭다운 메뉴에서 원하는 바코드 형식을 선택하세요. (CODE128, QR코드 등)</p>
+            <p><strong>2. 바코드 값 입력</strong>: 텍스트 필드에 바코드로 변환할 값을 입력하고 '추가' 버튼을 클릭하세요.</p>
+            <p><strong>3. 엑셀 데이터 일괄 변환</strong>: 여러 개의 바코드를 생성하려면 텍스트 상자에 엑셀에서 복사한 데이터를 붙여넣고 '일괄 생성' 버튼을 클릭하세요.</p>
+            <p><strong>4. 바코드 관리</strong>: 생성된 바코드는 화면에 표시되며, 더 이상 필요하지 않은 바코드는 'X' 버튼을 클릭하여 삭제할 수 있습니다.</p>
+            <p><strong>5. 바코드 활용</strong>: 생성된 바코드는 인쇄하거나 디지털 형태로 사용할 수 있습니다. 상품 관리, 이벤트 티켓, 재고 관리 등 다양한 용도로 활용하세요.</p>
+        </div>
     </div>
 
+    <!-- 방명록 섹션 -->
+    <section class="comments-section">
+        <div class="container">
+            <h2 class="comments-title">사용자 의견</h2>
+            <p class="comments-description">바코드 생성기 사용 경험을 공유해주세요. 개선 사항이나 제안이 있으시면 남겨주세요.</p>
+            <div class="comments-container">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </section>
 
-    <div id="disqus_thread"></div>
     <script>
-        /**
-        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-        /*
         var disqus_config = function () {
-        this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+            this.page.url = window.location.href;
+            this.page.identifier = 'barcode';
+            this.page.title = document.title;
         };
-        */
-        (function () { // DON'T EDIT BELOW THIS LINE
+        
+        (function() {
             var d = document, s = d.createElement('script');
             s.src = 'https://tani-devtool.disqus.com/embed.js';
             s.setAttribute('data-timestamp', +new Date());
             (d.head || d.body).appendChild(s);
         })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by
-            Disqus.</a></noscript>
-
+    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
 
     <!-- footer 컨테이너 추가 -->
     <div id="footer-container"></div>
-    
-
 </body>
 </html> 

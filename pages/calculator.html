@@ -4,27 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#74ebd5">
-    <title>공학용 계산기 | Tani DevTool</title>
-    <meta name="description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다.">
-    <meta name="keywords" content="공학용 계산기, 계산기, 온라인 계산기, 무료 계산기, scientific calculator, online calculator">
-    <meta property="og:title" content="공학용 계산기 | Tani DevTool">
-    <meta property="og:description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다.">
+    <title>공학용 계산기 | 무료 온라인 계산기 | Tani DevTool</title>
+    <meta name="description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수, 제곱근 등 다양한 수학 함수를 지원하는 간편한 웹 계산기입니다. 모바일 환경에 최적화되어 있습니다.">
+    <meta name="keywords" content="공학용 계산기, 계산기, 온라인 계산기, 무료 계산기, 웹 계산기, 삼각함수 계산기, 로그 계산기, scientific calculator, online calculator">
+    <meta property="og:title" content="공학용 계산기 | 무료 온라인 계산기 | Tani DevTool">
+    <meta property="og:description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다. 모바일 환경에 최적화되어 있습니다.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tani-devtool.netlify.app/pages/calculator.html">
     <meta property="og:image" content="https://tani-devtool.netlify.app/images/calculator-preview.png">
     <meta property="og:site_name" content="Tani DevTool">
     <link rel="canonical" href="https://tani-devtool.netlify.app/pages/calculator.html">
     
+    <!-- 추가 SEO 메타 태그 -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Tani DevTool">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="공학용 계산기 | 무료 온라인 계산기">
+    <meta name="twitter:description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다.">
+    <meta name="twitter:image" content="https://tani-devtool.netlify.app/images/calculator-preview.png">
+    
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/calculator.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- 구조화된 데이터 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "공학용 계산기",
+        "url": "https://tani-devtool.netlify.app/pages/calculator.html",
+        "description": "무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다.",
+        "applicationCategory": "UtilityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "operatingSystem": "Web Browser",
+        "browserRequirements": "모든 최신 웹 브라우저 지원"
+    }
+    </script>
 </head>
 <body class="calculator-page">
     <div id="top-container"></div>
 
     <div class="container">
-        <h2>공학용 계산기</h2>
+        <h1>공학용 계산기</h1>
+        
+        <div class="calculator-description">
+            <p>이 무료 온라인 공학용 계산기는 기본 연산뿐만 아니라 삼각함수(sin, cos, tan), 로그(log, ln), 지수, 제곱근 등의 고급 수학 함수를 지원합니다. 모바일 기기에 최적화되어 있어 언제 어디서나 사용하기 편리합니다.</p>
+        </div>
         
         <div class="calculator-wrapper">
             <div class="calculator">
@@ -86,6 +117,26 @@
                     <button class="number" data-action="decimal">.</button>
                 </div>
             </div>
+        </div>
+        
+        <div class="calculator-features">
+            <h2>주요 기능</h2>
+            <ul>
+                <li><strong>기본 연산</strong>: 더하기, 빼기, 곱하기, 나누기</li>
+                <li><strong>삼각함수</strong>: sin, cos, tan, sinh, cosh, tanh</li>
+                <li><strong>로그 함수</strong>: log(밑 10), ln(자연로그)</li>
+                <li><strong>제곱 및 거듭제곱</strong>: x², x³, y^x</li>
+                <li><strong>제곱근</strong>: √, ∛(세제곱근)</li>
+                <li><strong>상수</strong>: π(파이), e(자연상수)</li>
+                <li><strong>메모리 기능</strong>: MC, MR, M+, M-</li>
+                <li><strong>기타</strong>: 팩토리얼(x!), 역수(1/x), 랜덤 숫자 생성</li>
+            </ul>
+        </div>
+        
+        <div class="calculator-usage">
+            <h2>사용 방법</h2>
+            <p>공학용 계산기는 직관적인 인터페이스로 설계되어 쉽게 사용할 수 있습니다. 화면 상단에 현재 입력과 계산 내역이 표시되며, 버튼을 클릭하여 연산을 수행할 수 있습니다. 다양한 수학 함수와 상수를 활용하여 복잡한 수식도 간편하게 계산해보세요.</p>
+            <p>모바일 환경에서도 최적화되어 있어 손가락으로 쉽게 조작할 수 있습니다. 데스크톱과 모바일 모두에서 동일한 기능을 제공합니다.</p>
         </div>
     </div>
 

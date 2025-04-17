@@ -201,6 +201,65 @@ button:active::after {
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
+/* 새로 추가된 SEO 콘텐츠 스타일 */
+.calculator-description {
+    margin-bottom: 30px;
+    line-height: 1.6;
+    color: #555;
+    max-width: 800px;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.calculator-features {
+    margin-top: 40px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+.calculator-features h2, .calculator-usage h2 {
+    color: #3d5cb9;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #e8f0fe;
+    padding-bottom: 10px;
+}
+
+.calculator-features ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+
+.calculator-features li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.calculator-usage {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
+.calculator-usage p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.calculator-usage p:last-child {
+    margin-bottom: 0;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .calculator {
@@ -231,5 +290,14 @@ button:active::after {
     
     .equals {
         height: 75px;
+    }
+    
+    .calculator-features, .calculator-usage {
+        padding: 15px;
+    }
+    
+    .calculator-description {
+        text-align: left;
+        padding: 0 15px;
     }
 } 
