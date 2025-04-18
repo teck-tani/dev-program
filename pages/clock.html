@@ -17,17 +17,10 @@
             overflow: hidden;
         }
 
-        .top-controls {
+        #clock-fullscreen-btn {
             position: fixed;
-            top: 0;
-            right: 0;
-            padding: 10px;
-            display: flex;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .control-button {
+            top: 70px;
+            right: 10px;
             background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
@@ -39,9 +32,10 @@
             gap: 6px;
             font-size: 14px;
             transition: background-color 0.3s;
+            z-index: 1000;
         }
 
-        .control-button:hover {
+        #clock-fullscreen-btn:hover {
             background: rgba(255, 255, 255, 0.3);
         }
 
@@ -133,14 +127,18 @@
             }
         }
     </style>
+
+    <script src="../js/common.js"></script>
+
 </head>
 <body>
-    <div class="top-controls">
-        <button class="control-button" onclick="toggleFullscreen()" title="전체화면">
-            <i class="fas fa-expand"></i>
-            전체화면
-        </button>
-    </div>
+
+    <div id="top-container"></div>
+    
+    <button id="clock-fullscreen-btn" onclick="toggleFullscreen()" title="전체화면">
+        <i class="fas fa-expand"></i>
+        전체화면
+    </button>
 
     <div class="clock-container">
         <div class="location">
@@ -272,13 +270,21 @@
         }
 
         function toggleFullscreen() {
+            const header = document.getElementById('topHeader');
+            const topContainer = document.getElementById('top-container');
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
+                document.documentElement.requestFullscreen().then(() => {
+                    if (header) header.style.display = 'none';
+                    if (topContainer) topContainer.style.display = 'none';
+                }).catch(err => {
                     console.log(`Error attempting to enable fullscreen: ${err.message}`);
                 });
             } else {
                 if (document.exitFullscreen) {
-                    document.exitFullscreen();
+                    document.exitFullscreen().then(() => {
+                        if (header) header.style.display = '';
+                        if (topContainer) topContainer.style.display = '';
+                    });
                 }
             }
         }
@@ -292,13 +298,82 @@
 
         // ESC 키로 전체화면 해제 감지
         document.addEventListener('fullscreenchange', () => {
-            const fullscreenBtn = document.querySelector('.control-button i');
+            const header = document.getElementById('topHeader');
+            const fullscreenBtn = document.querySelector('#clock-fullscreen-btn i');
             if (document.fullscreenElement) {
+                if (header) header.style.display = 'none';
                 fullscreenBtn.className = 'fas fa-compress';
             } else {
+                if (header) header.style.display = '';
                 fullscreenBtn.className = 'fas fa-expand';
             }
         });
+
+        // 모바일 메뉴 토글 기능
+        document.getElementById('menuToggle')?.addEventListener('click', function() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+            
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // 드롭다운 클릭 이벤트 처리
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            if (dropdownBtn) {
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const dropdown = this.parentElement;
+                    dropdown.classList.toggle('active');
+                });
+
+                // 다른 곳을 클릭하면 드롭다운 닫기
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.dropdown')) {
+                        const dropdown = document.querySelector('.dropdown');
+                        if (dropdown) dropdown.classList.remove('active');
+                    }
+                });
+            }
+        });
     </script>
+
+    <!-- 방명록 섹션 -->
+    <section class="comments-section">
+        <div class="container">
+            <div class="comments-container">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- footer 컨테이너 추가 -->
+    <div id="footer-container"></div>
+
+    <!-- Disqus 스크립트 -->
+    <script>
+        var disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = 'clock';
+            this.page.title = document.title;
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://tani-devtool.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+
 </body>
 </html> 
