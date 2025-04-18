@@ -3,58 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>특수문자 모음 | Tani DevTool</title>
-    <meta name="description" content="이모지, 이모티콘, 아스키아트 등 다양한 특수문자를 모아놓은 페이지입니다. 클릭하면 자동으로 복사됩니다.">
+    <title>이모지 모음 | 무료 이모지 복사 사이트 | Tani DevTool</title>
+    <meta name="description" content="모든 이모지 모음 - 다양한 이모지를 한 곳에서 확인하고 복사하세요. 간편한 클릭 한 번으로 이모지를 복사하여 문자, SNS, 이메일 등에 활용할 수 있습니다.">
+    <meta name="keywords" content="이모지, 이모티콘, 특수문자, 이모지 모음, 이모지 복사, 무료 이모지, emoji, 카카오톡 이모지, SNS 이모지, 한글 이모지, 한국어 이모지">
+    <meta property="og:title" content="이모지 모음 | 무료 이모지 복사 사이트">
+    <meta property="og:description" content="모든 이모지 모음 - 다양한 이모지를 한 곳에서 확인하고 복사하세요. 간편한 클릭 한 번으로 이모지를 복사하여 문자, SNS, 이메일 등에 활용할 수 있습니다.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/special-characters.html">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/emoji-preview.png">
+    <meta property="og:site_name" content="Tani DevTool">
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/special-characters.html">
+    
+    <!-- 추가 SEO 메타 태그 -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Tani DevTool">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="이모지 모음 | 무료 이모지 복사 사이트">
+    <meta name="twitter:description" content="모든 이모지 모음 - 다양한 이모지를 한 곳에서 확인하고 복사하세요. 간편한 클릭 한 번으로 이모지를 복사하여 문자, SNS, 이메일 등에 활용할 수 있습니다.">
+    <meta name="twitter:image" content="https://tani-devtool.netlify.app/images/emoji-preview.png">
+    
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 구조화된 데이터 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "이모지 모음",
+        "url": "https://tani-devtool.netlify.app/pages/special-characters.html",
+        "description": "모든 이모지 모음 - 다양한 이모지를 한 곳에서 확인하고 복사하세요. 간편한 클릭 한 번으로 이모지를 복사하여 문자, SNS, 이메일 등에 활용할 수 있습니다.",
+        "applicationCategory": "UtilityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "operatingSystem": "Web Browser"
+    }
+    </script>
     <style>
-        .special-characters-container {
+        .emoji-container {
             width: 100%;
             max-width: 100%;
             margin: 0 auto;
             padding: 10px;
         }
 
-        .tabs {
+        .emoji-header {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #74ebd5;
-            width: 100%;
         }
 
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #f5f5f5;
-            border: none;
-            border-radius: 5px 5px 0 0;
-            margin-right: 5px;
-            transition: all 0.3s ease;
+        .emoji-search {
+            display: flex;
+            max-width: 300px;
+            margin-left: auto;
         }
 
-        .tab.active {
+        .emoji-search input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            flex-grow: 1;
+        }
+
+        .emoji-search button {
+            padding: 8px 12px;
             background: #74ebd5;
             color: white;
-        }
-
-        .tab-content {
-            display: none;
-            padding: 10px;
-            background: white;
-            border-radius: 0 0 5px 5px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .tab-content.active {
-            display: block;
-            width: 100%;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
         }
 
         .characters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
-            gap: 5px;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 6px;
             padding: 5px;
             width: 100%;
             box-sizing: border-box;
@@ -87,29 +115,6 @@
             color: white;
         }
 
-        .ascii-art-item {
-            aspect-ratio: 1/1;
-            padding: 4px;
-            text-align: center;
-            background: #f8f9fa;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: monospace;
-            font-size: 0.7em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .ascii-art-item:hover {
-            background: #e9ecef;
-            transform: scale(1.1);
-            z-index: 1;
-        }
-
-        /* Add category headers for better organization */
         .category-header {
             grid-column: 1 / -1;
             font-weight: bold;
@@ -119,7 +124,6 @@
             border-radius: 4px;
         }
 
-        /* Loading indicator */
         .loading {
             grid-column: 1 / -1;
             text-align: center;
@@ -139,36 +143,46 @@
             display: none;
             z-index: 1000;
         }
+
+        .emoji-description {
+            max-width: 800px;
+            margin: 30px auto;
+            text-align: center;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 10px 0;
+            z-index: 100;
+            border-bottom: 2px solid #74ebd5;
+        }
     </style>
 </head>
 <body>
     <div id="top-container"></div>
 
-    <div class="special-characters-container">
-        <h1>특수문자 모음</h1>
+    <div class="emoji-container">
+        <div class="emoji-header sticky-header">
+            <h1>이모지 모음</h1>
+            <div class="emoji-search">
+                <input type="text" id="searchEmoji" placeholder="이모지 검색..." aria-label="이모지 검색">
+                <button id="searchButton"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
         
-        <div class="tabs">
-            <button class="tab active" data-tab="emojis">이모지</button>
-            <button class="tab" data-tab="emoticons">이모티콘</button>
-            <button class="tab" data-tab="ascii-art">아스키아트</button>
+        <div class="emoji-description">
+            원하는 이모지를 찾아보세요! 이모지를 클릭하면 자동으로 클립보드에 복사됩니다.
+            SNS, 메시지, 이메일 등 어디에나 붙여넣기 할 수 있어요.
+            총 10,000개 이상의 이모지를 제공합니다.
         </div>
-
-        <div id="emojis" class="tab-content active">
-            <div class="characters-grid" id="emojis-grid">
-                <!-- Emojis will be added here by JavaScript -->
-            </div>
-        </div>
-
-        <div id="emoticons" class="tab-content">
-            <div class="characters-grid" id="emoticons-grid">
-                <!-- Emoticons will be added here by JavaScript -->
-            </div>
-        </div>
-
-        <div id="ascii-art" class="tab-content">
-            <div class="characters-grid" id="ascii-art-grid">
-                <!-- ASCII art will be added here by JavaScript -->
-            </div>
+        
+        <div class="characters-grid" id="emojis-grid">
+            <!-- Emojis will be added here by JavaScript -->
+            <div class="loading">이모지를 로딩 중입니다...</div>
         </div>
     </div>
 
@@ -188,29 +202,6 @@
 
     <script src="../js/common.js"></script>
     <script>
-        // Tab switching functionality
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs and contents
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                // Add active class to clicked tab and corresponding content
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
-                
-                // Load content for the active tab if it hasn't been loaded yet
-                const tabId = tab.dataset.tab;
-                if (tabId === 'emojis' && !document.getElementById('emojis-grid').hasChildNodes()) {
-                    fetchEmojis();
-                } else if (tabId === 'emoticons' && !document.getElementById('emoticons-grid').hasChildNodes()) {
-                    loadEmoticons();
-                } else if (tabId === 'ascii-art' && !document.getElementById('ascii-art-grid').hasChildNodes()) {
-                    loadAsciiArt();
-                }
-            });
-        });
-
         // Copy to clipboard functionality
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
@@ -233,29 +224,82 @@
             }, 500);
         }
 
-        // Lazy loading implementation
-        function lazyLoadItems(container, items, itemType, batchSize = 300) {
-            // Process items in batches to prevent UI freezing
-            const processBatch = (startIndex) => {
-                const endIndex = Math.min(startIndex + batchSize, items.length);
+        // Format group names for better readability
+        function formatGroupName(name) {
+            return name
+                .replace(/-/g, ' ')
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchEmoji');
+            const searchButton = document.getElementById('searchButton');
+            
+            const performSearch = () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const items = document.querySelectorAll('.character-item');
                 
-                for (let i = startIndex; i < endIndex; i++) {
-                    const div = document.createElement('div');
-                    div.className = itemType === 'ascii' ? 'ascii-art-item' : 'character-item';
-                    div.textContent = items[i];
-                    div.addEventListener('click', () => {
-                        copyToClipboard(items[i]);
-                        addCopiedClass(div);
+                if (searchTerm === '') {
+                    // Show all items and their categories
+                    items.forEach(item => {
+                        item.style.display = '';
                     });
-                    container.appendChild(div);
+                    document.querySelectorAll('.category-header').forEach(header => {
+                        header.style.display = '';
+                    });
+                    return;
                 }
                 
-                if (endIndex < items.length) {
-                    setTimeout(() => processBatch(endIndex), 0);
+                // Hide all category headers initially
+                document.querySelectorAll('.category-header').forEach(header => {
+                    header.style.display = 'none';
+                });
+                
+                // Show/hide items based on search
+                let foundItems = 0;
+                items.forEach(item => {
+                    const emoji = item.textContent;
+                    const description = item.getAttribute('title') || '';
+                    
+                    if (description.toLowerCase().includes(searchTerm) || 
+                        emoji.includes(searchTerm)) {
+                        item.style.display = '';
+                        foundItems++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show a message if no results
+                if (foundItems === 0) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'loading';
+                    noResults.id = 'noResults';
+                    noResults.textContent = `"${searchTerm}"에 대한 검색 결과가 없습니다.`;
+                    
+                    const existingNoResults = document.getElementById('noResults');
+                    if (existingNoResults) {
+                        existingNoResults.remove();
+                    }
+                    
+                    document.getElementById('emojis-grid').appendChild(noResults);
+                } else {
+                    const existingNoResults = document.getElementById('noResults');
+                    if (existingNoResults) {
+                        existingNoResults.remove();
+                    }
                 }
             };
             
-            processBatch(0);
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
         }
 
         // Fetch emojis from API
@@ -287,7 +331,10 @@
                         
                         // The API returns Unicode escape sequences that need to be converted
                         const emojiChar = emoji.character;
-                        groups[emoji.group][emoji.subGroup].push(emojiChar);
+                        groups[emoji.group][emoji.subGroup].push({
+                            char: emojiChar,
+                            description: emoji.unicodeName
+                        });
                     });
                     
                     // Create headers and content for each group/subgroup
@@ -313,9 +360,10 @@
                             groups[group][subGroup].forEach(emoji => {
                                 const div = document.createElement('div');
                                 div.className = 'character-item';
-                                div.textContent = emoji;
+                                div.textContent = emoji.char;
+                                div.title = emoji.description || '';
                                 div.addEventListener('click', () => {
-                                    copyToClipboard(emoji);
+                                    copyToClipboard(emoji.char);
                                     addCopiedClass(div);
                                 });
                                 emojisGrid.appendChild(div);
@@ -325,6 +373,13 @@
                     
                     // After API emojis are loaded, load emojis from text files
                     loadEmojisFromTextFiles(emojisGrid);
+                    
+                    // Setup search functionality
+                    setupSearch();
+                    
+                    // Update page title with count
+                    const emojiCount = document.querySelectorAll('.character-item').length;
+                    document.title = `${emojiCount.toLocaleString()}개 이모지 모음 | 무료 이모지 복사 사이트`;
                 })
                 .catch(error => {
                     console.error('이모지 로딩 실패:', error);
@@ -336,18 +391,10 @@
                         setTimeout(() => {
                             generateFallbackEmojis();
                             loadEmojisFromTextFiles(emojisGrid);
+                            setupSearch();
                         }, 500);
                     }, 2000);
                 });
-        }
-        
-        // Format group names for better readability
-        function formatGroupName(name) {
-            return name
-                .replace(/-/g, ' ')
-                .split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
         }
         
         // Fallback to generate emojis locally in case the API fails
@@ -371,221 +418,27 @@
                 }
             });
             
-            lazyLoadItems(document.getElementById('emojis-grid'), allEmojis, 'emoji');
-        }
-
-        // Generate a large collection of emoticons
-        function loadEmoticons() {
-            const emoticonsGrid = document.getElementById('emoticons-grid');
-            emoticonsGrid.innerHTML = '<div class="loading">이모티콘을 로딩 중입니다...</div>';
+            const emojisGrid = document.getElementById('emojis-grid');
+            emojisGrid.innerHTML = '';
             
-            setTimeout(() => {
-                emoticonsGrid.innerHTML = '';
-                
-                // Base components for creating emoticons
-                const eyes = ['◕', '◠', '◡', '•́', '•̀', '⊙', '◉', '•', '⚆', 'ಠ', 'ಥ', 'ʘ', '￣', '•̀.̫•́', '⌒', '*', 'ᵔ', 'ᵕ', 'ᵒ', 'ᵘ', 'ᴗ', '⌣', 'ᐛ', '≖', '´⌣', '°', '¬', '꒪', 'T', 'x', 'X', 'o', 'O', '`', '=', '-'];
-                const mouths = ['‿', '◡', '︵', '⌂', 'ω', '_', '▽', 'ᗜ', 'ᗝ', 'ᗞ', 'ᗣ', 'ᴥ', 'o', 'O', '3', '﹏', 'ل͟', 'ㅂ', 'ㅅ', 'Д', '◞︵◟', '□', 'ᗨ', '▾', '.'];
-                const decorations = ['。', '♡', '◝', '◜', '₍', '₎', '⋆', '✧', 'ノ', 'ヾ', '╮', '╭', '♪', '♬', '✨', '✿', '*:･ﾟ', 'ʕ', 'ʔ', '(', ')', 'ฅ', '˙', '˚', '꒳', '˘', '⸝⸝', '⸜⸜'];
-                
-                let emoticons = [];
-                
-                // Classic emoticons
-                const classicEmoticons = [
-                    '(・ω・)', '(´･ω･`)', '(◕‿◕✿)', '(≧◡≦)', '(⌒‿⌒)', '(─‿‿─)',
-                    'ʕ•ᴥ•ʔ', 'ʕ◠ᴥ◠ʔ', '(ノ◕ヮ◕)ノ*:･ﾟ✧', '(づ｡◕‿‿◕｡)づ', '(✿◠‿◠)',
-                    '(◕‿◕)', 'uwu', 'owo', '>.<', '^_^', '>_<', '(>人<)', '(╯°□°）╯︵ ┻━┻',
-                    '┬─┬ノ( º _ ºノ)', '(っ˘ڡ˘ς)', '(づ￣ ³￣)づ', '⊂(◉‿◉)つ', '(つ≧▽≦)つ'
-                ];
-                
-                // Create category header for classic emoticons
-                const classicHeader = document.createElement('div');
-                classicHeader.className = 'category-header';
-                classicHeader.textContent = '인기 이모티콘';
-                emoticonsGrid.appendChild(classicHeader);
-                
-                // Add classic emoticons
-                classicEmoticons.forEach(emoticon => {
-                    const div = document.createElement('div');
-                    div.className = 'character-item';
-                    div.textContent = emoticon;
-                    div.addEventListener('click', () => {
-                        copyToClipboard(emoticon);
-                        addCopiedClass(div);
-                    });
-                    emoticonsGrid.appendChild(div);
-                });
-                
-                // Create header for generated emoticons
-                const generatedHeader = document.createElement('div');
-                generatedHeader.className = 'category-header';
-                generatedHeader.textContent = '다양한 이모티콘';
-                emoticonsGrid.appendChild(generatedHeader);
-                
-                // Generate more complex emoticons
-                for (let i = 0; i < 500; i++) {
-                    const eye = eyes[Math.floor(Math.random() * eyes.length)];
-                    const mouth = mouths[Math.floor(Math.random() * mouths.length)];
-                    const deco1 = Math.random() > 0.3 ? decorations[Math.floor(Math.random() * decorations.length)] : '';
-                    const deco2 = Math.random() > 0.3 ? decorations[Math.floor(Math.random() * decorations.length)] : '';
-                    
-                    // Different patterns
-                    const patterns = [
-                        `(${eye}${mouth}${eye})`,
-                        `${deco1}(${eye}${mouth}${eye})${deco2}`,
-                        `${deco1}${eye}${mouth}${eye}${deco2}`,
-                        `(${deco1}${eye}${mouth}${eye}${deco2})`,
-                        `${deco1}(${eye}${deco2}${mouth}${deco1}${eye})${deco2}`,
-                    ];
-                    
-                    const emoticon = patterns[Math.floor(Math.random() * patterns.length)];
-                    if (!emoticons.includes(emoticon)) {
-                        emoticons.push(emoticon);
-                        
-                        const div = document.createElement('div');
-                        div.className = 'character-item';
-                        div.textContent = emoticon;
-                        div.addEventListener('click', () => {
-                            copyToClipboard(emoticon);
-                            addCopiedClass(div);
-                        });
-                        emoticonsGrid.appendChild(div);
-                    }
-                }
-                
-                // Add common kaomoji
-                const kaomojiHeader = document.createElement('div');
-                kaomojiHeader.className = 'category-header';
-                kaomojiHeader.textContent = '카오모지';
-                emoticonsGrid.appendChild(kaomojiHeader);
-                
-                const kaomoji = [
-                    '(✿╹◡╹)', '(≧∀≦)', '(≧ω≦)', '(´▽`)', '(๑>ᴗ<๑)', '(＾▽＾)', '(⁀ᗢ⁀)',
-                    '♪(๑ᴖ◡ᴖ๑)♪', '(*^▽^*)', '(＾◡＾)', '(*°▽°*)', '(｡･ω･｡)', '(´｡• ᵕ •｡`)',
-                    '( ´･ω･)', '(≧◡≦)', '( ˙꒳​˙ )', '(*￣▽￣)b', '(°▽°)', '(o˘◡˘o)', '(๑˃ᴗ˂)ﻭ',
-                    '(っ˘ω˘ς )', '(*≧ω≦*)', '(´｡• ω •｡`)', '(￣▽￣)', '(￣ω￣)', '(▔◡▔)', '(°ロ°)',
-                    '(╬ಠ益ಠ)', '(ಥ﹏ಥ)', '(ノಠ益ಠ)ノ', '(ʘдʘ)', '(º_º)', '(⊙_⊙;)', '(☉_☉)', '(⊙﹏⊙)',
-                    '(⊙△⊙✿)', '(ノ_<。)', '(T_T)', '( ꈨຶ ˙̫̮ ꈨຶ )', '(ಠ╭╮ಠ)', '(⊃｡•́‿•̀｡)⊃', '┏(＾0＾)┛',
-                    '(╭☞•́⍛•̀)╭☞', '(❁´◡`❁)', '(^３^)♪', '(´・(oo)・｀)', '(ﾉ≧∀≦)ﾉ', '(☞ﾟヮﾟ)☞', '(⸝⸝•ᴗ•⸝⸝)♡ ', '( •̀ ω •́ )✧'
-                ];
-                
-                kaomoji.forEach(emoticon => {
-                    const div = document.createElement('div');
-                    div.className = 'character-item';
-                    div.textContent = emoticon;
-                    div.addEventListener('click', () => {
-                        copyToClipboard(emoticon);
-                        addCopiedClass(div);
-                    });
-                    emoticonsGrid.appendChild(div);
-                });
-            }, 100);
-        }
-
-        // Create ASCII art
-        function loadAsciiArt() {
-            const asciiArtGrid = document.getElementById('ascii-art-grid');
-            asciiArtGrid.innerHTML = '<div class="loading">아스키아트를 로딩 중입니다...</div>';
+            // Create fallback header
+            const fallbackHeader = document.createElement('div');
+            fallbackHeader.className = 'category-header';
+            fallbackHeader.textContent = '기본 이모지';
+            emojisGrid.appendChild(fallbackHeader);
             
-            setTimeout(() => {
-                asciiArtGrid.innerHTML = '';
-                
-                // Create category headers
-                const decorativeHeader = document.createElement('div');
-                decorativeHeader.className = 'category-header';
-                decorativeHeader.textContent = '장식적 아스키아트';
-                asciiArtGrid.appendChild(decorativeHeader);
-                
-                const decorativeArt = [
-                    '˗ˏˋ ♡ ˎˊ˗',
-                    '୨୧ ‧₊˚ ⊹',
-                    '⋆.ೃ࿔*:･',
-                    '꒰ঌ◡ঌ꒱',
-                    '(๑•́ ₃ •̀๑)',
-                    '₊˚ʚ ᗢ₊˚✧',
-                    '◦•●◉✿',
-                    '✩°｡⋆⸜',
-                    '♡˖°.♡',
-                    '⊹˚₊‧',
-                    '⋆｡°✩',
-                    '*ੈ✩‧₊˚',
-                    '𓆩♡𓆪',
-                    '◌⑅⃝*⃝*⃝',
-                    '♡⃕⃕',
-                    '(◕ᴗ◕✿)',
-                    '⋆.ೃ࿔*:･',
-                    '꒰⑅ᵕ༚ᵕ꒱˖♡',
-                    '♡°◌̊',
-                    '₊‧°𐐪♡𐑂°‧₊',
-                    '♡ ۫ ꒰ ⌗ ꒱',
-                    '୨୧⋆.˚⋆',
-                    '✧*。٩(ˊᗜˋ*)و✧*。',
-                    '༝༚༝༚ ༝༚༝༚',
-                    '✧⋄⋆⋅⋆⋄✧⋄⋆⋅⋆⋄✧',
-                    '༻✧༺',
-                    '꒦꒷♡꒷꒦',
-                    '¨̮ ♡⃕'
-                ];
-                
-                decorativeArt.forEach(art => {
-                    const div = document.createElement('div');
-                    div.className = 'ascii-art-item';
-                    div.textContent = art;
-                    div.addEventListener('click', () => {
-                        copyToClipboard(art);
-                        addCopiedClass(div);
-                    });
-                    asciiArtGrid.appendChild(div);
+            allEmojis.forEach(emoji => {
+                const div = document.createElement('div');
+                div.className = 'character-item';
+                div.textContent = emoji;
+                div.addEventListener('click', () => {
+                    copyToClipboard(emoji);
+                    addCopiedClass(div);
                 });
-                
-                // Action & Expression ASCII Art
-                const actionHeader = document.createElement('div');
-                actionHeader.className = 'category-header';
-                actionHeader.textContent = '표현적 아스키아트';
-                asciiArtGrid.appendChild(actionHeader);
-                
-                const actionArt = [
-                    '◍•ᴗ•◍',
-                    '◞ ◝',
-                    'ฅ^•ﻌ•^ฅ',
-                    '(ㅇㅅㅇ❀)',
-                    '(๑•́ ω •̀๑)',
-                    '(๑و•̀ω•́)و',
-                    'ヽ(*・ω・)ﾉ',
-                    '(๑╹ᆺ╹)',
-                    '⸜(｡˃ ᵕ ˂ )⸝',
-                    '(ღ˘⌣˘ღ)',
-                    '♡( ◡‿◡ )',
-                    'ʕ •ᴥ•ʔ',
-                    '✧◝(⁰▿⁰)◜✧',
-                    '♥╣[-_-]╠♥',
-                    '乁[ᓀ˵▾˵ᓂ]ㄏ',
-                    '┬┴┬┴┤(･_├┬┴┬┴',
-                    '(⊃｡•́‿•̀｡)⊃',
-                    '(ง •̀_•́)ง',
-                    '~(˘▾˘~)',
-                    '(._.) ( l: ) ( .-. ) ( :l ) (._.)',
-                    '┬──┬ ノ( ゜-゜ノ)',
-                    '(╯°□°）╯︵ ┻━┻',
-                    '┻━┻︵ \(°□°)/ ︵ ┻━┻',
-                    '┐(´д`)┌',
-                    '٩(͡๏̯͡๏)۶',
-                    '(◑‿◐)',
-                    '(✌ﾟ∀ﾟ)☞'
-                ];
-                
-                actionArt.forEach(art => {
-                    const div = document.createElement('div');
-                    div.className = 'ascii-art-item';
-                    div.textContent = art;
-                    div.addEventListener('click', () => {
-                        copyToClipboard(art);
-                        addCopiedClass(div);
-                    });
-                    asciiArtGrid.appendChild(div);
-                });
-            }, 100);
+                emojisGrid.appendChild(div);
+            });
         }
-
+        
         // Load emojis from text files
         function loadEmojisFromTextFiles(container) {
             const textFileSources = [
@@ -671,8 +524,9 @@
                         
                         loadedCount++;
                         if (loadedCount === textFileSources.length) {
-                            // All files loaded
-                            console.log('모든 이모지 파일이 로드되었습니다.');
+                            // All files loaded, update emoji count in title
+                            const emojiCount = document.querySelectorAll('.character-item').length;
+                            document.title = `${emojiCount.toLocaleString()}개 이모지 모음 | 무료 이모지 복사 사이트`;
                         }
                     })
                     .catch(error => {
@@ -745,7 +599,7 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
-            // Load emojis by default since it's the active tab
+            // Load emojis
             fetchEmojis();
         });
     </script>
@@ -754,7 +608,7 @@
     <script>
         var disqus_config = function () {
             this.page.url = window.location.href;
-            this.page.identifier = 'special-characters';
+            this.page.identifier = 'emoji-collection';
             this.page.title = document.title;
         };
         
