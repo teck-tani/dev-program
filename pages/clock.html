@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대한민국 표준시계 | Tani DevTool</title>
+    <meta name="description" content="정확한 대한민국 표준시를 제공하는 디지털 시계입니다.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2c2c2c;
+            color: white;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+
+        .top-controls {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .flag {
+            width: 50px;
+            height: auto;
+        }
+
+        .location-info {
+            text-align: left;
+        }
+
+        .city {
+            font-size: 2.5em;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .region {
+            font-size: 1.4em;
+            color: #e0e0e0;
+            margin: 5px 0;
+        }
+
+        .time {
+            font-size: 12em;
+            font-weight: bold;
+            color: #00ff9d;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .time .seconds {
+            font-size: 0.3em;
+            vertical-align: super;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .date {
+            font-size: 2.5em;
+            margin-top: 30px;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .time {
+                font-size: 6em;
+            }
+            .date {
+                font-size: 1.8em;
+            }
+            .city {
+                font-size: 2em;
+            }
+            .region {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-controls">
+        <button class="control-button" onclick="toggleFullscreen()" title="전체화면">
+            <i class="fas fa-expand"></i>
+            전체화면
+        </button>
+    </div>
+
+    <div class="clock-container">
+        <div class="location">
+            <img src="https://flagcdn.com/w80/kr.png" alt="대한민국 국기" class="flag">
+            <div class="location-info">
+                <h1 class="city">대한민국</h1>
+                <div class="region" id="userRegion">위치 확인 중...</div>
+            </div>
+        </div>
+        <div class="time" id="time">09:45<span class="seconds">19</span></div>
+        <div class="date" id="date">2025년 4월 18일 금요일</div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            
+            // 시간 포맷팅
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            // 날짜 포맷팅
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+            const dayName = dayNames[now.getDay()];
+            
+            // 화면 업데이트
+            document.getElementById('time').innerHTML = `${hours}:${minutes}<span class="seconds">${seconds}</span>`;
+            document.getElementById('date').textContent = `${year}년 ${month}월 ${date}일 ${dayName}요일`;
+        }
+
+        function getKoreanRegionName(region) {
+            const regionMap = {
+                '11': '서울특별시',
+                '26': '부산광역시',
+                '27': '대구광역시',
+                '28': '인천광역시',
+                '29': '광주광역시',
+                '30': '대전광역시',
+                '31': '울산광역시',
+                '36': '세종특별자치시',
+                '41': '경기도',
+                '42': '강원도',
+                '43': '충청북도',
+                '44': '충청남도',
+                '45': '전라북도',
+                '46': '전라남도',
+                '47': '경상북도',
+                '48': '경상남도',
+                '50': '제주특별자치도'
+            };
+            return regionMap[region] || region;
+        }
+
+        function getKoreanCityName(city) {
+            // 도시 이름을 소문자로 변환하여 비교
+            const normalizedCity = city.toLowerCase();
+            const cityMap = {
+                'seongnam-si': '성남시',
+                'seongnam': '성남시',
+                'seoul': '서울특별시',
+                'suwon-si': '수원시',
+                'suwon': '수원시',
+                'anyang-si': '안양시',
+                'anyang': '안양시',
+                'bucheon-si': '부천시',
+                'bucheon': '부천시',
+                'seongnam': '성남시',
+                'hwaseong-si': '화성시',
+                'hwaseong': '화성시',
+                'uijeongbu-si': '의정부시',
+                'uijeongbu': '의정부시',
+                'namyangju-si': '남양주시',
+                'namyangju': '남양주시',
+                'yongin-si': '용인시',
+                'yongin': '용인시',
+                'goyang-si': '고양시',
+                'goyang': '고양시',
+                'pyeongtaek-si': '평택시',
+                'pyeongtaek': '평택시',
+                'ansan-si': '안산시',
+                'ansan': '안산시',
+                // 서울시 구
+                'gangnam-gu': '강남구',
+                'seocho-gu': '서초구',
+                'songpa-gu': '송파구',
+                'gangdong-gu': '강동구',
+                'gwangjin-gu': '광진구',
+                'mapo-gu': '마포구',
+                'yeongdeungpo-gu': '영등포구',
+                'gangbuk-gu': '강북구',
+                'nowon-gu': '노원구',
+                'jung-gu': '중구',
+                'jongno-gu': '종로구'
+                // API 응답을 보고 더 추가하겠습니다
+            };
+            return cityMap[normalizedCity] || city;
+        }
+
+        function getUserLocation() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    // API 응답 데이터 확인을 위한 로그
+                    console.log('Location API Response:', data);
+                    
+                    if (data.region && data.city) {
+                        // region_code와 city 값을 기준으로 매핑
+                        const koreanRegion = getKoreanRegionName(data.region_code);
+                        const koreanCity = getKoreanCityName(data.city);
+                        console.log('Original Region:', data.region_code);
+                        console.log('Original City:', data.city);
+                        console.log('Converted Region:', koreanRegion);
+                        console.log('Converted City:', koreanCity);
+                        
+                        const location = `${koreanRegion} ${koreanCity}`;
+                        document.getElementById('userRegion').textContent = location;
+                    } else {
+                        document.getElementById('userRegion').textContent = '위치 정보 없음';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Location API Error:', error);
+                    document.getElementById('userRegion').textContent = '위치 정보 없음';
+                });
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // 초기 실행
+        updateClock();
+        getUserLocation();
+        
+        // 1초마다 업데이트
+        setInterval(updateClock, 1000);
+
+        // ESC 키로 전체화면 해제 감지
+        document.addEventListener('fullscreenchange', () => {
+            const fullscreenBtn = document.querySelector('.control-button i');
+            if (document.fullscreenElement) {
+                fullscreenBtn.className = 'fas fa-compress';
+            } else {
+                fullscreenBtn.className = 'fas fa-expand';
+            }
+        });
+    </script>
+</body>
+</html> 

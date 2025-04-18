@@ -83,7 +83,7 @@ textarea {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 30px;
-    margin-top: 0;
+    margin-top: 40px;
     padding: 10px;
     width: 100%;
 }
@@ -200,34 +200,39 @@ textarea {
     transform: scale(1.1) !important;
 }
 
+.barcode-controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
 .print-button {
-    position: relative;
-    top: auto;
-    left: auto;
-    background-color: #2196F3;
-    color: white;
-    width: auto;
-    height: auto;
-    border-radius: 4px;
+    background-color: #00A9FF !important;
     border: none;
+    color: white;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: inline-flex;
+    padding: 6px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    z-index: 100;
-    padding: 10px 20px;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    box-shadow: none;
 }
 
 .print-button:hover {
-    background-color: #1976D2;
+    background-color: #0095E5 !important;
     transform: scale(1.05);
 }
 
 @media print {
-    .print-button {
+    .barcode-controls {
         display: none;
     }
     .controls-container {

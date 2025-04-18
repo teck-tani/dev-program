@@ -164,6 +164,12 @@ function addBarcode() {
     generateBarcode(value, type, svg);
     barcodeInput.value = '';
     barcodeInput.focus();
+
+    // 바코드가 생성되면 인쇄 버튼 표시
+    const barcodeControls = document.querySelector('.barcode-controls');
+    if (barcodeControls) {
+        barcodeControls.style.display = 'flex';
+    }
 }
 
 // Drag and Drop functions
@@ -277,6 +283,12 @@ function clearAll() {
     document.getElementById('barcodeGrid').innerHTML = '';
     barcodeCount = 0;
     document.getElementById('error').textContent = '';
+    
+    // 모든 바코드가 삭제되면 인쇄 버튼 숨김
+    const barcodeControls = document.querySelector('.barcode-controls');
+    if (barcodeControls) {
+        barcodeControls.style.display = 'none';
+    }
 }
 
 function updateBarcodeNumbers() {
@@ -392,5 +404,112 @@ function generateFromExcel() {
 }
 
 function printBarcodes() {
-    window.print();
+    const printWindow = window.open('', '_blank');
+    
+    let printContent = '<!DOCTYPE html>\n' +
+        '<html>\n' +
+        '<head>\n' +
+        '    <title>바코드 인쇄</title>\n' +
+        '    <style>\n' +
+        '        body {\n' +
+        '            font-family: Arial, sans-serif;\n' +
+        '            padding: 20px;\n' +
+        '            background-color: white;\n' +
+        '        }\n' +
+        '        .print-grid {\n' +
+        '            display: grid;\n' +
+        '            grid-template-columns: repeat(4, 1fr);\n' +
+        '            gap: 30px;\n' +
+        '            padding: 10px;\n' +
+        '            width: 100%;\n' +
+        '        }\n' +
+        '        .print-item {\n' +
+        '            border: 1px solid #ddd;\n' +
+        '            padding: 15px 10px;\n' +
+        '            text-align: center;\n' +
+        '            background-color: white;\n' +
+        '            box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n' +
+        '            height: 150px;\n' +
+        '            display: flex;\n' +
+        '            flex-direction: column;\n' +
+        '            justify-content: space-between;\n' +
+        '            box-sizing: border-box;\n' +
+        '            page-break-inside: avoid;\n' +
+        '        }\n' +
+        '        .print-item svg {\n' +
+        '            max-width: 100%;\n' +
+        '            height: auto;\n' +
+        '            width: 100% !important;\n' +
+        '            height: 80px !important;\n' +
+        '            display: block;\n' +
+        '            margin: 0 auto;\n' +
+        '            margin-top: 10px;\n' +
+        '        }\n' +
+        '        .print-value {\n' +
+        '            margin-top: 15px;\n' +
+        '            font-size: 12px;\n' +
+        '            word-break: break-all;\n' +
+        '            height: 20px;\n' +
+        '            overflow: hidden;\n' +
+        '            text-overflow: ellipsis;\n' +
+        '            white-space: nowrap;\n' +
+        '            width: 100%;\n' +
+        '        }\n' +
+        '        @media print {\n' +
+        '            body {\n' +
+        '                padding: 0;\n' +
+        '                margin: 0;\n' +
+        '            }\n' +
+        '            .print-grid {\n' +
+        '                gap: 20px;\n' +
+        '            }\n' +
+        '            .print-item {\n' +
+        '                box-shadow: none;\n' +
+        '            }\n' +
+        '        }\n' +
+        '    </style>\n' +
+        '</head>\n' +
+        '<body>\n' +
+        '    <div class="print-grid">\n';
+    
+    const barcodeItems = document.querySelectorAll('#barcodeGrid .barcode-item');
+    
+    barcodeItems.forEach(item => {
+        const barcodeSvg = item.querySelector('svg').outerHTML;
+        const barcodeValue = item.querySelector('.barcode-value').textContent;
+        
+        printContent += '        <div class="print-item">\n' +
+            '            ' + barcodeSvg + '\n' +
+            '            <div class="print-value">' + barcodeValue + '</div>\n' +
+            '        </div>\n';
+    });
+    
+    printContent += '    </div>\n' +
+        '    <script>\n' +
+        '        window.onload = function() {\n' +
+        '            setTimeout(function() {\n' +
+        '                window.print();\n' +
+        '            }, 500);\n' +
+        '        };\n' +
+        '    </script>\n' +
+        '</body>\n' +
+        '</html>';
+    
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+}
+
+function removeBarcode(button) {
+    const barcodeItem = button.closest('.barcode-item');
+    barcodeItem.remove();
+    barcodeCount--;
+    updateBarcodeNumbers();
+    
+    // 바코드가 없으면 인쇄 버튼 숨김
+    const grid = document.getElementById('barcodeGrid');
+    const barcodeControls = document.querySelector('.barcode-controls');
+    if (grid.children.length === 0 && barcodeControls) {
+        barcodeControls.style.display = 'none';
+    }
 } 
