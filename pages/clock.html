@@ -3,10 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>대한민국 표준시계 | Tani DevTool</title>
-    <meta name="description" content="정확한 대한민국 표준시를 제공하는 디지털 시계입니다.">
+    <title>대한민국 시계 | 한국 표준시간 | Tani DevTool</title>
+    <meta name="description" content="대한민국 표준시를 제공하는 무료 온라인 시계입니다. 한국 시간을 정확하게 확인하세요. 서울 시간, 한국 표준시(KST) 제공.">
+    <meta name="keywords" content="대한민국 시계, 한국 시계, 한국 표준시, KST, 서울 시간, 온라인 시계, 무료 시계, 디지털 시계, 한국 시간">
+    <meta property="og:title" content="대한민국 시계 | 한국 표준시간">
+    <meta property="og:description" content="대한민국 표준시를 제공하는 무료 온라인 시계입니다. 한국 시간을 정확하게 확인하세요.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/clock.html">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/clock-preview.png">
+    <meta property="og:site_name" content="Tani DevTool">
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/clock.html">
+    
+    <!-- 추가 SEO 메타 태그 -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Tani DevTool">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="대한민국 시계 | 한국 표준시간">
+    <meta name="twitter:description" content="대한민국 표준시를 제공하는 무료 온라인 시계입니다. 한국 시간을 정확하게 확인하세요.">
+    <meta name="twitter:image" content="https://tani-devtool.netlify.app/images/clock-preview.png">
+    
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- 구조화된 데이터 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "대한민국 시계",
+        "url": "https://tani-devtool.netlify.app/pages/clock.html",
+        "description": "대한민국 표준시를 제공하는 무료 온라인 시계입니다. 한국 시간을 정확하게 확인하세요.",
+        "applicationCategory": "UtilityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "operatingSystem": "Web Browser"
+    }
+    </script>
     <style>
         body {
             margin: 0;
@@ -101,6 +137,20 @@
             margin-top: 30px;
             color: #ffffff;
         }
+        
+        .clock-description {
+            max-width: 800px;
+            margin: 30px auto;
+            text-align: center;
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #cccccc;
+            display: none;
+        }
+        
+        .comments-section {
+            margin-top: 50px;
+        }
 
         @media (max-width: 768px) {
             .flag {
@@ -144,12 +194,20 @@
         <div class="location">
             <img src="https://flagcdn.com/w80/kr.png" alt="대한민국 국기" class="flag">
             <div class="location-info">
-                <h1 class="city">대한민국</h1>
-                <div class="region" id="userRegion">위치 확인 중...</div>
+                <h1 class="city">대한민국 시계</h1>
+                <!-- <div class="region" id="userRegion">위치 확인 중...</div> -->
             </div>
         </div>
-        <div class="time" id="time">09:45<span class="seconds">19</span></div>
-        <div class="date" id="date">2025년 4월 18일 금요일</div>
+        <div class="time" id="time">
+            <span class="seconds"></span>
+        </div>
+        <div class="date" id="date"></div>
+        
+        <div class="clock-description">
+            이 페이지는 대한민국 표준시(Korean Standard Time, KST)를 기준으로 현재 시간을 제공합니다. 
+            한국 시간은 협정 세계시(UTC)보다 9시간 빠릅니다(UTC+9). 
+            정확한 대한민국 시간을 확인하고 전체화면으로 볼 수 있습니다.
+        </div>
     </div>
 
     <script>
@@ -171,6 +229,9 @@
             // 화면 업데이트
             document.getElementById('time').innerHTML = `${hours}:${minutes}<span class="seconds">${seconds}</span>`;
             document.getElementById('date').textContent = `${year}년 ${month}월 ${date}일 ${dayName}요일`;
+            
+            // 제목에 현재 시간 표시 (SEO 향상)
+            document.title = `${hours}:${minutes} 대한민국 시계 | 한국 표준시간 | Tani DevTool`;
         }
 
         function getKoreanRegionName(region) {
@@ -258,24 +319,40 @@
                         console.log('Converted City:', koreanCity);
                         
                         const location = `${koreanRegion} ${koreanCity}`;
-                        document.getElementById('userRegion').textContent = location;
+                        const userRegionElement = document.getElementById('userRegion');
+                        if (userRegionElement) {
+                            userRegionElement.textContent = location;
+                        }
                     } else {
-                        document.getElementById('userRegion').textContent = '위치 정보 없음';
+                        const userRegionElement = document.getElementById('userRegion');
+                        if (userRegionElement) {
+                            userRegionElement.textContent = '위치 정보 없음';
+                        }
                     }
                 })
                 .catch((error) => {
                     console.error('Location API Error:', error);
-                    document.getElementById('userRegion').textContent = '위치 정보 없음';
+                    const userRegionElement = document.getElementById('userRegion');
+                    if (userRegionElement) {
+                        userRegionElement.textContent = '위치 정보 없음';
+                    }
                 });
         }
 
         function toggleFullscreen() {
             const header = document.getElementById('topHeader');
             const topContainer = document.getElementById('top-container');
+            const clockDescription = document.querySelector('.clock-description');
+            const commentsSection = document.querySelector('.comments-section');
+            const footerContainer = document.getElementById('footer-container');
+            
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().then(() => {
                     if (header) header.style.display = 'none';
                     if (topContainer) topContainer.style.display = 'none';
+                    if (clockDescription) clockDescription.style.display = 'none';
+                    if (commentsSection) commentsSection.style.display = 'none';
+                    if (footerContainer) footerContainer.style.display = 'none';
                 }).catch(err => {
                     console.log(`Error attempting to enable fullscreen: ${err.message}`);
                 });
@@ -284,6 +361,9 @@
                     document.exitFullscreen().then(() => {
                         if (header) header.style.display = '';
                         if (topContainer) topContainer.style.display = '';
+                        if (clockDescription) clockDescription.style.display = '';
+                        if (commentsSection) commentsSection.style.display = '';
+                        if (footerContainer) footerContainer.style.display = '';
                     });
                 }
             }
@@ -299,33 +379,52 @@
         // ESC 키로 전체화면 해제 감지
         document.addEventListener('fullscreenchange', () => {
             const header = document.getElementById('topHeader');
+            const topContainer = document.getElementById('top-container');
+            const clockDescription = document.querySelector('.clock-description');
+            const commentsSection = document.querySelector('.comments-section');
+            const footerContainer = document.getElementById('footer-container');
             const fullscreenBtn = document.querySelector('#clock-fullscreen-btn i');
+            
             if (document.fullscreenElement) {
                 if (header) header.style.display = 'none';
+                if (topContainer) topContainer.style.display = 'none';
+                if (clockDescription) clockDescription.style.display = 'none';
+                if (commentsSection) commentsSection.style.display = 'none';
+                if (footerContainer) footerContainer.style.display = 'none';
                 fullscreenBtn.className = 'fas fa-compress';
             } else {
                 if (header) header.style.display = '';
+                if (topContainer) topContainer.style.display = '';
+                if (clockDescription) clockDescription.style.display = '';
+                if (commentsSection) commentsSection.style.display = '';
+                if (footerContainer) footerContainer.style.display = '';
                 fullscreenBtn.className = 'fas fa-expand';
             }
         });
 
-        // 모바일 메뉴 토글 기능
-        document.getElementById('menuToggle')?.addEventListener('click', function() {
-            const nav = document.getElementById('mainNav');
-            nav.classList.toggle('active');
-            
-            const icon = this.querySelector('i');
-            if (icon.classList.contains('fa-bars')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
-
-        // 드롭다운 클릭 이벤트 처리
+        // 페이지 로드시 설명 표시
         document.addEventListener('DOMContentLoaded', function() {
+            const clockDescription = document.querySelector('.clock-description');
+            if (clockDescription) {
+                clockDescription.style.display = 'block';
+            }
+            
+            // 모바일 메뉴 토글 기능
+            document.getElementById('menuToggle')?.addEventListener('click', function() {
+                const nav = document.getElementById('mainNav');
+                nav.classList.toggle('active');
+                
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-bars')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // 드롭다운 클릭 이벤트 처리
             const dropdownBtn = document.querySelector('.dropdown-btn');
             if (dropdownBtn) {
                 dropdownBtn.addEventListener('click', function(e) {
