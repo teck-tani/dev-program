@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://tani-devtool.netlify.app/sitemap.xml 
+Sitemap: https://tani-devtool.netlify.app/sitemap.xml
