@@ -58,9 +58,7 @@
         }
 
         .emoji-search {
-            display: flex;
-            max-width: 300px;
-            margin-left: auto;
+            display: none; /* Hide the search functionality */
         }
 
         .emoji-search input {
@@ -160,6 +158,17 @@
             z-index: 100;
             border-bottom: 2px solid #74ebd5;
         }
+
+        /* Fix for top menu dropdown z-index */
+        #top-container {
+            position: relative;
+            z-index: 200; /* Higher than sticky-header */
+        }
+
+        /* Also ensure dropdown menus have proper z-index */
+        .dropdown-content {
+            z-index: 300; /* Higher than top-container */
+        }
     </style>
 </head>
 <body>
@@ -168,10 +177,6 @@
     <div class="emoji-container">
         <div class="emoji-header sticky-header">
             <h1>이모지 모음</h1>
-            <div class="emoji-search">
-                <input type="text" id="searchEmoji" placeholder="이모지 검색..." aria-label="이모지 검색">
-                <button id="searchButton"><i class="fas fa-search"></i></button>
-            </div>
         </div>
         
         <div class="emoji-description">
@@ -235,71 +240,8 @@
 
         // Search functionality
         function setupSearch() {
-            const searchInput = document.getElementById('searchEmoji');
-            const searchButton = document.getElementById('searchButton');
-            
-            const performSearch = () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                const items = document.querySelectorAll('.character-item');
-                
-                if (searchTerm === '') {
-                    // Show all items and their categories
-                    items.forEach(item => {
-                        item.style.display = '';
-                    });
-                    document.querySelectorAll('.category-header').forEach(header => {
-                        header.style.display = '';
-                    });
-                    return;
-                }
-                
-                // Hide all category headers initially
-                document.querySelectorAll('.category-header').forEach(header => {
-                    header.style.display = 'none';
-                });
-                
-                // Show/hide items based on search
-                let foundItems = 0;
-                items.forEach(item => {
-                    const emoji = item.textContent;
-                    const description = item.getAttribute('title') || '';
-                    
-                    if (description.toLowerCase().includes(searchTerm) || 
-                        emoji.includes(searchTerm)) {
-                        item.style.display = '';
-                        foundItems++;
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-                
-                // Show a message if no results
-                if (foundItems === 0) {
-                    const noResults = document.createElement('div');
-                    noResults.className = 'loading';
-                    noResults.id = 'noResults';
-                    noResults.textContent = `"${searchTerm}"에 대한 검색 결과가 없습니다.`;
-                    
-                    const existingNoResults = document.getElementById('noResults');
-                    if (existingNoResults) {
-                        existingNoResults.remove();
-                    }
-                    
-                    document.getElementById('emojis-grid').appendChild(noResults);
-                } else {
-                    const existingNoResults = document.getElementById('noResults');
-                    if (existingNoResults) {
-                        existingNoResults.remove();
-                    }
-                }
-            };
-            
-            searchButton.addEventListener('click', performSearch);
-            searchInput.addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') {
-                    performSearch();
-                }
-            });
+            // Removed search functionality
+            return; // Do nothing since search is removed
         }
 
         // Fetch emojis from API
