@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <!-- 메인 페이지 -->
+  <url>
+    <loc>https://tani-devtool.netlify.app/</loc>
+    <lastmod>2023-11-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- 계산기 페이지 -->
+  <url>
+    <loc>https://tani-devtool.netlify.app/pages/calculator.html</loc>
+    <lastmod>2023-11-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 시계 페이지 -->
+  <url>
+    <loc>https://tani-devtool.netlify.app/pages/clock.html</loc>
+    <lastmod>2023-11-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 특수문자/이모지 페이지 -->
+  <url>
+    <loc>https://tani-devtool.netlify.app/pages/special-characters.html</loc>
+    <lastmod>2023-11-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 로또 페이지 -->
+  <url>
+    <loc>https://tani-devtool.netlify.app/pages/lotto.html</loc>
+    <lastmod>2023-11-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 바코드 페이지 -->
+  <url>
+    <loc>https://tani-devtool.netlify.app/pages/barcode.html</loc>
+    <lastmod>2023-11-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset> 
