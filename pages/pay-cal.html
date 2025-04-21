@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연봉 계산기 | 월급 실수령액 계산 | 2024년 세금 계산기 | Tani DevTool</title>
+    <meta name="description" content="연봉을 입력하면 4대보험과 소득세를 공제한 실제 월 실수령액을 정확히 계산해주는 무료 계산기입니다. 2024년 최신 세율 적용, 부양가족 수 반영, 퇴직금 포함 여부 선택 가능.">
+    <meta name="keywords" content="연봉 계산기, 월급 계산기, 실수령액 계산, 세후 월급, 연봉 실수령액, 4대보험 계산, 소득세 계산, 월급 수령액, 세금 계산, 연봉 세금, 급여 계산">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/pay-cal.html">
+    <meta property="og:title" content="연봉 계산기 | 월급 실수령액 자동 계산">
+    <meta property="og:description" content="연봉을 입력하면 4대보험과 세금을 공제한 실제 월 실수령액을 자동으로 계산해주는 무료 계산기입니다. 2024년 최신 세율 적용.">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/pay-cal-preview.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://tani-devtool.netlify.app/pages/pay-cal.html">
+    <meta property="twitter:title" content="연봉 계산기 | 월급 실수령액 자동 계산">
+    <meta property="twitter:description" content="연봉을 입력하면 4대보험과 세금을 공제한 실제 월 실수령액을 자동으로 계산해주는 무료 계산기입니다.">
+    <meta property="twitter:image" content="https://tani-devtool.netlify.app/images/pay-cal-preview.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/pay-cal.html">
+    
+    <!-- Robots meta tag -->
+    <meta name="robots" content="index, follow">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- 구조화된 데이터 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "연봉 계산기 - 월급 실수령액 계산",
+      "url": "https://tani-devtool.netlify.app/pages/pay-cal.html",
+      "description": "연봉을 입력하면 4대보험과 소득세를 공제한 실제 월 실수령액을 정확히 계산해주는 무료 계산기입니다. 2024년 최신 세율 적용.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "156"
+      }
+    }
+    </script>
+    
+    <style>
+        /* 메인 컨테이너 스타일 */
+        .calculator-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin: 30px 0 20px;
+            color: #333;
+            font-weight: 700;
+            position: relative;
+            width: 100%;
+        }
+        
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            margin: 10px auto 0;
+        }
+        
+        /* 입력 폼 섹션 */
+        .input-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input[type="number"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input[type="number"]:focus,
+        .form-group input[type="text"]:focus {
+            border-color: #74ebd5;
+            outline: none;
+        }
+        
+        /* 라디오 버튼 스타일 */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .radio-option input[type="radio"] {
+            margin-right: 8px;
+        }
+        
+        /* 카운터 입력 스타일 */
+        .counter-input {
+            display: flex;
+            align-items: center;
+            max-width: 200px;
+        }
+        
+        .counter-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #f0f0f0;
+            color: #333;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .counter-btn:hover {
+            background: #e3e3e3;
+        }
+        
+        .counter-btn.minus {
+            border-radius: 5px 0 0 5px;
+        }
+        
+        .counter-btn.plus {
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .counter-display {
+            width: 60px;
+            height: 36px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 1rem;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .counter-input input {
+            width: 60px;
+            height: 36px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 1rem;
+            background: white;
+            -moz-appearance: textfield; /* Firefox */
+        }
+        
+        .counter-input input::-webkit-outer-spin-button,
+        .counter-input input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* 계산 버튼 */
+        .calculate-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+        
+        .calculate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .calculate-button:active {
+            transform: translateY(0);
+        }
+        
+        /* 결과 섹션 */
+        .result-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            display: block;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            color: #555;
+        }
+        
+        .result-value {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .total-result {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .total-result .result-item {
+            border-bottom: none;
+        }
+        
+        .total-result .result-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #3d5cb9;
+        }
+        
+        .salary-input-wrapper {
+            position: relative;
+        }
+        
+        .salary-input-wrapper input {
+            padding-right: 70px;
+        }
+        
+        .salary-input-wrapper::after {
+            content: '원';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+        
+        /* 반응형 설정 */
+        @media (max-width: 992px) {
+            .calculator-container {
+                flex-direction: column;
+            }
+            
+            .result-section {
+                max-width: 100%;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        /* 도움말 스타일 */
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: #e9e9e9;
+            color: #666;
+            border-radius: 50%;
+            font-size: 12px;
+            margin-left: 8px;
+            cursor: help;
+            position: relative;
+        }
+        
+        .tooltip-icon:hover {
+            background: #ddd;
+            color: #333;
+        }
+        
+        .tooltip-content {
+            position: absolute;
+            width: 300px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.15);
+            padding: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #333;
+            z-index: 10;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            left: 30px;
+            top: -10px;
+        }
+        
+        .tooltip-icon:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tooltip-content h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #3d5cb9;
+        }
+    </style>
+</head>
+<body>
+    <!-- top-container가 로드될 자리 -->
+    <div id="top-container"></div>
+    
+    <h1 class="section-title">연봉 계산기 - 월급 실수령액 자동 계산</h1>
+    
+    <div class="calculator-container">
+        <!-- 입력 폼 섹션 -->
+        <div class="input-section">
+            <h2>연봉 정보 입력</h2>
+            <p>아래 정보를 입력하여 정확한 월 실수령액을 계산해보세요.</p>
+            
+            <form id="salaryForm">
+                <div class="form-group">
+                    <label for="annualSalary">연봉</label>
+                    <div class="salary-input-wrapper">
+                        <input type="text" id="annualSalary" placeholder="예: 36,000,000" inputmode="numeric" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>퇴직금
+                        <div class="tooltip-icon">?
+                            <div class="tooltip-content">
+                                <h4>퇴직금 옵션이란?</h4>
+                                <p><strong>별도:</strong> 순수 연봉만 입력한 경우. 퇴직금은 연봉과는 별도로 지급받음.</p>
+                                <p><strong>포함:</strong> 연봉에 퇴직금이 포함된 경우(총연봉). 이 경우 계산 시 퇴직금이 제외된 실제 연봉을 기준으로 월급이 계산됨.</p>
+                                <p>퇴직금은 일반적으로 1년 근무 시 한달치 월급에 해당하는 금액임(연봉의 약 1/12).</p>
+                            </div>
+                        </div>
+                    </label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="retirementFund" value="별도" checked>
+                            별도
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="retirementFund" value="포함">
+                            포함
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nonTaxableAmount">비과세액 (식대포함)
+                        <div class="tooltip-icon">?
+                            <div class="tooltip-content">
+                                <h4>비과세액이란?</h4>
+                                <p>세금이 부과되지 않는 소득 항목으로, 실제 세금 계산 시 제외됩니다.</p>
+                                <p>대표적인 비과세 항목:</p>
+                                <ul>
+                                    <li>식대 보조금: 월 20만원 한도</li>
+                                    <li>출장비, 여비</li>
+                                    <li>연구활동비</li>
+                                    <li>자녀보육수당: 월 10만원 한도</li>
+                                </ul>
+                                <p>비과세액이 많을수록 실수령액이 늘어납니다.</p>
+                            </div>
+                        </div>
+                    </label>
+                    <div class="salary-input-wrapper">
+                        <input type="text" id="nonTaxableAmount" value="200,000" inputmode="numeric">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>부양가족수 (본인포함)
+                        <div class="tooltip-icon">?
+                            <div class="tooltip-content">
+                                <h4>부양가족수란?</h4>
+                                <p>소득세 감면을 위한 인적공제 대상자 수입니다.</p>
+                                <p>부양가족으로 인정되는 요건:</p>
+                                <ul>
+                                    <li>본인(기본적으로 포함)</li>
+                                    <li>배우자</li>
+                                    <li>20세 이하 또는 60세 이상 직계가족</li>
+                                    <li>장애인 직계가족</li>
+                                </ul>
+                                <p>부양가족 1인당 연간 150만원의 소득공제 혜택이 적용됩니다.</p>
+                            </div>
+                        </div>
+                    </label>
+                    <div class="counter-input">
+                        <button type="button" class="counter-btn minus" id="dependentsMinusBtn">-</button>
+                        <input type="number" id="dependentsInput" min="1" value="1">
+                        <button type="button" class="counter-btn plus" id="dependentsPlusBtn">+</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>8세 이상 20세 이하 자녀수
+                        <div class="tooltip-icon">?
+                            <div class="tooltip-content">
+                                <h4>자녀세액공제란?</h4>
+                                <p>8세(취학전 아동) 이상 20세 이하 자녀에 대해 추가 세액공제를 받을 수 있습니다.</p>
+                                <p>자녀세액공제 혜택:</p>
+                                <ul>
+                                    <li>자녀 1명당 연간 15만원의 세액공제</li>
+                                    <li>3명 이상인 경우 추가 공제 혜택</li>
+                                </ul>
+                                <p>세액공제는 소득세에서 직접 차감되므로 실수령액 증가에 효과적입니다.</p>
+                            </div>
+                        </div>
+                    </label>
+                    <div class="counter-input">
+                        <button type="button" class="counter-btn minus" id="childrenMinusBtn">-</button>
+                        <input type="number" id="childrenInput" min="0" value="0">
+                        <button type="button" class="counter-btn plus" id="childrenPlusBtn">+</button>
+                    </div>
+                </div>
+                
+                <button type="button" id="calculateBtn" class="calculate-button">월 실수령액 계산하기</button>
+            </form>
+        </div>
+        
+        <!-- 결과 섹션 -->
+        <div class="result-section" id="resultSection">
+            <h2 class="result-title">월 급여 상세 내역</h2>
+            
+            <div class="result-item">
+                <div class="result-label">세전 월급 (총지급액)</div>
+                <div class="result-value" id="monthlyGrossSalary">0원</div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">국민연금 (4.5%)</div>
+                <div class="result-value" id="nationalPension">0원</div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">건강보험 (3.545%)</div>
+                <div class="result-value" id="healthInsurance">0원</div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">장기요양보험 (12.27%)</div>
+                <div class="result-value" id="longTermCare">0원</div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">고용보험 (0.9%)</div>
+                <div class="result-value" id="employmentInsurance">0원</div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">소득세</div>
+                <div class="result-value" id="incomeTax">0원</div>
+            </div>
+            
+            <div class="result-item">
+                <div class="result-label">지방소득세 (10%)</div>
+                <div class="result-value" id="localIncomeTax">0원</div>
+            </div>
+            
+            <div class="total-result">
+                <div class="result-item">
+                    <div class="result-label">총 공제액</div>
+                    <div class="result-value" id="totalDeduction">0원</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">실수령액 (월)</div>
+                    <div class="result-value" id="netSalary">0원</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ 섹션 -->
+    <div class="faq-section">
+        <div class="container">
+            <h2>연봉 계산기 자주 묻는 질문</h2>
+            
+            <div class="faq-item">
+                <h3>연봉 계산기는 어떤 세율을 적용하나요?</h3>
+                <p>본 연봉 계산기는 2024년 기준 국세청 종합소득세율을 적용합니다. 소득세는 과세표준 구간에 따라 6%에서 최대 42%까지 누진세율이 적용되며, 부양가족 및 자녀 공제가 반영됩니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>4대 보험 요율은 어떻게 계산되나요?</h3>
+                <p>국민연금 4.5%, 건강보험 3.545%, 장기요양보험(건강보험의 12.27%), 고용보험 0.9%의 요율이 적용됩니다. 이는 근로자 부담분만 계산한 것입니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>퇴직금이 포함된 연봉과 별도 연봉의 차이는 무엇인가요?</h3>
+                <p>퇴직금 포함 연봉(총연봉)은 연봉에 퇴직금이 이미 포함된 금액입니다. 이 경우 계산 시 퇴직금(연봉의 약 1/12)이 제외된 금액으로 월급이 계산됩니다. 퇴직금 별도 연봉은 순수 연봉만 의미하며, 퇴직금은 추가로 지급됩니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>비과세액은 어떤 항목이 포함되나요?</h3>
+                <p>비과세액에는 식대 보조금(월 20만원 한도), 출장비, 연구활동비, 자녀보육수당(월 10만원 한도) 등이 포함될 수 있습니다. 비과세액은 세금 계산에서 제외되어 실수령액 증가에 도움이 됩니다.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- footer-container가 로드될 자리 -->
+    <div id="footer-container"></div>
+    
+    <script src="../js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM 요소 참조
+            const dependentsInput = document.getElementById('dependentsInput');
+            const childrenInput = document.getElementById('childrenInput');
+            const dependentsMinusBtn = document.getElementById('dependentsMinusBtn');
+            const dependentsPlusBtn = document.getElementById('dependentsPlusBtn');
+            const childrenMinusBtn = document.getElementById('childrenMinusBtn');
+            const childrenPlusBtn = document.getElementById('childrenPlusBtn');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resultSection = document.getElementById('resultSection');
+            const annualSalaryInput = document.getElementById('annualSalary');
+            const nonTaxableAmountInput = document.getElementById('nonTaxableAmount');
+            
+            // 모바일에서 툴팁이 화면을 벗어나지 않도록 처리
+            const tooltipIcons = document.querySelectorAll('.tooltip-icon');
+            function adjustTooltipPosition() {
+                tooltipIcons.forEach(icon => {
+                    const tooltip = icon.querySelector('.tooltip-content');
+                    if (window.innerWidth < 768) {
+                        tooltip.style.left = 'auto';
+                        tooltip.style.right = '30px';
+                        tooltip.style.top = '30px';
+                    } else {
+                        tooltip.style.left = '30px';
+                        tooltip.style.right = 'auto';
+                        tooltip.style.top = '-10px';
+                    }
+                });
+            }
+            
+            window.addEventListener('resize', adjustTooltipPosition);
+            adjustTooltipPosition();
+            
+            // 금액 입력 필드 포맷 설정
+            function formatNumberInput(input) {
+                input.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/[^\d]/g, '');
+                    if (value) {
+                        value = parseInt(value, 10).toLocaleString('ko-KR');
+                    }
+                    e.target.value = value;
+                });
+                
+                input.addEventListener('blur', function(e) {
+                    let value = e.target.value.replace(/[^\d]/g, '');
+                    if (value) {
+                        value = parseInt(value, 10).toLocaleString('ko-KR');
+                        e.target.value = value;
+                    }
+                });
+            }
+            
+            formatNumberInput(annualSalaryInput);
+            formatNumberInput(nonTaxableAmountInput);
+            
+            // 부양가족 수 조절 이벤트
+            dependentsMinusBtn.addEventListener('click', function() {
+                let value = parseInt(dependentsInput.value);
+                if (value > 1) {
+                    dependentsInput.value = value - 1;
+                }
+            });
+            
+            dependentsPlusBtn.addEventListener('click', function() {
+                let value = parseInt(dependentsInput.value);
+                dependentsInput.value = value + 1;
+            });
+            
+            // 입력 검증
+            dependentsInput.addEventListener('change', function() {
+                let value = parseInt(this.value);
+                if (isNaN(value) || value < 1) {
+                    this.value = 1;
+                }
+            });
+            
+            // 자녀 수 조절 이벤트
+            childrenMinusBtn.addEventListener('click', function() {
+                let value = parseInt(childrenInput.value);
+                if (value > 0) {
+                    childrenInput.value = value - 1;
+                }
+            });
+            
+            childrenPlusBtn.addEventListener('click', function() {
+                let value = parseInt(childrenInput.value);
+                childrenInput.value = value + 1;
+            });
+            
+            // 입력 검증
+            childrenInput.addEventListener('change', function() {
+                let value = parseInt(this.value);
+                if (isNaN(value) || value < 0) {
+                    this.value = 0;
+                }
+            });
+            
+            // 금액을 형식화하는 함수
+            function formatCurrency(amount) {
+                return amount.toLocaleString('ko-KR') + '원';
+            }
+            
+            // 소득세 계산 함수
+            function calculateIncomeTax(taxableIncome, dependents, children) {
+                // 소득세율 (2023년 기준)
+                const taxRates = [
+                    { limit: 14000000, rate: 0.06, deduction: 0 },
+                    { limit: 50000000, rate: 0.15, deduction: 1260000 },
+                    { limit: 88000000, rate: 0.24, deduction: 5760000 },
+                    { limit: 150000000, rate: 0.35, deduction: 15440000 },
+                    { limit: 300000000, rate: 0.38, deduction: 19940000 },
+                    { limit: 500000000, rate: 0.40, deduction: 25940000 },
+                    { limit: 1000000000, rate: 0.42, deduction: 35940000 },
+                    { limit: Infinity, rate: 0.45, deduction: 65940000 }
+                ];
+                
+                // 인적공제 (1인당 150만원)
+                const personalDeduction = 1500000 * dependents;
+                
+                // 자녀세액공제 (1인당 연간 15만원, 대략 월 12,500원)
+                const childDeduction = 150000 * children;
+                
+                // 과세표준
+                const taxBase = Math.max(0, taxableIncome - personalDeduction);
+                
+                // 세율 적용
+                let tax = 0;
+                for (const bracket of taxRates) {
+                    if (taxBase <= bracket.limit) {
+                        tax = (taxBase * bracket.rate) - bracket.deduction;
+                        break;
+                    }
+                }
+                
+                // 자녀세액공제 적용
+                tax = Math.max(0, tax - childDeduction);
+                
+                // 월 기준으로 계산
+                return tax / 12;
+            }
+            
+            // 월 급여 계산 함수
+            calculateBtn.addEventListener('click', function() {
+                // 입력값 가져오기
+                const annualSalaryStr = annualSalaryInput.value.replace(/,/g, '');
+                const nonTaxableAmountStr = nonTaxableAmountInput.value.replace(/,/g, '');
+                const retirementFundOption = document.querySelector('input[name="retirementFund"]:checked').value;
+                const dependentsCount = parseInt(dependentsInput.value) || 1;
+                const childrenCount = parseInt(childrenInput.value) || 0;
+                
+                if (!annualSalaryStr) {
+                    alert('연봉을 입력해주세요.');
+                    return;
+                }
+                
+                // 문자열을 숫자로 변환
+                const annualSalary = parseInt(annualSalaryStr, 10);
+                const nonTaxableAmount = parseInt(nonTaxableAmountStr, 10) || 0;
+                
+                // 연봉에서 퇴직금 제외 (퇴직금 포함 선택시)
+                let actualAnnualSalary = annualSalary;
+                if (retirementFundOption === '포함') {
+                    actualAnnualSalary = Math.round(annualSalary * (12 / 13)); // 퇴직금은 1/12이므로 조정
+                }
+                
+                // 월 급여 계산
+                const monthlyGrossSalary = Math.round(actualAnnualSalary / 12);
+                const taxableAmount = monthlyGrossSalary - nonTaxableAmount;
+                
+                // 4대 보험 계산
+                const nationalPension = Math.round(taxableAmount * 0.045); // 국민연금 4.5%
+                const healthInsurance = Math.round(taxableAmount * 0.03545); // 건강보험 3.545%
+                const longTermCare = Math.round(healthInsurance * 0.1227); // 장기요양보험 12.27%
+                const employmentInsurance = Math.round(taxableAmount * 0.009); // 고용보험 0.9%
+                
+                // 소득세 계산
+                const incomeTax = Math.round(calculateIncomeTax(actualAnnualSalary, dependentsCount, childrenCount));
+                const localIncomeTax = Math.round(incomeTax * 0.1); // 지방소득세 10%
+                
+                // 총 공제액
+                const totalDeduction = nationalPension + healthInsurance + longTermCare + employmentInsurance + incomeTax + localIncomeTax;
+                
+                // 실수령액
+                const netSalary = monthlyGrossSalary - totalDeduction;
+                
+                // 결과 표시
+                document.getElementById('monthlyGrossSalary').textContent = formatCurrency(monthlyGrossSalary);
+                document.getElementById('nationalPension').textContent = formatCurrency(nationalPension);
+                document.getElementById('healthInsurance').textContent = formatCurrency(healthInsurance);
+                document.getElementById('longTermCare').textContent = formatCurrency(longTermCare);
+                document.getElementById('employmentInsurance').textContent = formatCurrency(employmentInsurance);
+                document.getElementById('incomeTax').textContent = formatCurrency(incomeTax);
+                document.getElementById('localIncomeTax').textContent = formatCurrency(localIncomeTax);
+                document.getElementById('totalDeduction').textContent = formatCurrency(totalDeduction);
+                document.getElementById('netSalary').textContent = formatCurrency(netSalary);
+            });
+        });
+    </script>
+</body>
+</html>

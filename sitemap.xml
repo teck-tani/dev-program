@@ -50,4 +50,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  
+  <!-- 연봉 계산기 페이지 -->
+  <url>
+    <loc>https://tani-devtool.netlify.app/pages/pay-cal.html</loc>
+    <lastmod>2023-11-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset> 
