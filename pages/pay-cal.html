@@ -542,7 +542,7 @@
             
             <div class="faq-item">
                 <h3>연봉 계산기는 어떤 세율을 적용하나요?</h3>
-                <p>본 연봉 계산기는 2024년 기준 국세청 종합소득세율을 적용합니다. 소득세는 과세표준 구간에 따라 6%에서 최대 42%까지 누진세율이 적용되며, 부양가족 및 자녀 공제가 반영됩니다.</p>
+                <p>본 연봉 계산기는 2025년 기준 국세청 종합소득세율을 적용합니다. 소득세는 과세표준 구간에 따라 6%에서 최대 42%까지 누진세율이 적용되며, 부양가족 및 자녀 공제가 반영됩니다.</p>
             </div>
             
             <div class="faq-item">
@@ -562,10 +562,38 @@
         </div>
     </div>
     
+    <!-- 방명록 섹션 -->
+    <section class="comments-section">
+        <div class="container">
+            
+            <div class="comments-container">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </section>
+    
     <!-- footer-container가 로드될 자리 -->
     <div id="footer-container"></div>
     
     <script src="../js/common.js"></script>
+    
+    <!-- Disqus 댓글 시스템 -->
+    <script>
+        var disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = 'pay-cal';
+            this.page.title = document.title;
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://tani-devtool.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // DOM 요소 참조
@@ -671,38 +699,64 @@
             
             // 소득세 계산 함수
             function calculateIncomeTax(taxableIncome, dependents, children) {
-                // 소득세율 (2023년 기준)
+                // 국세청 공식 소득세율 (2023년 기준)
                 const taxRates = [
                     { limit: 14000000, rate: 0.06, deduction: 0 },
-                    { limit: 50000000, rate: 0.15, deduction: 1260000 },
-                    { limit: 88000000, rate: 0.24, deduction: 5760000 },
-                    { limit: 150000000, rate: 0.35, deduction: 15440000 },
-                    { limit: 300000000, rate: 0.38, deduction: 19940000 },
-                    { limit: 500000000, rate: 0.40, deduction: 25940000 },
-                    { limit: 1000000000, rate: 0.42, deduction: 35940000 },
-                    { limit: Infinity, rate: 0.45, deduction: 65940000 }
+                    { limit: 50000000, rate: 0.15, deduction: 840000 },
+                    { limit: 88000000, rate: 0.24, deduction: 6240000 },
+                    { limit: 150000000, rate: 0.35, deduction: 15360000 },
+                    { limit: 300000000, rate: 0.38, deduction: 37060000 },
+                    { limit: 500000000, rate: 0.40, deduction: 94060000 },
+                    { limit: 1000000000, rate: 0.42, deduction: 174060000 },
+                    { limit: Infinity, rate: 0.45, deduction: 384060000 }
                 ];
                 
-                // 인적공제 (1인당 150만원)
+                // 기본 공제 (1인당 150만원)
                 const personalDeduction = 1500000 * dependents;
                 
-                // 자녀세액공제 (1인당 연간 15만원, 대략 월 12,500원)
-                const childDeduction = 150000 * children;
+                // 추가 소득공제 (기본 공제)
+                const additionalDeduction = 7200000; // 근로소득공제 + 표준공제 등
                 
-                // 과세표준
-                const taxBase = Math.max(0, taxableIncome - personalDeduction);
+                // 건강보험, 국민연금 등 사회보험료 공제 (세전 소득의 약 8%)
+                const socialInsuranceDeduction = taxableIncome * 0.08;
                 
-                // 세율 적용
+                // 총 공제액
+                const totalDeduction = personalDeduction + additionalDeduction + socialInsuranceDeduction;
+                
+                // 최종 과세표준 계산
+                const finalTaxableIncome = Math.max(0, taxableIncome - totalDeduction);
+                
+                // 소득세 계산 (과세표준에 세율 적용)
                 let tax = 0;
                 for (const bracket of taxRates) {
-                    if (taxBase <= bracket.limit) {
-                        tax = (taxBase * bracket.rate) - bracket.deduction;
+                    if (finalTaxableIncome <= bracket.limit) {
+                        tax = (finalTaxableIncome * bracket.rate) - bracket.deduction;
                         break;
                     }
                 }
                 
-                // 자녀세액공제 적용
-                tax = Math.max(0, tax - childDeduction);
+                // 자녀세액공제 (1인당 연간 15만원)
+                const childDeduction = 150000 * children;
+                
+                // 근로소득세액공제 적용 (산출세액의 최대 13% 공제)
+                let taxCredit = 0;
+                if (tax <= 1300000) {
+                    taxCredit = tax * 0.55;
+                } else if (tax <= 4600000) {
+                    taxCredit = 715000 + (tax - 1300000) * 0.30;
+                } else {
+                    taxCredit = 1705000 + (tax - 4600000) * 0.15;
+                }
+                
+                // 공제 한도 적용
+                if (finalTaxableIncome > 33000000) {
+                    // 과세표준 3300만원 초과시 공제 한도 축소
+                    const reductionRate = Math.min(1, (finalTaxableIncome - 33000000) / 40000000);
+                    taxCredit = taxCredit * (1 - reductionRate * 0.5);
+                }
+                
+                // 최종 세액공제 적용
+                tax = Math.max(0, tax - taxCredit - childDeduction);
                 
                 // 월 기준으로 계산
                 return tax / 12;
