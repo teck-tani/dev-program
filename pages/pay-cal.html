@@ -249,38 +249,40 @@
             </div>
         </div>
     </div>
-    
-    <!-- 방명록 섹션 -->
-    <section class="comments-section">
-        <div class="container">
-            
-            <div class="comments-container">
-                <div id="disqus_thread"></div>
+
+        <!-- 방명록 섹션 -->
+        <section class="comments-section">
+            <div class="container">
+                <div class="comments-container">
+                    <div id="disqus_thread"></div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+        
+        <script>
+            var disqus_config = function () {
+                this.page.url = window.location.href;
+                this.page.identifier = 'pay-cal';
+                this.page.title = document.title;
+            };
+
+            (function () {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://tani-devtool.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+        <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+    
+
     
     <!-- footer-container가 로드될 자리 -->
     <div id="footer-container"></div>
     
     <script src="../js/common.js"></script>
     
-    <!-- Disqus 댓글 시스템 -->
-    <script>
-        var disqus_config = function () {
-            this.page.url = window.location.href;
-            this.page.identifier = 'pay-cal';
-            this.page.title = document.title;
-        };
-        
-        (function() {
-            var d = document, s = d.createElement('script');
-            s.src = 'https://tani-devtool.disqus.com/embed.js';
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-        })();
-    </script>
-    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+ 
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {

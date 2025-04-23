@@ -344,16 +344,3 @@
     line-height: 1.6;
 }
 
-/* 코멘트 섹션 스타일 */
-.comments-section {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-.comments-container {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    padding: 20px;
-} 
