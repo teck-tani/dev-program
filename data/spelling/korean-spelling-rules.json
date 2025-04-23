@@ -1,0 +1,338 @@
+{
+  "version": "1.0.0",
+  "updated": "2024-07-01",
+  "rules": [
+    {
+      "id": "r001",
+      "category": "철자",
+      "pattern": "됬",
+      "correction": "됐",
+      "examples": [
+        {"error": "됬습니다", "correction": "됐습니다"},
+        {"error": "됬어요", "correction": "됐어요"},
+        {"error": "안됬어", "correction": "안됐어"}
+      ],
+      "description": "'되다'의 과거형은 '됐다'로 쓰는 것이 맞습니다."
+    },
+    {
+      "id": "r002",
+      "category": "철자",
+      "pattern": "되요",
+      "correction": "돼요",
+      "examples": [
+        {"error": "그렇게 되요", "correction": "그렇게 돼요"},
+        {"error": "괜찮게 되요", "correction": "괜찮게 돼요"}
+      ],
+      "description": "'되어요'의 준말은 '돼요'로 써야 합니다."
+    },
+    {
+      "id": "r003",
+      "category": "철자",
+      "pattern": "데이타",
+      "correction": "데이터",
+      "examples": [
+        {"error": "데이타를 분석했습니다", "correction": "데이터를 분석했습니다"}
+      ],
+      "description": "'data'의 한글 표기는 '데이터'가 올바릅니다."
+    },
+    {
+      "id": "r004",
+      "category": "띄어쓰기",
+      "pattern": "안됩니다",
+      "correction": "안 됩니다",
+      "examples": [
+        {"error": "그건 안됩니다", "correction": "그건 안 됩니다"}
+      ],
+      "description": "부정 부사 '안'은 뒤 단어와 띄어 써야 합니다."
+    },
+    {
+      "id": "r005",
+      "category": "띄어쓰기",
+      "pattern": "못함",
+      "correction": "못 함",
+      "examples": [
+        {"error": "이해를 못함", "correction": "이해를 못 함"}
+      ],
+      "description": "부정 부사 '못'은 뒤 단어와 띄어 써야 합니다."
+    },
+    {
+      "id": "r006",
+      "category": "철자",
+      "pattern": "어딨",
+      "correction": "어디 있",
+      "examples": [
+        {"error": "어딨어", "correction": "어디 있어"},
+        {"error": "어딨냐", "correction": "어디 있냐"}
+      ],
+      "description": "'어디'와 '있다'는 띄어 써야 합니다."
+    },
+    {
+      "id": "r007",
+      "category": "철자",
+      "pattern": "웬만",
+      "correction": "왠만",
+      "examples": [
+        {"error": "웬만하면", "correction": "왠만하면"}
+      ],
+      "description": "'웬'은 '웬 일'처럼 의문사로 쓰이고, '왠'은 '왠만하다'처럼 씁니다."
+    },
+    {
+      "id": "r008",
+      "category": "철자",
+      "pattern": "퓨쳐",
+      "correction": "퓨처",
+      "examples": [
+        {"error": "퓨쳐 시스템", "correction": "퓨처 시스템"}
+      ],
+      "description": "'future'의 한글 표기는 '퓨처'가 올바릅니다."
+    },
+    {
+      "id": "r009",
+      "category": "띄어쓰기",
+      "pattern": "수있",
+      "correction": "수 있",
+      "exceptAfter": ["무엇을", "할"],
+      "examples": [
+        {"error": "갈수있어요", "correction": "갈 수 있어요"},
+        {"error": "볼수있습니다", "correction": "볼 수 있습니다"}
+      ],
+      "description": "'수 있다'는 띄어 써야 합니다."
+    },
+    {
+      "id": "r010",
+      "category": "띄어쓰기",
+      "pattern": "수없",
+      "correction": "수 없",
+      "examples": [
+        {"error": "갈수없어요", "correction": "갈 수 없어요"},
+        {"error": "볼수없습니다", "correction": "볼 수 없습니다"}
+      ],
+      "description": "'수 없다'는 띄어 써야 합니다."
+    },
+    {
+      "id": "r011",
+      "category": "철자",
+      "pattern": "됫",
+      "correction": "됐",
+      "examples": [
+        {"error": "됫다", "correction": "됐다"},
+        {"error": "됫네", "correction": "됐네"}
+      ],
+      "description": "'되다'의 과거형은 '됐다'로 쓰는 것이 맞습니다."
+    },
+    {
+      "id": "r012",
+      "category": "철자",
+      "pattern": "밑쪽",
+      "correction": "아래쪽",
+      "examples": [
+        {"error": "페이지 밑쪽", "correction": "페이지 아래쪽"}
+      ],
+      "description": "위치를 나타낼 때는 '밑'보다 '아래'가 더 자연스럽습니다."
+    },
+    {
+      "id": "r013",
+      "category": "철자",
+      "pattern": "웃긴",
+      "correction": "우스운",
+      "examples": [
+        {"error": "웃긴 일", "correction": "우스운 일"}
+      ],
+      "description": "표준어는 '우스운'입니다."
+    },
+    {
+      "id": "r014",
+      "category": "띄어쓰기",
+      "pattern": "해봤자",
+      "correction": "해 봤자",
+      "examples": [
+        {"error": "해봤자 소용없어", "correction": "해 봤자 소용없어"}
+      ],
+      "description": "'해 보다'의 활용형은 띄어 써야 합니다."
+    },
+    {
+      "id": "r015",
+      "category": "철자",
+      "pattern": "할려고",
+      "correction": "하려고",
+      "examples": [
+        {"error": "공부할려고", "correction": "공부하려고"}
+      ],
+      "description": "의도를 나타내는 '-(으)려고'는 '할려고'가 아닌 '하려고'로 씁니다."
+    },
+    {
+      "id": "r016",
+      "category": "철자",
+      "pattern": "궁굼",
+      "correction": "궁금",
+      "examples": [
+        {"error": "궁굼해요", "correction": "궁금해요"}
+      ],
+      "description": "올바른 표기는 '궁금'입니다."
+    },
+    {
+      "id": "r017",
+      "category": "철자",
+      "pattern": "골르",
+      "correction": "고르",
+      "examples": [
+        {"error": "옷을 골라요", "correction": "옷을 고르세요"}
+      ],
+      "description": "'고르다'가 올바른 표기입니다."
+    },
+    {
+      "id": "r018",
+      "category": "띄어쓰기",
+      "pattern": "것같",
+      "correction": "것 같",
+      "examples": [
+        {"error": "좋은것같아요", "correction": "좋은 것 같아요"}
+      ],
+      "description": "'것'과 '같다'는 띄어 써야 합니다."
+    },
+    {
+      "id": "r019",
+      "category": "철자",
+      "pattern": "갑설스럽",
+      "correction": "갑작스럽",
+      "examples": [
+        {"error": "갑설스러운", "correction": "갑작스러운"}
+      ],
+      "description": "올바른 표현은 '갑작스럽다'입니다."
+    },
+    {
+      "id": "r020",
+      "category": "철자",
+      "pattern": "문법상",
+      "correction": "문법적으로",
+      "examples": [
+        {"error": "문법상 맞는 표현", "correction": "문법적으로 맞는 표현"}
+      ],
+      "description": "'문법적으로'가 더 자연스러운 표현입니다."
+    },
+    {
+      "id": "r021",
+      "category": "철자",
+      "pattern": "가르키",
+      "correction": "가리키",
+      "examples": [
+        {"error": "가르키는", "correction": "가리키는"}
+      ],
+      "description": "'가르치다'는 가르치는 행위를, '가리키다'는 지시하는 행위를 의미합니다."
+    },
+    {
+      "id": "r022",
+      "category": "철자",
+      "pattern": "부터",
+      "correction": "부터",
+      "examples": [
+        {"error": "저한테 부터", "correction": "저부터"}
+      ],
+      "description": "'부터'는 앞말에 붙여 씁니다."
+    },
+    {
+      "id": "r023",
+      "category": "철자",
+      "pattern": "때까",
+      "correction": "때까지",
+      "examples": [
+        {"error": "언제때까", "correction": "언제까지"}
+      ],
+      "description": "'때까지'는 일반적으로 '언제까지'로 바꿔 쓰는 것이 자연스럽습니다."
+    },
+    {
+      "id": "r024",
+      "category": "철자",
+      "pattern": "마찬가지",
+      "correction": "마찬가지",
+      "examples": [
+        {"error": "서로 마찬가지", "correction": "서로 마찬가지"}
+      ],
+      "description": "'마찬가지'는 '같다'의 의미로 사용됩니다."
+    },
+    {
+      "id": "r025",
+      "category": "철자",
+      "pattern": "문든",
+      "correction": "물든",
+      "examples": [
+        {"error": "물감에 문든", "correction": "물감에 물든"}
+      ],
+      "description": "'물들다'가 올바른 표현입니다."
+    },
+    {
+      "id": "r026",
+      "category": "띄어쓰기",
+      "pattern": "것이다",
+      "correction": "것이다",
+      "examples": [
+        {"error": "가능한것이다", "correction": "가능한 것이다"}
+      ],
+      "description": "'것'은 앞말과 띄어 써야 합니다."
+    },
+    {
+      "id": "r027",
+      "category": "철자",
+      "pattern": "즉석해서",
+      "correction": "즉석에서",
+      "examples": [
+        {"error": "즉석해서 만든", "correction": "즉석에서 만든"}
+      ],
+      "description": "올바른 표현은 '즉석에서'입니다."
+    },
+    {
+      "id": "r028",
+      "category": "철자",
+      "pattern": "알게끔",
+      "correction": "알도록",
+      "examples": [
+        {"error": "사람들이 알게끔", "correction": "사람들이 알도록"}
+      ],
+      "description": "'알도록'이 더 자연스러운 표현입니다."
+    },
+    {
+      "id": "r029",
+      "category": "철자",
+      "pattern": "생각치",
+      "correction": "생각지",
+      "examples": [
+        {"error": "생각치 못한", "correction": "생각지 못한"}
+      ],
+      "description": "올바른 표현은 '생각지 못한'입니다."
+    },
+    {
+      "id": "r030",
+      "category": "철자",
+      "pattern": "코르",
+      "correction": "코어",
+      "examples": [
+        {"error": "코르 기능", "correction": "코어 기능"}
+      ],
+      "description": "'core'의 한글 표기는 '코어'입니다."
+    }
+  ],
+  "patterns": [
+    {
+      "id": "p001",
+      "category": "조사",
+      "regex": "([가-힣])\\s+의\\s+([가-힣])",
+      "test": "의",
+      "examples": [
+        {"error": "저 의 집", "correction": "저의 집"}
+      ],
+      "description": "조사 '의'는 앞말에 붙여 씁니다."
+    },
+    {
+      "id": "p002",
+      "category": "조사",
+      "regex": "([가-힣])\\s+(은|는|이|가|을|를|에|과|와|로|으로|처럼)\\b",
+      "test": "은는이가을를에과와로",
+      "examples": [
+        {"error": "나 는", "correction": "나는"},
+        {"error": "책 이", "correction": "책이"},
+        {"error": "그것 을", "correction": "그것을"}
+      ],
+      "description": "조사는 앞말에 붙여 씁니다."
+    }
+  ]
+} 

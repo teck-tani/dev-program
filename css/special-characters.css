@@ -1,0 +1,126 @@
+.emoji-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.emoji-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.emoji-search {
+    display: none; /* Hide the search functionality */
+}
+
+.emoji-search input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    flex-grow: 1;
+}
+
+.emoji-search button {
+    padding: 8px 12px;
+    background: #74ebd5;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 6px;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.character-item {
+    aspect-ratio: 1/1;
+    padding: 5px;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.character-item:hover {
+    background: #e9ecef;
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+.character-item.copied {
+    background: #74ebd5;
+    color: white;
+}
+
+.category-header {
+    grid-column: 1 / -1;
+    font-weight: bold;
+    margin: 10px 0 5px 0;
+    padding: 5px;
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2em;
+    color: #666;
+}
+
+.copy-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #74ebd5;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+}
+
+.emoji-description {
+    max-width: 800px;
+    margin: 30px auto;
+    text-align: center;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 10px 0;
+    z-index: 100;
+    border-bottom: 2px solid #74ebd5;
+}
+
+/* Fix for top menu dropdown z-index */
+#top-container {
+    position: relative;
+    z-index: 200; /* Higher than sticky-header */
+}
+
+/* Also ensure dropdown menus have proper z-index */
+.dropdown-content {
+    z-index: 300; /* Higher than top-container */
+} 

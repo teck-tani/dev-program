@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맞춤법 검사기 | 한글 맞춤법 오류 수정 | Tani DevTool</title>
+    <meta name="description" content="한글 문장의 맞춤법을 자동으로 검사하고 수정해주는 무료 맞춤법 검사기입니다. 띄어쓰기, 철자 오류, 문법 오류를 빠르게 찾아 수정할 수 있습니다.">
+    <meta name="keywords" content="맞춤법 검사기, 한글 맞춤법, 띄어쓰기 검사, 맞춤법 교정, 철자 검사, 무료 맞춤법 검사, 문법 교정, 맞춤법 검사 도구">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/spell-checker.html">
+    <meta property="og:title" content="맞춤법 검사기 | 한글 맞춤법 오류 수정">
+    <meta property="og:description" content="한글 문장의 맞춤법을 자동으로 검사하고 수정해주는 무료 맞춤법 검사기입니다. 띄어쓰기, 철자 오류, 문법 오류를 빠르게 찾아 수정할 수 있습니다.">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/spell-checker-preview.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://tani-devtool.netlify.app/pages/spell-checker.html">
+    <meta property="twitter:title" content="맞춤법 검사기 | 한글 맞춤법 오류 수정">
+    <meta property="twitter:description" content="한글 문장의 맞춤법을 자동으로 검사하고 수정해주는 무료 맞춤법 검사기입니다.">
+    <meta property="twitter:image" content="https://tani-devtool.netlify.app/images/spell-checker-preview.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/spell-checker.html">
+    
+    <!-- Robots meta tag -->
+    <meta name="robots" content="index, follow">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/spell-checker.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- 구조화된 데이터 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "맞춤법 검사기 - 한글 맞춤법 오류 수정",
+      "url": "https://tani-devtool.netlify.app/pages/spell-checker.html",
+      "description": "한글 문장의 맞춤법을 자동으로 검사하고 수정해주는 맞춤법 검사기입니다. 띄어쓰기, 철자 오류, 문법 오류를 빠르게 찾아 수정할 수 있습니다.",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- top-container가 로드될 자리 -->
+    <div id="top-container"></div>
+    
+    <h1 class="section-title">맞춤법 검사기</h1>
+    
+    <div class="spell-checker-container">
+        <div class="input-section">
+            <div class="text-input-header">
+                <h2>텍스트 입력</h2>
+                <div class="character-count" id="characterCount">0 글자</div>
+            </div>
+            <div class="text-area-container">
+                <textarea id="inputText" placeholder="맞춤법을 검사할 텍스트를 입력하세요. (최대 5,000자)" maxlength="5000"></textarea>
+                <div class="controls">
+                    <button id="checkButton" class="check-button">맞춤법 검사하기</button>
+                    <button id="resetButton" class="reset-button">초기화</button>
+                </div>
+            </div>
+            
+            <!-- API 설정 -->
+            <div class="api-settings">
+                <details>
+                    <summary>API 설정</summary>
+                    <div class="settings-content">
+                        <div class="api-selection">
+                            <label for="apiType">API 타입:</label>
+                            <select id="apiType">
+                                <option value="openai">OpenAI GPT</option>
+                                <option value="local" selected>로컬 검사 (예시)</option>
+                                <!-- 추가 API 옵션 -->
+                            </select>
+                        </div>
+                        
+                        <div class="api-key-input" id="apiKeySection">
+                            <label for="apiKey">API 키:</label>
+                            <input type="password" id="apiKey" placeholder="API 키를 입력하세요">
+                            <button id="saveApiKey" class="small-button">저장</button>
+                        </div>
+                        
+                        <p class="api-info">
+                            <i class="fas fa-info-circle"></i> OpenAI API 키는 브라우저의 LocalStorage에 저장되며, 서버로 전송되지 않습니다.
+                        </p>
+                    </div>
+                </details>
+            </div>
+        </div>
+        
+        <div class="result-section" id="resultSection">
+            <div class="result-header">
+                <h2>검사 결과</h2>
+                <div class="error-summary" id="errorSummary">맞춤법 오류: <span id="errorCount">0</span>개</div>
+            </div>
+            <div class="result-content" id="resultContent">
+                <div class="intro-message">
+                    텍스트를 입력하고 '맞춤법 검사하기' 버튼을 클릭하면 맞춤법 오류를 확인할 수 있습니다.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 교정 옵션 모달 -->
+    <div class="correction-modal" id="correctionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>맞춤법 교정</h3>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="error-text" id="errorText"></div>
+                <div class="suggestion-header">추천 교정:</div>
+                <div class="suggestion-text" id="suggestionText"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="applyCorrection" class="apply-button">교정 적용</button>
+                <button id="skipCorrection" class="skip-button">건너뛰기</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ 섹션 -->
+    <div class="faq-section">
+        <div class="container">
+            <h2>자주 묻는 질문</h2>
+            
+            <div class="faq-item">
+                <h3>맞춤법 검사기는 어떻게 작동하나요?</h3>
+                <p>맞춤법 검사기는 입력된 텍스트를 분석하여 철자, 띄어쓰기, 문법적 오류를 찾아냅니다. AI API를 활용하면 더 정확한 맞춤법 검사가 가능합니다. 사용자가 직접 API 키를 입력하여 고급 AI 모델을 활용할 수 있습니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>맞춤법 검사 결과는 100% 정확한가요?</h3>
+                <p>모든 맞춤법 검사 도구가 그렇듯, 이 검사기도 100% 정확하지는 않습니다. 특히 문맥에 따라 달라지는 의미의 단어나, 신조어, 외래어 등에서는 오류가 발생할 수 있습니다. 최종적인 판단은 사용자가 직접 하는 것이 좋습니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>입력한 텍스트와 API 키는 어떻게 처리되나요?</h3>
+                <p>입력하신 텍스트는 맞춤법 검사 이외의 목적으로 저장되거나 사용되지 않습니다. API 키는 브라우저의 로컬 스토리지에만 저장되며, 서버로 전송되지 않습니다. OpenAI API 사용 시에만 해당 서비스로 텍스트가 전송됩니다.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>한번에 검사할 수 있는 텍스트 길이에 제한이 있나요?</h3>
+                <p>네, 현재 한 번에 최대 5,000자까지 검사할 수 있습니다. API 사용 시에는 해당 API의 제한에 따라 달라질 수 있습니다. 더 긴 텍스트는 여러 부분으로 나누어 검사해주세요.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 방명록 섹션 -->
+    <section class="comments-section">
+        <div class="container">
+            <div class="comments-container">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- footer-container가 로드될 자리 -->
+    <div id="footer-container"></div>
+    
+    <script src="../js/common.js"></script>
+    
+    <!-- Disqus 댓글 시스템 -->
+    <script>
+        var disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = 'spell-checker';
+            this.page.title = document.title;
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://tani-devtool.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM 요소 참조
+            const inputText = document.getElementById('inputText');
+            const characterCount = document.getElementById('characterCount');
+            const checkButton = document.getElementById('checkButton');
+            const resetButton = document.getElementById('resetButton');
+            const resultContent = document.getElementById('resultContent');
+            const errorCount = document.getElementById('errorCount');
+            const correctionModal = document.getElementById('correctionModal');
+            const closeModal = document.getElementById('closeModal');
+            const errorText = document.getElementById('errorText');
+            const suggestionText = document.getElementById('suggestionText');
+            const applyCorrection = document.getElementById('applyCorrection');
+            const skipCorrection = document.getElementById('skipCorrection');
+            const apiType = document.getElementById('apiType');
+            const apiKey = document.getElementById('apiKey');
+            const saveApiKey = document.getElementById('saveApiKey');
+            const apiKeySection = document.getElementById('apiKeySection');
+            
+            // API 키 저장 및 로드
+            loadApiSettings();
+            
+            // API 타입 변경 시 UI 업데이트
+            apiType.addEventListener('change', function() {
+                updateApiUI();
+            });
+            
+            // API 키 저장 버튼
+            saveApiKey.addEventListener('click', function() {
+                saveApiSettings();
+                alert('API 설정이 저장되었습니다.');
+            });
+            
+            // 현재 처리 중인 오류와 해당 교정 정보
+            let currentCorrections = [];
+            let currentIndex = 0;
+            let originalText = '';
+            
+            // 글자 수 표시
+            inputText.addEventListener('input', function() {
+                const count = this.value.length;
+                characterCount.textContent = count.toLocaleString() + ' 글자';
+            });
+            
+            // 초기화 버튼
+            resetButton.addEventListener('click', function() {
+                inputText.value = '';
+                resultContent.innerHTML = '<div class="intro-message">텍스트를 입력하고 \'맞춤법 검사하기\' 버튼을 클릭하면 맞춤법 오류를 확인할 수 있습니다.</div>';
+                errorCount.textContent = '0';
+                characterCount.textContent = '0 글자';
+                inputText.focus();
+            });
+            
+            // 모달 닫기
+            closeModal.addEventListener('click', function() {
+                correctionModal.style.display = 'none';
+            });
+            
+            // 모달 외부 클릭 시 닫기
+            window.addEventListener('click', function(event) {
+                if (event.target === correctionModal) {
+                    correctionModal.style.display = 'none';
+                }
+            });
+            
+            // 교정 적용 버튼
+            applyCorrection.addEventListener('click', function() {
+                if (currentIndex < currentCorrections.length) {
+                    const correction = currentCorrections[currentIndex];
+                    inputText.value = inputText.value.substring(0, correction.start) + 
+                                     correction.suggestion + 
+                                     inputText.value.substring(correction.end);
+                    
+                    // 다음 오류로 이동
+                    currentIndex++;
+                    if (currentIndex < currentCorrections.length) {
+                        showCurrentCorrection();
+                    } else {
+                        correctionModal.style.display = 'none';
+                        refreshResults();
+                    }
+                }
+            });
+            
+            // 건너뛰기 버튼
+            skipCorrection.addEventListener('click', function() {
+                // 다음 오류로 이동
+                currentIndex++;
+                if (currentIndex < currentCorrections.length) {
+                    showCurrentCorrection();
+                } else {
+                    correctionModal.style.display = 'none';
+                    refreshResults();
+                }
+            });
+            
+            // API 설정 저장 함수
+            function saveApiSettings() {
+                const settings = {
+                    apiType: apiType.value,
+                    apiKey: apiKey.value
+                };
+                
+                localStorage.setItem('spellCheckApiSettings', JSON.stringify(settings));
+                updateApiUI();
+            }
+            
+            // API 설정 로드 함수
+            function loadApiSettings() {
+                const savedSettings = localStorage.getItem('spellCheckApiSettings');
+                
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+                    apiType.value = settings.apiType || 'local';
+                    apiKey.value = settings.apiKey || '';
+                }
+                
+                updateApiUI();
+            }
+            
+            // API UI 업데이트 함수
+            function updateApiUI() {
+                if (apiType.value === 'local') {
+                    apiKeySection.style.display = 'none';
+                } else {
+                    apiKeySection.style.display = 'flex';
+                }
+            }
+            
+            // 현재 교정 정보 표시
+            function showCurrentCorrection() {
+                const correction = currentCorrections[currentIndex];
+                errorText.textContent = correction.error;
+                suggestionText.textContent = correction.suggestion;
+                
+                // 텍스트 에리어에서 해당 영역 선택
+                inputText.focus();
+                inputText.setSelectionRange(correction.start, correction.end);
+            }
+            
+            // 맞춤법 검사 결과 업데이트
+            function refreshResults() {
+                // API 요청이 완료된 후에 결과를 표시
+                const errors = currentCorrections;
+                errorCount.textContent = errors.length.toString();
+                
+                if (errors.length > 0) {
+                    let resultHTML = '<div class="result-list">';
+                    errors.forEach((error, index) => {
+                        resultHTML += `
+                            <div class="error-item">
+                                <div class="error-text">${error.error}</div>
+                                <div class="suggestion">추천: ${error.suggestion}</div>
+                                <div class="error-actions">
+                                    <button class="apply-single" data-index="${index}">적용</button>
+                                    <button class="skip-single" data-index="${index}">무시</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    resultHTML += '</div>';
+                    resultContent.innerHTML = resultHTML;
+                    
+                    // 각 항목에 이벤트 리스너 추가
+                    document.querySelectorAll('.apply-single').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const index = parseInt(this.dataset.index);
+                            const error = errors[index];
+                            inputText.value = inputText.value.substring(0, error.start) + 
+                                             error.suggestion + 
+                                             inputText.value.substring(error.end);
+                            refreshResults();
+                        });
+                    });
+                    
+                    document.querySelectorAll('.skip-single').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const index = parseInt(this.dataset.index);
+                            const errorItem = this.closest('.error-item');
+                            errorItem.classList.add('ignored');
+                            this.closest('.error-actions').innerHTML = '<span class="ignored-text">무시됨</span>';
+                        });
+                    });
+                } else {
+                    resultContent.innerHTML = '<div class="success-message">맞춤법 오류가 발견되지 않았습니다.</div>';
+                }
+            }
+            
+            // 맞춤법 검사 버튼
+            checkButton.addEventListener('click', function() {
+                const text = inputText.value.trim();
+                
+                if (text.length === 0) {
+                    alert('검사할 텍스트를 입력해주세요.');
+                    return;
+                }
+                
+                // 로딩 표시
+                resultContent.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-pulse"></i> 맞춤법 검사 중...</div>';
+                
+                // API 타입에 따라 다른 맞춤법 검사 메서드 호출
+                checkSpellingWithSelectedApi(text);
+            });
+            
+            // 선택된 API로 맞춤법 검사
+            function checkSpellingWithSelectedApi(text) {
+                const selectedApiType = apiType.value;
+                
+                switch (selectedApiType) {
+                    case 'openai':
+                        checkSpellingWithOpenAI(text);
+                        break;
+                    case 'local':
+                    default:
+                        // 로컬 검사 (예시 데이터)
+                        setTimeout(() => {
+                            originalText = text;
+                            currentCorrections = findSpellingErrorsLocally(text);
+                            errorCount.textContent = currentCorrections.length.toString();
+                            
+                            if (currentCorrections.length > 0) {
+                                currentIndex = 0;
+                                refreshResults();
+                            } else {
+                                resultContent.innerHTML = '<div class="success-message">맞춤법 오류가 발견되지 않았습니다.</div>';
+                            }
+                        }, 1000);
+                        break;
+                }
+            }
+            
+            // OpenAI API를 사용한 맞춤법 검사
+            async function checkSpellingWithOpenAI(text) {
+                const apiKeyValue = apiKey.value.trim();
+                
+                if (apiKeyValue === '') {
+                    alert('OpenAI API 키를 입력해주세요.');
+                    resultContent.innerHTML = '<div class="intro-message">텍스트를 입력하고 \'맞춤법 검사하기\' 버튼을 클릭하면 맞춤법 오류를 확인할 수 있습니다.</div>';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKeyValue}`
+                        },
+                        body: JSON.stringify({
+                            model: 'gpt-3.5-turbo',
+                            messages: [
+                                {
+                                    role: 'system',
+                                    content: '한국어 맞춤법 검사를 수행하는 도우미입니다. 주어진 텍스트에서 맞춤법, 띄어쓰기, 문법 오류를 찾아 JSON 형식으로 반환해주세요. 각 오류마다 원본 텍스트 내 위치(start, end), 오류 텍스트(error), 교정 제안(suggestion)을 포함해야 합니다.'
+                                },
+                                {
+                                    role: 'user',
+                                    content: `다음 텍스트의 맞춤법을 검사해주세요. JSON 형식으로 오류 목록을 반환해주세요: "${text}"`
+                                }
+                            ],
+                            temperature: 0.3,
+                            max_tokens: 2000
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('API 요청 실패: ' + response.statusText);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // API 응답 처리
+                    const content = data.choices[0].message.content;
+                    
+                    // JSON 형식 추출 (API 응답에 따라 수정 필요할 수 있음)
+                    let jsonStart = content.indexOf('[');
+                    let jsonEnd = content.lastIndexOf(']') + 1;
+                    
+                    if (jsonStart === -1 || jsonEnd === 0) {
+                        // JSON 배열을 찾을 수 없는 경우 전체 응답을 파싱 시도
+                        jsonStart = content.indexOf('{');
+                        jsonEnd = content.lastIndexOf('}') + 1;
+                    }
+                    
+                    if (jsonStart !== -1 && jsonEnd !== 0) {
+                        const jsonStr = content.substring(jsonStart, jsonEnd);
+                        let corrections = [];
+                        
+                        try {
+                            corrections = JSON.parse(jsonStr);
+                            
+                            // 배열이 아닌 경우 배열로 변환
+                            if (!Array.isArray(corrections)) {
+                                if (corrections.errors && Array.isArray(corrections.errors)) {
+                                    corrections = corrections.errors;
+                                } else {
+                                    corrections = [corrections];
+                                }
+                            }
+                            
+                            // 형식 확인 및 변환
+                            corrections = corrections.filter(item => 
+                                item && item.error && item.suggestion && 
+                                typeof item.start === 'number' && 
+                                typeof item.end === 'number'
+                            );
+                            
+                            // 결과 처리
+                            originalText = text;
+                            currentCorrections = corrections;
+                            
+                            if (corrections.length > 0) {
+                                currentIndex = 0;
+                                refreshResults();
+                            } else {
+                                resultContent.innerHTML = '<div class="success-message">맞춤법 오류가 발견되지 않았습니다.</div>';
+                            }
+                        } catch (parseError) {
+                            console.error('JSON 파싱 오류:', parseError);
+                            
+                            // 파싱 실패 시 텍스트 분석 시도
+                            const errorsText = content.replace(/```json|```/g, '').trim();
+                            resultContent.innerHTML = `
+                                <div class="api-response">
+                                    <div class="api-response-header">API 응답 (JSON 형식이 아님):</div>
+                                    <div class="api-response-content">${errorsText}</div>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        // JSON 형식이 없는 경우 텍스트 그대로 표시
+                        resultContent.innerHTML = `
+                            <div class="api-response">
+                                <div class="api-response-header">API 응답:</div>
+                                <div class="api-response-content">${content}</div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('API 오류:', error);
+                    resultContent.innerHTML = `
+                        <div class="error-message">
+                            API 요청 중 오류가 발생했습니다: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            // 로컬 맞춤법 검사 (예시 함수)
+            function findSpellingErrorsLocally(text) {
+                // 텍스트에 실제 오류가 있는 경우 반환
+                if (text.indexOf('됬습니다') >= 0 || text.indexOf('데이타') >= 0 || text.indexOf('안됩니다') >= 0 || text.indexOf('어딨어') >= 0) {
+                    const errors = [];
+                    
+                    if (text.indexOf('됬습니다') >= 0) {
+                        errors.push({
+                            start: text.indexOf('됬습니다'),
+                            end: text.indexOf('됬습니다') + 4,
+                            error: '됬습니다',
+                            suggestion: '됐습니다'
+                        });
+                    }
+                    
+                    if (text.indexOf('데이타') >= 0) {
+                        errors.push({
+                            start: text.indexOf('데이타'),
+                            end: text.indexOf('데이타') + 3,
+                            error: '데이타',
+                            suggestion: '데이터'
+                        });
+                    }
+                    
+                    if (text.indexOf('안됩니다') >= 0) {
+                        errors.push({
+                            start: text.indexOf('안됩니다'),
+                            end: text.indexOf('안됩니다') + 4,
+                            error: '안됩니다',
+                            suggestion: '안 됩니다'
+                        });
+                    }
+                    
+                    if (text.indexOf('어딨어') >= 0) {
+                        errors.push({
+                            start: text.indexOf('어딨어'),
+                            end: text.indexOf('어딨어') + 3,
+                            error: '어딨어',
+                            suggestion: '어디 있어'
+                        });
+                    }
+                    
+                    return errors;
+                }
+                
+                // 예시 오류 (실제 오류가 없는 경우)
+                const exampleErrors = text.length > 10 ? [
+                    {
+                        start: Math.floor(Math.random() * Math.max(text.length - 10, 0)),
+                        end: Math.floor(Math.random() * Math.max(text.length - 5, 5)) + 5,
+                        error: '예시 오류',
+                        suggestion: '예시 수정'
+                    }
+                ] : [];
+                
+                return text.length > 10 && Math.random() > 0.7 ? exampleErrors : [];
+            }
+        });
+    </script>
+</body>
+</html> 
