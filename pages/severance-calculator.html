@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#74ebd5">
+    <title>퇴직금 계산기 | 근무일수, 평균임금으로 계산 | Tani DevTool</title>
+    <meta name="description" content="무료 온라인 퇴직금 계산기. 근무일수와 평균임금을 입력하여 퇴직금을 쉽게 계산하세요. 정확한 퇴직금 계산을 지원합니다.">
+    <meta name="keywords" content="퇴직금 계산기, 퇴직금, 근무일수, 평균임금, 퇴직금 계산, 퇴직금 산정, 퇴직금 지급, 퇴직금 계산 방법">
+    <meta property="og:title" content="퇴직금 계산기 | 근무일수, 평균임금으로 계산 | Tani DevTool">
+    <meta property="og:description" content="무료 온라인 퇴직금 계산기. 근무일수와 평균임금을 입력하여 퇴직금을 쉽게 계산하세요. 정확한 퇴직금 계산을 지원합니다.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/severance-calculator.html">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/severance-preview.png">
+    <meta property="og:site_name" content="Tani DevTool">
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/severance-calculator.html">
+    
+    <!-- 추가 SEO 메타 태그 -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Tani DevTool">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="퇴직금 계산기 | 근무일수, 평균임금으로 계산">
+    <meta name="twitter:description" content="근무일수와 평균임금을 입력하여 퇴직금을 쉽게 계산하세요. 정확한 퇴직금 계산을 지원합니다.">
+    <meta name="twitter:image" content="https://tani-devtool.netlify.app/images/severance-preview.png">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/severance-calculator.css">
+    <style>
+        .seo-description {
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #666;
+            font-size: 0.85rem;
+            max-width: 95%;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        /* SEO 푸터 스타일 */
+        .seo-footer {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .seo-footer summary {
+            cursor: pointer;
+            color: #666;
+            padding: 8px 0;
+            font-weight: 500;
+            outline: none;
+            text-align: center;
+        }
+        
+        .seo-footer summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .seo-footer summary::after {
+            content: "▼";
+            font-size: 0.75rem;
+            margin-left: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .seo-footer details[open] summary::after {
+            transform: rotate(180deg);
+        }
+        
+        .seo-details {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .seo-details p {
+            margin: 10px 0;
+            line-height: 1.5;
+            color: #666;
+        }
+        
+        /* 방명록 섹션 스타일 */
+        .comments-section {
+            margin: 40px 0;
+            padding: 30px 0;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comments-title {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .comments-description {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .comments-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        /* 퇴직금 계산기 스타일 */
+        .calculator-wrapper {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .input-group input:focus {
+            border-color: #4287f5;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 135, 245, 0.2);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4287f5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .calculate-btn:hover {
+            background-color: #3066d3;
+        }
+        
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .result-container.show {
+            display: block;
+        }
+        
+        .result-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .result-value {
+            font-size: 1.2rem;
+            color: #4287f5;
+            font-weight: 600;
+        }
+        
+        .calculator-features, .calculator-usage {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin: 40px auto;
+            max-width: 800px;
+        }
+        
+        .calculator-features h2, .calculator-usage h2 {
+            color: #3d5cb9;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #e8f0fe;
+            padding-bottom: 10px;
+            text-align: left;
+        }
+        
+        .calculator-features ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .calculator-features li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .calculator-usage p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        #disqus_thread {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-wrapper {
+                padding: 15px;
+                margin: 15px;
+            }
+            
+            .calculator-features, .calculator-usage {
+                padding: 15px;
+                margin: 30px 15px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- 구조화된 데이터 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "퇴직금 계산기",
+        "url": "https://tani-devtool.netlify.app/pages/severance-calculator.html",
+        "description": "근무일수와 평균임금을 입력하여 퇴직금을 쉽게 계산하세요. 정확한 퇴직금 계산을 지원합니다.",
+        "applicationCategory": "UtilityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "operatingSystem": "Web Browser",
+        "browserRequirements": "모든 최신 웹 브라우저 지원",
+        "featureList": "근무일수 계산, 평균임금 계산, 퇴직금 계산, 퇴직금 산정 방법 안내"
+    }
+    </script>
+    
+    <script src="../js/common.js"></script>
+    <script src="../js/severance/severance-core.js"></script>
+</head>
+<body class="severance-page">
+    <div id="top-container"></div>
+
+    <div class="container">
+        <h1>퇴직금 계산기</h1>
+        
+        <p class="seo-description">근무일수와 평균임금을 입력하여 퇴직금을 쉽게 계산하세요. 정확한 퇴직금 계산을 지원합니다.</p>
+        
+        <div class="calculator-wrapper">
+            <div class="input-group">
+                <label for="startDate">입사일:</label>
+                <input type="date" id="startDate" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="endDate">퇴사일:</label>
+                <input type="date" id="endDate" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="monthlySalary">월 평균임금 (원):</label>
+                <input type="text" id="monthlySalary" placeholder="예: 3,000,000" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="workDays">주간 근무일수:</label>
+                <select id="workDays">
+                    <option value="5">5일 (월-금)</option>
+                    <option value="6">6일 (월-토)</option>
+                    <option value="7">7일 (월-일)</option>
+                </select>
+            </div>
+            
+            <button id="calculateBtn" class="calculate-btn">퇴직금 계산하기</button>
+            
+            <div id="resultContainer" class="result-container">
+                <div class="result-item">
+                    <div class="result-label">근무일수:</div>
+                    <div id="workDaysResult" class="result-value">0일</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">일 평균임금:</div>
+                    <div id="dailySalaryResult" class="result-value">0원</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">퇴직금:</div>
+                    <div id="severanceResult" class="result-value">0원</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO 콘텐츠 추가 -->
+        <div class="calculator-features">
+            <h2>퇴직금 계산기 주요 기능</h2>
+            <ul>
+                <li><strong>정확한 근무일수 계산</strong>: 입사일과 퇴사일을 입력하여 정확한 근무일수를 계산합니다.</li>
+                <li><strong>평균임금 기반 계산</strong>: 월 평균임금을 기준으로 퇴직금을 계산합니다.</li>
+                <li><strong>주간 근무일수 반영</strong>: 5일제, 6일제 등 다양한 근무 형태를 지원합니다.</li>
+                <li><strong>상세 결과 제공</strong>: 근무일수, 일 평균임금, 퇴직금 등 상세 정보를 제공합니다.</li>
+                <li><strong>무료 사용</strong>: 모든 기능을 무료로 제공합니다.</li>
+                <li><strong>회원가입 필요 없음</strong>: 별도의 가입 절차 없이 즉시 사용 가능합니다.</li>
+                <li><strong>모바일 지원</strong>: 모바일 기기에서도 편리하게 사용할 수 있습니다.</li>
+            </ul>
+        </div>
+        
+        <div class="calculator-usage">
+            <h2>퇴직금 계산기 사용 방법</h2>
+            <p><strong>1. 입사일과 퇴사일 입력</strong>: 퇴직금 계산을 위해 입사일과 퇴사일을 입력하세요.</p>
+            <p><strong>2. 월 평균임금 입력</strong>: 퇴직금 계산의 기준이 되는 월 평균임금을 입력하세요.</p>
+            <p><strong>3. 주간 근무일수 선택</strong>: 근무 형태에 맞는 주간 근무일수를 선택하세요.</p>
+            <p><strong>4. 계산하기</strong>: '퇴직금 계산하기' 버튼을 클릭하여 퇴직금을 계산하세요.</p>
+            <p><strong>5. 결과 확인</strong>: 계산된 근무일수, 일 평균임금, 퇴직금을 확인하세요.</p>
+            <p><strong>6. 퇴직금 산정 방법</strong>: 퇴직금은 1일 평균임금 × 30일 × (근속연수 + 1)로 계산됩니다.</p>
+        </div>
+    </div>
+
+    <!-- 방명록 섹션 -->
+    <section class="comments-section">
+        <div class="container">
+            <h2 class="comments-title">사용자 의견</h2>
+            <p class="comments-description">퇴직금 계산기 사용 경험을 공유해주세요. 개선 사항이나 제안이 있으시면 남겨주세요.</p>
+            <div class="comments-container">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        var disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = 'severance';
+            this.page.title = document.title;
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://tani-devtool.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+
+    <!-- footer 컨테이너 추가 -->
+    <div id="footer-container"></div>
+</body>
+</html> 
