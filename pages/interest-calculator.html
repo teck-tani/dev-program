@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#74ebd5">
+    <title>이자 계산기 | 단리, 복리 이자 계산 | Tani DevTool</title>
+    <meta name="description" content="무료 온라인 이자 계산기. 단리와 복리 이자를 계산하고 원금, 이자율, 기간에 따른 금액 변화를 확인하세요. 투자, 대출 계획에 도움이 됩니다.">
+    <meta name="keywords" content="이자 계산기, 단리, 복리, 이자율, 투자 계산, 대출 이자, 이자 계산, 예금 이자, 적금 이자">
+    <meta property="og:title" content="이자 계산기 | 단리, 복리 이자 계산 | Tani DevTool">
+    <meta property="og:description" content="무료 온라인 이자 계산기. 단리와 복리 이자를 계산하고 원금, 이자율, 기간에 따른 금액 변화를 확인하세요.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/interest-calculator.html">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/interest-preview.png">
+    <meta property="og:site_name" content="Tani DevTool">
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/interest-calculator.html">
+    
+    <!-- 추가 SEO 메타 태그 -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Tani DevTool">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="이자 계산기 | 단리, 복리 이자 계산">
+    <meta name="twitter:description" content="단리와 복리 이자를 빠르고 정확하게 계산하세요. 투자, 대출 계획에 필요한 정보를 제공합니다.">
+    <meta name="twitter:image" content="https://tani-devtool.netlify.app/images/interest-preview.png">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/interest-calculator.css">
+    <style>
+        .seo-description {
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #666;
+            font-size: 0.85rem;
+            max-width: 95%;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        /* 빠른 금액 버튼 스타일 */
+        .quick-amount-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .quick-amount-btn {
+            flex: 1;
+            background-color: #e8f4ff;
+            color: #4287f5;
+            border: 1px solid #d0e5ff;
+            border-radius: 4px;
+            padding: 6px 0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-amount-btn:hover {
+            background-color: #d0e5ff;
+            border-color: #4287f5;
+        }
+        
+        /* 기간 선택 버튼 스타일 */
+        .period-type-buttons {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .period-type-btn {
+            padding: 8px 12px;
+            background-color: #f1f1f1;
+            color: #555;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        input[type="radio"]:checked + .period-type-btn {
+            background-color: #4287f5;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .period-type-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        input[type="radio"]:checked + .period-type-btn:hover {
+            background-color: #3066d3;
+        }
+        
+        /* 이자 계산 방식 버튼 스타일 */
+        .interest-type-buttons, .tax-type-buttons {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .interest-type-btn, .tax-type-btn {
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            color: #555;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            user-select: none;
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        input[type="radio"]:checked + .interest-type-btn,
+        input[type="radio"]:checked + .tax-type-btn {
+            background-color: #4287f5;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .interest-type-btn:hover, .tax-type-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        input[type="radio"]:checked + .interest-type-btn:hover,
+        input[type="radio"]:checked + .tax-type-btn:hover {
+            background-color: #3066d3;
+        }
+        
+        /* SEO 푸터 스타일 */
+        .seo-footer {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .seo-footer summary {
+            cursor: pointer;
+            color: #666;
+            padding: 8px 0;
+            font-weight: 500;
+            outline: none;
+            text-align: center;
+        }
+        
+        .seo-footer summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .seo-footer summary::after {
+            content: "▼";
+            font-size: 0.75rem;
+            margin-left: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .seo-footer details[open] summary::after {
+            transform: rotate(180deg);
+        }
+        
+        .seo-details {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .seo-details p {
+            margin: 10px 0;
+            line-height: 1.5;
+            color: #666;
+        }
+        
+        /* 방명록 섹션 스타일 */
+        .comments-section {
+            margin: 40px 0;
+            padding: 30px 0;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comments-title {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .comments-description {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .comments-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        /* 이자 계산기 스타일 */
+        .calculator-wrapper {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom-color: #4287f5;
+            color: #4287f5;
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            border-color: #4287f5;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 135, 245, 0.2);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4287f5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        
+        .calculate-btn:hover {
+            background-color: #3066d3;
+        }
+        
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .result-container.show {
+            display: block;
+        }
+        
+        .result-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .result-value {
+            font-size: 1.2rem;
+            color: #4287f5;
+            font-weight: 600;
+        }
+        
+        .chart-container {
+            margin-top: 20px;
+            height: 300px;
+        }
+        
+        .calculator-features, .calculator-usage {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin: 40px auto;
+            max-width: 800px;
+        }
+        
+        .calculator-features h2, .calculator-usage h2 {
+            color: #3d5cb9;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #e8f0fe;
+            padding-bottom: 10px;
+            text-align: left;
+        }
+        
+        .calculator-features ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .calculator-features li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .calculator-usage p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .formula {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+        
+        #disqus_thread {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-wrapper {
+                padding: 15px;
+                margin: 15px;
+            }
+            
+            .calculator-features, .calculator-usage {
+                padding: 15px;
+                margin: 30px 15px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 구조화된 데이터 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "이자 계산기",
+        "url": "https://tani-devtool.netlify.app/pages/interest-calculator.html",
+        "description": "단리와 복리 이자를 계산하고 원금, 이자율, 기간에 따른 금액 변화를 확인하세요.",
+        "applicationCategory": "UtilityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "operatingSystem": "Web Browser",
+        "browserRequirements": "모든 최신 웹 브라우저 지원",
+        "featureList": "단리 계산, 복리 계산, 원금 계산, 이자율 계산, 기간 계산, 그래프 시각화"
+    }
+    </script>
+    
+    <script src="../js/common.js"></script>
+    <script src="../js/interest/interest-core.js"></script>
+</head>
+<body class="interest-page">
+    <div id="top-container"></div>
+
+    <div class="container">
+        <h1>이자 계산기</h1>
+        
+        <p class="seo-description">단리와 복리 이자를 계산하고 원금, 이자율, 기간에 따른 금액 변화를 확인하세요. 투자와 대출 계획에 유용합니다.</p>
+        
+        <div class="calculator-wrapper">
+            <div class="tab-content active" id="simple-interest">
+                <div class="input-group">
+                    <label for="principal">원금 (원):</label>
+                    <input type="text" id="principal" placeholder="예: 10,000,000" required>
+                    <div class="quick-amount-buttons">
+                        <button type="button" class="quick-amount-btn" data-target="principal" data-amount="100000">+100,000</button>
+                        <button type="button" class="quick-amount-btn" data-target="principal" data-amount="1000000">+1,000,000</button>
+                        <button type="button" class="quick-amount-btn" data-target="principal" data-amount="10000000">+10,000,000</button>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="period">기간:</label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="number" id="period" placeholder="예: 5" required style="flex: 1;">
+                        <div class="period-type-buttons">
+                            <input type="radio" id="period-years" name="period-type" value="years" checked hidden>
+                            <label for="period-years" class="period-type-btn">년</label>
+                            
+                            <input type="radio" id="period-months" name="period-type" value="months" hidden>
+                            <label for="period-months" class="period-type-btn">월</label>
+                            
+                            <input type="radio" id="period-days" name="period-type" value="days" hidden>
+                            <label for="period-days" class="period-type-btn">일</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="rate">연이자율 (%):</label>
+                    <input type="text" id="rate" placeholder="예: 3.5" required>
+                </div>
+
+                <div class="input-group">
+                    <label>이자 계산 방식:</label>
+                    <div class="interest-type-buttons">
+                        <input type="radio" id="interest-simple" name="interest-type" value="simple" checked hidden>
+                        <label for="interest-simple" class="interest-type-btn">단리</label>
+                        
+                        <input type="radio" id="interest-compound" name="interest-type" value="compound" hidden>
+                        <label for="interest-compound" class="interest-type-btn">월복리</label>
+                    </div>
+                </div>
+
+                <div class="input-group" id="regular-deposit-group" style="display: none;">
+                    <label for="regular-deposit">정기 예금/적금 (선택사항):</label>
+                    <input type="text" id="regular-deposit" placeholder="매월 추가 입금액 (원)" value="0">
+                </div>
+                
+                <div class="input-group">
+                    <label>이자과세:</label>
+                    <div class="tax-type-buttons">
+                        <input type="radio" id="tax-normal" name="tax-type" value="normal" checked hidden>
+                        <label for="tax-normal" class="tax-type-btn">일반과세 (15.4%)</label>
+                        
+                        <input type="radio" id="tax-exempt" name="tax-type" value="exempt" hidden>
+                        <label for="tax-exempt" class="tax-type-btn">비과세</label>
+                        
+                        <input type="radio" id="tax-preferred" name="tax-type" value="preferred" hidden>
+                        <label for="tax-preferred" class="tax-type-btn">세금우대 (9.5%)</label>
+                    </div>
+                </div>
+                
+                <button id="calculate-btn" class="calculate-btn">계산하기</button>
+                
+                <div id="result-container" class="result-container">
+                    <div class="result-item">
+                        <div class="result-label">총 이자:</div>
+                        <div id="interest-result" class="result-value">0원</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">세금:</div>
+                        <div id="tax-result" class="result-value">0원</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">세후 이자:</div>
+                        <div id="after-tax-interest" class="result-value">0원</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">만기 금액:</div>
+                        <div id="total-result" class="result-value">0원</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="interest-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO 콘텐츠 추가 -->
+        <div class="calculator-features">
+            <h2>이자 계산기 주요 기능</h2>
+            <ul>
+                <li><strong>단리 및 복리 계산</strong>: 두 가지 이자 계산 방식을 모두 지원합니다.</li>
+                <li><strong>다양한 복리 주기</strong>: 연복리, 월복리, 일복리 등 다양한 복리 계산 주기를 선택할 수 있습니다.</li>
+                <li><strong>기간 선택 옵션</strong>: 년, 개월, 일 단위로 기간을 지정할 수 있습니다.</li>
+                <li><strong>정기 예금/적금 기능</strong>: 정기적인 추가 입금액을 설정하여 계산할 수 있습니다.</li>
+                <li><strong>그래프 시각화</strong>: 시간에 따른 금액 변화를 그래프로 확인할 수 있습니다.</li>
+                <li><strong>실효 연이자율 계산</strong>: 복리 효과를 고려한 실제 연이자율을 계산합니다.</li>
+                <li><strong>무료 사용</strong>: 모든 기능을 무료로 제공합니다.</li>
+                <li><strong>회원가입 필요 없음</strong>: 별도의 가입 절차 없이 즉시 사용 가능합니다.</li>
+            </ul>
+        </div>
+        
+        <div class="calculator-usage">
+            <h2>이자 계산기 사용 방법</h2>
+            <p><strong>1. 단리 또는 복리 선택</strong>: 계산하려는 이자 방식을 선택하세요.</p>
+            <p><strong>2. 원금 입력</strong>: 초기 투자금액이나 대출 원금을 입력하세요.</p>
+            <p><strong>3. 이자율 입력</strong>: 연간 이자율을 퍼센트로 입력하세요 (예: 3.5%).</p>
+            <p><strong>4. 기간 설정</strong>: 투자 또는 대출 기간을 설정하고 단위(년, 개월, 일)를 선택하세요.</p>
+            <p><strong>5. 복리 옵션 선택</strong>: 복리 계산 시 복리 적용 주기를 선택하세요.</p>
+            <p><strong>6. 정기 예금/적금 설정</strong>: 필요한 경우 정기적인 추가 입금액을 설정하세요.</p>
+            <p><strong>7. 계산하기</strong>: '계산하기' 버튼을 클릭하여 결과를 확인하세요.</p>
+            
+            <h3>단리와 복리의 차이</h3>
+            <p><strong>단리 (Simple Interest)</strong>: 원금에 대해서만 이자가 발생합니다. 이자에 대한 이자는 발생하지 않습니다.</p>
+            <div class="formula">단리 금액 = 원금 × (1 + 이자율 × 기간)</div>
+            
+            <p><strong>복리 (Compound Interest)</strong>: 원금뿐만 아니라 이전에 발생한 이자에 대해서도 이자가 발생합니다.</p>
+            <div class="formula">복리 금액 = 원금 × (1 + 이자율/복리주기)^(복리주기×기간)</div>
+        </div>
+    </div>
+
+    <!-- 방명록 섹션 -->
+    <section class="comments-section">
+        <div class="container">
+            <h2 class="comments-title">사용자 의견</h2>
+            <p class="comments-description">이자 계산기 사용 경험을 공유해주세요. 개선 사항이나 제안이 있으시면 남겨주세요.</p>
+            <div class="comments-container">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        var disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = 'interest';
+            this.page.title = document.title;
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://tani-devtool.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+
+    <!-- footer 컨테이너 추가 -->
+    <div id="footer-container"></div>
+</body>
+</html> 

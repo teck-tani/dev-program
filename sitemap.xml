@@ -75,6 +75,14 @@
     <priority>0.7</priority>
   </url>
   
+  <!-- 이자 계산기 페이지 -->
+  <url>
+    <loc>https://tani-devtool.netlify.app/pages/interest-calculator.html</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
   <!-- 환율 계산기 페이지 -->
   <url>
     <loc>https://tani-devtool.netlify.app/pages/money_converter.html</loc>
