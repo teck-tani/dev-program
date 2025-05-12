@@ -13,7 +13,7 @@
   
   <!-- 계산기 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/calculator.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/calculator</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -21,7 +21,7 @@
   
   <!-- 시계 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/clock.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/clock</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -29,7 +29,7 @@
   
   <!-- 특수문자/이모지 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/special-characters.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/special-characters</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -37,7 +37,7 @@
   
   <!-- 로또 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/lotto.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/lotto</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -45,7 +45,7 @@
   
   <!-- 바코드 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/barcode.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/barcode</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -53,7 +53,7 @@
   
   <!-- 연봉 계산기 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/pay-cal.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/pay-cal</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -61,7 +61,7 @@
   
   <!-- 퇴직금 계산기 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/severance-calculator.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/severance-calculator</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -69,7 +69,7 @@
   
   <!-- 색상 도구 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/color.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/color</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -77,7 +77,7 @@
   
   <!-- 이자 계산기 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/interest-calculator.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/interest-calculator</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -85,7 +85,7 @@
   
   <!-- 환율 계산기 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/money_converter.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/money_converter</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -93,7 +93,7 @@
   
   <!-- 맞춤법 검사기 페이지 -->
   <url>
-    <loc>https://tani-devtool.netlify.app/pages/spell-checker.html</loc>
+    <loc>https://tani-devtool.netlify.app/pages/spell-checker</loc>
     <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
