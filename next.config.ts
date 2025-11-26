@@ -5,10 +5,11 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
 
-  // 🔽 이 부분을 추가합니다.
-  // GitHub Pages 저장소 이름에 맞게 모든 정적 자원의 경로를 수정합니다.
-  basePath: '/dev-program',
-  // Next.js 13+에서는 assetPrefix 대신 basePath를 사용하는 것이 권장됩니다.
+  // 🔽 basePath를 제거하고, assetPrefix를 사용하여 정적 자원 경로만 수정합니다.
+  assetPrefix: '/dev-program/', // 저장소 이름을 슬래시(/)로 닫아서 입력합니다.
+
+  // basePath는 제거합니다. (주석 처리하거나 삭제)
+  // basePath: '/dev-program', 
 };
 
 export default nextConfig;
