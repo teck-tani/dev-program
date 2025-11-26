@@ -1,0 +1,48 @@
+import Calculator from "@/components/Calculator";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "공학용 계산기 | 무료 온라인 계산기 | Tani DevTool",
+    description: "무료 온라인 공학용 계산기. 삼각함수, 로그, 지수, 제곱근 등 다양한 수학 함수를 지원하는 간편한 웹 계산기입니다. 모바일 환경에 최적화되어 있습니다.",
+    keywords: "공학용 계산기, 계산기, 온라인 계산기, 무료 계산기, 웹 계산기, 삼각함수 계산기, 로그 계산기, scientific calculator, online calculator",
+    openGraph: {
+        title: "공학용 계산기 | 무료 온라인 계산기 | Tani DevTool",
+        description: "무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다. 모바일 환경에 최적화되어 있습니다.",
+        type: "website",
+        url: "https://tani-devtool.netlify.app/calculator",
+        images: ["https://tani-devtool.netlify.app/images/calculator-preview.png"],
+    },
+};
+
+export default function CalculatorPage() {
+    return (
+        <div className="container">
+            <h1>공학용 계산기</h1>
+
+            <div style={{ marginBottom: '30px', lineHeight: '1.6', color: '#555', maxWidth: '800px', margin: '0 auto 30px', textAlign: 'center' }}>
+                <p>이 무료 온라인 공학용 계산기는 기본 연산뿐만 아니라 삼각함수(sin, cos, tan), 로그(log, ln), 지수, 제곱근 등의 고급 수학 함수를 지원합니다. 모바일 기기에 최적화되어 있어 언제 어디서나 사용하기 편리합니다.</p>
+            </div>
+
+            <Calculator />
+
+            <div style={{ marginTop: '40px', background: 'white', padding: '25px', borderRadius: '10px', boxShadow: '0 2px 15px rgba(0,0,0,0.08)', maxWidth: '800px', margin: '40px auto' }}>
+                <h2 style={{ color: '#3d5cb9', marginBottom: '15px', fontSize: '1.4rem', borderBottom: '2px solid #e8f0fe', paddingBottom: '10px' }}>주요 기능</h2>
+                <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '0' }}>
+                    <li style={{ marginBottom: '8px', lineHeight: '1.5', color: '#333' }}><strong>기본 연산</strong>: 더하기, 빼기, 곱하기, 나누기</li>
+                    <li style={{ marginBottom: '8px', lineHeight: '1.5', color: '#333' }}><strong>삼각함수</strong>: sin, cos, tan</li>
+                    <li style={{ marginBottom: '8px', lineHeight: '1.5', color: '#333' }}><strong>로그 함수</strong>: ln(자연로그)</li>
+                    <li style={{ marginBottom: '8px', lineHeight: '1.5', color: '#333' }}><strong>제곱 및 거듭제곱</strong>: x², x³, xʸ</li>
+                    <li style={{ marginBottom: '8px', lineHeight: '1.5', color: '#333' }}><strong>제곱근</strong>: √, ³√</li>
+                    <li style={{ marginBottom: '8px', lineHeight: '1.5', color: '#333' }}><strong>상수</strong>: π(파이), e(자연상수)</li>
+                    <li style={{ marginBottom: '8px', lineHeight: '1.5', color: '#333' }}><strong>메모리 기능</strong>: Ans(마지막 결과)</li>
+                </ul>
+            </div>
+
+            <div style={{ background: 'white', padding: '25px', borderRadius: '10px', boxShadow: '0 2px 15px rgba(0,0,0,0.08)', maxWidth: '800px', margin: '0 auto 40px' }}>
+                <h2 style={{ color: '#3d5cb9', marginBottom: '15px', fontSize: '1.4rem', borderBottom: '2px solid #e8f0fe', paddingBottom: '10px' }}>사용 방법</h2>
+                <p style={{ marginBottom: '15px', lineHeight: '1.6', color: '#555' }}>공학용 계산기는 직관적인 인터페이스로 설계되어 쉽게 사용할 수 있습니다. 화면 상단에 현재 입력과 계산 내역이 표시되며, 버튼을 클릭하여 연산을 수행할 수 있습니다. 다양한 수학 함수와 상수를 활용하여 복잡한 수식도 간편하게 계산해보세요.</p>
+                <p style={{ marginBottom: '15px', lineHeight: '1.6', color: '#555' }}>모바일 환경에서도 최적화되어 있어 손가락으로 쉽게 조작할 수 있습니다. 데스크톱과 모바일 모두에서 동일한 기능을 제공합니다.</p>
+            </div>
+        </div>
+    );
+}

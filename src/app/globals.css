@@ -1,0 +1,400 @@
+/* 기본 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* font-family is handled by next/font in layout.tsx */
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    width: 92%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* 헤더 스타일 */
+header {
+    background: linear-gradient(to right, #74ebd5, #ACB6E5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    width: 100%;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    margin-left: 10px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    margin-left: 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    padding: 5px 0;
+    display: inline-block;
+    position: relative;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    color: #fff;
+}
+
+nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #fff;
+    bottom: 0;
+    left: 0;
+    transition: width 0.3s;
+}
+
+nav ul li a:hover::after,
+nav ul li a.active::after {
+    width: 100%;
+}
+
+nav ul li.active {
+    font-weight: 700;
+}
+
+/* 홈 아이콘 */
+.home-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1.3rem;
+    transition: transform 0.3s;
+}
+
+.home-icon:hover {
+    transform: scale(1.1);
+}
+
+/* 드롭다운 메뉴 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.dropdown-btn {
+    color: #1e3a8a;
+    padding: 8px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    min-width: 140px;
+    justify-content: center;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+/* Arrow icon handled by React Icons now, but keeping CSS for reference if needed */
+/* .dropdown-btn::after { ... } */
+
+.dropdown.active .dropdown-btn {
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-btn:hover {
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    border-radius: 4px;
+    margin-top: 5px;
+    overflow: hidden;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.dropdown-content a {
+    color: #4b5563;
+    padding: 8px 16px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-content a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-content a:hover {
+    background-color: #f8f9fa;
+    color: #3d5cb9;
+    padding-left: 20px;
+}
+
+.dropdown.active .dropdown-content {
+    display: block;
+}
+
+/* 메인 콘텐츠 스타일 */
+main {
+    flex: 1;
+    padding: 30px 0;
+}
+
+main h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+main p {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* 푸터 스타일 */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    width: 100%;
+}
+
+footer p {
+    font-size: 0.9rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .dropdown-btn {
+        padding: 7px 16px;
+        font-size: 0.9rem;
+        min-width: 120px;
+    }
+
+    .dropdown-content {
+        width: 160px;
+    }
+
+    .dropdown-content a {
+        padding: 6px 12px;
+    }
+
+    main h2 {
+        font-size: 1.6rem;
+    }
+
+    main p {
+        font-size: 0.95rem;
+    }
+}
+
+/* 작은 모바일 화면 대응 */
+@media (max-width: 480px) {
+    .container {
+        width: 95%;
+        padding: 0 10px;
+    }
+
+    header h1 {
+        font-size: 1.3rem;
+    }
+
+    header {
+        padding: 8px 0;
+    }
+
+    .home-icon {
+        font-size: 1.2rem;
+    }
+
+    .dropdown {
+        margin-left: 10px;
+    }
+
+    .dropdown-btn {
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        min-width: 100px;
+    }
+
+    .dropdown-content {
+        min-width: 150px;
+    }
+
+    .dropdown-content a {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+    }
+
+    main h2 {
+        font-size: 1.4rem;
+    }
+
+    main p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Tool Cards Styles */
+.tools-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.tool-card {
+    width: 150px;
+    height: 150px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #74ebd5, #ACB6E5);
+}
+
+.tool-card span {
+    font-weight: 500;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.tools-heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    color: #333;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.tools-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(to right, #74ebd5, #ACB6E5);
+}
+
+.intro-section {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+
+.intro-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.popular-tools {
+    background-color: #f8f9fa;
+    padding: 40px 0;
+    margin-top: 60px;
+}
+
+.popular-tools h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.6rem;
+    color: #333;
+}

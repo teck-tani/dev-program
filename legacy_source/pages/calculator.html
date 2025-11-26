@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4836555208250151"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#74ebd5">
+    <title>공학용 계산기 | 무료 온라인 계산기 | Tani DevTool</title>
+    <meta name="description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수, 제곱근 등 다양한 수학 함수를 지원하는 간편한 웹 계산기입니다. 모바일 환경에 최적화되어 있습니다.">
+    <meta name="keywords" content="공학용 계산기, 계산기, 온라인 계산기, 무료 계산기, 웹 계산기, 삼각함수 계산기, 로그 계산기, scientific calculator, online calculator">
+    <meta property="og:title" content="공학용 계산기 | 무료 온라인 계산기 | Tani DevTool">
+    <meta property="og:description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다. 모바일 환경에 최적화되어 있습니다.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tani-devtool.netlify.app/pages/calculator.html">
+    <meta property="og:image" content="https://tani-devtool.netlify.app/images/calculator-preview.png">
+    <meta property="og:site_name" content="Tani DevTool">
+    <link rel="canonical" href="https://tani-devtool.netlify.app/pages/calculator.html">
+    
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Tani DevTool">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="공학용 계산기 | 무료 온라인 계산기">
+    <meta name="twitter:description" content="무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다.">
+    <meta name="twitter:image" content="https://tani-devtool.netlify.app/images/calculator-preview.png">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/calculator.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="../js/common.js"></script>
+    <script src="../js/calculator/calculator.js"></script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "공학용 계산기",
+        "url": "https://tani-devtool.netlify.app/pages/calculator.html",
+        "description": "무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다.",
+        "applicationCategory": "UtilityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "operatingSystem": "Web Browser",
+        "browserRequirements": "모든 최신 웹 브라우저 지원"
+    }
+    </script>
+</head>
+<body class="calculator-page">
+    <div id="top-container"></div>
+
+    <div class="container">
+        <h1>공학용 계산기</h1>
+        
+        <div class="calculator-description">
+            <p>이 무료 온라인 공학용 계산기는 기본 연산뿐만 아니라 삼각함수(sin, cos, tan), 로그(log, ln), 지수, 제곱근 등의 고급 수학 함수를 지원합니다. 모바일 기기에 최적화되어 있어 언제 어디서나 사용하기 편리합니다.</p>
+        </div>
+        
+        <div class="calculator-wrapper">
+            <div class="calculator">
+                <div class="display">
+                    <div class="history"></div>
+                    <div class="current-input">0</div>
+                </div>
+                <div class="buttons">
+                    <!-- 1행 -->
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.7rem;">ON</span>
+                    </button>
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.7rem;">HOME</span>
+                    </button>
+                    <button class="btn-empty"></button>
+                    <button class="btn-empty"></button>
+                    <button class="btn-empty"></button>
+                    <button class="scroll-btn">
+                        <i class="fas fa-chevron-up"></i>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <!-- 2행 -->
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.65rem;">SETTINGS</span>
+                    </button>
+                    <button class="btn-empty"></button>
+                    <button class="btn-empty"></button>
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.75rem;">OK</span>
+                    </button>
+                    <button class="btn-empty"></button>
+
+                    <!-- 3행 -->
+                    <button class="shift-btn" data-action="shift">
+                        <span class="btn-main">SHIFT</span>
+                    </button>
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.65rem;">VARIABLE</span>
+                    </button>
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.65rem;">FUNCTION</span>
+                    </button>
+                    <button class="btn-empty"></button>
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.65rem;">CATALOG</span>
+                    </button>
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.7rem;">TOOLS</span>
+                    </button>
+
+                    <!-- 4행 -->
+                    <button class="scientific" data-action="variable">
+                        <span class="btn-label-top green">DR</span>
+                        <span class="btn-main">x</span>
+                    </button>
+                    <button class="scientific" data-action="reciprocal">
+                        <span class="btn-label-top green">ⁿ√</span>
+                        <span class="btn-main">=</span>
+                    </button>
+                    <button class="scientific" data-action="sqrt">
+                        <span class="btn-label-top green">³√</span>
+                        <span class="btn-main">√</span>
+                    </button>
+                    <button class="scientific" data-action="square">
+                        <span class="btn-label-top green">□³</span>
+                        <span class="btn-main">□²</span>
+                    </button>
+                    <button class="scientific" data-action="power">
+                        <span class="btn-label-top green">□ˣ</span>
+                        <span class="btn-main">^</span>
+                    </button>
+                    <button class="scientific" data-action="log">
+                        <span class="btn-label-top green">log₁₀</span>
+                        <span class="btn-main">ln</span>
+                    </button>
+
+                    <!-- 5행 -->
+                    <button class="memory" data-action="ans">
+                        <span class="btn-main">Ans</span>
+                    </button>
+                    <button class="scientific" data-action="sin">
+                        <span class="btn-label-top green">sin⁻¹</span>
+                        <span class="btn-main">sin</span>
+                    </button>
+                    <button class="scientific" data-action="cos">
+                        <span class="btn-label-top green">cos⁻¹</span>
+                        <span class="btn-main">cos</span>
+                    </button>
+                    <button class="scientific" data-action="tan">
+                        <span class="btn-label-top green">tan⁻¹</span>
+                        <span class="btn-main">tan</span>
+                    </button>
+                    <button class="scientific" data-action="leftParen">
+                        <span class="btn-main">(</span>
+                    </button>
+                    <button class="scientific" data-action="rightParen">
+                        <span class="btn-main">)</span>
+                    </button>
+
+                    <!-- 6행 -->
+                    <button class="number" data-action="7">
+                        <span class="btn-label-top green">π</span>
+                        <span class="btn-main">7</span>
+                    </button>
+                    <button class="number" data-action="8">
+                        <span class="btn-label-top green">e</span>
+                        <span class="btn-main">8</span>
+                    </button>
+                    <button class="number" data-action="9">
+                        <span class="btn-label-top green">EE</span>
+                        <span class="btn-main">9</span>
+                    </button>
+                    <button class="operator" data-action="multiply">
+                        <span class="btn-label-top green">INS</span>
+                        <span class="btn-main">×</span>
+                    </button>
+                    <button class="clear-btn" data-action="clear">
+                        <span class="btn-label-top green">DEL</span>
+                        <span class="btn-main">AC</span>
+                    </button>
+
+                    <!-- 7행 -->
+                    <button class="number" data-action="4">
+                        <span class="btn-label-top green">A</span>
+                        <span class="btn-main">4</span>
+                    </button>
+                    <button class="number" data-action="5">
+                        <span class="btn-label-top green">B</span>
+                        <span class="btn-main">5</span>
+                    </button>
+                    <button class="number" data-action="6">
+                        <span class="btn-label-top green">C</span>
+                        <span class="btn-main">6</span>
+                    </button>
+                    <button class="operator" data-action="multiply">
+                        <span class="btn-main">×</span>
+                    </button>
+                    <button class="operator" data-action="divide">
+                        <span class="btn-main">÷</span>
+                    </button>
+
+                    <!-- 8행 -->
+                    <button class="number" data-action="1">
+                        <span class="btn-label-top green">D</span>
+                        <span class="btn-main">1</span>
+                    </button>
+                    <button class="number" data-action="2">
+                        <span class="btn-label-top green">E</span>
+                        <span class="btn-main">2</span>
+                    </button>
+                    <button class="number" data-action="3">
+                        <span class="btn-label-top green">F</span>
+                        <span class="btn-main">3</span>
+                    </button>
+                    <button class="operator" data-action="add">
+                        <span class="btn-main">+</span>
+                    </button>
+                    <button class="operator" data-action="subtract">
+                        <span class="btn-main">−</span>
+                    </button>
+
+                    <!-- 9행 -->
+                    <button class="number" data-action="0">
+                        <span class="btn-label-top green">X</span>
+                        <span class="btn-main">0</span>
+                    </button>
+                    <button class="number" data-action="decimal">
+                        <span class="btn-label-top green">Y</span>
+                        <span class="btn-main">.</span>
+                    </button>
+                    <button class="scientific" data-action="exp">
+                        <span class="btn-label-top green">Z</span>
+                        <span class="btn-main" style="font-size: 0.8rem;">×10ˣ</span>
+                    </button>
+                    <button class="btn-empty">
+                        <span class="btn-main" style="font-size: 0.6rem;">FORMAT</span>
+                    </button>
+                    <button class="exe-btn" data-action="equals">
+                        <span class="btn-main">EXE</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="calculator-features">
+            <h2>주요 기능</h2>
+            <ul>
+                <li><strong>기본 연산</strong>: 더하기, 빼기, 곱하기, 나누기</li>
+                <li><strong>삼각함수</strong>: sin, cos, tan</li>
+                <li><strong>로그 함수</strong>: ln(자연로그)</li>
+                <li><strong>제곱 및 거듭제곱</strong>: x², x³, xʸ</li>
+                <li><strong>제곱근</strong>: √, ³√</li>
+                <li><strong>상수</strong>: π(파이), e(자연상수)</li>
+                <li><strong>메모리 기능</strong>: Ans(마지막 결과)</li>
+            </ul>
+        </div>
+        
+        <div class="calculator-usage">
+            <h2>사용 방법</h2>
+            <p>공학용 계산기는 직관적인 인터페이스로 설계되어 쉽게 사용할 수 있습니다. 화면 상단에 현재 입력과 계산 내역이 표시되며, 버튼을 클릭하여 연산을 수행할 수 있습니다. 다양한 수학 함수와 상수를 활용하여 복잡한 수식도 간편하게 계산해보세요.</p>
+            <p>모바일 환경에서도 최적화되어 있어 손가락으로 쉽게 조작할 수 있습니다. 데스크톱과 모바일 모두에서 동일한 기능을 제공합니다.</p>
+        </div>
+    </div>
+
+    <section class="comments-section">
+        <div class="container">
+            <div class="comments-container">
+                <div id="disqus_thread"></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    
+    <script>
+        var disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = 'calculator';
+            this.page.title = document.title;
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://tani-devtool.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>댓글을 보려면 자바스크립트를 활성화해주세요</noscript>
+</body>
+</html>
