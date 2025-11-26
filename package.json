@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "predeploy": "npm run build",
-    "deploy": "touch out/.nojekyll && gh-pages -d out"
+    "deploy": "type nul > out/.nojekyll && gh-pages -d out"
   },
   "dependencies": {
     "@types/jsbarcode": "^3.11.4",
