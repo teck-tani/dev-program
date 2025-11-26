@@ -5,11 +5,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
 
-  // 🔽 정적 자원 경로 수정 (이전 단계에서 이미 추가)
+  // 🔽 assetPrefix만 남기고 basePath는 제거합니다.
   assetPrefix: '/dev-program/',
 
-  // 🔽 Next.js 내부 라우팅 경로 수정 (다시 추가)
-  basePath: '/dev-program',
+  // basePath는 완전히 제거
 };
 
 export default nextConfig;
