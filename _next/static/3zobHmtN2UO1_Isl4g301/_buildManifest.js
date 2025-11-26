@@ -4,7 +4,7 @@ self.__BUILD_MANIFEST = {
     "beforeFiles": [
       {
         "source": "/dev-program//_next/:path+",
-        "destination": "/dev-program/_next/:path+"
+        "destination": "/_next/:path+"
       }
     ],
     "fallback": []
