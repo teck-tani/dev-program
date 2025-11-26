@@ -5,10 +5,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
 
-  // 🔽 assetPrefix만 남기고 basePath는 제거합니다.
-  assetPrefix: '/dev-program/',
-
-  // basePath는 완전히 제거
+  // 🔽 assetPrefix와 basePath 설정을 모두 제거합니다.
+  // 이 두 필드는 이제 없어야 합니다.
 };
 
 export default nextConfig;
