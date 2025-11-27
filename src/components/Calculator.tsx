@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from "react";
 import styles from "@/app/calculator/calculator.module.css";
-import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 
 export default function Calculator() {
     const [currentInput, setCurrentInput] = useState("");
     const [history, setHistory] = useState("");
     const [lastResult, setLastResult] = useState<number | null>(null);
-    const [isRadians, setIsRadians] = useState(false);
 
     const handleButtonClick = (action: string) => {
         switch (action) {
@@ -52,6 +50,12 @@ export default function Calculator() {
                 if (lastResult !== null) {
                     setCurrentInput(lastResult.toString());
                 }
+                break;
+            case "pi":
+                setCurrentInput(currentInput + Math.PI.toString());
+                break;
+            case "e":
+                setCurrentInput(currentInput + Math.E.toString());
                 break;
             default:
                 if (action >= "0" && action <= "9") {
@@ -100,13 +104,13 @@ export default function Calculator() {
 
         switch (func) {
             case "sin":
-                result = isRadians ? Math.sin(value) : Math.sin((value * Math.PI) / 180);
+                result = Math.sin((value * Math.PI) / 180);
                 break;
             case "cos":
-                result = isRadians ? Math.cos(value) : Math.cos((value * Math.PI) / 180);
+                result = Math.cos((value * Math.PI) / 180);
                 break;
             case "tan":
-                result = isRadians ? Math.tan(value) : Math.tan((value * Math.PI) / 180);
+                result = Math.tan((value * Math.PI) / 180);
                 break;
             case "log":
                 result = Math.log(value);
@@ -183,179 +187,111 @@ export default function Calculator() {
                     <div className={styles.currentInput}>{currentInput || "0"}</div>
                 </div>
                 <div className={styles.buttons}>
-                    {/* Row 1 */}
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.7rem" }}>ON</span>
+                    {/* Row 1 - Scientific Functions */}
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("sin")}>
+                        sin
                     </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.7rem" }}>HOME</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("cos")}>
+                        cos
                     </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}></button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}></button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}></button>
-                    <button className={`${styles.button} ${styles.scrollBtn}`}>
-                        <FaChevronUp />
-                        <FaChevronDown />
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("tan")}>
+                        tan
                     </button>
-
-                    {/* Row 2 */}
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.65rem" }}>SETTINGS</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("log")}>
+                        ln
                     </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}></button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}></button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.75rem" }}>OK</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}></button>
-
-                    {/* Row 3 */}
-                    <button className={`${styles.button} ${styles.shiftBtn}`}>
-                        <span className={styles.btnMain}>SHIFT</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.65rem" }}>VARIABLE</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.65rem" }}>FUNCTION</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}></button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.65rem" }}>CATALOG</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.7rem" }}>TOOLS</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("sqrt")}>
+                        √
                     </button>
 
-                    {/* Row 4 */}
-                    <button className={`${styles.button} ${styles.scientific}`}>
-                        <span className={`${styles.btnLabelTop} green`}>DR</span>
-                        <span className={styles.btnMain}>x</span>
+                    {/* Row 2 - More Functions */}
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("square")}>
+                        x²
                     </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("reciprocal")}>
-                        <span className={`${styles.btnLabelTop} green`}>ⁿ√</span>
-                        <span className={styles.btnMain}>=</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("power")}>
+                        x^y
                     </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("sqrt")}>
-                        <span className={`${styles.btnLabelTop} green`}>³√</span>
-                        <span className={styles.btnMain}>√</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("reciprocal")}>
+                        1/x
                     </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("square")}>
-                        <span className={`${styles.btnLabelTop} green`}>□³</span>
-                        <span className={styles.btnMain}>□²</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("pi")}>
+                        π
                     </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("power")}>
-                        <span className={`${styles.btnLabelTop} green`}>□ˣ</span>
-                        <span className={styles.btnMain}>^</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("log")}>
-                        <span className={`${styles.btnLabelTop} green`}>log₁₀</span>
-                        <span className={styles.btnMain}>ln</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("e")}>
+                        e
                     </button>
 
-                    {/* Row 5 */}
-                    <button className={`${styles.button}`} onClick={() => handleButtonClick("ans")}>
-                        <span className={styles.btnMain}>Ans</span>
+                    {/* Row 3 - Parentheses and Clear */}
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("leftParen")}>
+                        (
                     </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("sin")}>
-                        <span className={`${styles.btnLabelTop} green`}>sin⁻¹</span>
-                        <span className={styles.btnMain}>sin</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("rightParen")}>
+                        )
                     </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("cos")}>
-                        <span className={`${styles.btnLabelTop} green`}>cos⁻¹</span>
-                        <span className={styles.btnMain}>cos</span>
+                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("ans")}>
+                        Ans
                     </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("tan")}>
-                        <span className={`${styles.btnLabelTop} green`}>tan⁻¹</span>
-                        <span className={styles.btnMain}>tan</span>
+                    <button className={`${styles.button} ${styles.delete}`} onClick={() => handleButtonClick("backspace")}>
+                        DEL
                     </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("leftParen")}>
-                        <span className={styles.btnMain}>(</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.scientific}`} onClick={() => handleButtonClick("rightParen")}>
-                        <span className={styles.btnMain}>)</span>
+                    <button className={`${styles.button} ${styles.clear}`} onClick={() => handleButtonClick("clear")}>
+                        AC
                     </button>
 
-                    {/* Row 6 */}
+                    {/* Row 4 - Numbers 7-9 */}
                     <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("7")}>
-                        <span className={`${styles.btnLabelTop} green`}>π</span>
-                        <span className={styles.btnMain}>7</span>
+                        7
                     </button>
                     <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("8")}>
-                        <span className={`${styles.btnLabelTop} green`}>e</span>
-                        <span className={styles.btnMain}>8</span>
+                        8
                     </button>
                     <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("9")}>
-                        <span className={`${styles.btnLabelTop} green`}>EE</span>
-                        <span className={styles.btnMain}>9</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.operator}`} onClick={() => handleButtonClick("multiply")}>
-                        <span className={`${styles.btnLabelTop} green`}>INS</span>
-                        <span className={styles.btnMain}>×</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.clearBtn}`} onClick={() => handleButtonClick("clear")}>
-                        <span className={`${styles.btnLabelTop} green`}>DEL</span>
-                        <span className={styles.btnMain}>AC</span>
-                    </button>
-
-                    {/* Row 7 */}
-                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("4")}>
-                        <span className={`${styles.btnLabelTop} green`}>A</span>
-                        <span className={styles.btnMain}>4</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("5")}>
-                        <span className={`${styles.btnLabelTop} green`}>B</span>
-                        <span className={styles.btnMain}>5</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("6")}>
-                        <span className={`${styles.btnLabelTop} green`}>C</span>
-                        <span className={styles.btnMain}>6</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.operator}`} onClick={() => handleButtonClick("multiply")}>
-                        <span className={styles.btnMain}>×</span>
+                        9
                     </button>
                     <button className={`${styles.button} ${styles.operator}`} onClick={() => handleButtonClick("divide")}>
-                        <span className={styles.btnMain}>÷</span>
+                        ÷
+                    </button>
+                    <button className={`${styles.button} ${styles.operator}`} onClick={() => handleButtonClick("multiply")}>
+                        ×
                     </button>
 
-                    {/* Row 8 */}
-                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("1")}>
-                        <span className={`${styles.btnLabelTop} green`}>D</span>
-                        <span className={styles.btnMain}>1</span>
+                    {/* Row 5 - Numbers 4-6 */}
+                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("4")}>
+                        4
                     </button>
-                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("2")}>
-                        <span className={`${styles.btnLabelTop} green`}>E</span>
-                        <span className={styles.btnMain}>2</span>
+                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("5")}>
+                        5
                     </button>
-                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("3")}>
-                        <span className={`${styles.btnLabelTop} green`}>F</span>
-                        <span className={styles.btnMain}>3</span>
+                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("6")}>
+                        6
                     </button>
                     <button className={`${styles.button} ${styles.operator}`} onClick={() => handleButtonClick("add")}>
-                        <span className={styles.btnMain}>+</span>
+                        +
                     </button>
                     <button className={`${styles.button} ${styles.operator}`} onClick={() => handleButtonClick("subtract")}>
-                        <span className={styles.btnMain}>−</span>
+                        −
                     </button>
 
-                    {/* Row 9 */}
-                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("0")}>
-                        <span className={`${styles.btnLabelTop} green`}>X</span>
-                        <span className={styles.btnMain}>0</span>
+                    {/* Row 6 - Numbers 1-3 */}
+                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("1")}>
+                        1
+                    </button>
+                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("2")}>
+                        2
+                    </button>
+                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("3")}>
+                        3
+                    </button>
+                    <button className={`${styles.button} ${styles.equals}`} onClick={() => handleButtonClick("equals")} style={{ gridRow: "span 2" }}>
+                        =
+                    </button>
+
+                    {/* Row 7 - Zero and Decimal */}
+                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("0")} style={{ gridColumn: "span 2" }}>
+                        0
                     </button>
                     <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("decimal")}>
-                        <span className={`${styles.btnLabelTop} green`}>Y</span>
-                        <span className={styles.btnMain}>.</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.scientific}`}>
-                        <span className={`${styles.btnLabelTop} green`}>Z</span>
-                        <span className={styles.btnMain} style={{ fontSize: "0.8rem" }}>×10ˣ</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.btnEmpty}`}>
-                        <span className={styles.btnMain} style={{ fontSize: "0.6rem" }}>FORMAT</span>
-                    </button>
-                    <button className={`${styles.button} ${styles.exeBtn}`} onClick={() => handleButtonClick("equals")}>
-                        <span className={styles.btnMain}>EXE</span>
+                        .
                     </button>
                 </div>
             </div>
