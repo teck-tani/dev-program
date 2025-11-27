@@ -1,7 +1,19 @@
 "use client";
 
+import type { Metadata } from "next";
 import { useState } from "react";
 import DisqusComments from "@/components/DisqusComments";
+
+const pageMetadata: Metadata = {
+    title: "무료 한글 맞춤법 검사기 | 띄어쓰기 교정 & 문법 검사",
+    description: "자기소개서, 이력서, 보고서 작성 시 필수! 실시간으로 한글 맞춤법과 띄어쓰기 오류를 찾아 교정해주는 무료 온라인 맞춤법 검사기입니다.",
+    keywords: "맞춤법 검사기, 한글 맞춤법, 띄어쓰기 검사기, 문법 검사, 자소서 맞춤법, 이력서 교정, 글자수 세기, 무료 맞춤법",
+    openGraph: {
+        title: "무료 한글 맞춤법 검사기 | 자소서 & 이력서 필수템",
+        description: "헷갈리는 맞춤법과 띄어쓰기, 이제 걱정 마세요. AI 기반 맞춤법 검사기로 완벽한 문장을 만들어보세요.",
+        type: "website",
+    },
+};
 
 export default function SpellCheckerPage() {
     const [inputText, setInputText] = useState("");
@@ -29,6 +41,10 @@ export default function SpellCheckerPage() {
                 { error: "갔다왔어", suggestion: "갔다 왔어" },
                 { error: "할수있다", suggestion: "할 수 있다" },
                 { error: "할수없다", suggestion: "할 수 없다" },
+                { error: "어떻해", suggestion: "어떡해" },
+                { error: "금새", suggestion: "금세" },
+                { error: "몇일", suggestion: "며칠" },
+                { error: "역활", suggestion: "역할" },
             ];
 
             patterns.forEach((pattern) => {
@@ -63,12 +79,18 @@ export default function SpellCheckerPage() {
 
     return (
         <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
-            <h1 style={{ textAlign: "center", marginBottom: "30px" }}>맞춤법 검사기</h1>
+            <section style={{ textAlign: "center", marginBottom: "40px" }}>
+                <h1 style={{ marginBottom: "20px" }}>무료 한글 맞춤법 검사기</h1>
+                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}>
+                    헷갈리는 맞춤법과 띄어쓰기를 한 번에 해결하세요.<br />
+                    자기소개서, 이력서, 업무 메일 작성 전 필수 체크!
+                </p>
+            </section>
 
             <div style={{ background: "white", borderRadius: "10px", boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "30px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                    <h2 style={{ margin: 0 }}>텍스트 입력</h2>
-                    <div style={{ color: "#666" }}>{inputText.length} 글자</div>
+                    <h2 style={{ margin: 0, fontSize: "1.2rem" }}>텍스트 입력</h2>
+                    <div style={{ color: "#666" }}>공백 포함 <strong>{inputText.length}</strong>자</div>
                 </div>
 
                 <textarea
@@ -85,6 +107,7 @@ export default function SpellCheckerPage() {
                         fontSize: "1rem",
                         resize: "vertical",
                         marginBottom: "15px",
+                        lineHeight: "1.6",
                     }}
                 />
 
@@ -127,9 +150,9 @@ export default function SpellCheckerPage() {
 
             <div style={{ background: "white", borderRadius: "10px", boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                    <h2 style={{ margin: 0 }}>검사 결과</h2>
+                    <h2 style={{ margin: 0, fontSize: "1.2rem" }}>검사 결과</h2>
                     <div style={{ color: errors.length > 0 ? "#ff4444" : "#44ff44", fontWeight: 600 }}>
-                        맞춤법 오류: {errors.length}개
+                        오류 발견: {errors.length}개
                     </div>
                 </div>
 
@@ -137,7 +160,7 @@ export default function SpellCheckerPage() {
                     <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
                         {inputText.length === 0
                             ? "텍스트를 입력하고 '맞춤법 검사하기' 버튼을 클릭하면 맞춤법 오류를 확인할 수 있습니다."
-                            : "맞춤법 오류가 발견되지 않았습니다."}
+                            : "맞춤법 오류가 발견되지 않았습니다. 완벽한 문장입니다! 🎉"}
                     </div>
                 ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
@@ -172,7 +195,7 @@ export default function SpellCheckerPage() {
                                             fontSize: "0.9rem",
                                         }}
                                     >
-                                        적용
+                                        수정 적용
                                     </button>
                                     <button
                                         onClick={() => setErrors(errors.filter((_, i) => i !== index))}
@@ -195,17 +218,48 @@ export default function SpellCheckerPage() {
                 )}
             </div>
 
-            <div style={{ marginTop: "30px", padding: "20px", background: "#f9f9f9", borderRadius: "8px" }}>
-                <h3 style={{ marginBottom: "15px" }}>💡 사용 팁</h3>
-                <ul style={{ lineHeight: 1.8, color: "#666" }}>
-                    <li>일반적인 맞춤법 오류를 자동으로 감지합니다.</li>
-                    <li>띄어쓰기, 철자 오류 등을 확인할 수 있습니다.</li>
-                    <li>더 정확한 검사를 위해서는 외부 API를 사용하는 것을 권장합니다.</li>
-                    <li>최대 5,000자까지 입력 가능합니다.</li>
-                </ul>
-            </div>
+            <article style={{ maxWidth: '800px', margin: '60px auto 0', lineHeight: '1.7' }}>
+                <section style={{ marginBottom: '50px' }}>
+                    <h2 style={{ fontSize: '1.8rem', color: '#333', marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                        자주 틀리는 맞춤법 BEST 5
+                    </h2>
+                    <ul style={{ paddingLeft: '20px', color: '#555' }}>
+                        <li style={{ marginBottom: '15px' }}>
+                            <strong>되 / 돼 구분하기</strong>: '하'를 넣어 말이 되면 '되', '해'를 넣어 말이 되면 '돼'를 씁니다.<br />
+                            <em style={{ color: '#888' }}>(예: 안되나요(X) -> 안하나요(X) / 안돼나요(X) -> 안해나요(X) ...? '안되나요'는 '하'가 어울리므로 '되'가 맞습니다.)</em><br />
+                            <em style={{ color: '#888' }}>팁: 문장 끝에는 무조건 '돼' (예: 안 돼, 해도 돼)</em>
+                        </li>
+                        <li style={{ marginBottom: '15px' }}>
+                            <strong>몇일 / 며칠</strong>: '몇일'이라는 말은 없습니다. 날짜를 셀 때는 항상 <strong>'며칠'</strong>이 맞습니다.
+                        </li>
+                        <li style={{ marginBottom: '15px' }}>
+                            <strong>어떻해 / 어떡해</strong>: '어떻게 해'의 줄임말은 <strong>'어떡해'</strong>입니다. '어떻해'는 틀린 표현입니다.
+                        </li>
+                        <li style={{ marginBottom: '15px' }}>
+                            <strong>금새 / 금세</strong>: '금시에'의 줄임말이므로 <strong>'금세'</strong>가 맞습니다.
+                        </li>
+                        <li style={{ marginBottom: '15px' }}>
+                            <strong>역활 / 역할</strong>: 자기가 마땅히 하여야 할 맡은 바 직책이나 임무는 <strong>'역할'</strong>입니다.
+                        </li>
+                    </ul>
+                </section>
 
-            <DisqusComments identifier="spell-checker" title="맞춤법 검사기" />
+                <section style={{ background: '#f0f4f8', padding: '30px', borderRadius: '15px' }}>
+                    <h2 style={{ fontSize: "1.6rem", color: "#333", marginBottom: "20px", textAlign: "center" }}>
+                        맞춤법 검사가 중요한 이유
+                    </h2>
+                    <p style={{ marginBottom: '15px', color: '#555' }}>
+                        올바른 맞춤법은 글의 신뢰도를 결정하는 가장 기본적인 요소입니다. 특히 자기소개서나 비즈니스 메일에서 맞춤법 오류는 전문성이 부족하다는 인상을 줄 수 있습니다.
+                    </p>
+                    <p style={{ color: '#555' }}>
+                        이 무료 맞춤법 검사기를 활용하여 사소한 실수를 예방하고, 더 완성도 높은 글을 작성해보세요.
+                    </p>
+                </section>
+            </article>
+
+            <div style={{ marginTop: '60px' }}>
+                <DisqusComments identifier="spell-checker" title="맞춤법 검사기" />
+            </div>
         </div>
     );
 }

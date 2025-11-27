@@ -1,8 +1,18 @@
-"use client";
-
+import type { Metadata } from "next";
 import { useState, useEffect } from "react";
 import styles from "./lotto.module.css";
 import DisqusComments from "@/components/DisqusComments";
+
+export const metadata: Metadata = {
+    title: "무료 로또 번호 생성기 | 로또 예상번호 추천 & 당첨 확인",
+    description: "빅데이터 분석 기반의 무료 로또 번호 생성기입니다. 역대 당첨 번호 통계와 제외수, 고정수 기능을 활용하여 나만의 행운의 번호를 조합해보세요.",
+    keywords: "로또 번호 생성기, 로또 예상번호, 무료 로또, 로또 당첨 확인, 로또 번호 추천, 로또 통계, 로또 1등, 로또 자동 생성",
+    openGraph: {
+        title: "무료 로또 번호 생성기 | 행운의 번호 추천",
+        description: "과학적인 통계 분석으로 제공하는 로또 예상 번호. 이번 주 1등의 주인공은 바로 당신입니다.",
+        type: "website",
+    },
+};
 
 // 로또 데이터 타입
 interface LottoData {
@@ -94,7 +104,13 @@ export default function LottoPage() {
 
     return (
         <div className={styles.lottoContainer}>
-            <h1 className={styles.sectionTitle}>로또 번호 생성기</h1>
+            <section style={{ textAlign: 'center', marginBottom: '40px' }}>
+                <h1 className={styles.sectionTitle}>무료 로또 번호 생성기</h1>
+                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0' }}>
+                    빅데이터 분석을 통한 나만의 로또 예상 번호를 무료로 받아보세요.<br />
+                    꿈 해몽과 통계 데이터를 결합하여 당첨 확률을 높여드립니다.
+                </p>
+            </section>
 
             {/* 번호 생성 섹션 */}
             <div className={styles.generatorSection}>
@@ -108,12 +124,13 @@ export default function LottoPage() {
                             id="dreamInfo"
                             value={dreamInfo}
                             onChange={(e) => setDreamInfo(e.target.value)}
-                            placeholder="최근에 꾼 꿈에 대해 간략히 설명해주세요."
+                            placeholder="최근에 꾼 꿈에 대해 간략히 설명해주세요. 꿈 해몽 데이터를 분석하여 번호를 추천해드립니다."
                         />
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label>포함하고 싶은 번호 (최대 5개)</label>
+                        <label>포함하고 싶은 번호 (고정수)</label>
+                        <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '10px' }}>꼭 포함시키고 싶은 번호가 있다면 최대 5개까지 선택하세요.</p>
                         <div className={styles.preferredNumbers}>
                             {Array.from({ length: 45 }, (_, i) => i + 1).map((num) => (
                                 <label key={num} className={styles.numberLabel}>
@@ -139,7 +156,7 @@ export default function LottoPage() {
                     onClick={generateNumbers}
                     disabled={isGenerating}
                 >
-                    <span>번호 추출하기</span>
+                    <span>{isGenerating ? "번호 분석 중..." : "무료 번호 추출하기"}</span>
                 </button>
 
                 {/* 로또 볼 표시 */}
@@ -181,8 +198,8 @@ export default function LottoPage() {
                                         </div>
                                         <div className={styles.detailReason}>
                                             {preferredNumbers.includes(num)
-                                                ? "사용자가 직접 선택한 번호입니다."
-                                                : `이 번호는 지금까지 ${frequency}회 당첨되었습니다.`}
+                                                ? "사용자가 직접 선택한 고정수입니다."
+                                                : `이 번호는 역대 ${frequency}회 당첨된 행운의 숫자입니다.`}
                                         </div>
                                     </div>
                                 );
@@ -193,7 +210,7 @@ export default function LottoPage() {
             </div>
 
             {/* 역대 당첨 번호 */}
-            <h2 className={styles.sectionTitle}>역대 1등 당첨 번호</h2>
+            <h2 className={styles.sectionTitle}>역대 1등 당첨 번호 조회</h2>
             <div className={styles.historySection}>
                 <div className={styles.roundSelector}>
                     <select value={selectedRound} onChange={(e) => setSelectedRound(e.target.value)}>
@@ -252,7 +269,32 @@ export default function LottoPage() {
                 </div>
             </div>
 
-            <DisqusComments identifier="lotto" title="로또 번호 생성기" />
+            <article style={{ maxWidth: '800px', margin: '60px auto 0', lineHeight: '1.7' }}>
+                <section style={{ marginBottom: '50px' }}>
+                    <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                        로또 당첨 확률 높이는 팁
+                    </h2>
+                    <ul style={{ paddingLeft: '20px', color: '#555' }}>
+                        <li style={{ marginBottom: '10px' }}><strong>통계 활용하기</strong>: 역대 당첨 번호 중 자주 나오는 번호(Hot Number)와 오랫동안 나오지 않은 번호(Cold Number)를 적절히 조합하세요.</li>
+                        <li style={{ marginBottom: '10px' }}><strong>자동과 수동 병행</strong>: 기계가 무작위로 뽑아주는 자동 방식과 본인의 직감을 믿는 수동 방식을 섞어서 구매하는 것도 좋은 전략입니다.</li>
+                        <li style={{ marginBottom: '10px' }}><strong>소액으로 꾸준히</strong>: 일확천금을 노리고 한 번에 많은 금액을 구매하기보다는, 매주 소액으로 꾸준히 참여하는 것이 당첨 확률을 높이는 길입니다.</li>
+                    </ul>
+                </section>
+
+                <div style={{ background: '#fff3cd', padding: '20px', borderRadius: '10px', border: '1px solid #ffeeba', color: '#856404' }}>
+                    <h3 style={{ fontSize: '1.2rem', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        ⚠️ 건전한 복권 문화 캠페인
+                    </h3>
+                    <p style={{ fontSize: '0.95rem' }}>
+                        복권은 소액으로 즐기는 건전한 레저입니다. 과도한 몰입은 도박 중독으로 이어질 수 있으니 주의하세요.
+                        만 19세 미만 청소년은 복권을 구매할 수 없습니다.
+                    </p>
+                </div>
+            </article>
+
+            <div style={{ marginTop: '60px' }}>
+                <DisqusComments identifier="lotto" title="무료 로또 번호 생성기" />
+            </div>
         </div>
     );
 }
