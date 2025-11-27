@@ -7,9 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "predeploy": "npm run build",
-    "deploy": "cmd /c \"echo > out\\.nojekyll\" && gh-pages -d out"
+    "lint": "eslint"
   },
   "dependencies": {
     "@types/jsbarcode": "^3.11.4",
