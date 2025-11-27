@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DisqusComments from "@/components/DisqusComments";
 
 export default function SeveranceCalculatorPage() {
     const [startDate, setStartDate] = useState("");
@@ -122,6 +123,8 @@ export default function SeveranceCalculatorPage() {
                     </div>
                 )}
             </div>
+
+            <DisqusComments identifier="severance-calculator" title="퇴직금 계산기" />
         </div>
     );
 }

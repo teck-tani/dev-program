@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DisqusComments from "@/components/DisqusComments";
 
 export default function SpellCheckerPage() {
     const [inputText, setInputText] = useState("");
@@ -203,6 +204,8 @@ export default function SpellCheckerPage() {
                     <li>최대 5,000자까지 입력 가능합니다.</li>
                 </ul>
             </div>
+
+            <DisqusComments identifier="spell-checker" title="맞춤법 검사기" />
         </div>
     );
 }

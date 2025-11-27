@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import DisqusComments from "@/components/DisqusComments";
 
 interface Currency {
     code: string;
@@ -158,6 +159,8 @@ export default function MoneyConverterPage() {
                     <li>실제 은행 환율과는 차이가 있을 수 있습니다.</li>
                 </ul>
             </div>
+
+            <DisqusComments identifier="money-converter" title="환율계산기 - 실시간 통화 환율 변환" />
         </div>
     );
 }

@@ -1,18 +1,7 @@
-import Calculator from "@/components/Calculator";
-import { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-    title: "공학용 계산기 | 무료 온라인 계산기 | Tani DevTool",
-    description: "무료 온라인 공학용 계산기. 삼각함수, 로그, 지수, 제곱근 등 다양한 수학 함수를 지원하는 간편한 웹 계산기입니다. 모바일 환경에 최적화되어 있습니다.",
-    keywords: "공학용 계산기, 계산기, 온라인 계산기, 무료 계산기, 웹 계산기, 삼각함수 계산기, 로그 계산기, scientific calculator, online calculator",
-    openGraph: {
-        title: "공학용 계산기 | 무료 온라인 계산기 | Tani DevTool",
-        description: "무료 온라인 공학용 계산기. 삼각함수, 로그, 지수 등 다양한 수학 함수를 지원합니다. 모바일 환경에 최적화되어 있습니다.",
-        type: "website",
-        url: "https://tani-devtool.netlify.app/calculator",
-        images: ["https://tani-devtool.netlify.app/images/calculator-preview.png"],
-    },
-};
+import Calculator from "@/components/Calculator";
+import DisqusComments from "@/components/DisqusComments";
 
 export default function CalculatorPage() {
     return (
@@ -43,6 +32,8 @@ export default function CalculatorPage() {
                 <p style={{ marginBottom: '15px', lineHeight: '1.6', color: '#555' }}>공학용 계산기는 직관적인 인터페이스로 설계되어 쉽게 사용할 수 있습니다. 화면 상단에 현재 입력과 계산 내역이 표시되며, 버튼을 클릭하여 연산을 수행할 수 있습니다. 다양한 수학 함수와 상수를 활용하여 복잡한 수식도 간편하게 계산해보세요.</p>
                 <p style={{ marginBottom: '15px', lineHeight: '1.6', color: '#555' }}>모바일 환경에서도 최적화되어 있어 손가락으로 쉽게 조작할 수 있습니다. 데스크톱과 모바일 모두에서 동일한 기능을 제공합니다.</p>
             </div>
+
+            <DisqusComments identifier="calculator" title="공학용 계산기 | 무료 온라인 계산기 | Tani DevTool" />
         </div>
     );
 }

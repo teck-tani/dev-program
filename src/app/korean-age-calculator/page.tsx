@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DisqusComments from "@/components/DisqusComments";
 
 export default function KoreanAgeCalculatorPage() {
     const [birthDate, setBirthDate] = useState("");
@@ -68,6 +69,8 @@ export default function KoreanAgeCalculatorPage() {
                     </div>
                 )}
             </div>
+
+            <DisqusComments identifier="korean-age-calculator" title="만나이 & 한국식 나이 계산기" />
         </div>
     );
 }

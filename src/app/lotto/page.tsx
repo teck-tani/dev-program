@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styles from "./lotto.module.css";
+import DisqusComments from "@/components/DisqusComments";
 
 // 로또 데이터 타입
 interface LottoData {
@@ -250,6 +251,8 @@ export default function LottoPage() {
                     })}
                 </div>
             </div>
+
+            <DisqusComments identifier="lotto" title="로또 번호 생성기" />
         </div>
     );
 }

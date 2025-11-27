@@ -1,18 +1,7 @@
-import BarcodeGenerator from "@/components/BarcodeGenerator";
-import { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-    title: "바코드생성기 | 엑셀 바코드 생성",
-    description: "완전 무료 온라인 바코드생성기, QR코드 생성기. CODE128, CODE39, EAN, UPC 등 다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하세요. 엑셀 데이터 일괄 변환 기능을 지원합니다.",
-    keywords: "바코드생성기, QR코드 생성기, 바코드, QR코드, 무료, 온라인, CODE128, CODE39, EAN, UPC, 엑셀 일괄 변환, barcode generator, QR code generator, free barcode",
-    openGraph: {
-        title: "무료 바코드생성기 | QR코드 생성기 | 엑셀 일괄 변환 | Tani DevTool",
-        description: "완전 무료 온라인 바코드생성기. 다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하고 엑셀 데이터를 일괄 변환할 수 있습니다.",
-        type: "website",
-        url: "https://tani-devtool.netlify.app/barcode",
-        images: ["https://tani-devtool.netlify.app/images/barcode-preview.png"],
-    },
-};
+import BarcodeGenerator from "@/components/BarcodeGenerator";
+import DisqusComments from "@/components/DisqusComments";
 
 export default function BarcodePage() {
     return (
@@ -59,7 +48,7 @@ export default function BarcodePage() {
                 </section>
             </div>
 
-            {/* Disqus comments section could be added here if needed, but skipping for now or can be added as a component */}
+            <DisqusComments identifier="barcode" title="바코드생성기 | 엑셀 바코드 생성" />
         </div>
     );
 }

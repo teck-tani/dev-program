@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DisqusComments from "@/components/DisqusComments";
 
 export default function InterestCalculatorPage() {
     const [principal, setPrincipal] = useState("");
@@ -116,6 +117,8 @@ export default function InterestCalculatorPage() {
                     </div>
                 )}
             </div>
+
+            <DisqusComments identifier="interest-calculator" title="이자 계산기" />
         </div>
     );
 }

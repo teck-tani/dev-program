@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DisqusComments from "@/components/DisqusComments";
 
 export default function PayCalPage() {
     const [annualSalary, setAnnualSalary] = useState("");
@@ -214,6 +215,8 @@ export default function PayCalPage() {
                     </div>
                 </div>
             )}
+
+            <DisqusComments identifier="pay-cal" title="연봉 계산기 - 월급 실수령액 자동 계산" />
         </div>
     );
 }
