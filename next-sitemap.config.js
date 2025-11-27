@@ -8,6 +8,7 @@ module.exports = {
 
     // 기본 생성될 페이지의 설정입니다.
     generateRobotsTxt: true, // robots.txt 파일도 자동으로 생성
+    generateIndexSitemap: false, // 단일 sitemap.xml 생성 (인덱스 파일 생성 안 함)
 
     // 제외하고 싶은 페이지가 있다면 여기에 패턴을 추가합니다. (예: 개인정보처리방침 등)
     exclude: [
