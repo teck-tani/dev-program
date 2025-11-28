@@ -226,7 +226,7 @@ export default function SpellCheckerPage() {
                     <ul style={{ paddingLeft: '20px', color: '#555' }}>
                         <li style={{ marginBottom: '15px' }}>
                             <strong>되 / 돼 구분하기</strong>: '하'를 넣어 말이 되면 '되', '해'를 넣어 말이 되면 '돼'를 씁니다.<br />
-                            <em style={{ color: '#888' }}>(예: 안되나요(X) -> 안하나요(X) / 안돼나요(X) -> 안해나요(X) ...? '안되나요'는 '하'가 어울리므로 '되'가 맞습니다.)</em><br />
+                            <em style={{ color: '#888' }}>(예: 안되나요(X) &rarr; 안하나요(X) / 안돼나요(X) &rarr; 안해나요(X) ...? '안되나요'는 '하'가 어울리므로 '되'가 맞습니다.)</em><br />
                             <em style={{ color: '#888' }}>팁: 문장 끝에는 무조건 '돼' (예: 안 돼, 해도 돼)</em>
                         </li>
                         <li style={{ marginBottom: '15px' }}>
