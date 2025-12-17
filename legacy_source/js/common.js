@@ -61,12 +61,15 @@ async function loadTopLayout(pathPrefix) {
             topContainer.appendChild(header);
             
             // 스크립트 실행
-            const script = doc.querySelector('script');
-            if (script) {
+            const scripts = doc.querySelectorAll('script');
+            scripts.forEach(script => {
                 const newScript = document.createElement('script');
+                Array.from(script.attributes).forEach(attr => {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
                 newScript.textContent = script.textContent;
                 document.body.appendChild(newScript);
-            }
+            });
             
             // 현재 활성 페이지 메뉴 강조
             highlightCurrentPage();
