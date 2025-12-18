@@ -1,222 +1,250 @@
+/* Casio Style Calculator Design */
 .calculatorPage {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: #e0e0e0;
     min-height: 100vh;
+    padding-top: 40px;
+    font-family: 'Inter', sans-serif;
 }
 
 .calculatorWrapper {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     padding: 20px;
 }
 
 .calculator {
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    padding: 30px;
+    background-color: #2b2b2b; /* Dark grey casing */
+    border-radius: 10px;
+    box-shadow: 
+        0 10px 20px rgba(0,0,0,0.4),
+        inset 0 2px 5px rgba(255,255,255,0.1); /* Bevel effect */
+    padding: 25px 20px 30px;
     width: 100%;
-    max-width: 420px;
+    max-width: 400px;
+    position: relative;
+    border: 1px solid #1a1a1a;
 }
 
-.display {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px;
-    padding: 25px 20px;
-    margin-bottom: 25px;
-    text-align: right;
-    min-height: 100px;
+/* Branding Header */
+.brandHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding: 0 5px;
+    height: 60px;
+}
+
+.brandLeft {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    justify-content: space-between;
+    height: 100%;
+}
+
+.brandRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.brandName {
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: #fff;
+    font-style: italic;
+    font-family: sans-serif;
+}
+
+.brandSubDetail {
+    color: #00bcd4; /* Cyan color common on Casio calculators */
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-family: sans-serif;
+}
+
+.modelName {
+    font-family: 'Arial', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    color: #e0e0e0;
+    font-size: 1rem;
+}
+
+.editionText {
+    font-size: 0.6rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.solarPanel {
+    width: 50px;
+    height: 18px;
+    background: #443333;
+    border-radius: 2px;
+    border: 1px solid #554444;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2px;
+}
+
+.solarPanel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 9px,
+        rgba(255,255,255,0.15) 10px
+    );
+}
+
+/* Display Screen */
+.display {
+    background-color: #c4d0bf; /* LCD Greenish background */
+    border: 4px solid #444;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 25px;
+    text-align: right;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: 'Courier New', Courier, monospace; /* Monospace for LCD feel */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+    position: relative;
 }
 
 .history {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1rem;
-    margin-bottom: 8px;
-    min-height: 24px;
-    word-wrap: break-word;
-    word-break: break-all;
+    color: #555;
+    font-size: 0.9rem;
+    min-height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .currentInput {
-    color: #ffffff;
-    font-size: 2.5rem;
-    font-weight: 300;
-    word-wrap: break-word;
-    word-break: break-all;
+    color: #000;
+    font-size: 2.2rem;
+    font-weight: bold;
+    letter-spacing: -1px;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
+/* Buttons Grid */
 .buttons {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
+    gap: 12px 10px; /* Row gap, Col gap */
 }
 
+/* General Button Styles */
 .button {
     border: none;
-    border-radius: 12px;
-    height: 65px;
-    font-size: 1.2rem;
+    border-radius: 6px;
+    height: 45px;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-weight: 500;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.3), 0 4px 5px rgba(0,0,0,0.2);
+    transition: transform 0.1s, box-shadow 0.1s;
+    user-select: none;
 }
 
 .button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.3), 0 2px 2px rgba(0,0,0,0.2);
 }
 
-.number {
-    background: #f8f9fa;
-    color: #2d3748;
-    font-size: 1.4rem;
-}
-
-.number:hover {
-    background: #e9ecef;
-}
-
-.operator {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff;
-    font-size: 1.5rem;
-}
-
-.operator:hover {
-    background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
-}
-
+/* 1. Scientific Functions (Top Rows) - Dark Grey / Black text on buttons usually white or silver, but distinct */
 .function {
-    background: #e9ecef;
-    color: #495057;
-    font-size: 1rem;
+    background: #555;
+    color: #fff;
+    font-size: 0.8rem;
+    box-shadow: 0 3px 0 #333, 0 4px 5px rgba(0,0,0,0.2);
+}
+.function:active {
+    box-shadow: 0 1px 0 #333;
 }
 
-.function:hover {
-    background: #dee2e6;
+/* 2. Numbers - Black/Dark Grey */
+.number {
+    background: #3a3a3a;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 3px 0 #222, 0 4px 5px rgba(0,0,0,0.2);
+}
+.number:active {
+    box-shadow: 0 1px 0 #222;
 }
 
-.clear {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: #ffffff;
-    font-weight: 600;
+/* 3. Operators - Distinct Color (Often Blue or Grey) */
+.operator {
+    background: #666;
+    color: #fff;
+    font-size: 1.2rem;
+    box-shadow: 0 3px 0 #444, 0 4px 5px rgba(0,0,0,0.2);
+}
+.operator:active {
+    box-shadow: 0 1px 0 #444;
 }
 
-.clear:hover {
-    background: linear-gradient(135deg, #e082ea 0%, #e4465b 100%);
+/* 4. DEL / AC - Red/Orange */
+.clear, .delete {
+    background: #d65a5a;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 3px 0 #a33e3e, 0 4px 5px rgba(0,0,0,0.2);
 }
-
-.delete {
-    background: #ff6b6b;
-    color: #ffffff;
-    font-weight: 600;
-}
-
-.delete:hover {
-    background: #ee5a5a;
+.clear:active, .delete:active {
+    background: #c94b4b;
+    box-shadow: 0 1px 0 #a33e3e;
 }
 
 .equals {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: 600;
+    background: #cdcdcd; /* Sometimes light, sometimes dark. Standard calculator = is often regular. */
+    color: #000;
+    font-size: 1.5rem;
+    background: #4a90e2; /* Let's use a nice Blue for action */
+    color: #fff;
+    box-shadow: 0 3px 0 #2c6eb5, 0 4px 5px rgba(0,0,0,0.2);
+}
+.equals:active {
+    box-shadow: 0 1px 0 #2c6eb5;
 }
 
-.equals:hover {
-    background: linear-gradient(135deg, #3e9bed 0%, #00e1ed 100%);
+/* Special styling for top row small buttons */
+.smallBtn {
+    height: 35px;
+    font-size: 0.75rem;
+    border-radius: 4px;
 }
 
-@media (max-width: 768px) {
-    .calculator {
-        padding: 25px 20px;
-        max-width: 380px;
-    }
-
-    .button {
-        height: 58px;
-        font-size: 1.1rem;
-    }
-
-    .number {
-        font-size: 1.3rem;
-    }
-
-    .operator {
-        font-size: 1.4rem;
-    }
-
-    .function {
-        font-size: 0.95rem;
-    }
-
-    .display {
-        padding: 20px 18px;
-        min-height: 90px;
-    }
-
-    .currentInput {
-        font-size: 2.2rem;
-    }
-
-    .history {
-        font-size: 0.95rem;
-    }
-}
-
+/* Responsive */
 @media (max-width: 480px) {
     .calculator {
-        max-width: 340px;
-        padding: 20px 15px;
+        padding: 15px;
     }
-
-    .buttons {
-        gap: 10px;
-    }
-
     .button {
-        height: 52px;
-        font-size: 1rem;
+        height: 50px; /* Taller touch targets */
     }
-
-    .number {
-        font-size: 1.2rem;
-    }
-
-    .operator {
-        font-size: 1.3rem;
-    }
-
-    .function {
-        font-size: 0.85rem;
-    }
-
-    .equals {
-        font-size: 1.6rem;
-    }
-
-    .display {
-        padding: 18px 15px;
-        min-height: 80px;
-    }
-
     .currentInput {
-        font-size: 2rem;
-    }
-
-    .history {
-        font-size: 0.9rem;
+        font-size: 1.8rem;
     }
 }

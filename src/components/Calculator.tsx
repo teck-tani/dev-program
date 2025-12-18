@@ -182,42 +182,55 @@ export default function Calculator() {
     return (
         <div className={styles.calculatorWrapper}>
             <div className={styles.calculator}>
+                <div className={styles.brandHeader}>
+                    <div className={styles.brandLeft}>
+                        <div className={styles.brandName}>CASIO</div>
+                        <div className={styles.brandSubDetail}>NATURAL-V.P.A.M.</div>
+                    </div>
+                    <div className={styles.brandRight}>
+                        <div className={styles.solarPanel}></div>
+                        <div className={styles.modelName}>fx-570ES PLUS</div>
+                        <div className={styles.editionText}>2nd edition</div>
+                    </div>
+                </div>
+                
                 <div className={styles.display}>
                     <div className={styles.history}>{history}</div>
                     <div className={styles.currentInput}>{currentInput || "0"}</div>
                 </div>
+                
                 <div className={styles.buttons}>
                     {/* Row 1 - Scientific Functions */}
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("sin")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("sin")}>
                         sin
                     </button>
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("cos")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("cos")}>
                         cos
                     </button>
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("tan")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("tan")}>
                         tan
                     </button>
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("log")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("log")}>
                         ln
                     </button>
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("sqrt")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("sqrt")}>
                         √
                     </button>
 
                     {/* Row 2 - More Functions */}
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("square")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("square")}>
                         x²
                     </button>
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("power")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("power")}>
                         x^y
                     </button>
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("reciprocal")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("reciprocal")}>
                         1/x
                     </button>
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("pi")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("pi")}>
                         π
                     </button>
-                    <button className={`${styles.button} ${styles.function}`} onClick={() => handleButtonClick("e")}>
+                    <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("e")}>
                         e
                     </button>
 
@@ -282,16 +295,15 @@ export default function Calculator() {
                     <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("3")}>
                         3
                     </button>
-                    <button className={`${styles.button} ${styles.equals}`} onClick={() => handleButtonClick("equals")} style={{ gridRow: "span 2" }}>
-                        =
-                    </button>
-
-                    {/* Row 7 - Zero and Decimal */}
-                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("0")} style={{ gridColumn: "span 2" }}>
+                    {/* Row 7 - Zero, Decimal, Equals */}
+                    <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("0")}>
                         0
                     </button>
                     <button className={`${styles.button} ${styles.number}`} onClick={() => handleButtonClick("decimal")}>
                         .
+                    </button>
+                    <button className={`${styles.button} ${styles.equals}`} onClick={() => handleButtonClick("equals")} style={{ gridColumn: "span 5", marginTop: "10px" }}>
+                        =
                     </button>
                 </div>
             </div>
