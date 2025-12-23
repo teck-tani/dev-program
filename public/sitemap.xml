@@ -1,15 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://dev-program.vercel.app/barcode</loc><lastmod>2025-11-28T00:46:51.105Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/calculator</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/clock</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/interest-calculator</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/korean-age-calculator</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/lotto</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/money-converter</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/pay-cal</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/severance-calculator</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/special-characters</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://dev-program.vercel.app/spell-checker</loc><lastmod>2025-11-28T00:46:51.108Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://teck-tani.com/</loc>
+    <lastmod>2025-12-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/barcode</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/calculator</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/clock</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/interest-calculator</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/korean-age-calculator</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/lotto</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/money-converter</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/pay-cal</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/severance-calculator</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/special-characters</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/spell-checker</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
