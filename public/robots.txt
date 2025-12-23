@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://dev-program.vercel.app
+Host: https://teck-tani.com
 
 # Sitemaps
-Sitemap: https://dev-program.vercel.app/sitemap.xml
+Sitemap: https://teck-tani.com/sitemap.xml

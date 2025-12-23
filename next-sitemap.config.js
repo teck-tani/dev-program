@@ -1,7 +1,7 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
     // 🚨 [필수] Vercel에 배포된 실제 도메인 주소를 입력하세요.
-    siteUrl: 'https://dev-program.vercel.app',
+    siteUrl: 'https://teck-tani.com',
 
     // 사이트맵이 저장될 경로입니다. Next.js의 public 폴더를 지정합니다.
     outDir: './public',
