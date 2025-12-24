@@ -95,9 +95,9 @@ export default function LottoClient() {
     return (
         <div className={styles.lottoContainer}>
             <section style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <h1 className={styles.sectionTitle}>무료 로또 번호 생성기</h1>
+                <h1 className={styles.sectionTitle}>로또 번호 생성기</h1>
                 <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0' }}>
-                    빅데이터 분석을 통한 나만의 로또 예상 번호를 무료로 받아보세요.<br />
+                    빅데이터 분석을 통한 나만의 로또 예상 번호를 받아보세요.<br />
                     꿈 해몽과 통계 데이터를 결합하여 당첨 확률을 높여드립니다.
                 </p>
             </section>
@@ -146,7 +146,7 @@ export default function LottoClient() {
                     onClick={generateNumbers}
                     disabled={isGenerating}
                 >
-                    <span>{isGenerating ? "번호 분석 중..." : "무료 번호 추출하기"}</span>
+                    <span>{isGenerating ? "번호 분석 중..." : "번호 추출하기"}</span>
                 </button>
 
                 {/* 로또 볼 표시 */}
@@ -283,7 +283,7 @@ export default function LottoClient() {
             </article>
 
             <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="lotto" title="무료 로또 번호 생성기" />
+                <DisqusComments identifier="lotto" title="로또 번호 생성기" />
             </div>
         </div>
     );

@@ -4,11 +4,11 @@ import DisqusComments from "@/components/DisqusComments";
 
 export const metadata: Metadata = {
     title: "바코드 생성기 여러개 생성 | QR코드 만들기 & 엑셀 대량 변환",
-    description: "설치가 필요 없는 무료 온라인 바코드 생성기입니다. QR코드, CODE128, EAN-13 등 다양한 형식을 지원하며 엑셀 데이터를 이용한 대량 바코드 생성이 가능합니다.",
-    keywords: "바코드 생성기, QR코드 만들기, 무료 바코드, 엑셀 바코드 변환, 온라인 바코드, CODE128 생성, EAN13 생성, 대량 바코드 만들기",
+    description: "설치가 필요 없는 온라인 바코드 생성기입니다. QR코드, CODE128, EAN-13 등 다양한 형식을 지원하며 엑셀 데이터를 이용한 대량 바코드 생성이 가능합니다.",
+    keywords: "바코드 생성기, QR코드 만들기, 바코드, 엑셀 바코드 변환, 온라인 바코드, CODE128 생성, EAN13 생성, 대량 바코드 만들기",
     openGraph: {
         title: "바코드 생성기 여러개 생성 | QR코드 & 대량 변환",
-        description: "설치 없이 바로 사용하는 무료 바코드/QR코드 생성기. 엑셀 붙여넣기로 수백 개의 바코드를 한 번에 만드세요.",
+        description: "설치 없이 바로 사용하는 바코드/QR코드 생성기. 엑셀 붙여넣기로 수백 개의 바코드를 한 번에 만드세요.",
         type: "website",
     },
 };
@@ -17,7 +17,7 @@ export default function BarcodePage() {
     return (
         <div className="container">
             <section style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <h1>무료 온라인 바코드 생성기</h1>
+                <h1>온라인 바코드 생성기</h1>
                 <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0' }}>
                     다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하세요.<br />
                     엑셀 데이터를 복사해 붙여넣으면 수백 개의 바코드도 한 번에 만들 수 있습니다.
@@ -33,7 +33,7 @@ export default function BarcodePage() {
                     </h2>
                     <p style={{ marginBottom: '15px' }}>
                         비즈니스 현장이나 개인적인 용도로 바코드가 필요할 때, 복잡한 프로그램을 설치하거나 유료 서비스를 이용할 필요가 없습니다.
-                        이 <strong>무료 온라인 바코드 생성기</strong>는 웹브라우저만 있으면 언제 어디서나 즉시 사용 가능합니다.
+                        이 <strong>온라인 바코드 생성기</strong>는 웹브라우저만 있으면 언제 어디서나 즉시 사용 가능합니다.
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginTop: '30px' }}>
                         <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
@@ -114,9 +114,9 @@ export default function BarcodePage() {
                     </h2>
 
                     <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>Q. 이 바코드 생성기는 정말 무료인가요?</summary>
+                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>Q. 이 바코드 생성기는 사용 제한이 있나요?</summary>
                         <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>
-                            네, 100% 무료입니다. 개인은 물론 기업에서도 상업적인 용도로 자유롭게 사용하실 수 있습니다. 회원가입이나 유료 결제 유도는 전혀 없습니다.
+                            상업적 용도를 포함해 누구나 자유롭게 사용하실 수 있습니다. 회원가입이나 결제 없이 모든 기능을 이용할 수 있습니다.
                         </p>
                     </details>
 
@@ -144,7 +144,7 @@ export default function BarcodePage() {
             </article>
 
             <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="barcode" title="무료 온라인 바코드 생성기" />
+                <DisqusComments identifier="barcode" title="온라인 바코드 생성기" />
             </div>
         </div>
     );

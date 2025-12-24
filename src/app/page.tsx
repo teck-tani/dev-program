@@ -7,7 +7,7 @@ export default function Home() {
             <div className="intro-section">
                 <h1 className="tools-heading">편리한 웹 도구 모음</h1>
                 <p>
-                    Tani DevTool은 일상생활과 업무에 필요한 다양한 웹 도구를 무료로 제공합니다. 계산기, 시계, 이모지 모음 등 필요한 도구를 한 곳에서 간편하게 사용해보세요.
+                    Tani DevTool은 일상생활과 업무에 필요한 다양한 웹 도구를 제공합니다. 계산기, 시계, 이모지 모음 등 필요한 도구를 한 곳에서 간편하게 사용해보세요.
                 </p>
                 <p>
                     모든 도구는 PC와 모바일에서 모두 편리하게 사용할 수 있으며, 인터넷만 연결되어 있다면 언제 어디서나 접근 가능합니다.

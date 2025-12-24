@@ -5,11 +5,11 @@ import { useState } from "react";
 import DisqusComments from "@/components/DisqusComments";
 
 const pageMetadata: Metadata = {
-    title: "무료 한글 맞춤법 검사기 | 띄어쓰기 교정 & 문법 검사",
-    description: "자기소개서, 이력서, 보고서 작성 시 필수! 실시간으로 한글 맞춤법과 띄어쓰기 오류를 찾아 교정해주는 무료 온라인 맞춤법 검사기입니다.",
-    keywords: "맞춤법 검사기, 한글 맞춤법, 띄어쓰기 검사기, 문법 검사, 자소서 맞춤법, 이력서 교정, 글자수 세기, 무료 맞춤법",
+    title: "한글 맞춤법 검사기 | 띄어쓰기 교정 & 문법 검사",
+    description: "자기소개서, 이력서, 보고서 작성 시 필수! 실시간으로 한글 맞춤법과 띄어쓰기 오류를 찾아 교정해주는 온라인 맞춤법 검사기입니다.",
+    keywords: "맞춤법 검사기, 한글 맞춤법, 띄어쓰기 검사기, 문법 검사, 자소서 맞춤법, 이력서 교정, 글자수 세기, 맞춤법",
     openGraph: {
-        title: "무료 한글 맞춤법 검사기 | 자소서 & 이력서 필수템",
+        title: "한글 맞춤법 검사기 | 자소서 & 이력서 필수템",
         description: "헷갈리는 맞춤법과 띄어쓰기, 이제 걱정 마세요. AI 기반 맞춤법 검사기로 완벽한 문장을 만들어보세요.",
         type: "website",
     },
@@ -80,7 +80,7 @@ export default function SpellCheckerPage() {
     return (
         <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
             <section style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1 style={{ marginBottom: "20px" }}>무료 한글 맞춤법 검사기</h1>
+                <h1 style={{ marginBottom: "20px" }}>한글 맞춤법 검사기</h1>
                 <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}>
                     헷갈리는 맞춤법과 띄어쓰기를 한 번에 해결하세요.<br />
                     자기소개서, 이력서, 업무 메일 작성 전 필수 체크!
@@ -252,7 +252,7 @@ export default function SpellCheckerPage() {
                         올바른 맞춤법은 글의 신뢰도를 결정하는 가장 기본적인 요소입니다. 특히 자기소개서나 비즈니스 메일에서 맞춤법 오류는 전문성이 부족하다는 인상을 줄 수 있습니다.
                     </p>
                     <p style={{ color: '#555' }}>
-                        이 무료 맞춤법 검사기를 활용하여 사소한 실수를 예방하고, 더 완성도 높은 글을 작성해보세요.
+                        이 맞춤법 검사기를 활용하여 사소한 실수를 예방하고, 더 완성도 높은 글을 작성해보세요.
                     </p>
                 </section>
             </article>

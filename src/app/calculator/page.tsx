@@ -3,11 +3,11 @@ import Calculator from "@/components/Calculator";
 import DisqusComments from "@/components/DisqusComments";
 
 export const metadata: Metadata = {
-    title: "무료 공학용 계산기 | 삼각함수, 로그, 지수 계산 | Tani DevTool",
-    description: "웹에서 바로 사용하는 무료 공학용 계산기입니다. sin, cos, tan 삼각함수부터 로그, 제곱근, 지수 계산까지 복잡한 수식을 간편하게 계산하세요. 모바일 지원.",
-    keywords: "공학용 계산기, 무료 계산기, 온라인 계산기, 삼각함수 계산기, 로그 계산기, 공학 계산, sin cos tan 계산, 루트 계산",
+    title: "공학용 계산기 | 삼각함수, 로그, 지수 계산 | Tani DevTool",
+    description: "웹에서 바로 사용하는 공학용 계산기입니다. sin, cos, tan 삼각함수부터 로그, 제곱근, 지수 계산까지 복잡한 수식을 간편하게 계산하세요. 모바일 지원.",
+    keywords: "공학용 계산기, 온라인 계산기, 삼각함수 계산기, 로그 계산기, 공학 계산, sin cos tan 계산, 루트 계산",
     openGraph: {
-        title: "무료 공학용 계산기 | 삼각함수 & 공학 연산",
+        title: "공학용 계산기 | 삼각함수 & 공학 연산",
         description: "설치 없이 웹에서 바로 쓰는 강력한 공학용 계산기. 공학도와 학생을 위한 필수 도구.",
         type: "website",
     },
@@ -20,7 +20,7 @@ export default function CalculatorPage() {
                 <h1>공학용 계산기</h1>
                 <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0' }}>
                     복잡한 공학 연산을 쉽고 빠르게.<br />
-                    삼각함수, 로그, 지수 등 다양한 기능을 무료로 이용하세요.
+                    삼각함수, 로그, 지수 등 다양한 기능을 이용하세요.
                 </p>
             </section>
 
@@ -127,7 +127,7 @@ export default function CalculatorPage() {
             </article>
 
             <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="calculator" title="공학용 계산기 | 무료 온라인 계산기" />
+                <DisqusComments identifier="calculator" title="공학용 계산기 | 온라인 계산기" />
             </div>
         </div>
     );
