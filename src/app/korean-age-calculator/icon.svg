@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="20" fill="#EC4899" />
+  <rect x="25" y="30" width="50" height="50" rx="5" fill="white" />
+  <rect x="25" y="30" width="50" height="15" rx="5" fill="#DB2777" />
+  <circle cx="35" cy="25" r="3" fill="#FBCFE8" />
+  <circle cx="65" cy="25" r="3" fill="#FBCFE8" />
+  <text x="50" y="70" font-family="Arial" font-size="25" fill="#EC4899" text-anchor="middle" font-weight="bold">AGE</text>
+</svg>

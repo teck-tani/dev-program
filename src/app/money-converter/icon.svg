@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="20" fill="#22C55E" />
+  <text x="35" y="60" font-family="Arial" font-size="35" fill="white" font-weight="bold">$</text>
+  <text x="65" y="60" font-family="Arial" font-size="35" fill="white" font-weight="bold">₩</text>
+  <path d="M45 40 L55 40 M45 40 L48 37 M45 40 L48 43" stroke="white" stroke-width="3" stroke-linecap="round" />
+  <path d="M55 55 L45 55 M55 55 L52 52 M55 55 L52 58" stroke="white" stroke-width="3" stroke-linecap="round" />
+</svg>

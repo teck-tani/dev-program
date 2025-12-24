@@ -35,7 +35,7 @@ export default function Header() {
             </button>
             <div className="dropdown-content">
               <Link href="/barcode">바코드생성기</Link>
-              <Link href="/calculator">계산기</Link>
+              <Link href="/calculator">공학용 계산기</Link>
               <Link href="/clock">대한민국 시계</Link>
               <Link href="/special-characters">이모지 모음</Link>
               <Link href="/lotto">로또번호 AI추천</Link>

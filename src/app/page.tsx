@@ -16,7 +16,7 @@ export default function Home() {
 
             <div className="tools-container" id="toolsContainer">
                 <ToolCard href="/barcode" icon={<FaBarcode />} title="바코드생성기" />
-                <ToolCard href="/calculator" icon={<FaCalculator />} title="계산기" />
+                <ToolCard href="/calculator" icon={<FaCalculator />} title="공학용 계산기" />
                 <ToolCard href="/clock" icon={<FaClock />} title="대한민국 시계" />
                 <ToolCard href="/special-characters" icon={<FaSmile />} title="이모지 모음" />
                 <ToolCard href="/lotto" icon={<FaDice />} title="로또번호 AI추천" />
@@ -32,7 +32,7 @@ export default function Home() {
                 <div className="container">
                     <h2>인기 웹 도구</h2>
                     <div className="tools-container">
-                        <ToolCard href="/calculator" icon={<FaCalculator />} title="계산기" />
+                        <ToolCard href="/calculator" icon={<FaCalculator />} title="공학용 계산기" />
                         <ToolCard href="/clock" icon={<FaClock />} title="대한민국 시계" />
                         <ToolCard href="/special-characters" icon={<FaSmile />} title="이모지 모음" />
                     </div>

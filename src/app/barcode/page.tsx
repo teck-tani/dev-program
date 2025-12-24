@@ -3,11 +3,11 @@ import BarcodeGenerator from "@/components/BarcodeGenerator";
 import DisqusComments from "@/components/DisqusComments";
 
 export const metadata: Metadata = {
-    title: "무료 온라인 바코드 생성기 | QR코드 만들기 & 엑셀 대량 변환",
+    title: "바코드 생성기 여러개 생성 | QR코드 만들기 & 엑셀 대량 변환",
     description: "설치가 필요 없는 무료 온라인 바코드 생성기입니다. QR코드, CODE128, EAN-13 등 다양한 형식을 지원하며 엑셀 데이터를 이용한 대량 바코드 생성이 가능합니다.",
     keywords: "바코드 생성기, QR코드 만들기, 무료 바코드, 엑셀 바코드 변환, 온라인 바코드, CODE128 생성, EAN13 생성, 대량 바코드 만들기",
     openGraph: {
-        title: "무료 온라인 바코드 생성기 | QR코드 & 대량 변환",
+        title: "바코드 생성기 여러개 생성 | QR코드 & 대량 변환",
         description: "설치 없이 바로 사용하는 무료 바코드/QR코드 생성기. 엑셀 붙여넣기로 수백 개의 바코드를 한 번에 만드세요.",
         type: "website",
     },

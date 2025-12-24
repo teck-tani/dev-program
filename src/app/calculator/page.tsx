@@ -17,7 +17,7 @@ export default function CalculatorPage() {
     return (
         <div className="container">
             <section style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <h1>무료 온라인 공학용 계산기</h1>
+                <h1>공학용 계산기</h1>
                 <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0' }}>
                     복잡한 공학 연산을 쉽고 빠르게.<br />
                     삼각함수, 로그, 지수 등 다양한 기능을 무료로 이용하세요.
