@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-    const apiKey = process.env.KOREA_EXIM_API_KEY;
+    const apiKey = "9sYd8MjKwbfdZlFzlmcMH8FCQlvYMxBF";
     
     // YYYYMMDD format for today
     const now = new Date();
