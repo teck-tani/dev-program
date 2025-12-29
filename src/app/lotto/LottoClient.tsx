@@ -1,290 +1,436 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import styles from "./lotto.module.css";
+import { useState, useEffect, useMemo } from "react";
 import DisqusComments from "@/components/DisqusComments";
 
-// 로또 데이터 타입
-interface LottoData {
-    round: number;
-    date: string;
-    numbers: number[];
-    bonus: number;
+// Types
+interface LottoRound {
+    drwNo: number;
+    drwNoDate: string;
+    totSellamnt: number;
+    firstWinamnt: number;
+    firstPrzwnerCo: number;
+    drwtNo1: number;
+    drwtNo2: number;
+    drwtNo3: number;
+    drwtNo4: number;
+    drwtNo5: number;
+    drwtNo6: number;
+    bnusNo: number;
+}
+
+interface NumberStat {
+    num: number;
+    count: number;
+    probability: number;
 }
 
 export default function LottoClient() {
-    const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
-    const [preferredNumbers, setPreferredNumbers] = useState<number[]>([]);
-    const [dreamInfo, setDreamInfo] = useState("");
-    const [showExplanation, setShowExplanation] = useState(false);
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [lottoData, setLottoData] = useState<LottoData[]>([]);
-    const [selectedRound, setSelectedRound] = useState("");
-    const [frequentNumbers, setFrequentNumbers] = useState<Array<{ number: number, frequency: number }>>([]);
+    // --- State: Data & History ---
+    const [history, setHistory] = useState<LottoRound[]>([]);
+    const [selectedRound, setSelectedRound] = useState<LottoRound | null>(null);
+    const [syncing, setSyncing] = useState(false);
+    const [syncStatus, setSyncStatus] = useState("");
 
-    // 볼 색상 클래스
-    const getBallColorClass = (number: number) => {
-        if (number <= 10) return styles.ball110;
-        if (number <= 20) return styles.ball1120;
-        if (number <= 30) return styles.ball2130;
-        if (number <= 40) return styles.ball3140;
-        return styles.ball4145;
-    };
+    // --- State: Generator ---
+    const [fixedNumbers, setFixedNumbers] = useState<number[]>([]);
+    const [generatedNumbers, setGeneratedNumbers] = useState<number[]>([]);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [drumBalls, setDrumBalls] = useState<number[]>([]); 
 
-    // 로또 데이터 로드
+    // --- State: Stats ---
+    const [sortBy, setSortBy] = useState<'number' | 'prob'>('prob');
+
+    // --- Effects ---
     useEffect(() => {
-        // 샘플 데이터 (실제로는 API에서 가져와야 함)
-        const sampleData: LottoData[] = [
-            { round: 1145, date: "2024-11-23", numbers: [3, 12, 19, 23, 28, 42], bonus: 7 },
-            { round: 1144, date: "2024-11-16", numbers: [5, 11, 16, 20, 35, 44], bonus: 31 },
-            { round: 1143, date: "2024-11-09", numbers: [2, 8, 15, 27, 33, 41], bonus: 18 },
-        ];
-        setLottoData(sampleData);
-
-        // 통계 계산
-        const allNumbers = sampleData.flatMap(d => d.numbers);
-        const frequency: { [key: number]: number } = {};
-        for (let i = 1; i <= 45; i++) {
-            frequency[i] = allNumbers.filter(n => n === i).length;
-        }
-        const sorted = Object.entries(frequency)
-            .map(([num, freq]) => ({ number: parseInt(num), frequency: freq }))
-            .sort((a, b) => b.frequency - a.frequency)
-            .slice(0, 20);
-        setFrequentNumbers(sorted);
+        fetchHistory();
     }, []);
 
-    // 선호 번호 토글
-    const togglePreferredNumber = (num: number) => {
-        if (preferredNumbers.includes(num)) {
-            setPreferredNumbers(preferredNumbers.filter(n => n !== num));
-        } else if (preferredNumbers.length < 5) {
-            setPreferredNumbers([...preferredNumbers, num]);
-        } else {
-            alert("최대 5개까지만 선택 가능합니다.");
+    useEffect(() => {
+        if (history.length > 0) {
+            checkAndAutoUpdate(history);
+        }
+    }, [history]);
+
+    // Initial Drum Setup (All balls in drum)
+    useEffect(() => {
+        if (!isAnimating && generatedNumbers.length === 0) {
+            setDrumBalls(Array.from({ length: 45 }, (_, i) => i + 1));
+        }
+    }, [isAnimating, generatedNumbers]);
+
+
+    // --- Logic: Data Fetching ---
+    const fetchHistory = async () => {
+        try {
+            const res = await fetch("/api/lotto");
+            const data = await res.json();
+            if (data.length > 0) {
+                const sorted = [...data].sort((a: any, b: any) => b.drwNo - a.drwNo);
+                setHistory(sorted);
+                setSelectedRound((prev) => prev ? prev : sorted[0]);
+            } else {
+                setHistory([]);
+            }
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    // 번호 생성
-    const generateNumbers = () => {
-        setIsGenerating(true);
-        setShowExplanation(false);
-        setSelectedNumbers([]);
-
-        setTimeout(() => {
-            let numbers = [...preferredNumbers];
-            const available = Array.from({ length: 45 }, (_, i) => i + 1)
-                .filter(n => !numbers.includes(n));
-
-            while (numbers.length < 6) {
-                const randomIndex = Math.floor(Math.random() * available.length);
-                numbers.push(available[randomIndex]);
-                available.splice(randomIndex, 1);
-            }
-
-            numbers.sort((a, b) => a - b);
-            setSelectedNumbers(numbers);
-            setIsGenerating(false);
-
-            setTimeout(() => {
-                setShowExplanation(true);
-            }, 1800);
-        }, 2000);
+    const checkAndAutoUpdate = async (currentHistory: LottoRound[]) => {
+        const sorted = [...currentHistory].sort((a, b) => b.drwNo - a.drwNo);
+        const latest = sorted[0];
+        if (!latest) return;
+        const nextDrawDate = new Date(latest.drwNoDate);
+        nextDrawDate.setDate(new Date(latest.drwNoDate).getDate() + 7);
+        nextDrawDate.setHours(21, 0, 0, 0); 
+        if (new Date() >= nextDrawDate) await processBatch(1); 
     };
 
+    const startSync = async () => {
+        if (syncing) return;
+        setSyncing(true);
+        setSyncStatus("확인 중...");
+        try { await processBatch(3); } catch { setSyncStatus("오류"); setSyncing(false); }
+    };
+
+    const processBatch = async (batchSize = 3) => {
+        try {
+            // Add a timeout to the fetch to prevent infinite hanging
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+            const res = await fetch(`/api/lotto/update?count=${batchSize}`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            const data = await res.json();
+            if (data.status === 'success') {
+                setSyncStatus(`${data.processed}개 업데이트`);
+                fetchHistory(); 
+                // If we found data, there might be more. Try one more small batch.
+                if (batchSize > 1) await processBatch(3);
+            } else if (data.status === 'done') {
+                setSyncStatus("최신 상태");
+                setTimeout(() => {
+                    if (syncing) { setSyncing(false); setSyncStatus(""); }
+                }, 2000);
+                fetchHistory();
+            }
+        } catch (e: any) {
+            console.error(e);
+            if (e.name === 'AbortError') {
+                setSyncStatus("시간 초과");
+            } else {
+                setSyncStatus("연결 실패");
+            }
+            setTimeout(() => setSyncing(false), 2000);
+        }
+    };
+
+
+    // --- Logic: Generator & Animation ---
+    const toggleFixedNumber = (num: number) => {
+        if (fixedNumbers.includes(num)) {
+            setFixedNumbers(fixedNumbers.filter(n => n !== num));
+        } else {
+            if (fixedNumbers.length >= 5) return alert("고정수는 최대 5개까지!");
+            setFixedNumbers([...fixedNumbers, num]);
+        }
+    };
+
+    const generateLotto = () => {
+        // Normal Random Generation (respecting fixed numbers)
+        const result = [...fixedNumbers];
+        const pool = Array.from({ length: 45 }, (_, i) => i + 1).filter(n => !fixedNumbers.includes(n));
+        
+        while (result.length < 6) {
+            const idx = Math.floor(Math.random() * pool.length);
+            result.push(pool[idx]);
+            pool.splice(idx, 1);
+        }
+        result.sort((a, b) => a - b);
+        startDrumAnimation(result);
+    };
+
+    const startDrumAnimation = async (finalNumbers: number[]) => {
+        if (isAnimating) return;
+        setIsAnimating(true);
+        setGeneratedNumbers([]);
+        setDrumBalls(Array.from({ length: 45 }, (_, i) => i + 1)); // Reset drum
+
+        // Loop to pop balls one by one
+        for (let i = 0; i < 6; i++) {
+            await new Promise<void>(resolve => setTimeout(resolve, 600)); // slightly faster pop
+            setGeneratedNumbers(prev => [...prev, finalNumbers[i]]);
+            setDrumBalls(prev => prev.filter(n => n !== finalNumbers[i]));
+        }
+        setIsAnimating(false);
+    };
+
+    // --- Logic: Stats ---
+    const stats: NumberStat[] = useMemo(() => {
+        const counts = Array(46).fill(0);
+        let totalBalls = 0;
+        history.forEach(round => {
+            [round.drwtNo1, round.drwtNo2, round.drwtNo3, round.drwtNo4, round.drwtNo5, round.drwtNo6, round.bnusNo].forEach(num => {
+                counts[num]++;
+                totalBalls++;
+            });
+        });
+        if (history.length === 0) return Array.from({length: 45}, (_, i) => ({ num: i+1, count: 0, probability: 0 }));
+        const result = counts.map((count, i) => i === 0 ? null : { num: i, count, probability: (count / (history.length * 7)) * 100 }).filter(Boolean) as NumberStat[];
+        return result;
+    }, [history]);
+
+    const sortedStats = useMemo(() => {
+        return [...stats].sort((a, b) => sortBy === 'prob' ? b.probability - a.probability : a.num - b.num);
+    }, [stats, sortBy]);
+
+
+    // --- Helpers ---
+    const getBallColor = (num: number) => {
+        if (num <= 10) return "#FBC400";
+        if (num <= 20) return "#69C8F2";
+        if (num <= 30) return "#FF7272";
+        if (num <= 40) return "#AAAAAA";
+        return "#B0D840";
+    };
+
+    // --- Styles for Animation ---
+    const getRandomTransform = () => `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px)`;
+
     return (
-        <div className={styles.lottoContainer}>
-            <section style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <h1 className={styles.sectionTitle}>로또 번호 생성기</h1>
-                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0' }}>
-                    빅데이터 분석을 통한 나만의 로또 예상 번호를 받아보세요.<br />
-                    꿈 해몽과 통계 데이터를 결합하여 당첨 확률을 높여드립니다.
-                </p>
-            </section>
+        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 20px", fontFamily: "'Pretendard', sans-serif", color: "#333" }}>
+            
+            <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
+                <h1 style={{ fontSize: "1.8rem", fontWeight: "800" }}>로또 6/45</h1>
+                <button 
+                    onClick={startSync} 
+                    disabled={syncing} 
+                    style={{ 
+                        padding: "8px 16px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "bold",
+                        border: "1px solid #ddd", 
+                        background: syncing ? "#eef2ff" : "white", 
+                        color: syncing ? "#2563eb" : "#555",
+                        cursor: syncing ? "wait" : "pointer",
+                        display: "flex", alignItems: "center", gap: "6px",
+                        transition: "all 0.2s"
+                    }}
+                >
+                    {syncing && syncStatus !== "최신 상태" && syncStatus !== "완료!" && (
+                        <span style={{
+                            width: "12px", height: "12px", border: "2px solid #2563eb", 
+                            borderTop: "2px solid transparent", borderRadius: "50%",
+                            display: "inline-block", animation: "spin 1s linear infinite"
+                        }}></span>
+                    )}
+                    {syncing ? syncStatus : "🔄 최신 데이터 확인"}
+                </button>
+                <style jsx>{`
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                `}</style>
+            </header>
 
-            {/* 번호 생성 섹션 */}
-            <div className={styles.generatorSection}>
-                <h2>행운의 로또 번호 생성</h2>
-
-                {/* 사용자 선호도 */}
-                <div className={styles.userPreferences}>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="dreamInfo">꿈 정보 (선택사항)</label>
-                        <textarea
-                            id="dreamInfo"
-                            value={dreamInfo}
-                            onChange={(e) => setDreamInfo(e.target.value)}
-                            placeholder="최근에 꾼 꿈에 대해 간략히 설명해주세요. 꿈 해몽 데이터를 분석하여 번호를 추천해드립니다."
-                        />
+            {/* --- GENERATOR SECTION --- */}
+            <section style={{ marginBottom: "50px", background: "white", padding: "40px 30px", borderRadius: "24px", boxShadow: "0 10px 30px rgba(0,0,0,0.05)", border: "1px solid #f0f0f0" }}>
+                
+                {/* 1. Animation Area (Result Tray + Drum) */}
+                <div style={{ textAlign: "center", position: 'relative', minHeight: "450px" }}>
+                    
+                    {/* Result Tray (Top) */}
+                    <div style={{ 
+                        minHeight: "80px", display: "flex", justifyContent: "center", gap: "10px", marginBottom: "30px",
+                        perspective: "1000px" 
+                    }}>
+                        {generatedNumbers.map((num, i) => (
+                            <div key={i} style={{ 
+                                width: "60px", height: "60px", borderRadius: "50%", 
+                                background: getBallColor(num), 
+                                display: "flex", alignItems: "center", justifyContent: "center", 
+                                color: "white", fontWeight: "bold", fontSize: "1.8rem",
+                                animation: "popOutTop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
+                                boxShadow: "0 5px 15px rgba(0,0,0,0.2)"
+                            }}>
+                                {num}
+                            </div>
+                        ))}
                     </div>
 
-                    <div className={styles.formGroup}>
-                        <label>포함하고 싶은 번호 (고정수)</label>
-                        <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '10px' }}>꼭 포함시키고 싶은 번호가 있다면 최대 5개까지 선택하세요.</p>
-                        <div className={styles.preferredNumbers}>
-                            {Array.from({ length: 45 }, (_, i) => i + 1).map((num) => (
-                                <label key={num} className={styles.numberLabel}>
-                                    <input
-                                        type="checkbox"
-                                        className={styles.numberCheckbox}
-                                        checked={preferredNumbers.includes(num)}
-                                        onChange={() => togglePreferredNumber(num)}
-                                    />
-                                    <span className={preferredNumbers.includes(num) ? styles.checked : ""}>
-                                        {num}
-                                    </span>
-                                </label>
+                    {/* The Drum */}
+                    <div style={{ 
+                        width: "260px", height: "260px", borderRadius: "50%", 
+                        border: "12px solid #e0e0e0", margin: "0 auto", 
+                        position: "relative", overflow: "visible", // Visible for top-exit illusion if needed, but 'hidden' clips balls inside. 
+                        // Actually to make balls come OUT, we ideally need them to transition from inside to outside.
+                        // But CSS overflow:hidden clips them. 
+                        // Trick: The tray is outside. The 'popOut' animation just scales them in at the tray position.
+                        // Implication: The ball 'leaving' the drum is visualizd by it disappearing from drum and appearing in tray.
+                        background: "linear-gradient(135deg, #fff 0%, #f4f4f4 100%)",
+                        boxShadow: "inset 0 0 40px rgba(0,0,0,0.1), 0 20px 40px rgba(0,0,0,0.1)"
+                    }}>
+                        {/* Top Hole Visual */}
+                        <div style={{ 
+                            position: "absolute", top: "-15px", left: "50%", transform: "translateX(-50%)",
+                            width: "60px", height: "20px", background: "#333", borderRadius: "50%", zIndex: 0
+                        }}></div>
+
+                        {/* Balls inside drum */}
+                        <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", position: "relative", zIndex: 1 }}>
+                            {drumBalls.map(num => (
+                                <div key={num} style={{
+                                    position: "absolute",
+                                    left: "50%", top: "50%",
+                                    width: "28px", height: "28px", borderRadius: "50%",
+                                    background: getBallColor(num), color: "rgba(255,255,255,0.9)", fontSize: "11px", fontWeight: "bold",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    boxShadow: "inset -2px -2px 5px rgba(0,0,0,0.2)",
+                                    transform: isAnimating ? getRandomTransform() : `translate(${(Math.random()*180 - 90)}px, ${(Math.random()*180 - 90)}px)`,
+                                    transition: isAnimating ? "transform 0.1s linear" : "transform 1s ease-out"
+                                }}>
+                                    {num}
+                                </div>
                             ))}
                         </div>
+                        
+                        {/* Glass Reflection Overlay */}
+                        <div style={{ position: "absolute", top: "20%", left: "20%", width: "50px", height: "50px", borderRadius: "50%", background: "rgba(255,255,255,0.6)", zIndex: 2, pointerEvents: "none" }}></div>
+                    </div>
+
+                    {/* Controls (Below Drum) */}
+                    <div style={{ marginTop: "40px" }}>
+                        <button 
+                            onClick={generateLotto} 
+                            disabled={isAnimating}
+                            style={{ 
+                                padding: "15px 50px", fontSize: "1.2rem", fontWeight: "bold", 
+                                background: isAnimating ? "#ccc" : "#2563eb", color: "white", 
+                                border: "none", borderRadius: "40px", 
+                                cursor: isAnimating ? "not-allowed" : "pointer", 
+                                boxShadow: "0 10px 20px rgba(37, 99, 235, 0.3)",
+                                transform: isAnimating ? "scale(0.95)" : "scale(1)",
+                                transition: "all 0.2s"
+                            }}
+                        >
+                            {isAnimating ? "추첨 중..." : "번호 뽑기 START!"}
+                        </button>
+                    </div>
+
+                </div>
+
+                <style jsx>{`
+                    @keyframes popOutTop {
+                        0% { transform: translateY(150px) scale(0.5); opacity: 0; }
+                        50% { transform: translateY(-20px) scale(1.1); opacity: 1; }
+                        100% { transform: translateY(0) scale(1); opacity: 1; }
+                    }
+                `}</style>
+
+                {/* 2. Fixed Numbers (Moved Below & Smaller) */}
+                <div style={{ marginTop: "50px", borderTop: "1px solid #eee", paddingTop: "30px" }}>
+                    <h3 style={{ fontSize: "0.9rem", fontWeight: "bold", marginBottom: "15px", color: "#888", textAlign: "center" }}>
+                        📌 고정수 선택 (최대 5개)
+                    </h3>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(9, 1fr)", gap: "4px", maxWidth: "400px", margin: "0 auto" }}>
+                        {Array.from({ length: 45 }, (_, i) => i + 1).map(num => (
+                            <button 
+                                key={num} onClick={() => toggleFixedNumber(num)}
+                                style={{
+                                    width: "100%", aspectRatio: "1", borderRadius: "6px", border: "1px solid #f0f0f0",
+                                    background: fixedNumbers.includes(num) ? getBallColor(num) : "white",
+                                    color: fixedNumbers.includes(num) ? "white" : "#aaa",
+                                    fontWeight: "bold", fontSize: "0.75rem", cursor: "pointer",
+                                    transition: "all 0.1s"
+                                }}
+                            >
+                                {num}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-                <p>아래 버튼을 클릭하여 로또 번호 6개를 무작위로 생성해보세요!</p>
+            </section>
 
-                <button
-                    className={styles.generateButton}
-                    onClick={generateNumbers}
-                    disabled={isGenerating}
-                >
-                    <span>{isGenerating ? "번호 분석 중..." : "번호 추출하기"}</span>
-                </button>
+            {/* --- HISTORY SECTION --- */}
+            {selectedRound && (
+                <section style={{ marginBottom: "60px", background: "white", padding: "40px 30px", borderRadius: "24px", boxShadow: "0 10px 30px rgba(0,0,0,0.05)", border: "1px solid #f0f0f0", textAlign: "center" }}>
+                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "20px", marginBottom: "40px" }}>
+                         <button onClick={() => selectedRound && setSelectedRound(history.find(h => h.drwNo === selectedRound.drwNo - 1) || selectedRound)}
+                            disabled={!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo - 1)}
+                            style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #eee", background: "white", cursor: "pointer", fontSize: "1.2rem", color: "#666", opacity: (!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo - 1)) ? 0.3 : 1 }}
+                        > &lt; </button>
+                        
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", position: "relative" }}>
+                                <select 
+                                    value={selectedRound.drwNo} 
+                                    onChange={(e) => setSelectedRound(history.find(h => h.drwNo === parseInt(e.target.value)) || selectedRound)}
+                                    style={{ fontSize: "2rem", fontWeight: "bold", border: "none", outline: "none", background: "transparent", cursor: "pointer", appearance: "none", textAlign: "right", paddingRight: "10px", color: "#333" }}
+                                >
+                                    {history.map(h => <option key={h.drwNo} value={h.drwNo}>{h.drwNo}회차</option>)}
+                                </select>
+                            </div>
+                            <span style={{ fontSize: "1.1rem", color: "#888", marginTop: "5px" }}>({selectedRound.drwNoDate})</span>
+                        </div>
 
-                {/* 로또 볼 표시 */}
-                <div className={styles.lottoBallsContainer}>
-                    {selectedNumbers.map((num, idx) => (
-                        <div
-                            key={idx}
-                            className={`${styles.lottoBall} ${getBallColorClass(num)} ${styles.drawn}`}
-                            style={{ transitionDelay: `${idx * 0.3}s` }}
-                        >
-                            {num}
+                        <button onClick={() => selectedRound && setSelectedRound(history.find(h => h.drwNo === selectedRound.drwNo + 1) || selectedRound)}
+                            disabled={!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo + 1)}
+                            style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #eee", background: "white", cursor: "pointer", fontSize: "1.2rem", color: "#666", opacity: (!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo + 1)) ? 0.3 : 1 }}
+                        > &gt; </button>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "15px", flexWrap: "wrap", marginBottom: "50px" }}>
+                        {[selectedRound.drwtNo1, selectedRound.drwtNo2, selectedRound.drwtNo3, selectedRound.drwtNo4, selectedRound.drwtNo5, selectedRound.drwtNo6].map((num, i) => (
+                            <div key={i} style={{ width: "60px", height: "60px", borderRadius: "50%", background: getBallColor(num), display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: "bold", fontSize: "1.8rem", boxShadow: "inset -3px -3px 5px rgba(0,0,0,0.15)" }}>
+                                {num}
+                            </div>
+                        ))}
+                        <div style={{ fontSize: "2.5rem", color: "#ddd", fontWeight: "300", margin: "0 10px" }}>+</div>
+                        <div style={{ width: "60px", height: "60px", borderRadius: "50%", background: getBallColor(selectedRound.bnusNo), display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: "bold", fontSize: "1.8rem", boxShadow: "inset -3px -3px 5px rgba(0,0,0,0.15)" }}>
+                            {selectedRound.bnusNo}
+                        </div>
+                    </div>
+
+                    <div style={{ background: "#f8f9fa", borderRadius: "16px", padding: "25px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                        <div>
+                            <div style={{ fontSize: "0.9rem", color: "#666", marginBottom: "5px" }}>1등 당첨금 (1인)</div>
+                            <div style={{ fontSize: "1.3rem", fontWeight: "bold", color: "#333" }}>{selectedRound.firstWinamnt.toLocaleString()}원</div>
+                             <div style={{ fontSize: "0.85rem", color: "#666" }}>총 {selectedRound.firstPrzwnerCo}명</div>
+                        </div>
+                        <div>
+                            <div style={{ fontSize: "0.9rem", color: "#666", marginBottom: "5px" }}>총 판매금액</div>
+                            <div style={{ fontSize: "1.3rem", fontWeight: "bold", color: "#555" }}>{selectedRound.totSellamnt.toLocaleString()}원</div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* --- STATS SECTION --- */}
+            <section style={{ marginBottom: "60px", background: "white", padding: "30px", borderRadius: "24px", boxShadow: "0 10px 30px rgba(0,0,0,0.05)", border: "1px solid #f0f0f0" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: "bold" }}>📊 번호별 통계</h2>
+                    <div style={{ display: "flex", gap: "5px", background: "#f3f4f6", padding: "4px", borderRadius: "10px" }}>
+                        <button onClick={() => setSortBy('number')} style={{ padding: "6px 12px", borderRadius: "8px", border: "none", background: sortBy === 'number' ? "white" : "transparent", color: sortBy === 'number' ? "#2563eb" : "#666", fontWeight: "bold", fontSize: "0.8rem", cursor: "pointer" }}>번호순</button>
+                        <button onClick={() => setSortBy('prob')} style={{ padding: "6px 12px", borderRadius: "8px", border: "none", background: sortBy === 'prob' ? "white" : "transparent", color: sortBy === 'prob' ? "#2563eb" : "#666", fontWeight: "bold", fontSize: "0.8rem", cursor: "pointer" }}>확률순</button>
+                    </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(60px, 1fr))", gap: "8px" }}>
+                    {sortedStats.map((stat) => (
+                        <div key={stat.num} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px", borderRadius: "12px", background: "#f9fafb" }}>
+                            <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: getBallColor(stat.num), color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", fontWeight: "bold", marginBottom: "5px" }}>
+                                {stat.num}
+                            </div>
+                            <div style={{ fontSize: "0.75rem", color: "#444", fontWeight: "bold" }}>{stat.probability.toFixed(2)}%</div>
                         </div>
                     ))}
                 </div>
+            </section>
 
-                {/* 번호 설명 */}
-                {showExplanation && selectedNumbers.length > 0 && (
-                    <div className={styles.numberExplanation}>
-                        <h3 className={styles.explanationTitle}>번호 분석 결과</h3>
-                        <p>선택된 번호에 대한 분석 결과와 확률 정보입니다.</p>
-                        <div className={styles.numberDetails}>
-                            {selectedNumbers.map((num) => {
-                                const freq = frequentNumbers.find(f => f.number === num);
-                                const frequency = freq ? freq.frequency : 0;
-                                const probability = lottoData.length > 0 ? (frequency / lottoData.length * 100).toFixed(2) : "0";
-
-                                return (
-                                    <div key={num} className={styles.numberDetailItem}>
-                                        <div className={styles.detailHeader}>
-                                            <div className={`${styles.detailBall} ${getBallColorClass(num)}`}>
-                                                {num}
-                                            </div>
-                                            <div className={styles.detailStats}>
-                                                <div>{frequency}회 당첨 ({probability}%)</div>
-                                                <div className={styles.probabilityBar}>
-                                                    <div className={styles.probabilityFill} style={{ width: `${parseFloat(probability) * 2}%` }} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className={styles.detailReason}>
-                                            {preferredNumbers.includes(num)
-                                                ? "사용자가 직접 선택한 고정수입니다."
-                                                : `이 번호는 역대 ${frequency}회 당첨된 행운의 숫자입니다.`}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* 역대 당첨 번호 */}
-            <h2 className={styles.sectionTitle}>역대 1등 당첨 번호 조회</h2>
-            <div className={styles.historySection}>
-                <div className={styles.roundSelector}>
-                    <select value={selectedRound} onChange={(e) => setSelectedRound(e.target.value)}>
-                        <option value="">회차를 선택하세요</option>
-                        {lottoData.map((data) => (
-                            <option key={data.round} value={data.round}>
-                                {data.round}회 ({data.date})
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className={styles.winningNumbers}>
-                    {selectedRound ? (
-                        <>
-                            <p className={styles.winningRoundInfo}>
-                                {lottoData.find(d => d.round.toString() === selectedRound)?.round}회 당첨번호
-                            </p>
-                            {lottoData
-                                .find(d => d.round.toString() === selectedRound)
-                                ?.numbers.map((num, idx) => (
-                                    <div key={idx} className={`${styles.lottoBall} ${getBallColorClass(num)} ${styles.drawn}`}>
-                                        {num}
-                                    </div>
-                                ))}
-                            <div style={{ margin: "0 10px", fontSize: "1.5rem", fontWeight: "bold" }}>+</div>
-                            <div className={`${styles.lottoBall} ${styles.drawn}`} style={{ background: "#aaa" }}>
-                                {lottoData.find(d => d.round.toString() === selectedRound)?.bonus}
-                            </div>
-                        </>
-                    ) : (
-                        <p className={styles.winningRoundInfo}>회차를 선택하면 당첨 번호가 표시됩니다.</p>
-                    )}
-                </div>
-            </div>
-
-            {/* 통계 섹션 */}
-            <h2 className={styles.sectionTitle}>로또 번호 통계 분석</h2>
-            <div className={styles.statsSection}>
-                <p className={styles.statsTitle}>가장 많이 당첨된 번호 TOP 20</p>
-                <div className={styles.frequentNumbers}>
-                    {frequentNumbers.map(({ number, frequency }) => {
-                        const probability = lottoData.length > 0 ? (frequency / lottoData.length * 100).toFixed(1) : "0";
-                        return (
-                            <div key={number} className={styles.frequentNumber}>
-                                <div className={`${styles.numberBall} ${getBallColorClass(number)}`}>
-                                    {number}
-                                </div>
-                                <div className={styles.numberStats}>
-                                    <span className={styles.numberFrequency}>{frequency}회 출현</span>
-                                    <span className={styles.numberProbability}>확률: {probability}%</span>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            <article style={{ maxWidth: '800px', margin: '60px auto 0', lineHeight: '1.7' }}>
-                <section style={{ marginBottom: '50px' }}>
-                    <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                        로또 당첨 확률 높이는 팁
-                    </h2>
-                    <ul style={{ paddingLeft: '20px', color: '#555' }}>
-                        <li style={{ marginBottom: '10px' }}><strong>통계 활용하기</strong>: 역대 당첨 번호 중 자주 나오는 번호(Hot Number)와 오랫동안 나오지 않은 번호(Cold Number)를 적절히 조합하세요.</li>
-                        <li style={{ marginBottom: '10px' }}><strong>자동과 수동 병행</strong>: 기계가 무작위로 뽑아주는 자동 방식과 본인의 직감을 믿는 수동 방식을 섞어서 구매하는 것도 좋은 전략입니다.</li>
-                        <li style={{ marginBottom: '10px' }}><strong>소액으로 꾸준히</strong>: 일확천금을 노리고 한 번에 많은 금액을 구매하기보다는, 매주 소액으로 꾸준히 참여하는 것이 당첨 확률을 높이는 길입니다.</li>
-                    </ul>
-                </section>
-
-                <div style={{ background: '#fff3cd', padding: '20px', borderRadius: '10px', border: '1px solid #ffeeba', color: '#856404' }}>
-                    <h3 style={{ fontSize: '1.2rem', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        ⚠️ 건전한 복권 문화 캠페인
-                    </h3>
-                    <p style={{ fontSize: '0.95rem' }}>
-                        복권은 소액으로 즐기는 건전한 레저입니다. 과도한 몰입은 도박 중독으로 이어질 수 있으니 주의하세요.
-                        만 19세 미만 청소년은 복권을 구매할 수 없습니다.
-                    </p>
-                </div>
-            </article>
-
-            <div style={{ marginTop: '60px' }}>
+             <div style={{ marginTop: '60px' }}>
                 <DisqusComments identifier="lotto" title="로또 번호 생성기" />
             </div>
         </div>
     );
 }
+
+
