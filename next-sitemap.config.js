@@ -16,13 +16,22 @@ module.exports = {
         '/server-sitemap.xml' // 동적 sitemap을 사용할 경우 제외
     ],
 
-    // 페이지별 우선순위와 업데이트 주기를 설정합니다.
-    // changefreq: 'daily',
-    // priority: 0.7,
+    additionalPaths: async (config) => {
+        const result = [];
+        
+        // Barcode Pages (Korean & English)
+        result.push({
+            loc: '/barcode',
+            changefreq: 'daily',
+            priority: 0.7
+        });
+        
+        result.push({
+            loc: '/en/barcode',
+            changefreq: 'daily',
+            priority: 0.7
+        });
 
-    // 만약 pages/ 하위에 정적으로 생성된 페이지 외에 별도로 추가하고 싶은 URL이 있다면
-    // 이 배열에 추가할 수 있습니다.
-    // additionalPaths: async (config) => [
-    //     config.baseUrl + '/tools/new-tool',
-    // ],
+        return result;
+    },
 };

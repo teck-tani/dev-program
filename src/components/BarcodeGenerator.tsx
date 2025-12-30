@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import JsBarcode from "jsbarcode";
 import QRCode from "qrcode";
-import styles from "@/app/barcode/barcode.module.css";
+import styles from "@/app/[locale]/barcode/barcode.module.css";
+import { useTranslations } from "next-intl";
 
 interface BarcodeItem {
     id: number;
@@ -12,6 +13,7 @@ interface BarcodeItem {
 }
 
 export default function BarcodeGenerator() {
+    const t = useTranslations("Barcode.generator");
     const [barcodes, setBarcodes] = useState<BarcodeItem[]>([]);
     const [barcodeType, setBarcodeType] = useState("CODE128");
     const [barcodeValue, setBarcodeValue] = useState("");
@@ -22,13 +24,13 @@ export default function BarcodeGenerator() {
 
     const addBarcode = () => {
         if (!barcodeValue) {
-            setError("바코드 값을 입력해주세요");
+            setError(t("errorEmpty"));
             return;
         }
 
         if (validateBarcode(barcodeValue, barcodeType)) {
             if (barcodes.length >= maxBarcodes) {
-                setError(`최대 바코드 개수 (${maxBarcodes}개)에 도달했습니다`);
+                setError(t("errorMax", { max: maxBarcodes }));
                 return;
             }
             setBarcodes([...barcodes, { id: Date.now(), value: barcodeValue, type: barcodeType }]);
@@ -41,17 +43,17 @@ export default function BarcodeGenerator() {
         if (type === "EAN" || type === "EAN8") {
             const numericValue = value.replace(/\D/g, "");
             if (type === "EAN" && numericValue.length !== 12 && numericValue.length !== 13) {
-                setError("EAN 바코드는 12자리 또는 13자리 숫자여야 합니다");
+                setError(t("errorEanInvalid"));
                 return false;
             }
             if (type === "EAN8" && numericValue.length !== 7 && numericValue.length !== 8) {
-                setError("EAN-8 바코드는 7자리 또는 8자리 숫자여야 합니다");
+                setError(t("errorEan8Invalid"));
                 return false;
             }
         } else if (type === "UPC") {
             const numericValue = value.replace(/\D/g, "");
             if (numericValue.length !== 11 && numericValue.length !== 12) {
-                setError("UPC 바코드는 11자리 또는 12자리 숫자여야 합니다");
+                setError(t("errorUpcInvalid"));
                 return false;
             }
         }
@@ -60,13 +62,13 @@ export default function BarcodeGenerator() {
 
     const generateFromExcel = () => {
         if (!excelData) {
-            setError("엑셀 데이터를 입력해주세요");
+            setError(t("errorExcelEmpty"));
             return;
         }
 
         const lines = excelData.split(/\r?\n/).filter((line) => line.trim() !== "");
         if (lines.length + barcodes.length > maxBarcodes) {
-            setError(`최대 바코드 개수를 초과합니다. 현재 ${barcodes.length}개, 추가 ${lines.length}개, 최대 ${maxBarcodes}개`);
+            setError(t("errorBulkMax", { current: barcodes.length, added: lines.length, max: maxBarcodes }));
             return;
         }
 
@@ -85,7 +87,7 @@ export default function BarcodeGenerator() {
 
         setBarcodes([...barcodes, ...newBarcodes]);
         setExcelData("");
-        setError(errorCount > 0 ? `${newBarcodes.length}개 생성, ${errorCount}개 오류` : `${newBarcodes.length}개 바코드 생성 완료`);
+        setError(errorCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errorCount }) : t("resultBulk", { count: newBarcodes.length }));
     };
 
     const removeBarcode = (index: number) => {
@@ -107,7 +109,7 @@ export default function BarcodeGenerator() {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>바코드 인쇄</title>
+        <title>${t("btnPrint")}</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; background-color: white; }
           .print-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; padding: 10px; width: 100%; }
@@ -179,13 +181,13 @@ export default function BarcodeGenerator() {
         <div className={styles.barcodeWrapper}>
             <div className={styles.controlsContainer}>
                 <div className={styles.inputGroup}>
-                    <label htmlFor="barcodeType">바코드 종류:</label>
+                    <label htmlFor="barcodeType">{t("labelType")}</label>
                     <select
                         id="barcodeType"
                         value={barcodeType}
                         onChange={(e) => setBarcodeType(e.target.value)}
                     >
-                        <option value="CODE128">CODE128 (기본)</option>
+                        <option value="CODE128">CODE128 ({t("generator.default") || "Default"})</option>
                         <option value="CODE39">CODE39</option>
                         <option value="EAN">EAN-13</option>
                         <option value="EAN8">EAN-8</option>
@@ -198,37 +200,37 @@ export default function BarcodeGenerator() {
                         <option value="MSI1010">MSI1010</option>
                         <option value="MSI1110">MSI1110</option>
                         <option value="pharmacode">Pharmacode</option>
-                        <option value="QR">QR 코드</option>
+                        <option value="QR">{t("generator.qr") || "QR Code"}</option>
                     </select>
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <label htmlFor="barcodeValue">바코드 값:</label>
+                    <label htmlFor="barcodeValue">{t("labelValue")}</label>
                     <input
                         type="text"
                         id="barcodeValue"
-                        placeholder="바코드/QR코드 값을 입력하세요"
+                        placeholder={t("placeholderValue")}
                         value={barcodeValue}
                         onChange={(e) => setBarcodeValue(e.target.value)}
                     />
                     <button onClick={addBarcode} className={`${styles.actionButton} ${styles.addButton}`}>
-                        추가
+                        {t("btnAdd")}
                     </button>
                 </div>
 
                 <div className={`${styles.inputGroup} ${styles.excelInput}`}>
-                    <label htmlFor="excelData">Excel 데이터 (한 줄에 하나의 값):</label>
+                    <label htmlFor="excelData">{t("labelExcel")}</label>
                     <textarea
                         id="excelData"
-                        placeholder="엑셀에서 복사한 데이터를 붙여넣으세요"
+                        placeholder={t("placeholderExcel")}
                         value={excelData}
                         onChange={(e) => setExcelData(e.target.value)}
                     ></textarea>
                     <button onClick={generateFromExcel} className={`${styles.actionButton} ${styles.generateButton}`}>
-                        일괄 생성
+                        {t("btnBulk")}
                     </button>
                     <button onClick={clearAll} className={`${styles.actionButton} ${styles.clearButton}`}>
-                        모두 지우기
+                        {t("btnClear")}
                     </button>
                 </div>
 
@@ -238,7 +240,7 @@ export default function BarcodeGenerator() {
             <div className={styles.barcodeContainer}>
                 {barcodes.length > 0 && (
                     <div className={styles.barcodeControls}>
-                        <button className={styles.printButton} onClick={printBarcodes} title="바코드 인쇄">
+                        <button className={styles.printButton} onClick={printBarcodes} title={t("btnPrint")}>
                             🖨️
                         </button>
                     </div>
@@ -253,6 +255,7 @@ export default function BarcodeGenerator() {
                             onDragStart={handleDragStart}
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
+                            removeLabel={t("remove")}
                         />
                     ))}
                 </div>
@@ -268,6 +271,7 @@ function BarcodeItemComponent({
     onDragStart,
     onDragOver,
     onDrop,
+    removeLabel
 }: {
     item: BarcodeItem;
     index: number;
@@ -275,6 +279,7 @@ function BarcodeItemComponent({
     onDragStart: (e: React.DragEvent, index: number) => void;
     onDragOver: (e: React.DragEvent, index: number) => void;
     onDrop: (e: React.DragEvent, index: number) => void;
+    removeLabel: string;
 }) {
     const svgRef = useRef<SVGSVGElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -340,7 +345,7 @@ function BarcodeItemComponent({
             onDrop={(e) => onDrop(e, index)}
         >
             <div className={styles.barcodeNumber}>{index + 1}</div>
-            <button className={styles.removeBarcode} onClick={onRemove} aria-label="바코드 삭제"></button>
+            <button className={styles.removeBarcode} onClick={onRemove} aria-label={removeLabel}></button>
             {item.type === "QR" ? (
                 <canvas ref={canvasRef} style={{ width: '100%', height: '80px', objectFit: 'contain' }}></canvas>
             ) : (

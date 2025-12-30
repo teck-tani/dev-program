@@ -1,0 +1,111 @@
+{
+  "Index": {
+    "title": "Useful Web Tools Collection",
+    "description": "Tani DevTool provides various web tools necessary for daily life and work. Easily use tools like calculators, clocks, and emoji collections in one place.",
+    "description2": "All tools are convenient to use on both PC and mobile, and are accessible anytime, anywhere with an internet connection.",
+    "popularTools": "Popular Web Tools",
+    "tools": {
+      "barcode": "Barcode Generator",
+      "calculator": "Scientific Calculator",
+      "clock": "Korea Clock",
+      "emoji": "Emoji Collection",
+      "lotto": "Lotto AI Recommendation",
+      "salary": "Salary Calculator",
+      "spellCheck": "Spell Checker",
+      "exchange": "Exchange Rate Calculator",
+      "severance": "Severance Pay Calculator",
+      "interest": "Interest Calculator",
+      "age": "Korean Age Calculator"
+    }
+  },
+  "Barcode": {
+    "title": "Online Barcode Generator",
+    "subtitle": "Create various types of barcodes and QR codes quickly and easily.<br />Copy and paste Excel data to create hundreds of barcodes at once.",
+    "whyUse": {
+      "title": "Why use this barcode generator?",
+      "desc": "When you need a barcode for business or personal use, you don't need to install complex software or pay for services. This <strong>Online Barcode Generator</strong> is available instantly, anytime, anywhere, with just a web browser.",
+      "speed": {
+        "title": "⚡ High-Speed Bulk Generation",
+        "desc": "Just copy and paste data from Excel or spreadsheets. Dozens or hundreds of barcodes are created instantly."
+      },
+      "format": {
+        "title": "🎨 Various Formats Supported",
+        "desc": "Fully supports all standard formats, from the widely used CODE128 to EAN-13 for products, and QR codes."
+      },
+      "security": {
+        "title": "🔒 Secure & Safe",
+        "desc": "All barcode generation happens within your browser. No data is sent to the server, so you can use it with confidence."
+      }
+    },
+    "guide": {
+      "title": "Supported Barcode Types & Guide",
+      "code128": {
+        "title": "1. CODE128 (Standard Barcode)",
+        "desc": "The most widely used barcode format. It can include uppercase/lowercase letters, numbers, and special symbols, making it popular for logistics, inventory, and invoices. <strong>If you're unsure what to use, choose CODE128.</strong>"
+      },
+      "qrcode": {
+        "title": "2. QR Code",
+        "desc": "A 2D barcode that can hold large amounts of data like URLs, contact info, or Wi-Fi details. Useful for connecting to websites via smartphone scanning."
+      },
+      "ean13": {
+        "title": "3. EAN-13 (Product Barcode)",
+        "desc": "The standard barcode attached to retail products worldwide. It consists of 13 digits and is mandatory for items sold in convenience stores or supermarkets."
+      },
+      "itf": {
+        "title": "4. ITF (Interleaved 2 of 5)",
+        "desc": "A high-density numeric-only barcode, mainly used for corrugated boxes or logistics printing. It has high recognition rates even with poor print quality."
+      }
+    },
+    "instruction": {
+      "title": "How to Use",
+      "step1": "<strong>Select Format</strong>: Choose the type of barcode you want to create. For general use, choose 'CODE128'; for website links, choose 'QR Code'.",
+      "step2": {
+        "title": "<strong>Enter Data</strong>:",
+        "sub1": "<strong>Individual</strong>: Enter content in the input box and click 'Add'.",
+        "sub2": "<strong>Bulk</strong>: Turn on 'Bulk Input', paste data copied from Excel, and click 'Bulk Generate'."
+      },
+      "step3": "<strong>Adjust Options</strong>: Adjust width, height, margins, etc., to create your desired design.",
+      "step4": "<strong>Download & Print</strong>: Save the generated barcodes as images or print them directly."
+    },
+    "faq": {
+      "title": "FAQ",
+      "limit": {
+        "q": "Q. Are there any usage limits?",
+        "a": "It is free for everyone, including commercial use. All features are available without signup or payment."
+      },
+      "expiry": {
+        "q": "Q. Do generated barcodes expire?",
+        "a": "No, generated barcodes are image files and can be used permanently as long as they are scannable."
+      },
+      "korean": {
+        "q": "Q. Can I make barcodes with Korean text?",
+        "a": "QR codes fully support Korean text. However, 1D barcodes like CODE128 or EAN-13 typically support only English and numbers."
+      },
+      "batch": {
+        "q": "Q. How do I convert Excel data at once?",
+        "a": "Drag and copy (Ctrl+C) the cells you want to convert in Excel, then paste (Ctrl+V) them into the input box on this site. It automatically recognizes line-separated data and generates multiple barcodes at once."
+      }
+    },
+    "generator": {
+      "labelType": "Barcode Type:",
+      "labelValue": "Barcode Value:",
+      "placeholderValue": "Enter barcode/QR code value",
+      "btnAdd": "Add",
+      "labelExcel": "Excel Data (One value per line):",
+      "placeholderExcel": "Paste data copied from Excel here",
+      "btnBulk": "Bulk Generate",
+      "btnClear": "Clear All",
+      "btnPrint": "Print Barcodes",
+      "errorEmpty": "Please enter a barcode value",
+      "errorMax": "Maximum barcode limit ({max}) reached",
+      "errorEanInvalid": "EAN barcode must be 12 or 13 digits",
+      "errorEan8Invalid": "EAN-8 barcode must be 7 or 8 digits",
+      "errorUpcInvalid": "UPC barcode must be 11 or 12 digits",
+      "errorExcelEmpty": "Please enter Excel data",
+      "errorBulkMax": "Exceeds maximum limit. Current: {current}, Adding: {added}, Max: {max}",
+      "resultBulk": "{count} barcodes generated",
+      "resultBulkError": "{count} generated, {error} errors",
+      "remove": "Remove Barcode"
+    }
+  }
+}
