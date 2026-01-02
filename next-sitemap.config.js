@@ -18,19 +18,37 @@ module.exports = {
 
     additionalPaths: async (config) => {
         const result = [];
-        
+
         // Barcode Pages (Korean & English)
         result.push({
             loc: '/barcode',
             changefreq: 'daily',
             priority: 0.7
         });
-        
+
         result.push({
             loc: '/en/barcode',
             changefreq: 'daily',
             priority: 0.7
         });
+
+        // Clock Pages
+        result.push({
+            loc: '/clock',
+            changefreq: 'always',
+            priority: 1.0
+        });
+        result.push({
+            loc: '/clock/stopwatch',
+            changefreq: 'monthly',
+            priority: 0.8
+        });
+        result.push({
+            loc: '/clock/timer',
+            changefreq: 'monthly',
+            priority: 0.8
+        });
+
 
         return result;
     },
