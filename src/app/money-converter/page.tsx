@@ -15,10 +15,25 @@ export const metadata: Metadata = {
 
 export default function MoneyConverterPage() {
     return (
-        <div className="container" style={{ maxWidth: "1000px", padding: "20px" }}>
-            <section style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1 style={{ marginBottom: "20px" }}>실시간 환율 계산기</h1>
-                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}>
+        <div className="container page-container" style={{ maxWidth: "1000px", padding: "20px" }}>
+            <style>{`
+                @media (max-width: 600px) {
+                    .mobile-hidden-text {
+                        display: none !important;
+                    }
+                    .page-container {
+                        padding: 10px !important;
+                    }
+                    .page-title {
+                        margin-bottom: 10px !important;
+                        font-size: 1.5rem !important;
+                        margin-top: 0 !important;
+                    }
+                }
+            `}</style>
+            <section style={{ textAlign: "center", marginBottom: "10px" }}>
+                <h1 className="page-title" style={{ marginBottom: "20px" }}>실시간 환율 계산기</h1>
+                <p className="mobile-hidden-text" style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}>
                     주요 통화의 실시간 환율을 한눈에 확인하세요.<br />
                     매일 업데이트되는 정확한 환율 정보를 제공합니다.
                 </p>

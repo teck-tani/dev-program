@@ -110,8 +110,129 @@ export default function ExchangeRateClient() {
 
     return (
         <div>
-            {/* 1. Synced Exchange Rate Dashboard (Top 5 Cards) */}
-            <div style={{ marginBottom: "40px" }}>
+            <style>{`
+                @media (max-width: 600px) {
+                    .mobile-hidden {
+                        display: none !important;
+                    }
+                    .calc-row {
+                        flex-direction: column !important;
+                        align-items: stretch !important;
+                        gap: 0 !important;
+                        padding: 8px 12px !important;
+                        margin-bottom: 6px !important;
+                    }
+                    .calc-select-container {
+                        flex: none !important;
+                        width: 100% !important;
+                        border-right: none !important;
+                        border-bottom: 1px solid #f0f0f0 !important;
+                        padding-right: 0 !important;
+                        margin-right: 0 !important;
+                        margin-bottom: 4px !important;
+                        padding-bottom: 4px !important;
+                    }
+                    .calc-select-container select {
+                        font-size: 0.95rem !important;
+                        width: 100% !important;
+                        padding: 2px 0 !important;
+                    }
+                    .calc-input-container {
+                        width: 100% !important;
+                    }
+                    .calc-input-container input {
+                        font-size: 1.3rem !important;
+                        padding: 2px 0;
+                        width: 100% !important;
+                        text-align: right !important;
+                        height: auto !important;
+                    }
+                    .calc-container {
+                        padding: 12px 10px !important;
+                        margin-bottom: 20px !important;
+                    }
+                }
+            `}</style>
+            {/* 2. 5-Row Calculator Section (Top) */}
+            <div className="calc-container" style={{ background: "#f8f9fa", padding: "30px", borderRadius: "16px", border: "1px solid #e9ecef", marginBottom: "40px" }}>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {rowCurrencies.map((currentCode, index) => {
+                        const displayValue = getDisplayValue(currentCode);
+                        
+                        return (
+                            <div key={index} className="calc-row" style={{ 
+                                display: "flex", 
+                                background: "white", 
+                                padding: "12px", 
+                                borderRadius: "10px", 
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                                alignItems: "center",
+                                border: "1px solid #e5e7eb"
+                            }}>
+                                {/* Currency Select with Fixed Flag */}
+                                <div className="calc-select-container" style={{ flex: "0 0 160px", borderRight: "1px solid #f0f0f0", paddingRight: "12px", marginRight: "12px", position: "relative" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                        <img 
+                                            src={getFlagUrl(currentCode)} 
+                                            alt="flag" 
+                                            style={{ width: "24px", height: "16px", objectFit: "cover", borderRadius: "2px" }} 
+                                        />
+                                        <select 
+                                            value={currentCode}
+                                            onChange={(e) => handleCurrencyChange(index, e.target.value)}
+                                            style={{ 
+                                                width: "100%", 
+                                                padding: "4px 0", 
+                                                border: "none", 
+                                                fontWeight: "600", 
+                                                fontSize: "1rem", 
+                                                cursor: "pointer", 
+                                                outline: "none",
+                                                background: "transparent",
+                                                color: "#374151"
+                                            }}
+                                        >
+                                            <option value="KRW">KRW 한국 원</option>
+                                            {rates.map(rate => (
+                                                <option key={rate.cur_unit} value={rate.cur_unit}>
+                                                    {rate.cur_unit} {rate.cur_nm}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Input Field */}
+                                <div className="calc-input-container" style={{ flex: 1 }}>
+                                    <input 
+                                        type="text" 
+                                        value={displayValue === "NaN" ? "" : formatNumber(parseFloat(displayValue))}
+                                        onChange={(e) => handleInputChange(e.target.value, currentCode)}
+                                        style={{ 
+                                            width: "100%", 
+                                            border: "none", 
+                                            fontSize: "1.4rem", 
+                                            textAlign: "right", 
+                                            fontWeight: "bold", 
+                                            color: "#1f2937",
+                                            outline: "none",
+                                            background: "transparent"
+                                        }}
+                                        placeholder="0"
+                                    />
+                                </div>
+                                <div style={{ minWidth: "45px", textAlign: "right", paddingLeft: "10px", color: "#6b7280", fontWeight: "500", fontSize: "0.9rem" }}>
+                                    {currentCode.replace("(100)", "")}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* 1. Synced Exchange Rate Dashboard (Bottom) */}
+            <div className="mobile-hidden">
                 <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "15px", color: "#333" }}>주요 통화 환율 정보 ({new Date().toLocaleDateString()})</h2>
                 {loading ? (
                     <div style={{ textAlign: "center", padding: "40px" }}>데이터를 불러오는 중...</div>
@@ -157,87 +278,6 @@ export default function ExchangeRateClient() {
                         })}
                     </div>
                 )}
-            </div>
-
-            {/* 2. 5-Row Calculator Section (Bottom) */}
-            <div style={{ background: "#f8f9fa", padding: "30px", borderRadius: "16px", border: "1px solid #e9ecef" }}>
-                <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "20px", color: "#333" }}>실시간 환율 계산기</h2>
-                
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    {rowCurrencies.map((currentCode, index) => {
-                        const displayValue = getDisplayValue(currentCode);
-                        
-                        return (
-                            <div key={index} style={{ 
-                                display: "flex", 
-                                background: "white", 
-                                padding: "12px", 
-                                borderRadius: "10px", 
-                                boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-                                alignItems: "center",
-                                border: "1px solid #e5e7eb"
-                            }}>
-                                {/* Currency Select with Fixed Flag */}
-                                <div style={{ flex: "0 0 160px", borderRight: "1px solid #f0f0f0", paddingRight: "12px", marginRight: "12px", position: "relative" }}>
-                                    <div style={{ fontSize: "0.75rem", color: "#9ca3af", marginBottom: "4px" }}>통화</div>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                        <img 
-                                            src={getFlagUrl(currentCode)} 
-                                            alt="flag" 
-                                            style={{ width: "24px", height: "16px", objectFit: "cover", borderRadius: "2px" }} 
-                                        />
-                                        <select 
-                                            value={currentCode}
-                                            onChange={(e) => handleCurrencyChange(index, e.target.value)}
-                                            style={{ 
-                                                width: "100%", 
-                                                padding: "4px 0", 
-                                                border: "none", 
-                                                fontWeight: "600", 
-                                                fontSize: "1rem", 
-                                                cursor: "pointer", 
-                                                outline: "none",
-                                                background: "transparent",
-                                                color: "#374151"
-                                            }}
-                                        >
-                                            <option value="KRW">KRW 한국 원</option>
-                                            {rates.map(rate => (
-                                                <option key={rate.cur_unit} value={rate.cur_unit}>
-                                                    {rate.cur_unit} {rate.cur_nm}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Input Field */}
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontSize: "0.75rem", color: "#9ca3af", marginBottom: "2px", textAlign: "right" }}>금액</div>
-                                    <input 
-                                        type="text" 
-                                        value={displayValue === "NaN" ? "" : formatNumber(parseFloat(displayValue))}
-                                        onChange={(e) => handleInputChange(e.target.value, currentCode)}
-                                        style={{ 
-                                            width: "100%", 
-                                            border: "none", 
-                                            fontSize: "1.4rem", 
-                                            textAlign: "right", 
-                                            fontWeight: "bold", 
-                                            color: "#1f2937",
-                                            outline: "none",
-                                            background: "transparent"
-                                        }}
-                                        placeholder="0"
-                                    />
-                                </div>
-                                <div style={{ minWidth: "45px", textAlign: "right", paddingLeft: "10px", color: "#6b7280", fontWeight: "500", fontSize: "0.9rem" }}>
-                                    {currentCode.replace("(100)", "")}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
             </div>
             
             {!loading && rates.length === 0 && (
