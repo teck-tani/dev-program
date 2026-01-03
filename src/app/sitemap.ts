@@ -7,7 +7,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // 관리 중인 도구 리스트 (새 도구가 추가되면 여기만 업데이트하세요)
     const tools = [
         '', // 메인 홈
+        '/barcode',
         '/calculator',
+        '/clock',
+        '/clock/stopwatch',
         '/clock/timer',
         '/interest-calculator',
         '/korean-age-calculator',
