@@ -1,10 +1,13 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { useState, useEffect } from "react";
 import { FaHome, FaAngleDown } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 
 export default function Header() {
+  const t = useTranslations('Header');
+  const tTools = useTranslations('Index.tools');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Close dropdown when clicking outside
@@ -31,20 +34,20 @@ export default function Header() {
               className="dropdown-btn"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
-              웹도구 <FaAngleDown style={{ marginLeft: "5px" }} />
+              {t('menu')} <FaAngleDown style={{ marginLeft: "5px" }} />
             </button>
             <div className="dropdown-content">
-              <Link href="/barcode">바코드생성기</Link>
-              <Link href="/calculator">공학용 계산기</Link>
-              <Link href="/clock">대한민국 시계</Link>
-              <Link href="/special-characters">이모지 모음</Link>
-              <Link href="/lotto">로또번호 AI추천</Link>
-              <Link href="/pay-cal">월급계산기</Link>
-              <Link href="/spell-checker">맞춤법 검사기</Link>
-              <Link href="/money-converter">환율계산기</Link>
-              <Link href="/severance-calculator">퇴직금계산기</Link>
-              <Link href="/interest-calculator">이자계산기</Link>
-              <Link href="/korean-age-calculator">만나이 & 한국식 나이 계산기</Link>
+              <Link href="/barcode">{tTools('barcode')}</Link>
+              <Link href="/calculator">{tTools('calculator')}</Link>
+              <Link href="/clock">{tTools('clock')}</Link>
+              <Link href="/special-characters">{tTools('emoji')}</Link>
+              <Link href="/lotto">{tTools('lotto')}</Link>
+              <Link href="/pay-cal">{tTools('salary')}</Link>
+              <Link href="/spell-checker">{tTools('spellCheck')}</Link>
+              <Link href="/money-converter">{tTools('exchange')}</Link>
+              <Link href="/severance-calculator">{tTools('severance')}</Link>
+              <Link href="/interest-calculator">{tTools('interest')}</Link>
+              <Link href="/korean-age-calculator">{tTools('age')}</Link>
             </div>
           </div>
         </div>

@@ -1,26 +1,191 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://teck-tani.com/calculator/icon.svg</loc><lastmod>2025-12-30T02:27:21.202Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/calculator</loc><lastmod>2025-12-30T02:27:21.204Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/clock/icon.svg</loc><lastmod>2025-12-30T02:27:21.204Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/clock</loc><lastmod>2025-12-30T02:27:21.204Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/icon.svg</loc><lastmod>2025-12-30T02:27:21.204Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/interest-calculator/icon.svg</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/interest-calculator</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/korean-age-calculator/icon.svg</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/korean-age-calculator</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/lotto/icon.svg</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/lotto</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/money-converter/icon.svg</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/money-converter</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/pay-cal/icon.svg</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/pay-cal</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/severance-calculator/icon.svg</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/severance-calculator</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/special-characters/icon.svg</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/special-characters</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/spell-checker/icon.svg</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/spell-checker</loc><lastmod>2025-12-30T02:27:21.205Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/barcode</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://teck-tani.com/en/barcode</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://teck-tani.com/ko/barcode</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/barcode"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/barcode"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/barcode"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/barcode</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/barcode"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/barcode"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/barcode"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/lotto</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/lotto"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/lotto"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/lotto"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/lotto</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/lotto"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/lotto"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/lotto"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/pay-cal</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/pay-cal"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/pay-cal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/pay-cal"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/pay-cal</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/pay-cal"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/pay-cal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/pay-cal"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/interest-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/interest-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/interest-calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/interest-calculator"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/interest-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/interest-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/interest-calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/interest-calculator"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/severance-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/severance-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/severance-calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/severance-calculator"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/severance-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/severance-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/severance-calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/severance-calculator"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/korean-age-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/korean-age-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/korean-age-calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/korean-age-calculator"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/korean-age-calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/korean-age-calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/korean-age-calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/korean-age-calculator"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/special-characters</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/special-characters"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/special-characters"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/special-characters"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/special-characters</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/special-characters"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/special-characters"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/special-characters"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/spell-checker</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/spell-checker"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/spell-checker"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/spell-checker"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/spell-checker</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/spell-checker"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/spell-checker"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/spell-checker"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/money-converter</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/money-converter"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/money-converter"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/money-converter"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/money-converter</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/money-converter"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/money-converter"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/money-converter"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/calculator"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/calculator</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/calculator"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/calculator"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/calculator"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://teck-tani.com/ko/clock</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/clock"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/clock"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/clock"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teck-tani.com/en/clock</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://teck-tani.com/ko/clock"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://teck-tani.com/en/clock"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://teck-tani.com/ko/clock"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>

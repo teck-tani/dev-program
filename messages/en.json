@@ -1,4 +1,11 @@
 {
+  "Meta": {
+    "defaultTitle": "Web Tools Collection | Calculator, Clock, Emoji | Tani DevTool",
+    "defaultDescription": "Various web tools necessary for daily life and work. Use calculators, clocks, emoji collections and more in one place. Conveniently available on mobile.",
+    "keywords": "web tools, online calculator, korea clock, emoji collection, practical web tools, life tools, utility",
+    "ogTitle": "Web Tools Collection | Tani DevTool",
+    "ogDescription": "Various web tools necessary for daily life and work. Use calculators, clocks, emoji collections and more in one place."
+  },
   "Index": {
     "title": "Useful Web Tools Collection",
     "description": "Tani DevTool provides various web tools necessary for daily life and work. Easily use tools like calculators, clocks, and emoji collections in one place.",
@@ -17,6 +24,12 @@
       "interest": "Interest Calculator",
       "age": "Korean Age Calculator"
     }
+  },
+  "Header": {
+    "menu": "Web Tools"
+  },
+  "Footer": {
+    "copyright": "© 2024 Jeokjeongin. All rights reserved."
   },
   "Barcode": {
     "title": "Online Barcode Generator",
@@ -106,6 +119,520 @@
       "resultBulk": "{count} barcodes generated",
       "resultBulkError": "{count} generated, {error} errors",
       "remove": "Remove Barcode"
+    }
+  },
+  "Calculator": {
+    "meta": {
+      "title": "Scientific Calculator | Tani DevTool",
+      "description": "Scientific calculator usable directly on the web. Calculate complex formulas including sin, cos, tan, log, root, and exponents instantly. Mobile supported.",
+      "keywords": "scientific calculator, online calculator, trigonometry calculator, log calculator, engineering calculation, sin cos tan, root calculator",
+      "ogTitle": "Scientific Calculator | Trigonometry & Engineering",
+      "ogDescription": "Powerful scientific calculator to use directly on the web without installation. Essential tool for engineers and students."
+    },
+    "title": "Scientific Calculator",
+    "description": "Perform complex engineering calculations easily and quickly.<br />Use various functions such as trigonometry, log, and exponents.",
+    "features": {
+      "title": "Powerful Features",
+      "desc": "This <strong>Online Scientific Calculator</strong> is designed for students, engineers, researchers, and anyone who needs precise calculations. Use full functions of a high-performance calculator directly in your browser without installing any software.",
+      "list": {
+        "trig": {
+          "title": "📐 Full Trigonometry Support",
+          "desc": "Supports Sin, Cos, Tan, and inverse trigonometric functions, optimized for geometry and physics calculations."
+        },
+        "log": {
+          "title": "📈 Log & Exponential Functions",
+          "desc": "Supports natural log (ln), common log (log), and exponential (e^x) calculations to solve complex formulas easily."
+        },
+        "mobile": {
+          "title": "📱 Mobile Optimized",
+          "desc": "Provides a responsive design that works perfectly on PCs, smartphones, and tablets."
+        }
+      }
+    },
+    "guide": {
+      "title": "Key Math Functions Guide",
+      "list": {
+        "trig": {
+          "title": "Trigonometric Functions",
+          "desc": "Use <strong>sin, cos, tan</strong> buttons to calculate sine, cosine, and tangent of angles. Used in architecture, design, wave analysis, etc."
+        },
+        "log": {
+          "title": "Logarithmic Functions",
+          "desc": "<strong>log</strong> calculates common logarithm (base 10), and <strong>ln</strong> calculates natural logarithm (base e). Used in data analysis and acoustics (decibels)."
+        },
+        "power": {
+          "title": "Powers & Roots",
+          "desc": "Provides <strong>x²</strong>, <strong>x³</strong>, and <strong>√</strong> (root) functions. Essential for area calculation and standard deviation in statistics."
+        }
+      }
+    },
+    "instruction": {
+      "title": "How to Use",
+      "steps": {
+        "step1": "<strong>Enter Formula</strong>: Input numbers using buttons on the screen or your keyboard.",
+        "step2": "<strong>Use Functions</strong>: Press function buttons like sin, cos, log first, then enter numbers, or use parentheses for complex formulas.<br /><em style='font-size: 0.9rem; color: #666'>Ex: sin(30) + log(100)</em>",
+        "step3": "<strong>Get Result</strong>: Press <strong>=</strong> button to display the calculation result.",
+        "step4": "<strong>Reset</strong>: Press <strong>AC</strong> (All Clear) to clear all inputs. <strong>CE</strong> clears only the recent input."
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "list": {
+        "degRad": {
+          "q": "Q. Does it use Degrees or Radians?",
+          "a": "Currently, this calculator basically uses <strong>Degrees</strong>. Radian conversion feature will be added soon."
+        },
+        "history": {
+          "q": "Q. Is calculation history saved?",
+          "a": "For security, history is cleared when you close the browser or refresh. We recommend noting down important results."
+        },
+        "keyboard": {
+          "q": "Q. Can I type with keyboard?",
+          "a": "Yes, you can directly input numbers and operators (+, -, *, /) using your keyboard. Press Enter to calculate."
+        }
+      }
+    },
+    "disqus": {
+      "title": "Scientific Calculator | Online Calculator"
+    }
+  },
+  "Clock": {
+    "Layout": {
+      "clock": "Clock",
+      "stopwatch": "Stopwatch",
+      "timer": "Timer",
+      "fullscreen": "Fullscreen"
+    },
+    "Main": {
+      "meta": {
+        "title": "Korea Current Time - Real-time KST",
+        "description": "Check the most accurate Korea Standard Time in seconds. Optimized real-time clock for ticketing and server time check.",
+        "keywords": "Korea clock, current time, KST, server time, seconds clock",
+        "ogTitle": "Real-time Korea Clock",
+        "ogDescription": "Accurate Korea Standard Time in seconds"
+      },
+      "title": "Korea Clock",
+      "seo": {
+        "title": "Accurate Korea Standard Time (KST)",
+        "desc": "This service provides real-time Korea Standard Time based on atomic clocks. Suitable for checking server time for ticketing or registration."
+      }
+    },
+    "Stopwatch": {
+      "meta": {
+        "title": "Online Stopwatch - Accurate Real-time Stopwatch",
+        "description": "The easiest online stopwatch to measure time for study, workout, or work. Use directly in browser without installation.",
+        "keywords": "stopwatch, online stopwatch, timer, time measure, workout timer",
+        "ogTitle": "Accurate Online Stopwatch",
+        "ogDescription": "Simple time measurement tool with one click"
+      },
+      "controls": {
+        "start": "Start",
+        "stop": "Stop",
+        "reset": "Reset"
+      },
+      "seo": {
+        "title": "Real-time Online Stopwatch Service",
+        "desc": "This stopwatch measures up to milliseconds accuracy and can be used for workouts or study time management. Supports fullscreen mode for better focus."
+      }
+    },
+    "Timer": {
+      "meta": {
+        "title": "Timer - Online Timer & Alarm",
+        "description": "Convenient online timer with alarm. Use for cooking, studying, workout, etc."
+      },
+      "controls": {
+        "start": "Start",
+        "continue": "Resume",
+        "stop": "Stop",
+        "reset": "Reset",
+        "confirm": "OK"
+      },
+      "labels": {
+        "hour": "Hour",
+        "minute": "Min",
+        "second": "Sec"
+      },
+      "modal": {
+        "title": "Timer"
+      }
+    }
+  },
+  "Lotto": {
+    "meta": {
+      "title": "Lotto Number Generator | Prediction & Check",
+      "description": "Big data-based Lotto number generator. Use past statistics, fixed numbers, and excluded numbers to create your lucky combination.",
+      "keywords": "Lotto generator, lotto prediction, lottery, check lotto, lucky numbers, lotto stats, powerball, auto generate",
+      "ogTitle": "Lotto Number Generator | Lucky Numbers",
+      "ogDescription": "Lotto prediction based on scientific analysis. You could be the next winner."
+    },
+    "header": {
+      "title": "Lotto 6/45",
+      "checkLatest": "🔄 Check Latest Data",
+      "checking": "Checking...",
+      "error": "Error",
+      "timeout": "Timeout",
+      "failed": "Failed",
+      "updated": "{count} Updated",
+      "upToDate": "Up to Date"
+    },
+    "generator": {
+      "generating": "Drawing...",
+      "start": "Draw Numbers START!",
+      "fixedTitle": "📌 Select Fixed Numbers (Max 5)",
+      "alertFixedMax": "Max 5 fixed numbers allowed!"
+    },
+    "history": {
+      "round": "Round {round}",
+      "firstPrize": "1st Prize (Per Person)",
+      "totalWinners": "Total {count} winners",
+      "totalSales": "Total Sales"
+    },
+    "stats": {
+      "title": "📊 Statistics by Number",
+      "sortByNum": "By Number",
+      "sortByProb": "By Probability"
+    },
+    "disqus": {
+      "title": "Lotto Number Generator"
+    }
+  },
+  "MoneyConverter": {
+    "meta": {
+      "title": "Real-time Exchange Rate Calculator | USD JPY EUR Converter | Tani DevTool",
+      "description": "Calculate real-time exchange rates for major currencies worldwide. Essential exchange rate info for USD, EUR, JPY, CNY for travel and shopping.",
+      "keywords": "exchange rate calculator, currency converter, usd rate, jpy rate, eur rate, exchange calculator",
+      "ogTitle": "Real-time Exchange Rate Calculator",
+      "ogDescription": "Check real-time exchange rates before travel or shopping."
+    },
+    "title": "Exchange Rate Calculator",
+    "description": "Check exchange rates of major currencies at a glance.<br />Accurate rates updated daily.",
+    "client": {
+      "loading": "Loading data...",
+      "noData": "Exchange rate data is not available today (Weekend/Holiday).",
+      "dashboardTitle": "Exchange Rates ({date})",
+      "standardRate": "Standard Rate",
+      "krwName": "Korean Won"
+    },
+    "tips": {
+      "title": "Tips for Better Exchange Rates",
+      "mobile": {
+        "title": "📱 Mobile App Exchange",
+        "desc": "Using bank mobile apps can give you up to 90% preferential exchange rates. Convenient to pick up at airport branches."
+      },
+      "private": {
+        "title": "💵 Private Exchange Offices",
+        "desc": "Private exchange offices in tourist areas often offer better rates than banks. (Especially for USD, EUR)"
+      },
+      "travelCard": {
+        "title": "💳 Travel Cards",
+        "desc": "Using cards like Travel Wallet allows you to pay or withdraw cash locally without exchange fees."
+      }
+    },
+    "caution": {
+      "title": "⚠️ Caution",
+      "desc": "This service uses the Export-Import Bank of Korea API. Data may not be updated on non-business days.<br />Information is for reference only."
+    },
+    "disqus": {
+      "title": "Exchange Rate Calculator"
+    }
+  },
+  "PayCal": {
+    "meta": {
+      "title": "2025 Net Salary Calculator | Korea Payroll Tax Calculator",
+      "description": "Calculate your estimated monthly net pay just by entering your annual salary. Accurately calculates National Pension, Health Insurance, and Income Tax deductions based on 2025 standards.",
+      "keywords": "Net salary calculator, Korea salary calculator, 2025 salary table, 4 major insurances, payroll calculator",
+      "ogTitle": "2025 Net Salary Calculator | How much is my real pay?",
+      "ogDescription": "Stop complex tax calculations. Check your real monthly salary excluding taxes and insurance with one click."
+    },
+    "title": "2025 Net Salary Calculator",
+    "subtitle": "What is my real monthly income?<br />Calculate exact net pay excluding National Pension, Health Insurance, and Income Taxes.",
+    "input": {
+      "title": "Enter Salary Info",
+      "salary": "Annual Salary",
+      "salaryPlaceholder": "Ex: 36,000,000",
+      "retirement": "Severance Pay",
+      "separate": "Excluded (Separate from Salary)",
+      "included": "Included (Part of Salary)",
+      "nonTaxable": "Non-taxable Amount (Meal, etc.)",
+      "nonTaxableDesc": "* Meals up to 200,000 KRW are non-taxable",
+      "dependents": "Dependents (Inc. Self)",
+      "children": "Children (8-20 yrs)",
+      "calculate": "Calculate Net Income",
+      "alertSalary": "Please enter your annual salary."
+    },
+    "result": {
+      "title": "Monthly Pay Details",
+      "gross": "Pre-tax Monthly Pay",
+      "pension": "National Pension (4.5%)",
+      "health": "Health Insurance (3.545%)",
+      "care": "Long-term Care (12.27%)",
+      "employment": "Employment Ins. (0.9%)",
+      "incomeTax": "Income Tax",
+      "localTax": "Local Income Tax (10%)",
+      "totalDeduction": "Total Deductions",
+      "net": "Net Monthly Pay"
+    },
+    "info": {
+      "title": "Deduction Items Explained",
+      "pension": {
+        "title": "💰 National Pension (4.5%)",
+        "desc": "Pension for retirement security. Company and employee each pay 4.5%, totaling 9%."
+      },
+      "health": {
+        "title": "🏥 Health Insurance (3.545%)",
+        "desc": "Insurance for medical expenses. Long-term care insurance (12.27% of health insurance) is added."
+      },
+      "employment": {
+        "title": "💼 Employment Insurance (0.9%)",
+        "desc": "Insurance for unemployment benefits. Employee pays 0.9%."
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "list": {
+        "nonTaxable": {
+          "q": "Q. What is a non-taxable amount?",
+          "a": "Salary items not subject to tax. Examples include meal allowance (up to 200k KRW) and childcare allowance. Higher non-taxable amounts mean lower tax and higher net pay."
+        },
+        "severance": {
+          "q": "Q. Difference between Severance Excluded/Included?",
+          "a": "If 'Included', annual salary is divided by 13 (12 for monthly pay, 1 for severance). So monthly net pay is lower than 'Excluded' (salary / 12)."
+        }
+      }
+    },
+    "disqus": {
+      "title": "Net Salary Calculator"
+    }
+  },
+  "InterestCalculator": {
+    "meta": {
+      "title": "Interest Calculator | Deposit & Savings Simple/Compound Calculator",
+      "description": "Essential for savings planning! Compare simple vs compound interest and calculate after-tax returns. Enter monthly deposit, period, and rate to see maturity amount.",
+      "keywords": "interest calculator, savings calculator, deposit calculator, simple vs compound, compound interest calculator",
+      "ogTitle": "Interest Calculator | Simple vs Compound Interest",
+      "ogDescription": "How much will my money grow? Calculate your savings maturity amount in advance."
+    },
+    "title": "Interest Calculator (Deposit/Savings)",
+    "subtitle": "Start maximizing your savings!<br />Compare deposit and savings interest with simple and compound calculations.",
+    "input": {
+      "typeLabel": "Calculation Method",
+      "typeDeposit": "Deposit (Lump Sum)",
+      "typeSavings": "Savings (Monthly)",
+      "interestTypeLabel": "Interest Type",
+      "simple": "Simple Interest",
+      "compound": "Compound Interest (Monthly)",
+      "principalDeposit": "Deposit Amount (Principal)",
+      "principalSavings": "Monthly Savings Amount",
+      "principalPlaceholderDeposit": "Ex: 10,000,000",
+      "principalPlaceholderSavings": "Ex: 1,000,000",
+      "period": "Period (Months)",
+      "periodPlaceholder": "Ex: 12",
+      "rate": "Annual Interest Rate (%)",
+      "ratePlaceholder": "Ex: 3.5",
+      "calculate": "Calculate Interest",
+      "alertInput": "Please enter all values."
+    },
+    "result": {
+      "title": "Calculation Result (Net)",
+      "totalPrincipal": "Total Principal",
+      "beforeTax": "Pre-tax Interest",
+      "tax": "Interest Income Tax (15.4%)",
+      "finalAmount": "Final Payout"
+    },
+    "info": {
+      "title": "Simple vs Compound Interest?",
+      "simpleTitle": "Simple Interest",
+      "simpleDesc": "Interest is calculated only on the principal amount. Interest earned is not reinvested, so the interest amount remains constant each period.",
+      "compoundTitle": "Compound Interest",
+      "compoundDesc": "Interest is added to the principal, and future interest is calculated on the new total. This creates the 'compounding effect' where your money grows faster over time."
+    },
+    "tips": {
+      "title": "💡 Investment Tips",
+      "desc": "For short-term (under 1 year) savings, the difference between simple and compound interest is small. However, for long-term (3+ years) investments, compound interest is significantly more advantageous. Utilizing tax-advantaged savings accounts can also save on the 15.4% interest income tax."
+    },
+    "disqus": {
+      "title": "Interest Calculator"
+    }
+  },
+  "SeveranceCalculator": {
+    "meta": {
+      "title": "Severance Pay Calculator | Retirement Allowance Estimate",
+      "description": "Calculate your estimated severance pay by entering join/leave dates and recent salary. Accurate calculation for statutory retirement allowance for 1+ years of service.",
+      "keywords": "severance calculator, retirement pay, severance eligibility, korea severance pay, labor standards act",
+      "ogTitle": "Severance Pay Calculator | How much will I get?",
+      "ogDescription": "Check before you leave! Calculate your estimated severance pay in 1 minute."
+    },
+    "title": "Severance Pay Calculator",
+    "subtitle": "Planning to leave? Check your retirement benefit.<br />Easily calculate estimated severance pay by entering your dates.",
+    "input": {
+      "joinDate": "Join Date",
+      "leaveDate": "Resignation Date (Day after last work)",
+      "baseSalary": "Total Salary for Last 3 Months (Pre-tax)",
+      "baseSalaryPlaceholder": "Ex: 9,000,000",
+      "baseSalaryDesc": "* Sum of monthly salary + allowances received during the 3 months prior to resignation",
+      "bonus": "Total Annual Bonus",
+      "leaveAllowance": "Annual Leave Allowance",
+      "calculate": "Calculate Severance Pay",
+      "alertInput": "Please enter join date, resignation date, and 3-month salary total.",
+      "alertPeriod": "Employees with less than 1 year of continuous service are not eligible for severance pay."
+    },
+    "result": {
+      "title": "Estimated Severance Pay",
+      "disclaimer": "* This is an estimate. Actual amount may vary depending on company regulations and tax deductions."
+    },
+    "info": {
+      "title": "Eligibility Criteria",
+      "list": {
+        "1": "<strong>More than 1 Year Service</strong>: Continuous employment period from join to resignation must be at least 1 year.",
+        "2": "<strong>15+ Hours/Week</strong>: Average weekly working hours over a 4-week period must be 15 hours or more.",
+        "3": "<strong>Employee Status</strong>: Contract workers and part-timers are eligible if they meet the above conditions."
+      },
+      "faq": {
+        "title": "FAQ",
+        "q1": "Q. Can I get an interim settlement (mid-term withdrawal)?",
+        "a1": "In principle, interim settlement is prohibited. Exceptions exist for specific reasons like purchasing a home (for non-homeowners), medical care for 6+ months, etc.",
+        "q2": "Q. When must severance pay be paid?",
+        "a2": "Employers must pay severance within 14 days of retirement. The deadline can be extended by mutual agreement."
+      }
+    },
+    "disqus": {
+      "title": "Severance Pay Calculator"
+    }
+  },
+  "KoreanAgeCalculator": {
+    "meta": {
+      "title": "International Age Calculator | Korean Age & D-Day",
+      "description": "Calculate your International Age, Year Age, and Korean Age just by entering your birthdate. Accurate age calculation and birthday D-Day check.",
+      "keywords": "age calculator, korean age calculator, international age, year age, zodiac calculator, d-day calculator",
+      "ogTitle": "International Age Calculator | What is my Korean Age?",
+      "ogDescription": "Confused about age calculation? Check your exact International and Korean age."
+    },
+    "title": "International & Korean Age Calculator",
+    "subtitle": "Confused about your age in Korea?<br />Compare International Age, Year Age, and Korean Age at a glance.",
+    "input": {
+      "birthDate": "Birth Date",
+      "referenceDate": "Reference Date (Default: Today)",
+      "calculate": "Calculate Age",
+      "alertInput": "Please enter your birth date."
+    },
+    "result": {
+      "manAge": "International Age",
+      "manAgeDesc": "Legal Standard",
+      "koreanAge": "Korean Age",
+      "koreanAgeDesc": "Traditional Age",
+      "yearAge": "Year Age",
+      "yearAgeDesc": "For Military/Alcohol Laws",
+      "extraInfo": "Additional Info",
+      "zodiac": "Zodiac",
+      "dDay": "Next Birthday D-Day",
+      "birthDate": "Birth Date"
+    },
+    "info": {
+      "title": "Age Calculation Methods Explained",
+      "man": {
+        "title": "🎂 International Age (Man Age)",
+        "desc": "Starts at 0 from birth and adds 1 year on every birthday. This is the global standard and legal standard in Korea since June 2023."
+      },
+      "year": {
+        "title": "📅 Year Age",
+        "desc": "Current Year - Birth Year. Used in some laws like Military Service Act and Youth Protection Act (buying alcohol/tobacco)."
+      },
+      "korean": {
+        "title": "🇰🇷 Korean Age (Counting Age)",
+        "desc": "Starts at 1 from birth and adds 1 year on every January 1st. Still commonly used in daily life in Korea."
+      }
+    },
+    "disqus": {
+      "title": "International Age Calculator"
+    }
+  },
+  "SpecialCharacters": {
+    "meta": {
+      "title": "Emoji Collection | Copy & Paste Special Characters",
+      "description": "A collection of various emojis and special characters for Instagram, Facebook, and blogs. Copy and paste easily with one click. Categorized by hearts, faces, animals, etc.",
+      "keywords": "emoji collection, copy emojis, special characters, instagram emojis, heart emoticon, face emojis, cute symbols, copy paste emoji",
+      "ogTitle": "Emoji Collection | Click to Copy",
+      "ogDescription": "Thousands of emojis to decorate your SNS and blog. Click to copy instantly."
+    },
+    "title": "Emoji Collection & Copy",
+    "subtitle": "Cute emojis to decorate your Instagram, Facebook, YouTube, and blog posts.<br />Click any emoji to copy specifically.",
+    "categories": {
+      "faces": "😀 Faces",
+      "hearts": "❤️ Hearts",
+      "hands": "👋 Hands",
+      "animals": "🐶 Animals",
+      "food": "🍎 Food",
+      "sports": "⚽ Sports",
+      "transport": "🚗 Transport",
+      "symbols": "⭐ Symbols"
+    },
+    "copied": "Copied!",
+    "tips": {
+      "title": "Emoji Tips",
+      "desc": "Emojis effectively express emotions and nuances that text alone cannot. They play a big role in improving readability and friendliness, especially in mobile environments.",
+      "shortcuts": {
+        "title": "💻 PC Shortcuts for Emoji Input",
+        "win": "<strong>Windows</strong>: <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">Win</code> + <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">. (Period)</code>",
+        "mac": "<strong>Mac</strong>: <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">Control</code> + <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">Command</code> + <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">Space</code>"
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": "Q. Emojis show as squares (□).",
+      "a1": "Old devices or browsers may not support the latest emojis and display them as boxes. Try updating your OS or browser to the latest version.",
+      "q2": "Q. Can I use them commercially?",
+      "a2": "Emojis are Unicode standard characters and can be used freely like text. However, using the emoji design (font) itself as a logo may require checking the copyright policy of the platform (Apple, Google, etc.)."
+    },
+    "disqus": {
+      "title": "Emoji Collection"
+    }
+  },
+  "SpellChecker": {
+    "meta": {
+      "title": "Korean Spell Checker | Grammar & Spacing Check",
+      "description": "Essential for resumes and reports! Real-time Korean spelling and spacing checker. Correct your grammar automatically.",
+      "keywords": "korean spell checker, grammar check, spacing check, hangul spelling, resume proofreading",
+      "ogTitle": "Korean Spell Checker | Proofread your text",
+      "ogDescription": "Confused about Korean spelling? Use our AI-powered checker to perfect your sentences."
+    },
+    "title": "Korean Spell Checker",
+    "subtitle": "Fix confusing spelling and spacing errors at once.<br />Must-check before sending emails or submitting resumes!",
+    "input": {
+      "title": "Text Input",
+      "count": "Total <strong>{count}</strong> chars",
+      "placeholder": "Enter text to check... (Max 5,000 chars)",
+      "check": "Check Spelling",
+      "checking": "Checking...",
+      "reset": "Reset",
+      "alertEmpty": "Please enter text to check."
+    },
+    "result": {
+      "title": "Check Result",
+      "found": "Errors Found: {count}",
+      "empty": "Enter text and click 'Check Spelling' to see results.",
+      "perfect": "No errors found. Perfect sentence! 🎉",
+      "errorLabel": "Error:",
+      "suggestionLabel": "Suggestion:",
+      "apply": "Apply",
+      "ignore": "Ignore"
+    },
+    "common": {
+      "title": "Top 5 Common Korean Spelling Mistakes",
+      "list": {
+        "1": "<strong>되 (Doe) / 돼 (Dwae)</strong>: Rule of thumb - replace with 'Ha' (Doe) or 'Hae' (Dwae). If 'Hae' makes sense, use 'Dwae'.",
+        "2": "<strong>Example</strong>: Sentences usually end with 'Dwae' (e.g., An-dwae).",
+        "3": "<strong>Myeot-il (X) / Myeo-chil (O)</strong>: Always use 'Myeo-chil' for dates. 'Myeot-il' is incorrect.",
+        "4": "<strong>Eotteokhae (O)</strong>: Calculated as abbreviation of 'Eotteoke Hae'. 'Eotteoh-hae' is wrong.",
+        "5": "<strong>Yeok-hal (Role)</strong>: The correct spelling for 'Role' is 'Yeok-hal', not 'Yeok-hwal'."
+      }
+    },
+    "why": {
+      "title": "Why Spelling Matters",
+      "desc1": "Correct spelling is fundamental to credibility. Errors in resumes or business emails can look unprofessional.",
+      "desc2": "Use this tool to prevent minor mistakes and write polished Korean text."
+    },
+    "disqus": {
+      "title": "Spell Checker"
     }
   }
 }

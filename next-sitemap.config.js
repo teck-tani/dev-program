@@ -1,55 +1,84 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-    // 🚨 [필수] Vercel에 배포된 실제 도메인 주소를 입력하세요.
     siteUrl: 'https://teck-tani.com',
-
-    // 사이트맵이 저장될 경로입니다. Next.js의 public 폴더를 지정합니다.
     outDir: './public',
+    generateRobotsTxt: true,
+    generateIndexSitemap: false, // Single sitemap.xml
 
-    // 기본 생성될 페이지의 설정입니다.
-    generateRobotsTxt: false, // robots.txt 파일도 자동으로 생성
-    generateIndexSitemap: false, // 단일 sitemap.xml 생성 (인덱스 파일 생성 안 함)
-
-    // 제외하고 싶은 페이지가 있다면 여기에 패턴을 추가합니다. (예: 개인정보처리방침 등)
+    // Exclude legacy paths without locale prefix
     exclude: [
         '/404',
-        '/server-sitemap.xml' // 동적 sitemap을 사용할 경우 제외
+        '/server-sitemap.xml',
+        '/barcode',
+        '/calculator',
+        '/clock',
+        '/lotto',
+        '/pay-cal',
+        '/interest-calculator',
+        '/severance-calculator',
+        '/korean-age-calculator',
+        '/special-characters',
+        '/spell-checker',
+        '/money-converter'
     ],
 
     additionalPaths: async (config) => {
         const result = [];
+        const tools = [
+            'barcode',
+            'lotto',
+            'pay-cal',
+            'interest-calculator',
+            'severance-calculator',
+            'korean-age-calculator',
+            'special-characters',
+            'spell-checker',
+            'money-converter',
+            'calculator',
+            'clock',
+            'clock/stopwatch',
+            'clock/timer'
+        ];
 
-        // Barcode Pages (Korean & English)
-        result.push({
-            loc: '/barcode',
-            changefreq: 'daily',
-            priority: 0.7
-        });
+        for (const tool of tools) {
+            // Bundle ko and en for each tool with alternateRefs
+            const alternateRefs = [
+                { href: `${config.siteUrl}/ko/${tool}`, hreflang: 'ko' },
+                { href: `${config.siteUrl}/en/${tool}`, hreflang: 'en' },
+                { href: `${config.siteUrl}/ko/${tool}`, hreflang: 'x-default' },
+            ];
 
-        result.push({
-            loc: '/en/barcode',
-            changefreq: 'daily',
-            priority: 0.7
-        });
+            // Add Korean page
+            result.push({
+                loc: `/ko/${tool}`,
+                changefreq: 'weekly',
+                priority: 0.8,
+                alternateRefs
+            });
 
-        // Clock Pages
-        result.push({
-            loc: '/clock',
-            changefreq: 'always',
-            priority: 1.0
-        });
-        result.push({
-            loc: '/clock/stopwatch',
-            changefreq: 'monthly',
-            priority: 0.8
-        });
-        result.push({
-            loc: '/clock/timer',
-            changefreq: 'monthly',
-            priority: 0.8
-        });
-
+            // Add English page
+            result.push({
+                loc: `/en/${tool}`,
+                changefreq: 'weekly',
+                priority: 0.8,
+                alternateRefs
+            });
+        }
 
         return result;
     },
+
+    // Filter out .svg or non-localized paths from auto-generated list
+    transform: async (config, path) => {
+        if (path.endsWith('.svg') || (!path.startsWith('/ko') && !path.startsWith('/en'))) {
+            return null;
+        }
+        return {
+            loc: path,
+            changefreq: config.changefreq,
+            priority: config.priority,
+            lastmod: new Date().toISOString(),
+            alternateRefs: config.alternateRefs ?? [],
+        }
+    }
 };

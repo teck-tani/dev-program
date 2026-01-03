@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "@/app/calculator/calculator.module.css";
+import styles from "@/app/[locale]/calculator/calculator.module.css";
 
 export default function Calculator() {
     const [currentInput, setCurrentInput] = useState("");
@@ -193,12 +193,12 @@ export default function Calculator() {
                         <div className={styles.editionText}>2nd edition</div>
                     </div>
                 </div>
-                
+
                 <div className={styles.display}>
                     <div className={styles.history}>{history}</div>
                     <div className={styles.currentInput}>{currentInput || "0"}</div>
                 </div>
-                
+
                 <div className={styles.buttons}>
                     {/* Row 1 - Scientific Functions */}
                     <button className={`${styles.button} ${styles.function} ${styles.smallBtn}`} onClick={() => handleButtonClick("sin")}>

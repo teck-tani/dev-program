@@ -1,9 +1,11 @@
 import ToolCard from "@/components/ToolCard";
 import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaSpellCheck, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock } from "react-icons/fa";
-import { useTranslations } from 'next-intl';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-export default function Home() {
-    const t = useTranslations('Index');
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    setRequestLocale(locale);
+    const t = await getTranslations('Index');
 
     return (
         <div className="container">
