@@ -3,5 +3,9 @@ User-agent: *
 Allow: /
 
 
+
+
+
+
 # Sitemaps
 Sitemap: https://teck-tani.com/sitemap.xml
