@@ -2,8 +2,5 @@
 User-agent: *
 Allow: /
 
-# Host
-Host: https://teck-tani.com
-
 # Sitemaps
 Sitemap: https://teck-tani.com/sitemap.xml
