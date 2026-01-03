@@ -23,62 +23,54 @@ module.exports = {
     ],
 
     additionalPaths: async (config) => {
-        const result = [];
-        const tools = [
-            'barcode',
-            'lotto',
-            'pay-cal',
-            'interest-calculator',
-            'severance-calculator',
-            'korean-age-calculator',
-            'special-characters',
-            'spell-checker',
-            'money-converter',
-            'calculator',
-            'clock',
-            'clock/stopwatch',
-            'clock/timer'
-        ];
-
-        for (const tool of tools) {
-            // Bundle ko and en for each tool with alternateRefs
-            const alternateRefs = [
-                { href: `${config.siteUrl}/ko/${tool}`, hreflang: 'ko' },
-                { href: `${config.siteUrl}/en/${tool}`, hreflang: 'en' },
-                { href: `${config.siteUrl}/ko/${tool}`, hreflang: 'x-default' },
-            ];
-
-            // Add Korean page
-            result.push({
-                loc: `/ko/${tool}`,
-                changefreq: 'weekly',
-                priority: 0.8,
-                alternateRefs
-            });
-
-            // Add English page
-            result.push({
-                loc: `/en/${tool}`,
-                changefreq: 'weekly',
-                priority: 0.8,
-                alternateRefs
-            });
-        }
-
-        return result;
+        return [];
     },
 
-    // Filter out .svg or non-localized paths from auto-generated list
     transform: async (config, path) => {
-        if (path.endsWith('.svg') || (!path.startsWith('/ko') && !path.startsWith('/en'))) {
+        // Filter out unwanted files
+        if (path.endsWith('.svg') || path.includes('icon.svg')) {
             return null;
         }
+
+        // Only process localized paths
+        // Matches /ko, /en, /ko/..., /en/...
+        const match = path.match(/^\/(ko|en)(\/.*)?$/);
+
+        // If it's not a localized path (e.g. legacy root paths if they slipped through), ignore or keep without alternates?
+        // Since we excluded legacy paths in `exclude`, we accept any other paths but only add alternates to localized ones.
+        if (!match) {
+            // Check if it's one of the legacy paths we want to ensure are gone
+            const LegacyPaths = ['/barcode', '/calculator', '/clock', '/lotto', '/pay-cal',
+                '/interest-calculator', '/severance-calculator', '/korean-age-calculator',
+                '/special-characters', '/spell-checker', '/money-converter'];
+            if (LegacyPaths.includes(path)) return null;
+
+            return {
+                loc: path,
+                changefreq: config.changefreq,
+                priority: config.priority,
+                lastmod: new Date().toISOString(),
+                alternateRefs: []
+            };
+        }
+
+        const locale = match[1];
+        const slug = match[2] || ''; // Will be empty string for root /ko or /en
+
+        // Construct absolute URLs for alternates
+        // We use the slug to ensure we point to the equivalent page in the other language
+        const alternateRefs = [
+            { href: `https://teck-tani.com/ko${slug}`, hreflang: 'ko' },
+            { href: `https://teck-tani.com/en${slug}`, hreflang: 'en' },
+            { href: `https://teck-tani.com/ko${slug}`, hreflang: 'x-default' },
+        ];
+
         return {
             loc: path,
             changefreq: config.changefreq,
             priority: config.priority,
             lastmod: new Date().toISOString(),
-            alternateRefs: config.alternateRefs ?? [],
+            alternateRefs: alternateRefs,
         }
     }
 };

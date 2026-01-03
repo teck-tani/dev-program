@@ -106,7 +106,12 @@ export default function SpellCheckerClient() {
             <div style={{ background: "white", borderRadius: "10px", boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "30px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                     <h2 style={{ margin: 0, fontSize: "1.2rem" }}>{tInput('title')}</h2>
-                    <div style={{ color: "#666" }} dangerouslySetInnerHTML={{ __html: tInput.raw('count', { count: inputText.length }) }}></div>
+                    <div style={{ color: "#666" }}>
+                        {tInput.rich('count', {
+                            count: inputText.length,
+                            strong: (chunks) => <strong>{chunks}</strong>
+                        })}
+                    </div>
                 </div>
 
                 <textarea
