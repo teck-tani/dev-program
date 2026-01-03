@@ -33,7 +33,8 @@ export default function BarcodeGenerator() {
                 setError(t("errorMax", { max: maxBarcodes }));
                 return;
             }
-            setBarcodes([...barcodes, { id: Date.now(), value: barcodeValue, type: barcodeType }]);
+            const newId = Date.now();
+            setBarcodes([...barcodes, { id: newId, value: barcodeValue, type: barcodeType }]);
             setBarcodeValue("");
             setError("");
         }
@@ -73,7 +74,7 @@ export default function BarcodeGenerator() {
         }
 
         const newBarcodes: BarcodeItem[] = [];
-        let errorCount = 0;
+        const errorCount = 0;
 
         lines.forEach((line) => {
             let value = line.trim();
@@ -113,9 +114,9 @@ export default function BarcodeGenerator() {
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; background-color: white; }
           .print-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; padding: 10px; width: 100%; }
-          .print-item { border: 1px solid #ddd; padding: 15px 10px; text-align: center; background-color: white; height: 150px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; page-break-inside: avoid; }
+          .print-item { border: 1px solid #ddd; padding: 15px 10px; text-align: center; background-color: white; min-height: 150px; height: auto; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; page-break-inside: avoid; }
           .print-item svg, .print-item img { max-width: 100%; width: 100% !important; height: 80px !important; display: block; margin: 0 auto; margin-top: 10px; }
-          .print-value { margin-top: 15px; font-size: 12px; word-break: break-all; height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
+          .print-value { margin-top: 15px; font-size: 12px; word-break: break-all; height: auto; overflow: visible; white-space: normal; width: 100%; }
           @media print { body { padding: 0; margin: 0; } .print-grid { gap: 20px; } .print-item { box-shadow: none; } }
         </style>
       </head>
@@ -161,7 +162,7 @@ export default function BarcodeGenerator() {
         e.dataTransfer.effectAllowed = "move";
     };
 
-    const handleDragOver = (e: React.DragEvent, index: number) => {
+    const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
     };
@@ -294,10 +295,11 @@ function BarcodeItemComponent({
         } else {
             if (svgRef.current) {
                 try {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const options: any = {
                         width: 2,
                         height: 60,
-                        displayValue: true,
+                        displayValue: false,
                         fontSize: 14,
                         textMargin: 4,
                         margin: 0,

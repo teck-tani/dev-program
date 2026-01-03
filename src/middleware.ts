@@ -18,7 +18,7 @@ export default function middleware(request: any) {
 
 const handleRequest = createMiddleware({
   locales,
-  localePrefix,
+  localePrefix: 'always', // URL에 항상 언어 접두사(/ko, /en)를 포함하도록 강제 설정
   defaultLocale: 'ko',
   localeDetection: true
 });
