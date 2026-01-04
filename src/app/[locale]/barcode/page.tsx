@@ -4,6 +4,9 @@ import { useTranslations } from 'next-intl';
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
     const isKo = locale === 'ko';
+    const baseUrl = 'https://teck-tani.com';
+    const path = `/${locale}/barcode`;
+
     return {
         title: isKo
             ? "대량 바코드 생성기 - 엑셀 일괄 변환 및 QR코드 무료 만들기"
@@ -15,7 +18,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
             ? "대량 바코드 생성기, 엑셀 바코드 변환, 바코드 일괄 생성, 무료 바코드 만들기, QR코드 대량생성, CODE128 생성기, 온라인 바코드 인쇄"
             : "bulk barcode generator, excel to barcode, batch barcode maker, free qr code generator, online barcode printing",
         alternates: {
-            canonical: 'https://teck-tani.com/barcode'
+            canonical: `${baseUrl}${path}`
         },
         openGraph: {
             title: isKo
