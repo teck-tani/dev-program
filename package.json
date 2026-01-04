@@ -29,6 +29,12 @@
     "next-sitemap": "^4.2.3",
     "typescript": "^5"
   },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "not dead"
+  ],
   "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
   "main": "fix-lockfile.js",
   "keywords": [],
