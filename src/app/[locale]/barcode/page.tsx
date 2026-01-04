@@ -2,7 +2,6 @@ import BarcodeGenerator from "@/components/BarcodeGenerator";
 
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
-import { Suspense } from "react";
 
 export function generateStaticParams() {
     return locales.map((locale) => ({ locale }));
@@ -83,9 +82,7 @@ export default async function BarcodePage({ params }: { params: Promise<{ locale
                 </p>
             </section>
 
-            <Suspense fallback={<div style={{ minHeight: '400px' }}>Loading...</div>}>
-                <BarcodeGenerator />
-            </Suspense>
+            <BarcodeGenerator />
 
             <article style={{ maxWidth: '800px', margin: '60px auto 0', lineHeight: '1.7' }}>
                 <section style={{ marginBottom: '50px' }}>
