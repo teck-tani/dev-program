@@ -7,6 +7,7 @@ import { Noto_Sans_KR } from "next/font/google";
 import "../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import GoogleAdsense from "@/components/GoogleAdsense";
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
@@ -102,12 +103,7 @@ export default async function LocaleLayout({
             <Footer />
           </div>
         </NextIntlClientProvider>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4836555208250151"
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-        />
+        <GoogleAdsense />
       </body>
     </html>
   );
