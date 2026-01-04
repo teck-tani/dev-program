@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 // Dynamic usage for jsbarcode and qrcode
 import styles from "@/app/[locale]/barcode/barcode.module.css";
 import { useTranslations } from "next-intl";
@@ -265,7 +265,7 @@ export default function BarcodeGenerator() {
     );
 }
 
-function BarcodeItemComponent({
+const BarcodeItemComponent = memo(function BarcodeItemComponent({
     item,
     index,
     onRemove,
@@ -369,4 +369,4 @@ function BarcodeItemComponent({
             <div className={styles.barcodeValue}>{item.value}</div>
         </div>
     );
-}
+});
