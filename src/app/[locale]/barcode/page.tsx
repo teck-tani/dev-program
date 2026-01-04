@@ -1,4 +1,4 @@
-import BarcodeGeneratorDynamic from "@/components/BarcodeGeneratorDynamic";
+import BarcodeGenerator from "@/components/BarcodeGenerator";
 
 import { useTranslations } from 'next-intl';
 
@@ -70,7 +70,7 @@ export default function BarcodePage() {
                 </p>
             </section>
 
-            <BarcodeGeneratorDynamic />
+            <BarcodeGenerator />
 
             <article style={{ maxWidth: '800px', margin: '60px auto 0', lineHeight: '1.7' }}>
                 <section style={{ marginBottom: '50px' }}>

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import JsBarcode from "jsbarcode";
-import QRCode from "qrcode";
+// Dynamic usage for jsbarcode and qrcode
 import styles from "@/app/[locale]/barcode/barcode.module.css";
 import { useTranslations } from "next-intl";
 
@@ -291,8 +290,10 @@ function BarcodeItemComponent({
     useEffect(() => {
         if (item.type === "QR") {
             if (canvasRef.current) {
-                QRCode.toCanvas(canvasRef.current, item.value, { width: 100, margin: 0 }, (error) => {
-                    if (error) console.error(error);
+                import("qrcode").then((QRCode) => {
+                    QRCode.toCanvas(canvasRef.current, item.value, { width: 100, margin: 0 }, (error) => {
+                        if (error) console.error(error);
+                    });
                 });
             }
         } else {
@@ -332,8 +333,14 @@ function BarcodeItemComponent({
                             break;
                     }
 
-                    JsBarcode(svgRef.current, item.value, options);
-                    svgRef.current.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                    import("jsbarcode").then((module) => {
+                        const JsBarcode = module.default;
+                        JsBarcode(svgRef.current, item.value, options);
+                        if (svgRef.current) {
+                            svgRef.current.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                        }
+                    });
+
                 } catch (e) {
                     console.error(e);
                 }
