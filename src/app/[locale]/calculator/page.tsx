@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Calculator from "@/components/Calculator";
-import DisqusComments from "@/components/DisqusComments";
+
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -113,9 +113,7 @@ export default async function CalculatorPage({ params }: { params: Promise<{ loc
                 </section>
             </article>
 
-            <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="calculator" title={t('disqus.title')} />
-            </div>
+
         </div>
     );
 }

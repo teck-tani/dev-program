@@ -1,5 +1,5 @@
 import BarcodeGenerator from "@/components/BarcodeGenerator";
-import DisqusComments from "@/components/DisqusComments";
+
 import { useTranslations } from 'next-intl';
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
@@ -204,9 +204,7 @@ export default function BarcodePage() {
                 </section>
             </article>
 
-            <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="barcode" title="온라인 바코드 생성기" />
-            </div>
+
         </div>
     );
 }

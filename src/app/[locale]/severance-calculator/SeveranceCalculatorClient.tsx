@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import DisqusComments from "@/components/DisqusComments";
+
 import { useTranslations } from "next-intl";
 
 export default function SeveranceCalculatorClient() {
@@ -194,9 +194,7 @@ export default function SeveranceCalculatorClient() {
                 </section>
             </article>
 
-            <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="severance-calculator" title={t('disqus.title')} />
-            </div>
+
         </div>
     );
 }

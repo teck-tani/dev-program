@@ -1,5 +1,5 @@
 import ExchangeRateClient from "./ExchangeRateClient";
-import DisqusComments from "@/components/DisqusComments";
+
 import { Metadata } from "next";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -80,9 +80,7 @@ export default async function MoneyConverterPage({ params }: { params: Promise<{
                 </section>
             </article>
 
-            <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="money-converter" title={t('disqus.title')} />
-            </div>
+
         </div>
     );
 }

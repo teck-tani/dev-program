@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import DisqusComments from "@/components/DisqusComments";
+
 import { useTranslations } from "next-intl";
 
 export default function KoreanAgeCalculatorClient() {
@@ -222,9 +222,7 @@ function KoreanAgeCalculatorContent({ t, tInput, tResult, tInfo, birthDate, setB
                 </section>
             </article>
 
-            <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="korean-age-calculator" title={t('disqus.title')} />
-            </div>
+
         </div>
     );
 }

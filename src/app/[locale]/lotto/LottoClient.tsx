@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import DisqusComments from "@/components/DisqusComments";
+
 import { useTranslations } from "next-intl";
 
 // Types
@@ -424,9 +424,7 @@ export default function LottoClient() {
                 </div>
             </section>
 
-            <div style={{ marginTop: '60px' }}>
-                <DisqusComments identifier="lotto" title={t('disqus.title')} />
-            </div>
+
         </div>
     );
 }
