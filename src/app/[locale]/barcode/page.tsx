@@ -1,8 +1,10 @@
 import BarcodeGenerator from "@/components/BarcodeGenerator";
 
-import { useTranslations } from 'next-intl';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    setRequestLocale(locale);
     const isKo = locale === 'ko';
     const baseUrl = 'https://teck-tani.com';
     const path = `/${locale}/barcode`;
@@ -32,8 +34,10 @@ export async function generateMetadata({ params: { locale } }: { params: { local
     };
 }
 
-export default function BarcodePage() {
-    const t = useTranslations('Barcode');
+export default async function BarcodePage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    setRequestLocale(locale);
+    const t = await getTranslations('Barcode');
 
     // 구글 검색 로봇을 위한 구조화 데이터
     const jsonLd = {
