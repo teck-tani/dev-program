@@ -298,3 +298,15 @@
         padding: 15px;
     }
 }
+
+/* [수정] 태그 대신 클래스명(.articleSection) 사용 */
+.articleSection,
+.faqSection {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
+}
+
+.barcodeItem {
+    min-height: 180px;
+    contain: content;
+}

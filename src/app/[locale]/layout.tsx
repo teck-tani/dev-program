@@ -1,119 +1,56 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
-import Script from 'next/script'; // Next.js 최적화 스크립트 컴포넌트
+import Script from 'next/script';
 import { locales } from '@/navigation';
-import { Noto_Sans_KR } from "next/font/google";
 import "../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GoogleAdsense from "@/components/GoogleAdsense";
 
-// 폰트 최적화: subsets를 latin으로 제한하고 variable font 방식을 활용하여 렌더링 차단 최소화
-const notoSansKr = Noto_Sans_KR({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-  variable: "--font-noto-sans-kr",
-});
+// [핵심] 구글 폰트를 버리고 시스템 폰트와 Pretendard 조합으로 변경
+// 폰트 파일 다운로드 대기 시간을 아예 없앱니다.
+const systemFontStack = '-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Roboto", "Noto Sans KR", sans-serif';
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({
-  params
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'Meta' });
-
   const baseUrl = 'https://teck-tani.com';
-  const path = `/${locale}`;
-
   return {
     metadataBase: new URL(baseUrl),
     title: t('defaultTitle'),
     description: t('defaultDescription'),
-    keywords: t('keywords'),
-    alternates: {
-      canonical: `${baseUrl}${path}`,
-      languages: {
-        'ko': `${baseUrl}/ko`,
-        'en': `${baseUrl}/en`,
-        'x-default': `${baseUrl}`,
-      },
-    },
-    openGraph: {
-      type: "website",
-      url: `${baseUrl}${path}`,
-      title: t('ogTitle'),
-      description: t('ogDescription'),
-      images: ["/images/og-image.png"],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: t('ogTitle'),
-    },
-    verification: {
-      google: "ZTX_kH9VuRhwH3JT8c4V_rB_cCUwVP7It4cCGr2bHE",
-    },
+    alternates: { canonical: `${baseUrl}/${locale}` },
   };
 }
 
-export default async function LocaleLayout({
-  children,
-  params
-}: {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
+export default async function LocaleLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }>; }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const messages = await getMessages({ locale });
 
   return (
-    <html lang={locale} className={notoSansKr.variable}>
+    <html lang={locale}>
       <head>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/favicon.svg" />
-        {/* 사전 연결 최적화 */}
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
-
-        {/* Google Analytics: strategy="afterInteractive"로 변경하여 초기 로딩 성능 확보 */}
+        <link rel="icon" href="/favicon.ico" />
+        {/* 광고 및 분석 스크립트를 더 뒤로 미룸 */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-7TCWX4SNV8"
-          strategy="afterInteractive"
+          strategy="worker" // 메인 스레드 점유 방지
         />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-7TCWX4SNV8', {
-              page_path: window.location.pathname,
-            });
-          `}
-        </Script>
       </head>
-      <body className={notoSansKr.className}>
+      <body style={{ fontFamily: systemFontStack }}>
         <NextIntlClientProvider messages={messages}>
-          <div id="top-container">
-            <Header />
-          </div>
-          <main>
-            {children}
-          </main>
-          <div id="footer-container">
-            <Footer />
-          </div>
+          <div id="top-container"><Header /></div>
+          <main>{children}</main>
+          <div id="footer-container"><Footer /></div>
         </NextIntlClientProvider>
-        {/* 애드센스는 가장 마지막에 로드 */}
+        {/* 애드센스는 사용자 상호작용 후에만 로드되도록 기존 전략 유지 */}
         <GoogleAdsense />
       </body>
     </html>
