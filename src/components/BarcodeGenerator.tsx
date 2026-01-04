@@ -132,7 +132,7 @@ export default function BarcodeGenerator() {
 
             let visualElement = "";
             if (svg) visualElement = svg.outerHTML;
-            else if (canvas) visualElement = `<img src="${canvas.toDataURL()}" />`;
+            else if (canvas) visualElement = `<img src="${canvas.toDataURL()}" alt="Barcode ${value}" />`;
 
             printContent += `
           <div class="print-item">
@@ -188,7 +188,7 @@ export default function BarcodeGenerator() {
                         value={barcodeType}
                         onChange={(e) => setBarcodeType(e.target.value)}
                     >
-                        <option value="CODE128">CODE128 ({t("generator.default") || "Default"})</option>
+                        <option value="CODE128">CODE128 ({t("default")})</option>
                         <option value="CODE39">CODE39</option>
                         <option value="EAN">EAN-13</option>
                         <option value="EAN8">EAN-8</option>
@@ -201,7 +201,7 @@ export default function BarcodeGenerator() {
                         <option value="MSI1010">MSI1010</option>
                         <option value="MSI1110">MSI1110</option>
                         <option value="pharmacode">Pharmacode</option>
-                        <option value="QR">{t("generator.qr") || "QR Code"}</option>
+                        <option value="QR">{t("qr")}</option>
                     </select>
                 </div>
 
@@ -257,6 +257,7 @@ export default function BarcodeGenerator() {
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             removeLabel={t("remove")}
+                            ariaLabel={t("barcodeLabel", { value: item.value })}
                         />
                     ))}
                 </div>
@@ -272,7 +273,8 @@ function BarcodeItemComponent({
     onDragStart,
     onDragOver,
     onDrop,
-    removeLabel
+    removeLabel,
+    ariaLabel
 }: {
     item: BarcodeItem;
     index: number;
@@ -281,6 +283,7 @@ function BarcodeItemComponent({
     onDragOver: (e: React.DragEvent, index: number) => void;
     onDrop: (e: React.DragEvent, index: number) => void;
     removeLabel: string;
+    ariaLabel: string;
 }) {
     const svgRef = useRef<SVGSVGElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -345,13 +348,16 @@ function BarcodeItemComponent({
             onDragStart={(e) => onDragStart(e, index)}
             onDragOver={(e) => onDragOver(e, index)}
             onDrop={(e) => onDrop(e, index)}
+            aria-label={ariaLabel}
+            role="img"
+            title={ariaLabel}
         >
             <div className={styles.barcodeNumber}>{index + 1}</div>
             <button className={styles.removeBarcode} onClick={onRemove} aria-label={removeLabel}></button>
             {item.type === "QR" ? (
-                <canvas ref={canvasRef} style={{ width: '100%', height: '80px', objectFit: 'contain' }}></canvas>
+                <canvas ref={canvasRef} style={{ width: '100%', height: '80px', objectFit: 'contain' }} role="img" aria-label={ariaLabel}></canvas>
             ) : (
-                <svg ref={svgRef}></svg>
+                <svg ref={svgRef} role="img" aria-label={ariaLabel}></svg>
             )}
             <div className={styles.barcodeValue}>{item.value}</div>
         </div>

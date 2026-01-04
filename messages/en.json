@@ -32,7 +32,7 @@
     "copyright": "© 2024 Jeokjeongin. All rights reserved."
   },
   "Barcode": {
-    "title": "Online Barcode Generator",
+    "title": "Bulk Barcode & QR Code Generator (Excel Support)",
     "subtitle": "Create various types of barcodes and QR codes quickly and easily.\n Copy and paste Excel data to create hundreds of barcodes at once.",
     "whyUse": {
       "title": "Why use this barcode generator?",
@@ -118,7 +118,10 @@
       "errorBulkMax": "Exceeds maximum limit. Current: {current}, Adding: {added}, Max: {max}",
       "resultBulk": "{count} barcodes generated",
       "resultBulkError": "{count} generated, {error} errors",
-      "remove": "Remove Barcode"
+      "remove": "Remove Barcode",
+      "default": "Default",
+      "qr": "QR Code",
+      "barcodeLabel": "Barcode: {value}"
     }
   },
   "Calculator": {

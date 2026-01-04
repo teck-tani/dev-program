@@ -32,7 +32,7 @@
     "copyright": "© 2024 적정인. 모든 권리 보유."
   },
   "Barcode": {
-    "title": "온라인 바코드 생성기",
+    "title": "대량 바코드 & QR코드 생성기 (엑셀 지원)",
     "subtitle": "다양한 형식의 바코드와 QR코드를 쉽고 빠르게 생성하세요.\n엑셀 데이터를 복사해 붙여넣으면 수백 개의 바코드도 한 번에 만들 수 있습니다.",
     "whyUse": {
       "title": "왜 이 바코드 생성기를 사용해야 할까요?",
@@ -118,7 +118,10 @@
       "errorBulkMax": "최대 바코드 개수를 초과합니다. 현재 {current}개, 추가 {added}개, 최대 {max}개",
       "resultBulk": "{count}개 바코드 생성 완료",
       "resultBulkError": "{count}개 생성, {error}개 오류",
-      "remove": "바코드 삭제"
+      "remove": "바코드 삭제",
+      "default": "기본값",
+      "qr": "QR코드",
+      "barcodeLabel": "바코드: {value}"
     }
   },
   "Calculator": {

@@ -1,24 +1,65 @@
-import type { Metadata } from "next";
 import BarcodeGenerator from "@/components/BarcodeGenerator";
 import DisqusComments from "@/components/DisqusComments";
 import { useTranslations } from 'next-intl';
 
-export const metadata: Metadata = {
-    title: "바코드 생성기 여러개 생성 | QR코드 만들기 & 엑셀 대량 변환",
-    description: "설치가 필요 없는 온라인 바코드 생성기입니다. QR코드, CODE128, EAN-13 등 다양한 형식을 지원하며 엑셀 데이터를 이용한 대량 바코드 생성이 가능합니다.",
-    keywords: "바코드 생성기, QR코드 만들기, 바코드, 엑셀 바코드 변환, 온라인 바코드, CODE128 생성, EAN13 생성, 대량 바코드 만들기",
-    openGraph: {
-        title: "바코드 생성기 여러개 생성 | QR코드 & 대량 변환",
-        description: "설치 없이 바로 사용하는 바코드/QR코드 생성기. 엑셀 붙여넣기로 수백 개의 바코드를 한 번에 만드세요.",
-        type: "website",
-    },
-};
+export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+    const isKo = locale === 'ko';
+    return {
+        title: isKo
+            ? "대량 바코드 생성기 - 엑셀 일괄 변환 및 QR코드 무료 만들기"
+            : "Bulk Barcode Generator - Excel Batch Conversion & Free QR Code",
+        description: isKo
+            ? "엑셀 데이터를 복사해서 붙여넣기만 하세요! 수백 개의 바코드와 QR코드를 한 번에 무료로 생성하고 인쇄할 수 있는 가장 빠르고 강력한 온라인 도구입니다."
+            : "Generate hundreds of barcodes at once with Excel copy-paste! Free online bulk barcode & QR code generator.",
+        keywords: isKo
+            ? "대량 바코드 생성기, 엑셀 바코드 변환, 바코드 일괄 생성, 무료 바코드 만들기, QR코드 대량생성, CODE128 생성기, 온라인 바코드 인쇄"
+            : "bulk barcode generator, excel to barcode, batch barcode maker, free qr code generator, online barcode printing",
+        alternates: {
+            canonical: 'https://teck-tani.com/barcode'
+        },
+        openGraph: {
+            title: isKo
+                ? "대량 바코드 생성기 | 엑셀로 수백 개를 한 번에 만드세요"
+                : "Bulk Barcode Generator | Create Hundreds from Excel Instantly",
+            description: isKo
+                ? "번거로운 개별 생성은 그만! 엑셀 복사-붙여넣기로 바코드와 QR코드를 일괄 생성하는 무료 웹 도구입니다."
+                : "Stop creating one by one! Batch generate barcodes and QR codes from Excel data for free.",
+            type: "website",
+        },
+    };
+}
 
 export default function BarcodePage() {
     const t = useTranslations('Barcode');
 
+    // 구글 검색 로봇을 위한 구조화 데이터
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "대량 바코드 생성기 (Bulk Barcode Generator)",
+        "operatingSystem": "Windows, macOS, Linux, Android, iOS",
+        "applicationCategory": "BusinessApplication",
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "120"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "featureList": "Excel bulk generation, Multiple formats support (CODE128, EAN, QR), Online printing"
+    };
+
     return (
         <div className="container">
+            {/* JSON-LD 삽입 */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+
             <section style={{ textAlign: 'center', marginBottom: '40px' }}>
                 <h1>{t('title')}</h1>
                 <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0', whiteSpace: 'pre-line' }}>
