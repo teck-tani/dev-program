@@ -21,10 +21,8 @@ export default function BarcodePage() {
         <div className="container">
             <section style={{ textAlign: 'center', marginBottom: '40px' }}>
                 <h1>{t('title')}</h1>
-                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0' }}>
-                    {t.rich('subtitle', {
-                        br: () => <br />
-                    })}
+                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0', whiteSpace: 'pre-line' }}>
+                    {t('subtitle')}
                 </p>
             </section>
 
