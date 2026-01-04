@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
+import Script from 'next/script';
 import { locales } from '@/navigation';
 import { Noto_Sans_KR } from "next/font/google";
 import "../globals.css";
@@ -85,7 +86,6 @@ export default async function LocaleLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag() { dataLayer.push(arguments); }
               gtag('js', new Date());
-              gtag('config', 'G-7TCWX4SNV8');
             `,
           }}
         />
@@ -100,6 +100,12 @@ export default async function LocaleLayout({
             <Footer />
           </div>
         </NextIntlClientProvider>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4836555208250151"
+          crossOrigin="anonymous"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
