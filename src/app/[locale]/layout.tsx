@@ -89,8 +89,6 @@ export default async function LocaleLayout({
             `,
           }}
         />
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4836555208250151"
-          crossOrigin="anonymous"></script>
       </head>
       <body className={notoSansKr.className}>
         <NextIntlClientProvider messages={messages}>
