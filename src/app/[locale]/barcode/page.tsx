@@ -1,6 +1,11 @@
 import BarcodeGenerator from "@/components/BarcodeGenerator";
 
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { locales } from '@/navigation';
+
+export function generateStaticParams() {
+    return locales.map((locale) => ({ locale }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
