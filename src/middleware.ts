@@ -3,7 +3,7 @@ import createMiddleware from 'next-intl/middleware';
 import { locales, localePrefix } from './navigation';
 import { NextRequest } from 'next/server';
 
-export default function middleware(request: any) {
+export default function middleware(request: NextRequest) {
   const response = handleRequest(request);
   // next-intl returns 307 (Temporary Redirect) by default for locale redirects.
   // We change this to 301 (Moved Permanently) as requested for SEO.

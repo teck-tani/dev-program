@@ -1,3 +1,5 @@
+"use client";
+
 import { Roboto_Mono } from 'next/font/google';
 import FullscreenButton from "@/components/FullscreenButton";
 import ClockSidebar from "@/components/ClockSidebar";
