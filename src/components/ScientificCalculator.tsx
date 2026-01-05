@@ -238,7 +238,6 @@ const ScientificCalculator = () => {
             <button 
               onClick={() => setIsDegree(true)}
               className={`px-2 py-1 rounded ${isDegree ? 'bg-white text-blue-800 shadow-sm font-bold' : 'text-gray-700'}`} // Darkened for A11y
-              aria-pressed={isDegree}
               role="radio"
               aria-checked={isDegree}
               type="button"
@@ -248,7 +247,6 @@ const ScientificCalculator = () => {
             <button 
               onClick={() => setIsDegree(false)}
               className={`px-2 py-1 rounded ${!isDegree ? 'bg-white text-blue-800 shadow-sm font-bold' : 'text-gray-700'}`} // Darkened for A11y
-              aria-pressed={!isDegree}
               role="radio"
               aria-checked={!isDegree}
               type="button"
@@ -267,6 +265,8 @@ const ScientificCalculator = () => {
           <div 
              ref={inputRef}
              className="w-full text-lg text-gray-700 font-medium whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll mb-2 min-h-[28px] pb-1 leading-tight" // Darkened text
+             role="region"
+             aria-live="polite"
              aria-label="Expression"
           >
             {input || ''}
