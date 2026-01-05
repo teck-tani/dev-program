@@ -323,7 +323,7 @@ const ScientificCalculator = () => {
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-2" role="list">
+            <div className="flex-1 overflow-y-auto p-2" role={history.length > 0 ? "list" : undefined}>
               {history.length === 0 ? (
                 <div className="text-center text-gray-600 mt-10 text-sm">No history yet</div>
               ) : (
