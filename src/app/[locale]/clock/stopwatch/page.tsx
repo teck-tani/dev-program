@@ -1,4 +1,4 @@
-import StopwatchView from "./StopwatchView";
+import StopwatchWrapper from "./StopwatchWrapper";
 import { Metadata } from "next";
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
@@ -41,10 +41,10 @@ export default function StopwatchPage() {
                 {t('seo.title')}
             </h1>
 
-            <StopwatchView />
+            <StopwatchWrapper />
 
             {/* 페이지 하단에 SEO용 설명 텍스트 추가 */}
-            <section style={{ marginTop: '50px', color: '#888', fontSize: '0.9rem', textAlign: 'center', maxWidth: '800px', margin: '50px auto 0' }}>
+            <section style={{ marginTop: '50px', color: '#4b5563', fontSize: '0.9rem', textAlign: 'center', maxWidth: '800px', margin: '50px auto 0' }}>
                 <p>{t('seo.desc')}</p>
             </section>
         </main>

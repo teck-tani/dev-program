@@ -39,17 +39,22 @@ export default function StopwatchView() {
             <div className="digital-text" style={{
                 fontSize: 'clamp(3rem, 12vw, 8rem)',
                 marginBottom: '50px',
-                fontVariantNumeric: 'tabular-nums' // 숫자 너비를 고정하여 떨림 방지
+                fontVariantNumeric: 'tabular-nums', // 숫자 너비를 고정하여 떨림 방지
+                minHeight: '1.2em', // 폰트 로딩 CLS 방지
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                lineHeight: 1,
             }}>
                 {formatTime(time)}
             </div>
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
                 {!isRunning ? (
-                    <button className="digital-btn btn-green" onClick={() => setIsRunning(true)}>{t('start')}</button>
+                    <button className="digital-btn px-8 py-3 rounded-xl text-xl font-bold shadow-md bg-green-700 text-white hover:bg-green-800 active:bg-green-900 transition-colors" onClick={() => setIsRunning(true)}>{t('start')}</button>
                 ) : (
-                    <button className="digital-btn btn-red" onClick={() => setIsRunning(false)}>{t('stop')}</button>
+                    <button className="digital-btn px-8 py-3 rounded-xl text-xl font-bold shadow-md bg-red-700 text-white hover:bg-red-800 active:bg-red-900 transition-colors" onClick={() => setIsRunning(false)}>{t('stop')}</button>
                 )}
-                <button className="digital-btn btn-yellow" onClick={() => { setIsRunning(false); setTime(0); }}>{t('reset')}</button>
+                <button className="digital-btn px-8 py-3 rounded-xl text-xl font-bold shadow-md bg-yellow-400 text-black hover:bg-yellow-500 active:bg-yellow-600 transition-colors" onClick={() => { setIsRunning(false); setTime(0); }}>{t('reset')}</button>
             </div>
         </div>
     );
