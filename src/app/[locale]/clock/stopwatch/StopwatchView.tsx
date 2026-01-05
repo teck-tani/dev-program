@@ -45,6 +45,7 @@ export default function StopwatchView() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 lineHeight: 1,
+                willChange: 'content', // 렌더링 최적화 힌트
             }}>
                 {formatTime(time)}
             </div>

@@ -1,9 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Link, usePathname } from "@/navigation"; // Use localized navigation
+import { Link, usePathname } from "@/navigation";
 import { FaExpand, FaCompress, FaRegClock, FaStopwatch, FaHourglassStart } from "react-icons/fa";
 import { useTranslations } from "next-intl";
+import { Roboto_Mono } from 'next/font/google';
+
+const robotoMono = Roboto_Mono({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-roboto-mono',
+});
 
 export default function ClockLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -11,37 +18,14 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
     const [isFullscreen, setIsFullscreen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const toggleFullscreen = () => {
-        if (!document.fullscreenElement && containerRef.current) {
-            containerRef.current.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-            });
-            setIsFullscreen(true);
-        } else {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-                setIsFullscreen(false);
-            }
-        }
-    };
+    // ... (fullscreen logic)
 
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
-        };
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    }, []);
-
-    // Helper logic to highlight active link correctly even with prefixes
-    // next-intl's usePathname returns the path without locale prefix, so strict matching works better.
-    // However, if we need partial matching:
     const isClockActive = pathname === '/clock';
     const isStopwatchActive = pathname === '/clock/stopwatch';
     const isTimerActive = pathname === '/clock/timer';
 
     return (
-        <div ref={containerRef} className="app-main-container">
+        <div ref={containerRef} className={`app-main-container ${robotoMono.variable}`}>
             <style jsx global>{`
                 .app-main-container {
                     display: flex;
@@ -152,7 +136,7 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
 
                 /* Shared Digital Style */
                 .digital-text {
-                    font-family: 'Courier New', Courier, monospace;
+                    font-family: var(--font-roboto-mono), 'Courier New', monospace;
                     font-weight: bold;
                     color: #00ff9d;
                     line-height: 1;
