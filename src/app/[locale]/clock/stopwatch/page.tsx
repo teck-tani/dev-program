@@ -44,7 +44,7 @@ export default function StopwatchPage() {
             <StopwatchWrapper />
 
             {/* 페이지 하단에 SEO용 설명 텍스트 추가 */}
-            <section style={{ marginTop: '50px', color: '#4b5563', fontSize: '0.9rem', textAlign: 'center', maxWidth: '800px', margin: '50px auto 0' }}>
+            <section style={{ marginTop: '50px', color: '#d1d5db', fontSize: '0.9rem', textAlign: 'center', maxWidth: '800px', margin: '50px auto 0' }}>
                 <p>{t('seo.desc')}</p>
             </section>
         </main>
