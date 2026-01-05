@@ -1,10 +1,6 @@
-"use client";
-
-import { useState, useEffect, useRef } from "react";
-import { Link, usePathname } from "@/navigation";
-import { FaExpand, FaCompress, FaRegClock, FaStopwatch, FaHourglassStart } from "react-icons/fa";
-import { useTranslations } from "next-intl";
 import { Roboto_Mono } from 'next/font/google';
+import FullscreenButton from "@/components/FullscreenButton";
+import ClockSidebar from "@/components/ClockSidebar";
 
 const robotoMono = Roboto_Mono({
     subsets: ['latin'],
@@ -13,19 +9,9 @@ const robotoMono = Roboto_Mono({
 });
 
 export default function ClockLayout({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname();
-    const t = useTranslations('Clock.Layout');
-    const [isFullscreen, setIsFullscreen] = useState(false);
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    // ... (fullscreen logic)
-
-    const isClockActive = pathname === '/clock';
-    const isStopwatchActive = pathname === '/clock/stopwatch';
-    const isTimerActive = pathname === '/clock/timer';
-
+    
     return (
-        <div ref={containerRef} className={`app-main-container ${robotoMono.variable}`}>
+        <div className={`app-main-container ${robotoMono.variable}`}>
             <style jsx global>{`
                 .app-main-container {
                     display: flex;
@@ -33,37 +19,9 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     min-height: 100vh;
                     background-color: #2c2c2c;
                     color: white;
-                    margin: ${isFullscreen ? '0' : '-30px 0'};
+                    margin: -30px 0;
                     overflow: hidden;
                     font-family: 'Noto Sans KR', sans-serif;
-                }
-                
-                /* Sidebar Styles */
-                .sidebar {
-                    width: 80px;
-                    background-color: #1a1a1a;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    padding-top: 20px;
-                    border-right: 1px solid #333;
-                    z-index: 10;
-                    flex-shrink: 0;
-                }
-                .sidebar-item {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    width: 100%;
-                    padding: 15px 0;
-                    color: #888;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    font-size: 0.8rem;
-                    gap: 5px;
-                    white-space: nowrap;
-                    text-decoration: none;
                 }
                 
                 /* Timer Input Responsive Class */
@@ -80,29 +38,13 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
 
                 /* Mobile Sidebar & Timer */
                 @media (max-width: 600px) {
-                    .sidebar {
-                        width: 60px;
-                    }
-                    .sidebar-item {
-                        font-size: 0.65rem;
-                    }
-                    .sidebar-icon {
-                        font-size: 1.2rem;
-                    }
                     .timer-input {
                         width: 22vw;
                         font-size: 2rem;
                         padding: 5px;
                     }
                 }
-                .sidebar-item:hover, .sidebar-item.active {
-                    color: #fff;
-                    background-color: #333;
-                }
-                .sidebar-icon {
-                    font-size: 1.5rem;
-                }
-
+               
                 /* Content Area */
                 .content-area {
                     flex: 1;
@@ -110,28 +52,6 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                }
-
-                /* Fullscreen Button */
-                .fullscreen-btn {
-                    position: absolute;
-                    top: 20px;
-                    right: 20px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border: none;
-                    color: white;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-size: 14px;
-                    z-index: 100;
-                    transition: background 0.2s;
-                }
-                .fullscreen-btn:hover {
-                    background: rgba(255, 255, 255, 0.2);
                 }
 
                 /* Shared Digital Style */
@@ -179,43 +99,14 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                 }
                 .btn-red:hover { background-color: #d63031; }
 
-                /* Mobile Sidebar */
-                @media (max-width: 600px) {
-                    .sidebar {
-                        width: 60px;
-                    }
-                    .sidebar-item {
-                        font-size: 0.7rem;
-                    }
-                    .sidebar-icon {
-                        font-size: 1.2rem;
-                    }
-                }
             `}</style>
-
+            
             {/* Sidebar Navigation */}
-            <div className="sidebar">
-                <Link href="/clock" className={`sidebar-item ${isClockActive ? 'active' : ''}`}>
-                    <FaRegClock className="sidebar-icon" />
-                    <span>{t('clock')}</span>
-                </Link>
-                <Link href="/clock/stopwatch" className={`sidebar-item ${isStopwatchActive ? 'active' : ''}`}>
-                    <FaStopwatch className="sidebar-icon" />
-                    <span>{t('stopwatch')}</span>
-                </Link>
-                <Link href="/clock/timer" className={`sidebar-item ${isTimerActive ? 'active' : ''}`}>
-                    <FaHourglassStart className="sidebar-icon" />
-                    <span>{t('timer')}</span>
-                </Link>
-            </div>
+            <ClockSidebar />
 
             {/* Main Content */}
             <div className="content-area">
-                <button onClick={toggleFullscreen} className="fullscreen-btn">
-                    {isFullscreen ? <FaCompress /> : <FaExpand />}
-                    {t('fullscreen')}
-                </button>
-
+                <FullscreenButton />
                 {children}
             </div>
         </div>
