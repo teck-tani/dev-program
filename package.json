@@ -38,7 +38,8 @@
     "last 2 Chrome versions",
     "last 2 Firefox versions",
     "last 2 Safari versions",
-    "not dead"
+    "defaults",
+    "not IE 11"
   ],
   "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
   "main": "fix-lockfile.js",

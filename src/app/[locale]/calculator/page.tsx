@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import ScientificCalculator from "@/components/ScientificCalculator";
+import dynamic from 'next/dynamic';
+
+const ScientificCalculator = dynamic(() => import('@/components/ScientificCalculator'), {
+  loading: () => <div className="w-full h-[600px] flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200">Loading Calculator...</div>,
+  ssr: false
+});
 
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
