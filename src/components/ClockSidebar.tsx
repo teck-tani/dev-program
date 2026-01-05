@@ -14,7 +14,8 @@ export default function ClockSidebar() {
 
     return (
         <div className="sidebar">
-            <style jsx>{`
+            <style jsx global>{`
+                /* Sidebar Container */
                 .sidebar {
                     width: 80px;
                     background-color: #1a1a1a;
@@ -26,7 +27,9 @@ export default function ClockSidebar() {
                     z-index: 10;
                     flex-shrink: 0;
                 }
-                .sidebar-item {
+
+                /* Sidebar Items (Link) */
+                .sidebar .sidebar-item {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -41,22 +44,27 @@ export default function ClockSidebar() {
                     white-space: nowrap;
                     text-decoration: none;
                 }
-                 .sidebar-item:hover, .sidebar-item.active {
+                
+                .sidebar .sidebar-item:hover, 
+                .sidebar .sidebar-item.active {
                     color: #fff;
                     background-color: #333;
                 }
-                .sidebar-icon {
+
+                /* Icons */
+                .sidebar .sidebar-icon {
                     font-size: 1.5rem;
                 }
                 
+                /* Mobile Styles */
                 @media (max-width: 600px) {
                     .sidebar {
                         width: 60px;
                     }
-                    .sidebar-item {
+                    .sidebar .sidebar-item {
                         font-size: 0.65rem;
                     }
-                    .sidebar-icon {
+                    .sidebar .sidebar-icon {
                         font-size: 1.2rem;
                     }
                 }
