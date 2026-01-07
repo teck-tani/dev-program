@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Calculator from "@/components/Calculator";
+import CalculatorWrapper from "@/components/CalculatorWrapper";
 
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -35,7 +35,9 @@ export default async function CalculatorPage({ params }: { params: Promise<{ loc
                 />
             </section>
 
-            <Calculator />
+            <div className="flex justify-center w-full">
+                <CalculatorWrapper />
+            </div>
 
             <article style={{ maxWidth: '800px', margin: '60px auto 0', lineHeight: '1.7' }}>
                 <section style={{ marginBottom: '50px' }}>

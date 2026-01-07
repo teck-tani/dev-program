@@ -13,7 +13,19 @@ const nextConfig: NextConfig = {
   // React Icons 등 무거운 라이브러리의 임포트 최적화
   experimental: {
     optimizePackageImports: ['react-icons'],
-  }
+  },
+  compress: true,
+  headers: async () => [
+    {
+      source: '/:all*(svg|jpg|png)',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'public, max-age=31536000, immutable',
+        },
+      ],
+    },
+  ],
 };
 
 export default withNextIntl(nextConfig);

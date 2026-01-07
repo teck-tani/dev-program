@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< .merge_file_cQSBYU
 import { useState, useEffect, useRef } from "react";
 import { Link, usePathname } from "@/navigation";
 import { FaStopwatch, FaHourglassStart, FaGlobe } from "react-icons/fa";
@@ -36,9 +37,22 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
     const isClockActive = pathname === '/clock';
     const isStopwatchActive = pathname === '/clock/stopwatch';
     const isTimerActive = pathname === '/clock/timer';
+=======
+import { Roboto_Mono } from 'next/font/google';
+import FullscreenButton from "@/components/FullscreenButton";
+import ClockSidebar from "@/components/ClockSidebar";
 
+const robotoMono = Roboto_Mono({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-roboto-mono',
+});
+>>>>>>> .merge_file_UFufOt
+
+export default function ClockLayout({ children }: { children: React.ReactNode }) {
+    
     return (
-        <div ref={containerRef} className="app-main-container">
+        <div className={`app-main-container ${robotoMono.variable}`}>
             <style jsx global>{`
                 .app-main-container {
                     display: flex;
@@ -46,7 +60,7 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     min-height: 100vh;
                     background: transparent;
                     color: white;
-                    margin: ${isFullscreen ? '0' : '-30px 0'};
+                    margin: -30px 0;
                     overflow: hidden;
                     font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
                 }
@@ -57,6 +71,7 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     color: #1a1a2e;
                 }
                 
+<<<<<<< .merge_file_cQSBYU
                 /* Sidebar Styles */
                 .sidebar {
                     width: 80px;
@@ -123,6 +138,8 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     font-size: 1.4rem;
                 }
                 
+=======
+>>>>>>> .merge_file_UFufOt
                 /* Timer Input Responsive Class */
                 .timer-input {
                     background-color: transparent;
@@ -135,20 +152,36 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     padding: 10px;
                 }
 
+<<<<<<< .merge_file_cQSBYU
+=======
+                /* Mobile Sidebar & Timer */
+                @media (max-width: 600px) {
+                    .timer-input {
+                        width: 22vw;
+                        font-size: 2rem;
+                        padding: 5px;
+                    }
+                }
+               
+>>>>>>> .merge_file_UFufOt
                 /* Content Area */
                 .content-area {
                     flex: 1;
                     position: relative;
                     display: flex;
                     justify-content: center;
+<<<<<<< .merge_file_cQSBYU
                     align-items: flex-start;
                     overflow-y: auto;
                     padding: 20px;
+=======
+                    align-items: center;
+>>>>>>> .merge_file_UFufOt
                 }
 
                 /* Shared Digital Style */
                 .digital-text {
-                    font-family: 'Courier New', Courier, monospace;
+                    font-family: var(--font-roboto-mono), 'Courier New', monospace;
                     font-weight: bold;
                     color: #00ff88;
                     line-height: 1;
@@ -193,6 +226,7 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                 }
                 .btn-red:hover { background-color: #d63031; }
 
+<<<<<<< .merge_file_cQSBYU
                 /* Custom Scrollbar */
                 .content-area::-webkit-scrollbar {
                     width: 8px;
@@ -259,9 +293,12 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                         padding: 10px;
                     }
                 }
+=======
+>>>>>>> .merge_file_UFufOt
             `}</style>
-
+            
             {/* Sidebar Navigation */}
+<<<<<<< .merge_file_cQSBYU
             <div className="sidebar">
                 <Link href="/clock" className={`sidebar-item ${isClockActive ? 'active' : ''}`}>
                     <FaGlobe className="sidebar-icon" />
@@ -279,6 +316,13 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
 
             {/* Main Content */}
             <div className="content-area">
+=======
+            <ClockSidebar />
+
+            {/* Main Content */}
+            <div className="content-area">
+                <FullscreenButton />
+>>>>>>> .merge_file_UFufOt
                 {children}
             </div>
         </div>
