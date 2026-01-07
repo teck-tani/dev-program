@@ -1110,7 +1110,7 @@ export default function ClockView() {
           height: calc(100vh - 60px);
           overflow: hidden;
           justify-content: flex-start;
-          padding-top: 50px;
+          padding-top: 150px;
           gap: 160px;
           scrollbar-width: none;
           -ms-overflow-style: none;
@@ -1138,7 +1138,7 @@ export default function ClockView() {
           flex-direction: column;
           align-items: center;
           gap: 160px;
-          padding-top: 50px;
+          padding-top: 150px;
           max-width: 1200px;
           margin: 0 auto;
         }
