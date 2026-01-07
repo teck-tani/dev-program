@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Link, usePathname } from "@/navigation"; // Use localized navigation
-import { FaExpand, FaCompress, FaRegClock, FaStopwatch, FaHourglassStart } from "react-icons/fa";
+import { Link, usePathname } from "@/navigation";
+import { FaStopwatch, FaHourglassStart, FaGlobe } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 
 export default function ClockLayout({ children }: { children: React.ReactNode }) {
@@ -11,19 +11,19 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
     const [isFullscreen, setIsFullscreen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const toggleFullscreen = () => {
-        if (!document.fullscreenElement && containerRef.current) {
-            containerRef.current.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-            });
-            setIsFullscreen(true);
-        } else {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-                setIsFullscreen(false);
-            }
-        }
-    };
+    // Hide header and footer on clock pages
+    useEffect(() => {
+        const topContainer = document.getElementById('top-container');
+        const footerContainer = document.getElementById('footer-container');
+
+        if (topContainer) topContainer.style.display = 'none';
+        if (footerContainer) footerContainer.style.display = 'none';
+
+        return () => {
+            if (topContainer) topContainer.style.display = '';
+            if (footerContainer) footerContainer.style.display = '';
+        };
+    }, []);
 
     useEffect(() => {
         const handleFullscreenChange = () => {
@@ -33,9 +33,6 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
         return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
     }, []);
 
-    // Helper logic to highlight active link correctly even with prefixes
-    // next-intl's usePathname returns the path without locale prefix, so strict matching works better.
-    // However, if we need partial matching:
     const isClockActive = pathname === '/clock';
     const isStopwatchActive = pathname === '/clock/stopwatch';
     const isTimerActive = pathname === '/clock/timer';
@@ -47,25 +44,39 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     display: flex;
                     width: 100%;
                     min-height: 100vh;
-                    background-color: #2c2c2c;
+                    background: transparent;
                     color: white;
                     margin: ${isFullscreen ? '0' : '-30px 0'};
                     overflow: hidden;
-                    font-family: 'Noto Sans KR', sans-serif;
+                    font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                }
+                
+                /* Theme support - will be controlled by ClockView */
+                .app-main-container.light-theme {
+                    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ee 50%, #f5f7fa 100%);
+                    color: #1a1a2e;
                 }
                 
                 /* Sidebar Styles */
                 .sidebar {
                     width: 80px;
-                    background-color: #1a1a1a;
+                    background-color: rgba(0, 0, 0, 0.3);
+                    backdrop-filter: blur(10px);
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     padding-top: 20px;
-                    border-right: 1px solid #333;
+                    border-right: 1px solid rgba(255, 255, 255, 0.1);
                     z-index: 10;
                     flex-shrink: 0;
+                    transition: all 0.3s ease;
                 }
+                
+                body[data-theme="light"] .sidebar {
+                    background-color: rgba(255, 255, 255, 0.8);
+                    border-right: 1px solid rgba(0, 0, 0, 0.1);
+                }
+                
                 .sidebar-item {
                     display: flex;
                     flex-direction: column;
@@ -73,50 +84,55 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     justify-content: center;
                     width: 100%;
                     padding: 15px 0;
-                    color: #888;
+                    color: rgba(255, 255, 255, 0.5);
                     cursor: pointer;
                     transition: all 0.2s;
-                    font-size: 0.8rem;
-                    gap: 5px;
+                    font-size: 0.75rem;
+                    gap: 6px;
                     white-space: nowrap;
                     text-decoration: none;
+                }
+                
+                body[data-theme="light"] .sidebar-item {
+                    color: rgba(0, 0, 0, 0.5);
+                }
+                
+                .sidebar-item:hover {
+                    color: #fff;
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
+                
+                body[data-theme="light"] .sidebar-item:hover {
+                    color: #1a1a2e;
+                    background-color: rgba(0, 0, 0, 0.05);
+                }
+                
+                .sidebar-item.active {
+                    color: #00ff88;
+                    background-color: rgba(0, 255, 136, 0.1);
+                    border-right: 3px solid #00ff88;
+                }
+                
+                body[data-theme="light"] .sidebar-item.active {
+                    color: #0891b2;
+                    background-color: rgba(8, 145, 178, 0.1);
+                    border-right: 3px solid #0891b2;
+                }
+                
+                .sidebar-icon {
+                    font-size: 1.4rem;
                 }
                 
                 /* Timer Input Responsive Class */
                 .timer-input {
                     background-color: transparent;
-                    border: 1px solid #444;
-                    color: #00ff9d;
+                    border: 1px solid rgba(0, 255, 136, 0.3);
+                    color: #00ff88;
                     font-size: 3rem;
                     width: 100px;
                     text-align: center;
                     border-radius: 8px;
                     padding: 10px;
-                }
-
-                /* Mobile Sidebar & Timer */
-                @media (max-width: 600px) {
-                    .sidebar {
-                        width: 60px;
-                    }
-                    .sidebar-item {
-                        font-size: 0.65rem;
-                    }
-                    .sidebar-icon {
-                        font-size: 1.2rem;
-                    }
-                    .timer-input {
-                        width: 22vw;
-                        font-size: 2rem;
-                        padding: 5px;
-                    }
-                }
-                .sidebar-item:hover, .sidebar-item.active {
-                    color: #fff;
-                    background-color: #333;
-                }
-                .sidebar-icon {
-                    font-size: 1.5rem;
                 }
 
                 /* Content Area */
@@ -125,36 +141,16 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     position: relative;
                     display: flex;
                     justify-content: center;
-                    align-items: center;
-                }
-
-                /* Fullscreen Button */
-                .fullscreen-btn {
-                    position: absolute;
-                    top: 20px;
-                    right: 20px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border: none;
-                    color: white;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-size: 14px;
-                    z-index: 100;
-                    transition: background 0.2s;
-                }
-                .fullscreen-btn:hover {
-                    background: rgba(255, 255, 255, 0.2);
+                    align-items: flex-start;
+                    overflow-y: auto;
+                    padding: 20px;
                 }
 
                 /* Shared Digital Style */
                 .digital-text {
                     font-family: 'Courier New', Courier, monospace;
                     font-weight: bold;
-                    color: #00ff9d;
+                    color: #00ff88;
                     line-height: 1;
                     font-variant-numeric: tabular-nums;
                 }
@@ -173,10 +169,12 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     text-transform: uppercase;
                     letter-spacing: 1px;
                 }
+                
                 .digital-btn:active {
                     transform: translateY(2px);
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
                 }
+                
                 .btn-green { 
                     background-color: #00b894; 
                     color: white; 
@@ -195,16 +193,70 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                 }
                 .btn-red:hover { background-color: #d63031; }
 
+                /* Custom Scrollbar */
+                .content-area::-webkit-scrollbar {
+                    width: 8px;
+                }
+                .content-area::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .content-area::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.2);
+                    border-radius: 4px;
+                }
+                .content-area::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                }
+
+                /* Fullscreen Mode - Hide sidebar and scrollbar */
+                :fullscreen .sidebar,
+                :fullscreen .app-main-container > .sidebar {
+                    display: none !important;
+                }
+                
+                :fullscreen .content-area {
+                    overflow: hidden !important;
+                }
+                
+                :fullscreen .content-area::-webkit-scrollbar {
+                    display: none !important;
+                }
+
+                /* Hide all scrollbars when in fullscreen */
+                :fullscreen,
+                :fullscreen html,
+                :fullscreen body,
+                :fullscreen * {
+                    scrollbar-width: none !important;
+                    -ms-overflow-style: none !important;
+                }
+                
+                :fullscreen::-webkit-scrollbar,
+                :fullscreen *::-webkit-scrollbar {
+                    display: none !important;
+                    width: 0 !important;
+                    height: 0 !important;
+                }
+
                 /* Mobile Sidebar */
                 @media (max-width: 600px) {
                     .sidebar {
                         width: 60px;
                     }
                     .sidebar-item {
-                        font-size: 0.7rem;
+                        font-size: 0.65rem;
+                        padding: 12px 0;
                     }
                     .sidebar-icon {
                         font-size: 1.2rem;
+                    }
+                    .timer-input {
+                        width: 22vw;
+                        font-size: 2rem;
+                        padding: 5px;
+                    }
+                    .content-area {
+                        padding: 10px;
                     }
                 }
             `}</style>
@@ -212,7 +264,7 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
             {/* Sidebar Navigation */}
             <div className="sidebar">
                 <Link href="/clock" className={`sidebar-item ${isClockActive ? 'active' : ''}`}>
-                    <FaRegClock className="sidebar-icon" />
+                    <FaGlobe className="sidebar-icon" />
                     <span>{t('clock')}</span>
                 </Link>
                 <Link href="/clock/stopwatch" className={`sidebar-item ${isStopwatchActive ? 'active' : ''}`}>
@@ -227,11 +279,6 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
 
             {/* Main Content */}
             <div className="content-area">
-                <button onClick={toggleFullscreen} className="fullscreen-btn">
-                    {isFullscreen ? <FaCompress /> : <FaExpand />}
-                    {t('fullscreen')}
-                </button>
-
                 {children}
             </div>
         </div>

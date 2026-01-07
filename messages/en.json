@@ -2,7 +2,7 @@
   "Meta": {
     "defaultTitle": "Web Tools Collection | Calculator, Clock, Emoji | Tani DevTool",
     "defaultDescription": "Various web tools necessary for daily life and work. Use calculators, clocks, emoji collections and more in one place. Conveniently available on mobile.",
-    "keywords": "web tools, online calculator, korea clock, emoji collection, practical web tools, life tools, utility",
+    "keywords": "web tools, online calculator, online clock, emoji collection, practical web tools, life tools, utility",
     "ogTitle": "Web Tools Collection | Tani DevTool",
     "ogDescription": "Various web tools necessary for daily life and work. Use calculators, clocks, emoji collections and more in one place."
   },
@@ -14,7 +14,7 @@
     "tools": {
       "barcode": "Barcode Generator",
       "calculator": "Scientific Calculator",
-      "clock": "Korea Clock",
+      "clock": "Online Clock",
       "emoji": "Emoji Collection",
       "lotto": "Lotto AI Recommendation",
       "salary": "Salary Calculator",
@@ -201,23 +201,23 @@
   },
   "Clock": {
     "Layout": {
-      "clock": "Clock",
+      "clock": "World Clock",
       "stopwatch": "Stopwatch",
       "timer": "Timer",
       "fullscreen": "Fullscreen"
     },
     "Main": {
       "meta": {
-        "title": "Korea Current Time - Real-time KST",
-        "description": "Check the most accurate Korea Standard Time in seconds. Optimized real-time clock for ticketing and server time check.",
-        "keywords": "Korea clock, current time, KST, server time, seconds clock",
-        "ogTitle": "Real-time Korea Clock",
-        "ogDescription": "Accurate Korea Standard Time in seconds"
+        "title": "World Clock - Check Global Time | Time Zone Converter",
+        "description": "Check current time in major cities worldwide in real-time. Supports 30+ cities including Seoul, Tokyo, New York, London. Features drag and drop, theme toggle, and city search.",
+        "keywords": "world clock, global time, timezone converter, current time, KST, EST, GMT, JST, time difference",
+        "ogTitle": "World Clock | Global City Time Check",
+        "ogDescription": "Check current time in major cities worldwide at a glance"
       },
-      "title": "Korea Clock",
+      "title": "World Clock",
       "seo": {
-        "title": "Accurate Korea Standard Time (KST)",
-        "desc": "This service provides real-time Korea Standard Time based on atomic clocks. Suitable for checking server time for ticketing or registration."
+        "title": "World Clock - Global Time Check",
+        "desc": "Check current time in major cities worldwide based on Korea Standard Time (KST). Features drag and drop reordering, city search and add, dark/light theme toggle."
       }
     },
     "Stopwatch": {
