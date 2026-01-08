@@ -9,6 +9,7 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
     const pathname = usePathname();
     const t = useTranslations('Clock.Layout');
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Hide header and footer on clock pages
@@ -22,6 +23,46 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
         return () => {
             if (topContainer) topContainer.style.display = '';
             if (footerContainer) footerContainer.style.display = '';
+        };
+    }, []);
+
+    // Load theme from localStorage and listen for changes
+    useEffect(() => {
+        const loadTheme = () => {
+            const saved = localStorage.getItem('worldClockState');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    const savedTheme = parsed.theme || 'dark';
+                    setTheme(savedTheme);
+                    document.body.setAttribute('data-theme', savedTheme);
+                    document.body.style.background = savedTheme === 'dark'
+                        ? 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
+                        : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 50%, #f0f4f8 100%)';
+                } catch (e) {
+                    console.error('Failed to parse theme:', e);
+                }
+            }
+        };
+
+        loadTheme();
+
+        // Listen for storage changes (when theme is changed in world clock)
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'worldClockState') {
+                loadTheme();
+            }
+        };
+
+        // Custom event for same-tab updates
+        const handleThemeChange = () => loadTheme();
+
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('clockThemeChange', handleThemeChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('clockThemeChange', handleThemeChange);
         };
     }, []);
 
@@ -133,6 +174,12 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     text-align: center;
                     border-radius: 8px;
                     padding: 10px;
+                    transition: all 0.3s ease;
+                }
+
+                body[data-theme="light"] .timer-input {
+                    border: 1px solid rgba(8, 145, 178, 0.3);
+                    color: #0891b2;
                 }
 
                 /* Content Area */
@@ -141,7 +188,7 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     position: relative;
                     display: flex;
                     justify-content: center;
-                    align-items: flex-start;
+                    align-items: center;
                     overflow-y: auto;
                     padding: 20px;
                 }
@@ -153,6 +200,11 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     color: #00ff88;
                     line-height: 1;
                     font-variant-numeric: tabular-nums;
+                    transition: color 0.3s ease;
+                }
+
+                body[data-theme="light"] .digital-text {
+                    color: #0891b2;
                 }
                 
                 /* Digital Button Style */

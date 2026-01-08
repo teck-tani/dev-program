@@ -13,6 +13,34 @@ export default function TimerView() {
     const [isSetting, setIsSetting] = useState(true);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [showAlarmModal, setShowAlarmModal] = useState(false);
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+    // Load theme from localStorage
+    useEffect(() => {
+        const loadTheme = () => {
+            const saved = localStorage.getItem('worldClockState');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    setTheme(parsed.theme || 'dark');
+                } catch (e) {
+                    console.error('Failed to parse theme:', e);
+                }
+            }
+        };
+
+        loadTheme();
+
+        const handleThemeChange = () => loadTheme();
+        window.addEventListener('clockThemeChange', handleThemeChange);
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'worldClockState') loadTheme();
+        });
+
+        return () => {
+            window.removeEventListener('clockThemeChange', handleThemeChange);
+        };
+    }, []);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -168,7 +196,12 @@ export default function TimerView() {
                     <TimeInput value={inputValues.s} onChange={(v) => setInputValues({ ...inputValues, s: v })} label={t('labels.second')} max={59} />
                 </div>
             ) : (
-                <div className="digital-text" style={{ fontSize: 'clamp(4rem, 15vw, 10rem)', marginBottom: '40px' }}>
+                <div className="digital-text" style={{ 
+                    fontSize: 'clamp(4rem, 15vw, 10rem)', 
+                    marginBottom: '40px',
+                    color: theme === 'dark' ? '#00ff88' : '#0891b2',
+                    transition: 'color 0.3s ease',
+                }}>
                     {formatTime(timeLeft)}
                 </div>
             )}

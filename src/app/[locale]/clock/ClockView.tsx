@@ -925,6 +925,9 @@ export default function ClockView() {
       ? 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
       : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 50%, #f0f4f8 100%)';
     document.body.setAttribute('data-theme', state.theme);
+
+    // Dispatch custom event for other clock pages to listen
+    window.dispatchEvent(new CustomEvent('clockThemeChange'));
   }, [state, isInitialized]);
 
   // Update time every second

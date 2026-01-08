@@ -7,8 +7,36 @@ export default function StopwatchView() {
     const t = useTranslations('Clock.Stopwatch.controls');
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
+
+    // Load theme from localStorage
+    useEffect(() => {
+        const loadTheme = () => {
+            const saved = localStorage.getItem('worldClockState');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    setTheme(parsed.theme || 'dark');
+                } catch (e) {
+                    console.error('Failed to parse theme:', e);
+                }
+            }
+        };
+
+        loadTheme();
+
+        const handleThemeChange = () => loadTheme();
+        window.addEventListener('clockThemeChange', handleThemeChange);
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'worldClockState') loadTheme();
+        });
+
+        return () => {
+            window.removeEventListener('clockThemeChange', handleThemeChange);
+        };
+    }, []);
 
     const update = () => {
         setTime(Date.now() - startTimeRef.current);
@@ -34,6 +62,8 @@ export default function StopwatchView() {
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
     };
 
+    const textColor = theme === 'dark' ? '#00ff88' : '#0891b2';
+
     return (
         <div style={{ textAlign: 'center' }}>
             <div className="digital-text" style={{
@@ -46,6 +76,8 @@ export default function StopwatchView() {
                 justifyContent: 'center',
                 lineHeight: 1,
                 willChange: 'content', // 렌더링 최적화 힌트
+                color: textColor,
+                transition: 'color 0.3s ease',
             }}>
                 {formatTime(time)}
             </div>
