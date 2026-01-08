@@ -1,6 +1,6 @@
 import ClockView from "./ClockView";
 import { Metadata } from "next";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -19,12 +19,76 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
     };
 }
 
+// Feature lists by locale
+const featureLists = {
+    ko: [
+        "초단위 정밀 서버시간",
+        "티켓팅/수능 시험용 시계",
+        "세계 주요 도시 시간 표시",
+        "다크/라이트 테마 지원",
+        "드래그 앤 드롭으로 시계 순서 변경",
+        "도시 검색 및 추가",
+        "반응형 디자인",
+        "전체화면 모드"
+    ],
+    en: [
+        "Precise server time to the second",
+        "Clock for ticketing/exams",
+        "Display world city times",
+        "Dark/Light theme support",
+        "Drag and drop to reorder clocks",
+        "City search and add",
+        "Responsive design",
+        "Fullscreen mode"
+    ]
+};
+
+const seoContent = {
+    ko: {
+        ariaLabel: "페이지 설명",
+        subtitle: "초단위 정확한 서버시간",
+        featuresTitle: "주요 기능",
+        featureItems: [
+            "초단위 정밀 서버시간 표시",
+            "티켓팅, 수능 시험용 시계",
+            "전 세계 주요 도시 시간 동시 확인",
+            "디지털 세그먼트 스타일의 실시간 시계",
+            "다크 모드 / 라이트 모드 테마 전환",
+            "드래그 앤 드롭으로 시계 순서 변경",
+            "도시 검색 및 동적 추가",
+            "글꼴 크기 조절",
+            "전체화면 모드 지원",
+            "반응형 디자인"
+        ]
+    },
+    en: {
+        ariaLabel: "Page description",
+        subtitle: "Accurate Server Time to the Second",
+        featuresTitle: "Key Features",
+        featureItems: [
+            "Precise server time display to the second",
+            "Clock for ticketing and exams",
+            "Check world city times simultaneously",
+            "Real-time clock with digital segment style",
+            "Dark mode / Light mode theme toggle",
+            "Drag and drop to reorder clocks",
+            "City search and dynamic addition",
+            "Font size adjustment",
+            "Fullscreen mode support",
+            "Responsive design"
+        ]
+    }
+};
+
 export default function ClockPage() {
     const t = useTranslations('Clock.Main');
+    const locale = useLocale() as 'ko' | 'en';
+    const features = featureLists[locale] || featureLists.en;
+    const seo = seoContent[locale] || seoContent.en;
 
     return (
         <main style={{ width: '100%', height: '100%' }}>
-            {/* 구조화 데이터 삽입 */}
+            {/* Structured Data */}
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
@@ -42,22 +106,13 @@ export default function ClockPage() {
                             "price": "0",
                             "priceCurrency": "KRW"
                         },
-                        "featureList": [
-                            "초단위 정밀 서버시간",
-                            "티켓팅/수능 시험용 시계",
-                            "세계 주요 도시 시간 표시",
-                            "다크/라이트 테마 지원",
-                            "드래그 앤 드롭으로 시계 순서 변경",
-                            "도시 검색 및 추가",
-                            "반응형 디자인",
-                            "전체화면 모드"
-                        ]
+                        "featureList": features
                     }),
                 }}
             />
             <ClockView />
 
-            {/* SEO를 위한 숨겨진 텍스트 섹션 */}
+            {/* SEO Content Section */}
             <section 
                 style={{ 
                     marginTop: '50px', 
@@ -68,25 +123,16 @@ export default function ClockPage() {
                     margin: '50px auto 0', 
                     padding: '0 20px' 
                 }}
-                aria-label="페이지 설명"
+                aria-label={seo.ariaLabel}
             >
                 <h1>{t('seo.title')}</h1>
-                <h2>초단위 정확한 서버시간</h2>
-                <p>
-                    {t('seo.desc')}
-                </p>
-                <h2>주요 기능</h2>
+                <h2>{seo.subtitle}</h2>
+                <p>{t('seo.desc')}</p>
+                <h2>{seo.featuresTitle}</h2>
                 <ul>
-                    <li>초단위 정밀 서버시간 표시</li>
-                    <li>티켓팅, 수능 시험용 시계</li>
-                    <li>전 세계 주요 도시 시간 동시 확인</li>
-                    <li>디지털 세그먼트 스타일의 실시간 시계</li>
-                    <li>다크 모드 / 라이트 모드 테마 전환</li>
-                    <li>드래그 앤 드롭으로 시계 순서 변경</li>
-                    <li>도시 검색 및 동적 추가</li>
-                    <li>글꼴 크기 조절</li>
-                    <li>전체화면 모드 지원</li>
-                    <li>반응형 디자인</li>
+                    {seo.featureItems.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
                 </ul>
             </section>
         </main>
