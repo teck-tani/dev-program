@@ -1,23 +1,61 @@
 import TimerView from "./TimerView";
 import { Metadata } from "next";
+import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
-export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await props.params;
     const t = await getTranslations({ locale, namespace: 'Clock.Timer.meta' });
     return {
         title: t('title'),
         description: t('description'),
+        keywords: t('keywords'),
         openGraph: {
-            title: t('title'),
-            description: t('description'),
+            title: t('ogTitle'),
+            description: t('ogDescription'),
         },
     };
 }
 
 export default function TimerPage() {
+    const t = useTranslations('Clock.Timer');
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": t('meta.title'),
+        "operatingSystem": "All",
+        "applicationCategory": "UtilitiesApplication",
+        "description": t('meta.description'),
+        "url": "https://teck-tani.com/clock/timer",
+        "featureList": [
+            "타바타 운동 타이머",
+            "인터벌 트레이닝",
+            "라면 3분 타이머",
+            "주방/요리 타이머",
+            "알람 소리 알림",
+            "전체화면 모드"
+        ]
+    };
+
     return (
-        <>
+        <main>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+
+            {/* 검색 엔진을 위한 보이지 않는 제목 구성 */}
+            <h1 style={{ position: 'absolute', width: '1px', height: '1px', overflow: 'hidden' }}>
+                {t('seo.title')}
+            </h1>
+
             <TimerView />
-        </>
+
+            {/* 페이지 하단에 SEO용 설명 텍스트 추가 */}
+            <section style={{ marginTop: '50px', color: '#d1d5db', fontSize: '0.9rem', textAlign: 'center', maxWidth: '800px', margin: '50px auto 0', padding: '0 20px' }}>
+                <p>{t('seo.desc')}</p>
+            </section>
+        </main>
     );
 }

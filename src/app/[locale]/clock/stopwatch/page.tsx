@@ -3,7 +3,8 @@ import { Metadata } from "next";
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
-export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await props.params;
     const t = await getTranslations({ locale, namespace: 'Clock.Stopwatch.meta' });
     return {
         title: t('title'),
@@ -27,6 +28,13 @@ export default function StopwatchPage() {
         "applicationCategory": "UtilitiesApplication",
         "description": t('meta.description'),
         "url": "https://teck-tani.com/clock/stopwatch",
+        "featureList": [
+            "밀리초 단위 정밀 측정",
+            "공부 시간 기록 (공스타그램)",
+            "운동 랩타임 측정",
+            "전체화면 모드",
+            "PC/모바일 반응형 디자인"
+        ]
     };
 
     return (
@@ -44,7 +52,7 @@ export default function StopwatchPage() {
             <StopwatchWrapper />
 
             {/* 페이지 하단에 SEO용 설명 텍스트 추가 */}
-            <section style={{ marginTop: '50px', color: '#d1d5db', fontSize: '0.9rem', textAlign: 'center', maxWidth: '800px', margin: '50px auto 0' }}>
+            <section style={{ marginTop: '50px', color: '#d1d5db', fontSize: '0.9rem', textAlign: 'center', maxWidth: '800px', margin: '50px auto 0', padding: '0 20px' }}>
                 <p>{t('seo.desc')}</p>
             </section>
         </main>

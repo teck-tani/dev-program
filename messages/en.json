@@ -208,25 +208,25 @@
     },
     "Main": {
       "meta": {
-        "title": "World Clock - Check Global Time | Time Zone Converter",
-        "description": "Check current time in major cities worldwide in real-time. Supports 30+ cities including Seoul, Tokyo, New York, London. Features drag and drop, theme toggle, and city search.",
-        "keywords": "world clock, global time, timezone converter, current time, KST, EST, GMT, JST, time difference",
-        "ogTitle": "World Clock | Global City Time Check",
-        "ogDescription": "Check current time in major cities worldwide at a glance"
+        "title": "Online Clock - Accurate Server Time to the Second (For Exams/Ticketing)",
+        "description": "Precision 0.01 second online clock optimized for ticketing, exams, and tests. Check server time accurately to the second in real-time. Display multiple world city times simultaneously.",
+        "keywords": "online clock, server time, ticketing clock, exam clock, test clock, precise clock, world time, current time, accurate time, real-time clock",
+        "ogTitle": "Online Clock | Precise Server Time - For Ticketing & Exams",
+        "ogDescription": "The secret to successful ticketing! Check accurate server time down to 0.01 seconds in real-time."
       },
-      "title": "World Clock",
+      "title": "Online Clock",
       "seo": {
-        "title": "World Clock - Global Time Check",
-        "desc": "Check current time in major cities worldwide based on Korea Standard Time (KST). Features drag and drop reordering, city search and add, dark/light theme toggle."
+        "title": "Online Clock - Accurate Server Time to the Second",
+        "desc": "Need accurate time down to the second for ticketing or exams? This online clock displays server time precisely to the millisecond and allows you to check multiple world city times simultaneously. Optimized for concert ticketing, exam practice, and time management."
       }
     },
     "Stopwatch": {
       "meta": {
-        "title": "Online Stopwatch - Accurate Real-time Stopwatch",
-        "description": "The easiest online stopwatch to measure time for study, workout, or work. Use directly in browser without installation.",
-        "keywords": "stopwatch, online stopwatch, timer, time measure, workout timer",
-        "ogTitle": "Accurate Online Stopwatch",
-        "ogDescription": "Simple time measurement tool with one click"
+        "title": "Online Stopwatch - Study Time & Workout Lap Time Measurement (PC/Mobile)",
+        "description": "Online stopwatch optimized for study time tracking and workout lap time recording. Millisecond precision measurement, fullscreen mode for better focus. Essential for study tracking!",
+        "keywords": "online stopwatch, study stopwatch, workout stopwatch, lap time measurement, timer, time tracking, interval timer, study timer",
+        "ogTitle": "Online Stopwatch | Study & Workout Time Measurement",
+        "ogDescription": "Study time tracking, workout lap time measurement! Start efficient time management with millisecond precision stopwatch."
       },
       "controls": {
         "start": "Start",
@@ -234,14 +234,17 @@
         "reset": "Reset"
       },
       "seo": {
-        "title": "Real-time Online Stopwatch Service",
-        "desc": "This stopwatch measures up to milliseconds accuracy and can be used for workouts or study time management. Supports fullscreen mode for better focus."
+        "title": "Online Stopwatch - Study & Workout Time Measurement",
+        "desc": "This stopwatch measures up to milliseconds accuracy and can be used for study time tracking, workout lap time measurement, and work time management. Supports fullscreen mode for better focus. Works perfectly on both PC and mobile."
       }
     },
     "Timer": {
       "meta": {
-        "title": "Timer - Online Timer & Alarm",
-        "description": "Convenient online timer with alarm. Use for cooking, studying, workout, etc."
+        "title": "Online Timer - Workout Tabata & Cooking Alarm",
+        "description": "Online timer for Tabata workout, interval training, noodle timer, and kitchen timer. Set your desired time like 3 or 5 minutes and get alarm notifications.",
+        "keywords": "online timer, tabata timer, workout timer, routine timer, kitchen timer, cooking timer, interval timer, alarm setting",
+        "ogTitle": "Online Timer | Tabata Workout & Cooking Alarm",
+        "ogDescription": "Tabata workout, 3-minute noodle timer, cooking alarm! Set your time and get notified."
       },
       "controls": {
         "start": "Start",
@@ -257,6 +260,10 @@
       },
       "modal": {
         "title": "Timer"
+      },
+      "seo": {
+        "title": "Online Timer - Workout & Cooking Alarm",
+        "desc": "Use as a routine timer for Tabata workouts or interval training, or as a kitchen timer for cooking. Easily set common times like 3 or 5 minutes and get alarm notifications. Supports fullscreen mode and dark/light themes."
       }
     }
   },

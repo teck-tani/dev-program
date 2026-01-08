@@ -2,7 +2,8 @@ import PayCalClient from "./PayCalClient";
 import { Metadata } from "next";
 import { getTranslations } from 'next-intl/server';
 
-export async function generateMetadata({ params: { locale } }: { params: { locale: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await props.params;
     const t = await getTranslations({ locale, namespace: 'PayCal.meta' });
     return {
         title: t('title'),
