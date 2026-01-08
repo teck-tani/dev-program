@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useLocale } from 'next-intl';
 import {
   DndContext,
   closestCenter,
@@ -83,39 +84,128 @@ interface ClockState {
 }
 
 // ============================================
-// City Database
+// Localization
+// ============================================
+const i18n = {
+  ko: {
+    addCity: '도시 추가',
+    noResults: '검색 결과가 없습니다',
+    searchPlaceholder: '도시 또는 국가 검색...',
+    reference: '기준',
+    today: '오늘',
+    yesterday: '어제',
+    tomorrow: '내일',
+    hour: '시간',
+    hourMinute: (h: number, m: number) => `${h}시간 ${m}분`,
+    decreaseSize: '크기 줄이기',
+    increaseSize: '크기 늘리기',
+    toggleTheme: '테마 전환',
+    fullscreen: '전체화면',
+    exitFullscreen: '전체화면 해제',
+    days: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+    dateFormat: (y: number, m: number, d: number, day: string) => `${y}년 ${m}월 ${d}일 ${day}`,
+  },
+  en: {
+    addCity: 'Add City',
+    noResults: 'No results found',
+    searchPlaceholder: 'Search city or country...',
+    reference: 'Base',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    tomorrow: 'Tomorrow',
+    hour: 'hr',
+    hourMinute: (h: number, m: number) => `${h}h ${m}m`,
+    decreaseSize: 'Decrease size',
+    increaseSize: 'Increase size',
+    toggleTheme: 'Toggle theme',
+    fullscreen: 'Fullscreen',
+    exitFullscreen: 'Exit fullscreen',
+    days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    dateFormat: (y: number, m: number, d: number, day: string) => `${day}, ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1]} ${d}, ${y}`,
+  }
+};
+
+type Locale = 'ko' | 'en';
+
+// ============================================
+// City Database (70개 도시)
 // ============================================
 const CITY_DATABASE: City[] = [
+  // 🌏 아시아 / 오세아니아 (26개)
   { id: 'seoul', name: 'Seoul', nameKo: '서울', timezone: 'Asia/Seoul', offset: 9, country: 'South Korea', countryCode: 'KR', countryKo: '대한민국', flag: '🇰🇷' },
   { id: 'tokyo', name: 'Tokyo', nameKo: '도쿄', timezone: 'Asia/Tokyo', offset: 9, country: 'Japan', countryCode: 'JP', countryKo: '일본', flag: '🇯🇵' },
+  { id: 'osaka', name: 'Osaka', nameKo: '오사카', timezone: 'Asia/Tokyo', offset: 9, country: 'Japan', countryCode: 'JP', countryKo: '일본', flag: '🇯🇵' },
   { id: 'beijing', name: 'Beijing', nameKo: '베이징', timezone: 'Asia/Shanghai', offset: 8, country: 'China', countryCode: 'CN', countryKo: '중국', flag: '🇨🇳' },
-  { id: 'newyork', name: 'New York', nameKo: '뉴욕', timezone: 'America/New_York', offset: -5, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'shanghai', name: 'Shanghai', nameKo: '상하이', timezone: 'Asia/Shanghai', offset: 8, country: 'China', countryCode: 'CN', countryKo: '중국', flag: '🇨🇳' },
+  { id: 'hongkong', name: 'Hong Kong', nameKo: '홍콩', timezone: 'Asia/Hong_Kong', offset: 8, country: 'China', countryCode: 'HK', countryKo: '중국', flag: '🇭🇰' },
+  { id: 'taipei', name: 'Taipei', nameKo: '타이베이', timezone: 'Asia/Taipei', offset: 8, country: 'Taiwan', countryCode: 'TW', countryKo: '대만', flag: '🇹🇼' },
+  { id: 'singapore', name: 'Singapore', nameKo: '싱가포르', timezone: 'Asia/Singapore', offset: 8, country: 'Singapore', countryCode: 'SG', countryKo: '싱가포르', flag: '🇸🇬' },
+  { id: 'bangkok', name: 'Bangkok', nameKo: '방콕', timezone: 'Asia/Bangkok', offset: 7, country: 'Thailand', countryCode: 'TH', countryKo: '태국', flag: '🇹🇭' },
+  { id: 'hochiminh', name: 'Ho Chi Minh City', nameKo: '호치민', timezone: 'Asia/Ho_Chi_Minh', offset: 7, country: 'Vietnam', countryCode: 'VN', countryKo: '베트남', flag: '🇻🇳' },
+  { id: 'hanoi', name: 'Hanoi', nameKo: '하노이', timezone: 'Asia/Ho_Chi_Minh', offset: 7, country: 'Vietnam', countryCode: 'VN', countryKo: '베트남', flag: '🇻🇳' },
+  { id: 'jakarta', name: 'Jakarta', nameKo: '자카르타', timezone: 'Asia/Jakarta', offset: 7, country: 'Indonesia', countryCode: 'ID', countryKo: '인도네시아', flag: '🇮🇩' },
+  { id: 'kualalumpur', name: 'Kuala Lumpur', nameKo: '쿠알라룸푸르', timezone: 'Asia/Kuala_Lumpur', offset: 8, country: 'Malaysia', countryCode: 'MY', countryKo: '말레이시아', flag: '🇲🇾' },
+  { id: 'manila', name: 'Manila', nameKo: '마닐라', timezone: 'Asia/Manila', offset: 8, country: 'Philippines', countryCode: 'PH', countryKo: '필리핀', flag: '🇵🇭' },
+  { id: 'newdelhi', name: 'New Delhi', nameKo: '뉴델리', timezone: 'Asia/Kolkata', offset: 5.5, country: 'India', countryCode: 'IN', countryKo: '인도', flag: '🇮🇳' },
+  { id: 'mumbai', name: 'Mumbai', nameKo: '뭄바이', timezone: 'Asia/Kolkata', offset: 5.5, country: 'India', countryCode: 'IN', countryKo: '인도', flag: '🇮🇳' },
+  { id: 'bengaluru', name: 'Bengaluru', nameKo: '벵갈루루', timezone: 'Asia/Kolkata', offset: 5.5, country: 'India', countryCode: 'IN', countryKo: '인도', flag: '🇮🇳' },
+  { id: 'sydney', name: 'Sydney', nameKo: '시드니', timezone: 'Australia/Sydney', offset: 11, country: 'Australia', countryCode: 'AU', countryKo: '호주', flag: '🇦🇺' },
+  { id: 'melbourne', name: 'Melbourne', nameKo: '멜버른', timezone: 'Australia/Melbourne', offset: 11, country: 'Australia', countryCode: 'AU', countryKo: '호주', flag: '🇦🇺' },
+  { id: 'brisbane', name: 'Brisbane', nameKo: '브리즈번', timezone: 'Australia/Brisbane', offset: 10, country: 'Australia', countryCode: 'AU', countryKo: '호주', flag: '🇦🇺' },
+  { id: 'auckland', name: 'Auckland', nameKo: '오클랜드', timezone: 'Pacific/Auckland', offset: 13, country: 'New Zealand', countryCode: 'NZ', countryKo: '뉴질랜드', flag: '🇳🇿' },
+  { id: 'guam', name: 'Guam', nameKo: '괌', timezone: 'Pacific/Guam', offset: 10, country: 'USA', countryCode: 'GU', countryKo: '미국령', flag: '🇬🇺' },
+  { id: 'ulaanbaatar', name: 'Ulaanbaatar', nameKo: '울란바토르', timezone: 'Asia/Ulaanbaatar', offset: 8, country: 'Mongolia', countryCode: 'MN', countryKo: '몽골', flag: '🇲🇳' },
+  { id: 'almaty', name: 'Almaty', nameKo: '알마티', timezone: 'Asia/Almaty', offset: 6, country: 'Kazakhstan', countryCode: 'KZ', countryKo: '카자흐스탄', flag: '🇰🇿' },
+  { id: 'tashkent', name: 'Tashkent', nameKo: '타슈켄트', timezone: 'Asia/Tashkent', offset: 5, country: 'Uzbekistan', countryCode: 'UZ', countryKo: '우즈베키스탄', flag: '🇺🇿' },
+  { id: 'vladivostok', name: 'Vladivostok', nameKo: '블라디보스토크', timezone: 'Asia/Vladivostok', offset: 10, country: 'Russia', countryCode: 'RU', countryKo: '러시아', flag: '🇷🇺' },
+
+  // 🌍 유럽 / 아프리카 / 중동 (24개)
   { id: 'london', name: 'London', nameKo: '런던', timezone: 'Europe/London', offset: 0, country: 'UK', countryCode: 'GB', countryKo: '영국', flag: '🇬🇧' },
   { id: 'paris', name: 'Paris', nameKo: '파리', timezone: 'Europe/Paris', offset: 1, country: 'France', countryCode: 'FR', countryKo: '프랑스', flag: '🇫🇷' },
+  { id: 'frankfurt', name: 'Frankfurt', nameKo: '프랑크푸르트', timezone: 'Europe/Berlin', offset: 1, country: 'Germany', countryCode: 'DE', countryKo: '독일', flag: '🇩🇪' },
   { id: 'berlin', name: 'Berlin', nameKo: '베를린', timezone: 'Europe/Berlin', offset: 1, country: 'Germany', countryCode: 'DE', countryKo: '독일', flag: '🇩🇪' },
-  { id: 'moscow', name: 'Moscow', nameKo: '모스크바', timezone: 'Europe/Moscow', offset: 3, country: 'Russia', countryCode: 'RU', countryKo: '러시아', flag: '🇷🇺' },
-  { id: 'dubai', name: 'Dubai', nameKo: '두바이', timezone: 'Asia/Dubai', offset: 4, country: 'UAE', countryCode: 'AE', countryKo: '아랍에미리트', flag: '🇦🇪' },
-  { id: 'mumbai', name: 'Mumbai', nameKo: '뭄바이', timezone: 'Asia/Kolkata', offset: 5.5, country: 'India', countryCode: 'IN', countryKo: '인도', flag: '🇮🇳' },
-  { id: 'bangkok', name: 'Bangkok', nameKo: '방콕', timezone: 'Asia/Bangkok', offset: 7, country: 'Thailand', countryCode: 'TH', countryKo: '태국', flag: '🇹🇭' },
-  { id: 'singapore', name: 'Singapore', nameKo: '싱가포르', timezone: 'Asia/Singapore', offset: 8, country: 'Singapore', countryCode: 'SG', countryKo: '싱가포르', flag: '🇸🇬' },
-  { id: 'hongkong', name: 'Hong Kong', nameKo: '홍콩', timezone: 'Asia/Hong_Kong', offset: 8, country: 'China', countryCode: 'HK', countryKo: '중국', flag: '🇭🇰' },
-  { id: 'sydney', name: 'Sydney', nameKo: '시드니', timezone: 'Australia/Sydney', offset: 11, country: 'Australia', countryCode: 'AU', countryKo: '호주', flag: '🇦🇺' },
-  { id: 'auckland', name: 'Auckland', nameKo: '오클랜드', timezone: 'Pacific/Auckland', offset: 13, country: 'New Zealand', countryCode: 'NZ', countryKo: '뉴질랜드', flag: '🇳🇿' },
-  { id: 'losangeles', name: 'Los Angeles', nameKo: '로스앤젤레스', timezone: 'America/Los_Angeles', offset: -8, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
-  { id: 'chicago', name: 'Chicago', nameKo: '시카고', timezone: 'America/Chicago', offset: -6, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
-  { id: 'toronto', name: 'Toronto', nameKo: '토론토', timezone: 'America/Toronto', offset: -5, country: 'Canada', countryCode: 'CA', countryKo: '캐나다', flag: '🇨🇦' },
-  { id: 'vancouver', name: 'Vancouver', nameKo: '밴쿠버', timezone: 'America/Vancouver', offset: -8, country: 'Canada', countryCode: 'CA', countryKo: '캐나다', flag: '🇨🇦' },
-  { id: 'saopaulo', name: 'São Paulo', nameKo: '상파울루', timezone: 'America/Sao_Paulo', offset: -3, country: 'Brazil', countryCode: 'BR', countryKo: '브라질', flag: '🇧🇷' },
-  { id: 'cairo', name: 'Cairo', nameKo: '카이로', timezone: 'Africa/Cairo', offset: 2, country: 'Egypt', countryCode: 'EG', countryKo: '이집트', flag: '🇪🇬' },
-  { id: 'johannesburg', name: 'Johannesburg', nameKo: '요하네스버그', timezone: 'Africa/Johannesburg', offset: 2, country: 'South Africa', countryCode: 'ZA', countryKo: '남아공', flag: '🇿🇦' },
-  { id: 'istanbul', name: 'Istanbul', nameKo: '이스탄불', timezone: 'Europe/Istanbul', offset: 3, country: 'Turkey', countryCode: 'TR', countryKo: '튀르키예', flag: '🇹🇷' },
-  { id: 'jakarta', name: 'Jakarta', nameKo: '자카르타', timezone: 'Asia/Jakarta', offset: 7, country: 'Indonesia', countryCode: 'ID', countryKo: '인도네시아', flag: '🇮🇩' },
-  { id: 'manila', name: 'Manila', nameKo: '마닐라', timezone: 'Asia/Manila', offset: 8, country: 'Philippines', countryCode: 'PH', countryKo: '필리핀', flag: '🇵🇭' },
-  { id: 'taipei', name: 'Taipei', nameKo: '타이베이', timezone: 'Asia/Taipei', offset: 8, country: 'Taiwan', countryCode: 'TW', countryKo: '대만', flag: '🇹🇼' },
-  { id: 'hanoi', name: 'Hanoi', nameKo: '하노이', timezone: 'Asia/Ho_Chi_Minh', offset: 7, country: 'Vietnam', countryCode: 'VN', countryKo: '베트남', flag: '🇻🇳' },
-  { id: 'kualalumpur', name: 'Kuala Lumpur', nameKo: '쿠알라룸푸르', timezone: 'Asia/Kuala_Lumpur', offset: 8, country: 'Malaysia', countryCode: 'MY', countryKo: '말레이시아', flag: '🇲🇾' },
+  { id: 'munich', name: 'Munich', nameKo: '뮌헨', timezone: 'Europe/Berlin', offset: 1, country: 'Germany', countryCode: 'DE', countryKo: '독일', flag: '🇩🇪' },
   { id: 'amsterdam', name: 'Amsterdam', nameKo: '암스테르담', timezone: 'Europe/Amsterdam', offset: 1, country: 'Netherlands', countryCode: 'NL', countryKo: '네덜란드', flag: '🇳🇱' },
   { id: 'zurich', name: 'Zurich', nameKo: '취리히', timezone: 'Europe/Zurich', offset: 1, country: 'Switzerland', countryCode: 'CH', countryKo: '스위스', flag: '🇨🇭' },
+  { id: 'rome', name: 'Rome', nameKo: '로마', timezone: 'Europe/Rome', offset: 1, country: 'Italy', countryCode: 'IT', countryKo: '이탈리아', flag: '🇮🇹' },
+  { id: 'milan', name: 'Milan', nameKo: '밀라노', timezone: 'Europe/Rome', offset: 1, country: 'Italy', countryCode: 'IT', countryKo: '이탈리아', flag: '🇮🇹' },
+  { id: 'madrid', name: 'Madrid', nameKo: '마드리드', timezone: 'Europe/Madrid', offset: 1, country: 'Spain', countryCode: 'ES', countryKo: '스페인', flag: '🇪🇸' },
+  { id: 'barcelona', name: 'Barcelona', nameKo: '바르셀로나', timezone: 'Europe/Madrid', offset: 1, country: 'Spain', countryCode: 'ES', countryKo: '스페인', flag: '🇪🇸' },
+  { id: 'brussels', name: 'Brussels', nameKo: '브뤼셀', timezone: 'Europe/Brussels', offset: 1, country: 'Belgium', countryCode: 'BE', countryKo: '벨기에', flag: '🇧🇪' },
+  { id: 'moscow', name: 'Moscow', nameKo: '모스크바', timezone: 'Europe/Moscow', offset: 3, country: 'Russia', countryCode: 'RU', countryKo: '러시아', flag: '🇷🇺' },
+  { id: 'istanbul', name: 'Istanbul', nameKo: '이스탄불', timezone: 'Europe/Istanbul', offset: 3, country: 'Turkey', countryCode: 'TR', countryKo: '튀르키예', flag: '🇹🇷' },
+  { id: 'dubai', name: 'Dubai', nameKo: '두바이', timezone: 'Asia/Dubai', offset: 4, country: 'UAE', countryCode: 'AE', countryKo: '아랍에미리트', flag: '🇦🇪' },
+  { id: 'abudhabi', name: 'Abu Dhabi', nameKo: '아부다비', timezone: 'Asia/Dubai', offset: 4, country: 'UAE', countryCode: 'AE', countryKo: '아랍에미리트', flag: '🇦🇪' },
+  { id: 'riyadh', name: 'Riyadh', nameKo: '리야드', timezone: 'Asia/Riyadh', offset: 3, country: 'Saudi Arabia', countryCode: 'SA', countryKo: '사우디아라비아', flag: '🇸🇦' },
+  { id: 'doha', name: 'Doha', nameKo: '도하', timezone: 'Asia/Qatar', offset: 3, country: 'Qatar', countryCode: 'QA', countryKo: '카타르', flag: '🇶🇦' },
+  { id: 'telaviv', name: 'Tel Aviv', nameKo: '텔아비브', timezone: 'Asia/Jerusalem', offset: 2, country: 'Israel', countryCode: 'IL', countryKo: '이스라엘', flag: '🇮🇱' },
+  { id: 'cairo', name: 'Cairo', nameKo: '카이로', timezone: 'Africa/Cairo', offset: 2, country: 'Egypt', countryCode: 'EG', countryKo: '이집트', flag: '🇪🇬' },
+  { id: 'johannesburg', name: 'Johannesburg', nameKo: '요하네스버그', timezone: 'Africa/Johannesburg', offset: 2, country: 'South Africa', countryCode: 'ZA', countryKo: '남아공', flag: '🇿🇦' },
+  { id: 'capetown', name: 'Cape Town', nameKo: '케이프타운', timezone: 'Africa/Johannesburg', offset: 2, country: 'South Africa', countryCode: 'ZA', countryKo: '남아공', flag: '🇿🇦' },
+  { id: 'nairobi', name: 'Nairobi', nameKo: '나이로비', timezone: 'Africa/Nairobi', offset: 3, country: 'Kenya', countryCode: 'KE', countryKo: '케냐', flag: '🇰🇪' },
+  { id: 'lagos', name: 'Lagos', nameKo: '라고스', timezone: 'Africa/Lagos', offset: 1, country: 'Nigeria', countryCode: 'NG', countryKo: '나이지리아', flag: '🇳🇬' },
+
+  // 🌎 북미 / 남미 (20개)
+  { id: 'newyork', name: 'New York', nameKo: '뉴욕', timezone: 'America/New_York', offset: -5, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'washington', name: 'Washington D.C.', nameKo: '워싱턴 D.C.', timezone: 'America/New_York', offset: -5, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'boston', name: 'Boston', nameKo: '보스턴', timezone: 'America/New_York', offset: -5, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'atlanta', name: 'Atlanta', nameKo: '애틀랜타', timezone: 'America/New_York', offset: -5, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'toronto', name: 'Toronto', nameKo: '토론토', timezone: 'America/Toronto', offset: -5, country: 'Canada', countryCode: 'CA', countryKo: '캐나다', flag: '🇨🇦' },
+  { id: 'chicago', name: 'Chicago', nameKo: '시카고', timezone: 'America/Chicago', offset: -6, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'dallas', name: 'Dallas', nameKo: '댈러스', timezone: 'America/Chicago', offset: -6, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'houston', name: 'Houston', nameKo: '휴스턴', timezone: 'America/Chicago', offset: -6, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'denver', name: 'Denver', nameKo: '덴버', timezone: 'America/Denver', offset: -7, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'losangeles', name: 'Los Angeles', nameKo: '로스앤젤레스', timezone: 'America/Los_Angeles', offset: -8, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'sanfrancisco', name: 'San Francisco', nameKo: '샌프란시스코', timezone: 'America/Los_Angeles', offset: -8, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'seattle', name: 'Seattle', nameKo: '시애틀', timezone: 'America/Los_Angeles', offset: -8, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'vancouver', name: 'Vancouver', nameKo: '밴쿠버', timezone: 'America/Vancouver', offset: -8, country: 'Canada', countryCode: 'CA', countryKo: '캐나다', flag: '🇨🇦' },
+  { id: 'honolulu', name: 'Honolulu', nameKo: '호놀룰루', timezone: 'Pacific/Honolulu', offset: -10, country: 'USA', countryCode: 'US', countryKo: '미국', flag: '🇺🇸' },
+  { id: 'mexicocity', name: 'Mexico City', nameKo: '멕시코시티', timezone: 'America/Mexico_City', offset: -6, country: 'Mexico', countryCode: 'MX', countryKo: '멕시코', flag: '🇲🇽' },
+  { id: 'saopaulo', name: 'São Paulo', nameKo: '상파울루', timezone: 'America/Sao_Paulo', offset: -3, country: 'Brazil', countryCode: 'BR', countryKo: '브라질', flag: '🇧🇷' },
+  { id: 'riodejaneiro', name: 'Rio de Janeiro', nameKo: '리우데자네이루', timezone: 'America/Sao_Paulo', offset: -3, country: 'Brazil', countryCode: 'BR', countryKo: '브라질', flag: '🇧🇷' },
+  { id: 'buenosaires', name: 'Buenos Aires', nameKo: '부에노스아이레스', timezone: 'America/Argentina/Buenos_Aires', offset: -3, country: 'Argentina', countryCode: 'AR', countryKo: '아르헨티나', flag: '🇦🇷' },
+  { id: 'santiago', name: 'Santiago', nameKo: '산티아고', timezone: 'America/Santiago', offset: -4, country: 'Chile', countryCode: 'CL', countryKo: '칠레', flag: '🇨🇱' },
+  { id: 'bogota', name: 'Bogotá', nameKo: '보고타', timezone: 'America/Bogota', offset: -5, country: 'Colombia', countryCode: 'CO', countryKo: '콜롬비아', flag: '🇨🇴' },
 ];
 
 const DEFAULT_MAIN: City = CITY_DATABASE.find(c => c.id === 'seoul')!;
@@ -160,36 +250,52 @@ const formatTime = (date: Date): { hours: string; minutes: string; seconds: stri
   };
 };
 
-const formatDate = (date: Date): string => {
-  const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+const formatDate = (date: Date, locale: Locale): string => {
+  const t = i18n[locale];
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  const dayOfWeek = days[date.getDay()];
-  return `${year}년 ${month}월 ${day}일 ${dayOfWeek}`;
+  const dayOfWeek = t.days[date.getDay()];
+  return t.dateFormat(year, month, day, dayOfWeek);
 };
 
-const getTimeDifference = (mainOffset: number, targetOffset: number): string => {
+const getTimeDifference = (mainOffset: number, targetOffset: number, locale: Locale): string => {
+  const t = i18n[locale];
   const diff = targetOffset - mainOffset;
-  if (diff === 0) return '기준';
+  if (diff === 0) return t.reference;
   const sign = diff > 0 ? '+' : '';
   const hours = Math.floor(Math.abs(diff));
   const minutes = (Math.abs(diff) % 1) * 60;
   if (minutes > 0) {
-    return `${sign}${diff > 0 ? '' : '-'}${hours}시간 ${minutes}분`;
+    if (locale === 'ko') {
+      return `${sign}${diff > 0 ? '' : '-'}${hours}시간 ${minutes}분`;
+    }
+    return `${sign}${diff}h ${minutes}m`;
   }
-  return `${sign}${diff}시간`;
+  if (locale === 'ko') {
+    return `${sign}${diff}시간`;
+  }
+  return `${sign}${diff}${t.hour}`;
 };
 
-const getDayStatus = (mainTimezone: string, targetTimezone: string): string => {
+const getDayStatus = (mainTimezone: string, targetTimezone: string, locale: Locale): string => {
+  const t = i18n[locale];
   const mainDate = getTimeForTimezone(mainTimezone);
   const targetDate = getTimeForTimezone(targetTimezone);
   const mainDay = mainDate.getDate();
   const targetDay = targetDate.getDate();
 
-  if (targetDay === mainDay) return '오늘';
-  if (targetDay < mainDay) return '어제';
-  return '내일';
+  if (targetDay === mainDay) return t.today;
+  if (targetDay < mainDay) return t.yesterday;
+  return t.tomorrow;
+};
+
+const getCityName = (city: City, locale: Locale): string => {
+  return locale === 'ko' ? city.nameKo : city.name;
+};
+
+const getCountryName = (city: City, locale: Locale): string => {
+  return locale === 'ko' ? city.countryKo : city.country;
 };
 
 // ============================================
@@ -305,9 +411,10 @@ interface MainClockProps {
   time: Date;
   fontSize: number;
   theme: 'dark' | 'light';
+  locale: Locale;
 }
 
-const MainClockDisplay: React.FC<MainClockProps> = ({ city, time, fontSize, theme }) => {
+const MainClockDisplay: React.FC<MainClockProps> = ({ city, time, fontSize, theme, locale }) => {
   const { hours, minutes, seconds } = formatTime(time);
   const [blink, setBlink] = useState(true);
 
@@ -322,8 +429,8 @@ const MainClockDisplay: React.FC<MainClockProps> = ({ city, time, fontSize, them
     <div className={`main-clock-container ${theme}`}>
       <div className="main-clock-header">
         <div className="main-clock-info">
-          <div className="main-clock-city"><TwemojiFlag emoji={city.flag} size={28} /> {city.nameKo}</div>
-          <div className="main-clock-country">{city.countryCode} {city.countryKo}</div>
+          <div className="main-clock-city"><TwemojiFlag emoji={city.flag} size={28} /> {getCityName(city, locale)}</div>
+          <div className="main-clock-country">{city.countryCode} {getCountryName(city, locale)}</div>
         </div>
       </div>
 
@@ -341,7 +448,7 @@ const MainClockDisplay: React.FC<MainClockProps> = ({ city, time, fontSize, them
         ))}
       </div>
 
-      <div className="main-clock-date">{formatDate(time)}</div>
+      <div className="main-clock-date">{formatDate(time, locale)}</div>
 
       <style jsx>{`
         .main-clock-container {
@@ -416,12 +523,13 @@ interface SubClockCardProps {
   mainCity: City;
   fontSize: number;
   theme: 'dark' | 'light';
+  locale: Locale;
   onClick: () => void;
   onRemove: () => void;
 }
 
 const SubClockCard: React.FC<SubClockCardProps> = ({
-  city, time, mainCity, fontSize, theme, onClick, onRemove
+  city, time, mainCity, fontSize, theme, locale, onClick, onRemove
 }) => {
   const {
     attributes,
@@ -446,9 +554,10 @@ const SubClockCard: React.FC<SubClockCardProps> = ({
     return () => clearInterval(interval);
   }, []);
 
-  const digitSize = 32; // 고정 크기
-  const timeDiff = getTimeDifference(mainCity.offset, city.offset);
-  const dayStatus = getDayStatus(mainCity.timezone, city.timezone);
+  const digitSize = 32;
+  const timeDiff = getTimeDifference(mainCity.offset, city.offset, locale);
+  const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale);
+  const t = i18n[locale];
 
   return (
     <div
@@ -480,8 +589,8 @@ const SubClockCard: React.FC<SubClockCardProps> = ({
 
       <div className="sub-clock-header">
         <div className="sub-clock-info">
-          <div className="sub-clock-city"><TwemojiFlag emoji={city.flag} size={20} /> {city.nameKo}</div>
-          <div className="sub-clock-country">{city.countryCode} {city.countryKo}</div>
+          <div className="sub-clock-city"><TwemojiFlag emoji={city.flag} size={20} /> {getCityName(city, locale)}</div>
+          <div className="sub-clock-country">{city.countryCode} {getCountryName(city, locale)}</div>
         </div>
       </div>
 
@@ -500,7 +609,7 @@ const SubClockCard: React.FC<SubClockCardProps> = ({
       </div>
 
       <div className="sub-clock-footer">
-        <span className={`day-status ${dayStatus === '오늘' ? 'today' : 'other'}`}>
+        <span className={`day-status ${dayStatus === t.today ? 'today' : 'other'}`}>
           {dayStatus}
         </span>
         <span className="time-diff">{timeDiff}</span>
@@ -623,13 +732,15 @@ interface CitySearchModalProps {
   onSelect: (city: City) => void;
   existingCities: string[];
   theme: 'dark' | 'light';
+  locale: Locale;
 }
 
 const CitySearchModal: React.FC<CitySearchModalProps> = ({
-  isOpen, onClose, onSelect, existingCities, theme
+  isOpen, onClose, onSelect, existingCities, theme, locale
 }) => {
   const [search, setSearch] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = i18n[locale];
 
   const filteredCities = CITY_DATABASE.filter(city =>
     !existingCities.includes(city.id) &&
@@ -660,7 +771,7 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
     <div className="modal-overlay" onClick={onClose}>
       <div className={`modal-content ${theme}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>도시 추가</h2>
+          <h2>{t.addCity}</h2>
           <button onClick={onClose} className="modal-close">
             <FaTimes />
           </button>
@@ -671,7 +782,7 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
           <input
             ref={inputRef}
             type="text"
-            placeholder="도시 또는 국가 검색..."
+            placeholder={t.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -679,7 +790,7 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
 
         <div className="city-list">
           {filteredCities.length === 0 ? (
-            <div className="no-results">검색 결과가 없습니다</div>
+            <div className="no-results">{t.noResults}</div>
           ) : (
             filteredCities.map((city) => (
               <div
@@ -692,8 +803,8 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
               >
                 <span className="city-flag">{city.flag}</span>
                 <div className="city-details">
-                  <div className="city-name">{city.nameKo}</div>
-                  <div className="city-meta">{city.name}, {city.countryKo}</div>
+                  <div className="city-name">{getCityName(city, locale)}</div>
+                  <div className="city-meta">{city.name}, {getCountryName(city, locale)}</div>
                 </div>
                 <div className="city-offset">
                   UTC{city.offset >= 0 ? '+' : ''}{city.offset}
@@ -862,6 +973,9 @@ const ControlButton: React.FC<ControlButtonProps> = ({ icon, onClick, title, the
 // Main ClockView Component
 // ============================================
 export default function ClockView() {
+  const locale = (useLocale() as Locale) || 'ko';
+  const t = i18n[locale];
+
   const [state, setState] = useState<ClockState>({
     mainClock: DEFAULT_MAIN,
     subClocks: DEFAULT_SUBS,
@@ -1045,25 +1159,25 @@ export default function ClockView() {
         <ControlButton
           icon={<FaMinus />}
           onClick={() => adjustFontSize(-5)}
-          title="크기 줄이기"
+          title={t.decreaseSize}
           theme={state.theme}
         />
         <ControlButton
           icon={<FaPlus />}
           onClick={() => adjustFontSize(5)}
-          title="크기 늘리기"
+          title={t.increaseSize}
           theme={state.theme}
         />
         <ControlButton
           icon={<ThemeToggleIcon />}
           onClick={toggleTheme}
-          title="테마 전환"
+          title={t.toggleTheme}
           theme={state.theme}
         />
         <ControlButton
           icon={isFullscreen ? <FaCompress /> : <FaExpand />}
           onClick={toggleFullScreen}
-          title={isFullscreen ? "전체화면 해제" : "전체화면"}
+          title={isFullscreen ? t.exitFullscreen : t.fullscreen}
           theme={state.theme}
         />
       </div>
@@ -1076,6 +1190,7 @@ export default function ClockView() {
           time={getTimeForTimezone(state.mainClock.timezone)}
           fontSize={state.fontSize}
           theme={state.theme}
+          locale={locale}
         />
 
         {/* Sub Clocks Grid */}
@@ -1097,6 +1212,7 @@ export default function ClockView() {
                   mainCity={state.mainClock}
                   fontSize={state.fontSize}
                   theme={state.theme}
+                  locale={locale}
                   onClick={() => handleSwapToMain(city)}
                   onRemove={() => handleRemoveCity(city.id)}
                 />
@@ -1107,7 +1223,7 @@ export default function ClockView() {
                 <div className="add-city-icon">
                   <FaPlus />
                 </div>
-                <span>도시 추가</span>
+                <span>{t.addCity}</span>
               </div>
             </div>
           </SortableContext>
@@ -1121,6 +1237,7 @@ export default function ClockView() {
         onSelect={handleAddCity}
         existingCities={existingCityIds}
         theme={state.theme}
+        locale={locale}
       />
 
       <style jsx>{`
