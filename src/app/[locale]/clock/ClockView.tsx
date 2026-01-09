@@ -23,6 +23,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { FaPlus, FaMinus, FaExpand, FaCompress, FaTimes, FaSearch, FaGripVertical } from 'react-icons/fa';
 import twemoji from 'twemoji';
 import styles from './ClockView.module.css';
+import ClockAdsense from '@/components/ClockAdsense';
 
 // ============================================
 // Twemoji Flag Component
@@ -709,6 +710,7 @@ export default function ClockView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [blink, setBlink] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const isInitializedRef = useRef(false);
 
   // Load state from localStorage (only once)
@@ -767,6 +769,7 @@ export default function ClockView() {
 
   // Update time and blink every 500ms
   useEffect(() => {
+    setIsMounted(true);
     const interval = setInterval(() => {
       setCurrentTime(new Date());
       setBlink(b => !b);
@@ -870,6 +873,15 @@ export default function ClockView() {
     [state.mainClock.timezone, currentTime]
   );
 
+  // Prevent hydration mismatch - only render clock after mount
+  if (!isMounted) {
+    return (
+      <div className={`${styles.worldClockContainer} ${styles.dark}`}>
+        <div className={styles.mainContent} style={{ minHeight: '100vh' }} />
+      </div>
+    );
+  }
+
   return (
     <div className={`${styles.worldClockContainer} ${styles[state.theme]} ${isFullscreen ? styles.fullscreen : ''}`}>
       {/* Control Panel */}
@@ -914,6 +926,11 @@ export default function ClockView() {
           locale={locale}
           blink={blink}
         />
+
+        {/* AdSense Banner - Between Main and Sub Clocks */}
+        <div className={styles.adBanner}>
+          <ClockAdsense />
+        </div>
 
         {/* Sub Clocks Grid */}
         <DndContext

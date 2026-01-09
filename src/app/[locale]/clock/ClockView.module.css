@@ -629,6 +629,15 @@
   margin: 0 auto;
 }
 
+/* AdSense Banner */
+.adBanner {
+  width: 100%;
+  min-height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .subClocksGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
