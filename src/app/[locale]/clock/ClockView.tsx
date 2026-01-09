@@ -330,7 +330,7 @@ const DigitalDigit: React.FC<DigitProps> = React.memo(({ value, size, theme }) =
   };
 
   const activeColor = theme === 'dark' ? '#00ff88' : '#0891b2';
-  const inactiveColor = theme === 'dark' ? 'rgba(0, 255, 136, 0.08)' : 'rgba(8, 145, 178, 0.12)';
+  const inactiveColor = theme === 'dark' ? 'rgba(0, 255, 136, 0.08)' : 'rgba(8, 145, 178, 0.25)';
   const seg = segments[value] || [0, 0, 0, 0, 0, 0, 0];
 
   const w = size * 0.6;

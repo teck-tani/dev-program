@@ -91,9 +91,8 @@ export default function ClockPage() {
         <main style={{ 
             width: '100%', 
             height: '100%',
-            // CLS 방지: 초기 배경색 설정
-            minHeight: '100vh',
-            background: 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
+            // CLS 방지: 초기 배경색은 ClockView에서 테마에 따라 설정됨
+            minHeight: '100vh'
         }}>
             {/* Structured Data */}
             <script
@@ -123,13 +122,14 @@ export default function ClockPage() {
             <section 
                 style={{ 
                     marginTop: '50px', 
-                    color: '#d1d5db', 
+                    color: 'inherit', 
                     fontSize: '0.9rem', 
                     textAlign: 'center', 
                     maxWidth: '800px', 
                     margin: '50px auto 0', 
                     padding: '0 20px',
-                    minHeight: '400px' // CLS 방지를 위한 최소 높이
+                    minHeight: '400px', // CLS 방지를 위한 최소 높이
+                    opacity: 0.7
                 }}
                 aria-label={seo.ariaLabel}
             >
