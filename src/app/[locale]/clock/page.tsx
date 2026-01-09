@@ -87,7 +87,13 @@ export default function ClockPage() {
     const seo = seoContent[locale] || seoContent.en;
 
     return (
-        <main style={{ width: '100%', height: '100%' }}>
+        <main style={{ 
+            width: '100%', 
+            height: '100%',
+            // CLS 방지: 초기 배경색 설정
+            minHeight: '100vh',
+            background: 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
+        }}>
             {/* Structured Data */}
             <script
                 type="application/ld+json"
@@ -112,7 +118,7 @@ export default function ClockPage() {
             />
             <ClockView />
 
-            {/* SEO Content Section */}
+            {/* SEO Content Section - 고정 높이로 CLS 방지 */}
             <section 
                 style={{ 
                     marginTop: '50px', 
@@ -121,7 +127,8 @@ export default function ClockPage() {
                     textAlign: 'center', 
                     maxWidth: '800px', 
                     margin: '50px auto 0', 
-                    padding: '0 20px' 
+                    padding: '0 20px',
+                    minHeight: '400px' // CLS 방지를 위한 최소 높이
                 }}
                 aria-label={seo.ariaLabel}
             >
@@ -129,9 +136,9 @@ export default function ClockPage() {
                 <h2>{seo.subtitle}</h2>
                 <p>{t('seo.desc')}</p>
                 <h2>{seo.featuresTitle}</h2>
-                <ul>
+                <ul style={{ listStyle: 'none', padding: 0 }}>
                     {seo.featureItems.map((item, index) => (
-                        <li key={index}>{item}</li>
+                        <li key={index} style={{ margin: '8px 0' }}>{item}</li>
                     ))}
                 </ul>
             </section>

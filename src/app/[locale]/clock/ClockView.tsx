@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useLocale } from 'next-intl';
 import {
   DndContext,
@@ -21,6 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { FaPlus, FaMinus, FaExpand, FaCompress, FaTimes, FaSearch, FaGripVertical } from 'react-icons/fa';
 import twemoji from 'twemoji';
+import styles from './ClockView.module.css';
 
 // ============================================
 // Twemoji Flag Component
@@ -41,8 +42,7 @@ const TwemojiFlag: React.FC<TwemojiFlagProps> = ({ emoji }) => {
 
   return (
     <span
-      className="twemoji-flag"
-      style={{ display: 'inline-flex', alignItems: 'center' }}
+      className={styles.twemojiFlag}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -299,7 +299,7 @@ const getCountryName = (city: City, locale: Locale): string => {
 };
 
 // ============================================
-// Digital Segment Display Component
+// Digital Segment Display Component (Memoized)
 // ============================================
 interface DigitProps {
   value: string;
@@ -307,7 +307,7 @@ interface DigitProps {
   theme: 'dark' | 'light';
 }
 
-const DigitalDigit: React.FC<DigitProps> = ({ value, size, theme }) => {
+const DigitalDigit: React.FC<DigitProps> = React.memo(({ value, size, theme }) => {
   const segments: Record<string, number[]> = {
     '0': [1, 1, 1, 0, 1, 1, 1],
     '1': [0, 0, 1, 0, 0, 1, 0],
@@ -335,41 +335,43 @@ const DigitalDigit: React.FC<DigitProps> = ({ value, size, theme }) => {
       <polygon
         points={`${g + t},${g} ${w - g - t},${g} ${w - g - t * 1.5},${g + t} ${g + t * 1.5},${g + t}`}
         fill={seg[0] ? activeColor : inactiveColor}
-        style={{ transition: 'fill 0.15s ease' }}
+        className={styles.segment}
       />
       <polygon
         points={`${g},${g + t} ${g + t},${g + t * 1.5} ${g + t},${h / 2 - g - t / 2} ${g},${h / 2 - g}`}
         fill={seg[1] ? activeColor : inactiveColor}
-        style={{ transition: 'fill 0.15s ease' }}
+        className={styles.segment}
       />
       <polygon
         points={`${w - g},${g + t} ${w - g},${h / 2 - g} ${w - g - t},${h / 2 - g - t / 2} ${w - g - t},${g + t * 1.5}`}
         fill={seg[2] ? activeColor : inactiveColor}
-        style={{ transition: 'fill 0.15s ease' }}
+        className={styles.segment}
       />
       <polygon
         points={`${g + t * 1.5},${h / 2 - t / 2} ${w - g - t * 1.5},${h / 2 - t / 2} ${w - g - t},${h / 2} ${w - g - t * 1.5},${h / 2 + t / 2} ${g + t * 1.5},${h / 2 + t / 2} ${g + t},${h / 2}`}
         fill={seg[3] ? activeColor : inactiveColor}
-        style={{ transition: 'fill 0.15s ease' }}
+        className={styles.segment}
       />
       <polygon
         points={`${g},${h / 2 + g} ${g + t},${h / 2 + g + t / 2} ${g + t},${h - g - t * 1.5} ${g},${h - g - t}`}
         fill={seg[4] ? activeColor : inactiveColor}
-        style={{ transition: 'fill 0.15s ease' }}
+        className={styles.segment}
       />
       <polygon
         points={`${w - g},${h / 2 + g} ${w - g},${h - g - t} ${w - g - t},${h - g - t * 1.5} ${w - g - t},${h / 2 + g + t / 2}`}
         fill={seg[5] ? activeColor : inactiveColor}
-        style={{ transition: 'fill 0.15s ease' }}
+        className={styles.segment}
       />
       <polygon
         points={`${g + t * 1.5},${h - g - t} ${w - g - t * 1.5},${h - g - t} ${w - g - t},${h - g} ${g + t},${h - g}`}
         fill={seg[6] ? activeColor : inactiveColor}
-        style={{ transition: 'fill 0.15s ease' }}
+        className={styles.segment}
       />
     </svg>
   );
-};
+});
+
+DigitalDigit.displayName = 'DigitalDigit';
 
 interface ColonProps {
   size: number;
@@ -377,7 +379,7 @@ interface ColonProps {
   blink: boolean;
 }
 
-const DigitalColon: React.FC<ColonProps> = ({ size, theme, blink }) => {
+const DigitalColon: React.FC<ColonProps> = React.memo(({ size, theme, blink }) => {
   const color = theme === 'dark' ? '#00ff88' : '#0891b2';
   const w = size * 0.25;
   const h = size;
@@ -390,18 +392,22 @@ const DigitalColon: React.FC<ColonProps> = ({ size, theme, blink }) => {
         cy={h * 0.3}
         r={dotR}
         fill={color}
-        style={{ opacity: blink ? 1 : 0.3, transition: 'opacity 0.15s ease' }}
+        className={styles.colonDot}
+        style={{ opacity: blink ? 1 : 0.3 }}
       />
       <circle
         cx={w / 2}
         cy={h * 0.7}
         r={dotR}
         fill={color}
-        style={{ opacity: blink ? 1 : 0.3, transition: 'opacity 0.15s ease' }}
+        className={styles.colonDot}
+        style={{ opacity: blink ? 1 : 0.3 }}
       />
     </svg>
   );
-};
+});
+
+DigitalColon.displayName = 'DigitalColon';
 
 // ============================================
 // Main Clock Display Component
@@ -412,29 +418,27 @@ interface MainClockProps {
   fontSize: number;
   theme: 'dark' | 'light';
   locale: Locale;
+  blink: boolean;
 }
 
-const MainClockDisplay: React.FC<MainClockProps> = ({ city, time, fontSize, theme, locale }) => {
+const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fontSize, theme, locale, blink }) => {
   const { hours, minutes, seconds } = formatTime(time);
-  const [blink, setBlink] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => setBlink(b => !b), 500);
-    return () => clearInterval(interval);
-  }, []);
-
   const digitSize = fontSize * 1.8;
 
   return (
-    <div className={`main-clock-container ${theme}`}>
-      <div className="main-clock-header">
-        <div className="main-clock-info">
-          <div className="main-clock-city"><TwemojiFlag emoji={city.flag} size={28} /> {getCityName(city, locale)}</div>
-          <div className="main-clock-country">{city.countryCode} {getCountryName(city, locale)}</div>
+    <div className={`${styles.mainClockContainer} ${styles[theme]}`}>
+      <div className={styles.mainClockHeader}>
+        <div className={styles.mainClockInfo}>
+          <div className={styles.mainClockCity} style={{ fontSize: `${fontSize * 0.5}px` }}>
+            <TwemojiFlag emoji={city.flag} size={28} /> {getCityName(city, locale)}
+          </div>
+          <div className={styles.mainClockCountry} style={{ fontSize: `${fontSize * 0.28}px` }}>
+            {city.countryCode} {getCountryName(city, locale)}
+          </div>
         </div>
       </div>
 
-      <div className="main-clock-time">
+      <div className={styles.mainClockTime}>
         {hours.split('').map((d, i) => (
           <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
         ))}
@@ -448,71 +452,14 @@ const MainClockDisplay: React.FC<MainClockProps> = ({ city, time, fontSize, them
         ))}
       </div>
 
-      <div className="main-clock-date">{formatDate(time, locale)}</div>
-
-      <style jsx>{`
-        .main-clock-container {
-          background: ${theme === 'dark' ? 'rgba(0, 255, 136, 0.03)' : 'rgba(8, 145, 178, 0.05)'};
-          border: 1px solid ${theme === 'dark' ? 'rgba(0, 255, 136, 0.2)' : 'rgba(8, 145, 178, 0.25)'};
-          border-radius: 24px;
-          padding: clamp(20px, 4vw, 40px) clamp(30px, 5vw, 60px);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 20px;
-          box-shadow: ${theme === 'dark'
-          ? '0 20px 60px rgba(0, 255, 136, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-          : '0 20px 60px rgba(8, 145, 178, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5)'};
-          transition: all 0.3s ease;
-        }
-        .main-clock-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-        .main-clock-flag {
-          font-size: clamp(24px, 4vw, 36px);
-        }
-        .main-clock-city {
-          font-size: ${fontSize * 0.5}px;
-          font-weight: 700;
-          color: ${theme === 'dark' ? '#00ff88' : '#0891b2'};
-          letter-spacing: 2px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .main-clock-city :global(.twemoji-flag img) {
-          width: ${fontSize * 0.45}px;
-          height: ${fontSize * 0.45}px;
-          vertical-align: middle;
-        }
-        .main-clock-country {
-          font-size: ${fontSize * 0.28}px;
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'};
-          letter-spacing: 1px;
-        }
-        .main-clock-time {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-        .main-clock-date {
-          font-size: ${fontSize * 0.35}px;
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'};
-          font-weight: 500;
-        }
-        @media (max-width: 600px) {
-          .main-clock-container {
-            padding: 20px;
-          }
-        }
-      `}</style>
+      <div className={styles.mainClockDate} style={{ fontSize: `${fontSize * 0.35}px` }}>
+        {formatDate(time, locale)}
+      </div>
     </div>
   );
-};
+});
+
+MainClockDisplay.displayName = 'MainClockDisplay';
 
 // ============================================
 // Sub Clock Card Component (Sortable)
@@ -524,12 +471,13 @@ interface SubClockCardProps {
   fontSize: number;
   theme: 'dark' | 'light';
   locale: Locale;
+  blink: boolean;
   onClick: () => void;
   onRemove: () => void;
 }
 
-const SubClockCard: React.FC<SubClockCardProps> = ({
-  city, time, mainCity, fontSize, theme, locale, onClick, onRemove
+const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
+  city, time, mainCity, fontSize, theme, locale, blink, onClick, onRemove
 }) => {
   const {
     attributes,
@@ -547,13 +495,6 @@ const SubClockCard: React.FC<SubClockCardProps> = ({
   };
 
   const { hours, minutes, seconds } = formatTime(time);
-  const [blink, setBlink] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => setBlink(b => !b), 500);
-    return () => clearInterval(interval);
-  }, []);
-
   const digitSize = 32;
   const timeDiff = getTimeDifference(mainCity.offset, city.offset, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale);
@@ -563,14 +504,14 @@ const SubClockCard: React.FC<SubClockCardProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`sub-clock-card ${theme} ${isDragging ? 'dragging' : ''}`}
+      className={`${styles.subClockCard} ${styles[theme]} ${isDragging ? styles.dragging : ''}`}
       onClick={onClick}
     >
       {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
-        className="drag-handle"
+        className={styles.dragHandle}
         onClick={(e) => e.stopPropagation()}
       >
         <FaGripVertical />
@@ -582,19 +523,21 @@ const SubClockCard: React.FC<SubClockCardProps> = ({
           e.stopPropagation();
           onRemove();
         }}
-        className="remove-btn"
+        className={styles.removeBtn}
       >
         <FaTimes />
       </button>
 
-      <div className="sub-clock-header">
-        <div className="sub-clock-info">
-          <div className="sub-clock-city"><TwemojiFlag emoji={city.flag} size={20} /> {getCityName(city, locale)}</div>
-          <div className="sub-clock-country">{city.countryCode} {getCountryName(city, locale)}</div>
+      <div className={styles.subClockHeader}>
+        <div className={styles.subClockInfo}>
+          <div className={styles.subClockCity}>
+            <TwemojiFlag emoji={city.flag} size={20} /> {getCityName(city, locale)}
+          </div>
+          <div className={styles.subClockCountry}>{city.countryCode} {getCountryName(city, locale)}</div>
         </div>
       </div>
 
-      <div className="sub-clock-time">
+      <div className={styles.subClockTime}>
         {hours.split('').map((d, i) => (
           <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
         ))}
@@ -608,120 +551,17 @@ const SubClockCard: React.FC<SubClockCardProps> = ({
         ))}
       </div>
 
-      <div className="sub-clock-footer">
-        <span className={`day-status ${dayStatus === t.today ? 'today' : 'other'}`}>
+      <div className={styles.subClockFooter}>
+        <span className={`${styles.dayStatus} ${dayStatus === t.today ? styles.today : styles.other}`}>
           {dayStatus}
         </span>
-        <span className="time-diff">{timeDiff}</span>
+        <span className={styles.timeDiff}>{timeDiff}</span>
       </div>
-
-      <style jsx>{`
-        .sub-clock-card {
-          background: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)'};
-          border: 1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)'};
-          border-radius: 16px;
-          padding: 20px;
-          cursor: pointer;
-          position: relative;
-          transition: all 0.3s ease;
-        }
-        .sub-clock-card:hover {
-          border-color: ${theme === 'dark' ? 'rgba(0, 255, 136, 0.4)' : 'rgba(8, 145, 178, 0.4)'};
-          transform: translateY(-2px);
-        }
-        .sub-clock-card.dragging {
-          opacity: 0.8;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-        .drag-handle {
-          position: absolute;
-          top: 10px;
-          left: 50%;
-          transform: translateX(-50%);
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)'};
-          cursor: grab;
-          padding: 4px 12px;
-          transition: color 0.2s;
-        }
-        .drag-handle:hover {
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)'};
-        }
-        .remove-btn {
-          position: absolute;
-          top: 8px;
-          right: 8px;
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          border: none;
-          background: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'};
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)'};
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-          transition: all 0.2s ease;
-        }
-        .remove-btn:hover {
-          background: #ff4444;
-          color: #fff;
-        }
-        .sub-clock-header {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin: 12px 0 16px;
-        }
-        .sub-clock-flag {
-          font-size: 24px;
-        }
-        .sub-clock-city {
-          font-size: 16px;
-          font-weight: 600;
-          color: ${theme === 'dark' ? '#fff' : '#1a1a2e'};
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-        .sub-clock-city :global(.twemoji-flag img) {
-          width: 20px;
-          height: 20px;
-          vertical-align: middle;
-        }
-        .sub-clock-country {
-          font-size: 12px;
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'};
-        }
-        .sub-clock-time {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 2px;
-          flex-wrap: wrap;
-        }
-        .sub-clock-footer {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 14px;
-          font-size: 12px;
-        }
-        .day-status {
-          font-weight: 600;
-        }
-        .day-status.today {
-          color: ${theme === 'dark' ? '#00ff88' : '#0891b2'};
-        }
-        .day-status.other {
-          color: #ff8844;
-        }
-        .time-diff {
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'};
-        }
-      `}</style>
     </div>
   );
-};
+});
+
+SubClockCard.displayName = 'SubClockCard';
 
 // ============================================
 // City Search Modal Component
@@ -742,13 +582,13 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const t = i18n[locale];
 
-  const filteredCities = CITY_DATABASE.filter(city =>
+  const filteredCities = useMemo(() => CITY_DATABASE.filter(city =>
     !existingCities.includes(city.id) &&
     (city.name.toLowerCase().includes(search.toLowerCase()) ||
       city.nameKo.includes(search) ||
       city.country.toLowerCase().includes(search.toLowerCase()) ||
       city.countryKo.includes(search))
-  );
+  ), [existingCities, search]);
 
   useEffect(() => {
     if (isOpen) {
@@ -768,17 +608,17 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className={`modal-content ${theme}`} onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={`${styles.modalContent} ${styles[theme]}`} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalHeader}>
           <h2>{t.addCity}</h2>
-          <button onClick={onClose} className="modal-close">
+          <button onClick={onClose} className={styles.modalClose}>
             <FaTimes />
           </button>
         </div>
 
-        <div className="search-container">
-          <FaSearch className="search-icon" />
+        <div className={styles.searchContainer}>
+          <FaSearch className={styles.searchIcon} />
           <input
             ref={inputRef}
             type="text"
@@ -788,25 +628,25 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
           />
         </div>
 
-        <div className="city-list">
+        <div className={styles.cityList}>
           {filteredCities.length === 0 ? (
-            <div className="no-results">{t.noResults}</div>
+            <div className={styles.noResults}>{t.noResults}</div>
           ) : (
             filteredCities.map((city) => (
               <div
                 key={city.id}
-                className="city-item"
+                className={styles.cityItem}
                 onClick={() => {
                   onSelect(city);
                   onClose();
                 }}
               >
-                <span className="city-flag">{city.flag}</span>
-                <div className="city-details">
-                  <div className="city-name">{getCityName(city, locale)}</div>
-                  <div className="city-meta">{city.name}, {getCountryName(city, locale)}</div>
+                <span className={styles.cityFlag}>{city.flag}</span>
+                <div className={styles.cityDetails}>
+                  <div className={styles.cityName}>{getCityName(city, locale)}</div>
+                  <div className={styles.cityMeta}>{city.name}, {getCountryName(city, locale)}</div>
                 </div>
-                <div className="city-offset">
+                <div className={styles.cityOffset}>
                   UTC{city.offset >= 0 ? '+' : ''}{city.offset}
                 </div>
               </div>
@@ -814,119 +654,6 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
           )}
         </div>
       </div>
-
-      <style jsx>{`
-        .modal-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.6);
-          backdrop-filter: blur(8px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 2000;
-          padding: 20px;
-        }
-        .modal-content {
-          background: ${theme === 'dark' ? '#1a1a2e' : '#ffffff'};
-          border-radius: 20px;
-          width: 100%;
-          max-width: 480px;
-          max-height: 70vh;
-          overflow: hidden;
-          box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
-        }
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px 24px 16px;
-        }
-        .modal-header h2 {
-          margin: 0;
-          font-size: 20px;
-          font-weight: 700;
-          color: ${theme === 'dark' ? '#fff' : '#1a1a2e'};
-        }
-        .modal-close {
-          background: none;
-          border: none;
-          font-size: 20px;
-          cursor: pointer;
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)'};
-          padding: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .search-container {
-          position: relative;
-          padding: 0 24px 16px;
-        }
-        .search-container :global(.search-icon) {
-          position: absolute;
-          left: 40px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)'};
-        }
-        .search-container input {
-          width: 100%;
-          padding: 14px 18px 14px 44px;
-          font-size: 16px;
-          border: 1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
-          border-radius: 12px;
-          background: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)'};
-          color: ${theme === 'dark' ? '#fff' : '#1a1a2e'};
-          outline: none;
-          box-sizing: border-box;
-        }
-        .search-container input:focus {
-          border-color: ${theme === 'dark' ? 'rgba(0, 255, 136, 0.5)' : 'rgba(8, 145, 178, 0.5)'};
-        }
-        .city-list {
-          overflow-y: auto;
-          max-height: calc(70vh - 140px);
-          padding: 0 12px 12px;
-        }
-        .no-results {
-          padding: 40px 20px;
-          text-align: center;
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)'};
-        }
-        .city-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 14px 16px;
-          margin: 4px 0;
-          border-radius: 12px;
-          cursor: pointer;
-          transition: background 0.2s ease;
-        }
-        .city-item:hover {
-          background: ${theme === 'dark' ? 'rgba(0, 255, 136, 0.1)' : 'rgba(8, 145, 178, 0.1)'};
-        }
-        .city-flag {
-          font-size: 28px;
-        }
-        .city-details {
-          flex: 1;
-        }
-        .city-name {
-          font-weight: 600;
-          color: ${theme === 'dark' ? '#fff' : '#1a1a2e'};
-        }
-        .city-meta {
-          font-size: 13px;
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)'};
-        }
-        .city-offset {
-          font-size: 13px;
-          color: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'};
-          font-family: monospace;
-        }
-      `}</style>
     </div>
   );
 };
@@ -943,28 +670,8 @@ interface ControlButtonProps {
 
 const ControlButton: React.FC<ControlButtonProps> = ({ icon, onClick, title, theme }) => {
   return (
-    <button onClick={onClick} title={title} className={`control-btn ${theme}`}>
+    <button onClick={onClick} title={title} className={`${styles.controlBtn} ${styles[theme]}`}>
       {icon}
-      <style jsx>{`
-        .control-btn {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-          border: none;
-          background: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'};
-          color: ${theme === 'dark' ? '#fff' : '#1a1a2e'};
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 16px;
-          transition: all 0.2s ease;
-        }
-        .control-btn:hover {
-          background: ${theme === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)'};
-          transform: scale(1.05);
-        }
-      `}</style>
     </button>
   );
 };
@@ -976,18 +683,19 @@ export default function ClockView() {
   const locale = (useLocale() as Locale) || 'ko';
   const t = i18n[locale];
 
-  const [state, setState] = useState<ClockState>({
+  const [state, setState] = useState<ClockState>(() => ({
     mainClock: DEFAULT_MAIN,
     subClocks: DEFAULT_SUBS,
     theme: 'dark',
     fontSize: 50,
-  });
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  }));
+  const [currentTime, setCurrentTime] = useState<Date>(() => new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [blink, setBlink] = useState(true);
+  const isInitializedRef = useRef(false);
 
-  // Load state from localStorage
+  // Load state from localStorage (only once)
   useEffect(() => {
     const saved = localStorage.getItem('worldClockState');
     let loadedTheme: 'dark' | 'light' = 'dark';
@@ -1013,18 +721,17 @@ export default function ClockView() {
       }
     }
 
-    // Set initial body theme
     document.body.style.background = loadedTheme === 'dark'
       ? 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
       : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 50%, #f0f4f8 100%)';
     document.body.setAttribute('data-theme', loadedTheme);
 
-    setIsInitialized(true);
+    isInitializedRef.current = true;
   }, []);
 
   // Save state to localStorage and update body theme
   useEffect(() => {
-    if (!isInitialized) return;
+    if (!isInitializedRef.current) return;
 
     const toSave = {
       mainClockId: state.mainClock.id,
@@ -1034,21 +741,20 @@ export default function ClockView() {
     };
     localStorage.setItem('worldClockState', JSON.stringify(toSave));
 
-    // Update body background for full page theme
     document.body.style.background = state.theme === 'dark'
       ? 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
       : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 50%, #f0f4f8 100%)';
     document.body.setAttribute('data-theme', state.theme);
 
-    // Dispatch custom event for other clock pages to listen
     window.dispatchEvent(new CustomEvent('clockThemeChange'));
-  }, [state, isInitialized]);
+  }, [state]);
 
-  // Update time every second
+  // Update time and blink every 500ms
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+      setBlink(b => !b);
+    }, 500);
     return () => clearInterval(interval);
   }, []);
 
@@ -1073,7 +779,7 @@ export default function ClockView() {
     })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setState(prev => {
@@ -1085,77 +791,67 @@ export default function ClockView() {
         };
       });
     }
-  };
+  }, []);
 
-  const handleSwapToMain = (city: City) => {
+  const handleSwapToMain = useCallback((city: City) => {
     setState(prev => ({
       ...prev,
       mainClock: city,
       subClocks: [prev.mainClock, ...prev.subClocks.filter(c => c.id !== city.id)],
     }));
-  };
+  }, []);
 
-  const handleAddCity = (city: City) => {
+  const handleAddCity = useCallback((city: City) => {
     setState(prev => ({
       ...prev,
       subClocks: [...prev.subClocks, city],
     }));
-  };
+  }, []);
 
-  const handleRemoveCity = (cityId: string) => {
+  const handleRemoveCity = useCallback((cityId: string) => {
     setState(prev => ({
       ...prev,
       subClocks: prev.subClocks.filter(c => c.id !== cityId),
     }));
-  };
+  }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setState(prev => ({
       ...prev,
       theme: prev.theme === 'dark' ? 'light' : 'dark',
     }));
-  };
+  }, []);
 
-  const adjustFontSize = (delta: number) => {
+  const adjustFontSize = useCallback((delta: number) => {
     setState(prev => ({
       ...prev,
       fontSize: Math.min(140, Math.max(30, prev.fontSize + delta)),
     }));
-  };
+  }, []);
 
-  const toggleFullScreen = () => {
+  const toggleFullScreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
     } else {
       document.exitFullscreen();
     }
-  };
+  }, []);
 
-  const existingCityIds = [state.mainClock.id, ...state.subClocks.map(c => c.id)];
+  const existingCityIds = useMemo(() => 
+    [state.mainClock.id, ...state.subClocks.map(c => c.id)],
+    [state.mainClock.id, state.subClocks]
+  );
 
-  if (!isInitialized) {
-    return (
-      <div className="loading-container">
-        <div className="loading-text">Loading...</div>
-        <style jsx>{`
-          .loading-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100%;
-          }
-          .loading-text {
-            color: #888;
-          }
-        `}</style>
-      </div>
-    );
-  }
+  const mainClockTime = useMemo(() => 
+    getTimeForTimezone(state.mainClock.timezone),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state.mainClock.timezone, currentTime]
+  );
 
   return (
-    <div className={`world-clock-container ${state.theme} ${isFullscreen ? 'fullscreen' : ''}`}>
+    <div className={`${styles.worldClockContainer} ${styles[state.theme]} ${isFullscreen ? styles.fullscreen : ''}`}>
       {/* Control Panel */}
-      <div className="control-panel">
+      <div className={styles.controlPanel}>
         <ControlButton
           icon={<FaMinus />}
           onClick={() => adjustFontSize(-5)}
@@ -1183,14 +879,15 @@ export default function ClockView() {
       </div>
 
       {/* Main Content */}
-      <div className="main-content">
+      <div className={styles.mainContent}>
         {/* Main Clock */}
         <MainClockDisplay
           city={state.mainClock}
-          time={getTimeForTimezone(state.mainClock.timezone)}
+          time={mainClockTime}
           fontSize={state.fontSize}
           theme={state.theme}
           locale={locale}
+          blink={blink}
         />
 
         {/* Sub Clocks Grid */}
@@ -1203,7 +900,7 @@ export default function ClockView() {
             items={state.subClocks.map(c => c.id)}
             strategy={rectSortingStrategy}
           >
-            <div className="sub-clocks-grid">
+            <div className={styles.subClocksGrid}>
               {state.subClocks.map((city) => (
                 <SubClockCard
                   key={city.id}
@@ -1213,14 +910,15 @@ export default function ClockView() {
                   fontSize={state.fontSize}
                   theme={state.theme}
                   locale={locale}
+                  blink={blink}
                   onClick={() => handleSwapToMain(city)}
                   onRemove={() => handleRemoveCity(city.id)}
                 />
               ))}
 
               {/* Add City Button */}
-              <div className="add-city-btn" onClick={() => setIsModalOpen(true)}>
-                <div className="add-city-icon">
+              <div className={styles.addCityBtn} onClick={() => setIsModalOpen(true)}>
+                <div className={styles.addCityIcon}>
                   <FaPlus />
                 </div>
                 <span>{t.addCity}</span>
@@ -1239,123 +937,6 @@ export default function ClockView() {
         theme={state.theme}
         locale={locale}
       />
-
-      <style jsx>{`
-        .world-clock-container {
-          width: 100%;
-          min-height: 100vh;
-          padding: 20px;
-          box-sizing: border-box;
-          transition: all 0.3s ease;
-          background: ${state.theme === 'dark'
-          ? 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
-          : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 50%, #f0f4f8 100%)'};
-          color: ${state.theme === 'dark' ? '#ffffff' : '#1a1a2e'};
-        }
-        .world-clock-container.fullscreen {
-          position: fixed;
-          inset: 0;
-          height: 100vh;
-          width: 100vw;
-          overflow: hidden;
-          z-index: 9999;
-          padding: 30px;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        .world-clock-container.fullscreen::-webkit-scrollbar {
-          display: none;
-          width: 0;
-          height: 0;
-        }
-        .world-clock-container.fullscreen .main-content {
-          height: calc(100vh - 60px);
-          overflow: hidden;
-          justify-content: flex-start;
-          padding-top: 150px;
-          gap: 160px;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        .world-clock-container.fullscreen .main-content::-webkit-scrollbar {
-          display: none;
-        }
-        .world-clock-container.fullscreen .sub-clocks-grid {
-          max-height: none;
-          overflow: visible;
-        }
-        .world-clock-container.fullscreen .add-city-btn {
-          display: none;
-        }
-        .control-panel {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          display: flex;
-          gap: 8px;
-          z-index: 100;
-        }
-        .main-content {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 160px;
-          padding-top: 150px;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-        .sub-clocks-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-          gap: 16px;
-          width: 100%;
-        }
-        .add-city-btn {
-          background: ${state.theme === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.01)'};
-          border: 2px dashed ${state.theme === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)'};
-          border-radius: 16px;
-          min-height: 180px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .add-city-btn:hover {
-          border-color: ${state.theme === 'dark' ? 'rgba(0, 255, 136, 0.5)' : 'rgba(8, 145, 178, 0.5)'};
-          background: ${state.theme === 'dark' ? 'rgba(0, 255, 136, 0.05)' : 'rgba(8, 145, 178, 0.05)'};
-        }
-        .add-city-icon {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          background: ${state.theme === 'dark' ? 'rgba(0, 255, 136, 0.1)' : 'rgba(8, 145, 178, 0.15)'};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 22px;
-          color: ${state.theme === 'dark' ? '#00ff88' : '#0891b2'};
-        }
-        .add-city-btn span {
-          color: ${state.theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)'};
-          font-size: 14px;
-          font-weight: 500;
-        }
-        @media (max-width: 600px) {
-          .control-panel {
-            top: 10px;
-            right: 10px;
-          }
-          .main-content {
-            padding-top: 60px;
-          }
-          .sub-clocks-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
     </div>
   );
 }

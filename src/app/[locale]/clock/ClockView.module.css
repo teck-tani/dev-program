@@ -1,0 +1,708 @@
+/* ============================================
+   ClockView CSS Module - CLS 최적화
+   ============================================ */
+
+/* Twemoji Flag */
+.twemojiFlag {
+  display: inline-flex;
+  align-items: center;
+}
+
+.twemojiFlag :global(img) {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+
+/* Segment Animation */
+.segment {
+  transition: fill 0.15s ease;
+}
+
+.colonDot {
+  transition: opacity 0.15s ease;
+}
+
+/* ============================================
+   Main Clock Container
+   ============================================ */
+.mainClockContainer {
+  border-radius: 24px;
+  padding: clamp(20px, 4vw, 40px) clamp(30px, 5vw, 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s ease;
+  /* 고정 높이로 CLS 방지 */
+  min-height: 280px;
+}
+
+.mainClockContainer.dark {
+  background: rgba(0, 255, 136, 0.03);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 255, 136, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.mainClockContainer.light {
+  background: rgba(8, 145, 178, 0.05);
+  border: 1px solid rgba(8, 145, 178, 0.25);
+  box-shadow: 0 20px 60px rgba(8, 145, 178, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.mainClockHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mainClockInfo {
+  text-align: center;
+}
+
+.mainClockCity {
+  font-weight: 700;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dark .mainClockCity {
+  color: #00ff88;
+}
+
+.light .mainClockCity {
+  color: #0891b2;
+}
+
+.mainClockCountry {
+  letter-spacing: 1px;
+}
+
+.dark .mainClockCountry {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.light .mainClockCountry {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.mainClockTime {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mainClockDate {
+  font-weight: 500;
+}
+
+.dark .mainClockDate {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.light .mainClockDate {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* ============================================
+   Sub Clock Card
+   ============================================ */
+.subClockCard {
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  /* 고정 높이로 CLS 방지 */
+  min-height: 180px;
+}
+
+.subClockCard.dark {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.subClockCard.light {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.subClockCard:hover {
+  transform: translateY(-2px);
+}
+
+.subClockCard.dark:hover {
+  border-color: rgba(0, 255, 136, 0.4);
+}
+
+.subClockCard.light:hover {
+  border-color: rgba(8, 145, 178, 0.4);
+}
+
+.subClockCard.dragging {
+  opacity: 0.8;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.dragHandle {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: grab;
+  padding: 4px 12px;
+  transition: color 0.2s;
+}
+
+.dark .dragHandle {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.light .dragHandle {
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.dark .dragHandle:hover {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.light .dragHandle:hover {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.removeBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.dark .removeBtn {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.light .removeBtn {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.removeBtn:hover {
+  background: #ff4444;
+  color: #fff;
+}
+
+.subClockHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+
+.subClockInfo {
+  width: 100%;
+}
+
+.subClockCity {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dark .subClockCity {
+  color: #fff;
+}
+
+.light .subClockCity {
+  color: #1a1a2e;
+}
+
+.subClockCountry {
+  font-size: 12px;
+}
+
+.dark .subClockCountry {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.light .subClockCountry {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.subClockTime {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.subClockFooter {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.dayStatus {
+  font-weight: 600;
+}
+
+.dayStatus.today.dark,
+.dark .dayStatus.today {
+  color: #00ff88;
+}
+
+.dayStatus.today.light,
+.light .dayStatus.today {
+  color: #0891b2;
+}
+
+.dayStatus.other {
+  color: #ff8844;
+}
+
+.timeDiff {
+}
+
+.dark .timeDiff {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.light .timeDiff {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================
+   Modal
+   ============================================ */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modalContent {
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 70vh;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+}
+
+.modalContent.dark {
+  background: #1a1a2e;
+}
+
+.modalContent.light {
+  background: #ffffff;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.dark .modalHeader h2 {
+  color: #fff;
+}
+
+.light .modalHeader h2 {
+  color: #1a1a2e;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark .modalClose {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.light .modalClose {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.searchContainer {
+  position: relative;
+  padding: 0 24px 16px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dark .searchIcon {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.light .searchIcon {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.searchContainer input {
+  width: 100%;
+  padding: 14px 18px 14px 44px;
+  font-size: 16px;
+  border-radius: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.dark .searchContainer input {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.light .searchContainer input {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.02);
+  color: #1a1a2e;
+}
+
+.dark .searchContainer input:focus {
+  border-color: rgba(0, 255, 136, 0.5);
+}
+
+.light .searchContainer input:focus {
+  border-color: rgba(8, 145, 178, 0.5);
+}
+
+.cityList {
+  overflow-y: auto;
+  max-height: calc(70vh - 140px);
+  padding: 0 12px 12px;
+}
+
+.noResults {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.dark .noResults {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.light .noResults {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.cityItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  margin: 4px 0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dark .cityItem:hover {
+  background: rgba(0, 255, 136, 0.1);
+}
+
+.light .cityItem:hover {
+  background: rgba(8, 145, 178, 0.1);
+}
+
+.cityFlag {
+  font-size: 28px;
+}
+
+.cityDetails {
+  flex: 1;
+}
+
+.cityName {
+  font-weight: 600;
+}
+
+.dark .cityName {
+  color: #fff;
+}
+
+.light .cityName {
+  color: #1a1a2e;
+}
+
+.cityMeta {
+  font-size: 13px;
+}
+
+.dark .cityMeta {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.light .cityMeta {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.cityOffset {
+  font-size: 13px;
+  font-family: monospace;
+}
+
+.dark .cityOffset {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.light .cityOffset {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   Control Button
+   ============================================ */
+.controlBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.controlBtn.dark {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.controlBtn.light {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1a1a2e;
+}
+
+.controlBtn:hover {
+  transform: scale(1.05);
+}
+
+.dark.controlBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.light.controlBtn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   World Clock Container
+   ============================================ */
+.worldClockContainer {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.worldClockContainer.dark {
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%);
+  color: #ffffff;
+}
+
+.worldClockContainer.light {
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8eef5 50%, #f0f4f8 100%);
+  color: #1a1a2e;
+}
+
+.worldClockContainer.fullscreen {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  z-index: 9999;
+  padding: 30px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.worldClockContainer.fullscreen::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.worldClockContainer.fullscreen .mainContent {
+  height: calc(100vh - 60px);
+  overflow: hidden;
+  justify-content: flex-start;
+  padding-top: 150px;
+  gap: 160px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.worldClockContainer.fullscreen .mainContent::-webkit-scrollbar {
+  display: none;
+}
+
+.worldClockContainer.fullscreen .subClocksGrid {
+  max-height: none;
+  overflow: visible;
+}
+
+.worldClockContainer.fullscreen .addCityBtn {
+  display: none;
+}
+
+.controlPanel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 100;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 160px;
+  padding-top: 150px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.subClocksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.addCityBtn {
+  border-radius: 16px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dark .addCityBtn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+}
+
+.light .addCityBtn {
+  background: rgba(0, 0, 0, 0.01);
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+}
+
+.dark .addCityBtn:hover {
+  border-color: rgba(0, 255, 136, 0.5);
+  background: rgba(0, 255, 136, 0.05);
+}
+
+.light .addCityBtn:hover {
+  border-color: rgba(8, 145, 178, 0.5);
+  background: rgba(8, 145, 178, 0.05);
+}
+
+.addCityIcon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.dark .addCityIcon {
+  background: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+}
+
+.light .addCityIcon {
+  background: rgba(8, 145, 178, 0.15);
+  color: #0891b2;
+}
+
+.addCityBtn span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dark .addCityBtn span {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.light .addCityBtn span {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 600px) {
+  .mainClockContainer {
+    padding: 20px;
+    min-height: 220px;
+  }
+
+  .controlPanel {
+    top: 10px;
+    right: 10px;
+  }
+
+  .mainContent {
+    padding-top: 60px;
+  }
+
+  .subClocksGrid {
+    grid-template-columns: 1fr;
+  }
+}
