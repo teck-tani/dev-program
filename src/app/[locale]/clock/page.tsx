@@ -117,32 +117,6 @@ export default function ClockPage() {
                 }}
             />
             <ClockView />
-
-            {/* SEO Content Section - 고정 높이로 CLS 방지 */}
-            <section 
-                style={{ 
-                    marginTop: '50px', 
-                    color: 'inherit', 
-                    fontSize: '0.9rem', 
-                    textAlign: 'center', 
-                    maxWidth: '800px', 
-                    margin: '50px auto 0', 
-                    padding: '0 20px',
-                    minHeight: '400px', // CLS 방지를 위한 최소 높이
-                    opacity: 0.7
-                }}
-                aria-label={seo.ariaLabel}
-            >
-                <h1>{t('seo.title')}</h1>
-                <h2>{seo.subtitle}</h2>
-                <p>{t('seo.desc')}</p>
-                <h2>{seo.featuresTitle}</h2>
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {seo.featureItems.map((item, index) => (
-                        <li key={index} style={{ margin: '8px 0' }}>{item}</li>
-                    ))}
-                </ul>
-            </section>
         </main>
     );
 }

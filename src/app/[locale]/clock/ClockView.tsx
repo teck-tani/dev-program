@@ -979,6 +979,25 @@ export default function ClockView() {
         theme={state.theme}
         locale={locale}
       />
+
+      {/* SEO Content Section */}
+      <section className={styles.seoSection}>
+        <h1>{locale === 'ko' ? '온라인 시계 - 초단위 정확한 서버시간' : 'Online Clock - Accurate Server Time'}</h1>
+        <h2>{locale === 'ko' ? '초단위 정확한 서버시간' : 'Second-accurate Server Time'}</h2>
+        <p>
+          {locale === 'ko' 
+            ? '티켓팅이나 수능 시험 때 초 단위까지 정확한 시간이 필요하신가요? 이 온라인 시계는 밀리초 단위까지 정밀하게 서버시간을 표시하며, 전 세계 주요 도시의 시간을 동시에 확인할 수 있습니다.'
+            : 'Need accurate time down to the second for ticketing or exams? This online clock displays server time precisely to the millisecond.'}
+        </p>
+        <h2>{locale === 'ko' ? '주요 기능' : 'Key Features'}</h2>
+        <ul>
+          <li>{locale === 'ko' ? '초단위 정밀 서버시간 표시' : 'Second-accurate server time display'}</li>
+          <li>{locale === 'ko' ? '티켓팅, 수능 시험용 시계' : 'Clock for ticketing and exams'}</li>
+          <li>{locale === 'ko' ? '전 세계 주요 도시 시간 동시 확인' : 'View time in major cities worldwide'}</li>
+          <li>{locale === 'ko' ? '다크 모드 / 라이트 모드 테마 지원' : 'Dark mode / Light mode theme support'}</li>
+          <li>{locale === 'ko' ? '드래그 앤 드롭으로 시계 순서 변경' : 'Drag and drop to reorder clocks'}</li>
+        </ul>
+      </section>
     </div>
   );
 }
