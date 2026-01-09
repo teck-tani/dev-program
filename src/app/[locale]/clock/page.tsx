@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { useTranslations, useLocale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
+
 export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await props.params;
     const t = await getTranslations({ locale, namespace: 'Clock.Main.meta' });
