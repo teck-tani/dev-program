@@ -85,11 +85,13 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                 .app-main-container {
                     display: flex;
                     width: 100%;
+                    max-width: 100vw;
                     min-height: 100vh;
                     background: transparent;
                     color: white;
                     margin: ${isFullscreen ? '0' : '-30px 0'};
                     overflow: hidden;
+                    overflow-x: hidden;
                     font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
                 }
                 
