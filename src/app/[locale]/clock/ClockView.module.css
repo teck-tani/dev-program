@@ -143,8 +143,14 @@
 }
 
 .subClockCard.dragging {
-  opacity: 0.8;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: scale(1.02);
+  border: 2px solid #00ff88 !important;
+}
+
+.light .subClockCard.dragging {
+  border: 2px solid #0891b2 !important;
 }
 
 .dragHandle {
@@ -153,10 +159,12 @@
   left: 50%;
   transform: translateX(-50%);
   cursor: grab;
-  padding: 4px 12px;
-  transition: color 0.2s;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
   background: transparent;
   border: none;
+  border-radius: 8px;
+  touch-action: none;
 }
 
 .dark .dragHandle {
@@ -167,12 +175,21 @@
   color: rgba(0, 0, 0, 0.2);
 }
 
-.dark .dragHandle:hover {
-  color: rgba(255, 255, 255, 0.6);
+.dark .dragHandle:hover,
+.dark .dragHandle:active {
+  color: #00ff88;
+  background: rgba(0, 255, 136, 0.15);
 }
 
-.light .dragHandle:hover {
-  color: rgba(0, 0, 0, 0.4);
+.light .dragHandle:hover,
+.light .dragHandle:active {
+  color: #0891b2;
+  background: rgba(8, 145, 178, 0.15);
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+  transform: translateX(-50%) scale(1.1);
 }
 
 .removeBtn {
