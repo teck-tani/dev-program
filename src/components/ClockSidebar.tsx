@@ -57,15 +57,9 @@ export default function ClockSidebar() {
                 }
                 
                 /* Mobile Styles */
-                @media (max-width: 600px) {
+                @media (max-width: 768px) {
                     .sidebar {
-                        width: 60px;
-                    }
-                    .sidebar .sidebar-item {
-                        font-size: 0.65rem;
-                    }
-                    .sidebar .sidebar-icon {
-                        font-size: 1.2rem;
+                        display: none;
                     }
                 }
             `}</style>

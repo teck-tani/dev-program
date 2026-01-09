@@ -34,7 +34,6 @@
   align-items: center;
   gap: 20px;
   transition: all 0.3s ease;
-  /* 고정 높이로 CLS 방지 */
   min-height: 280px;
 }
 
@@ -93,7 +92,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
 }
 
@@ -118,7 +117,6 @@
   cursor: pointer;
   position: relative;
   transition: all 0.3s ease;
-  /* 고정 높이로 CLS 방지 */
   min-height: 180px;
 }
 
@@ -157,6 +155,8 @@
   cursor: grab;
   padding: 4px 12px;
   transition: color 0.2s;
+  background: transparent;
+  border: none;
 }
 
 .dark .dragHandle {
@@ -250,7 +250,7 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .subClockFooter {
@@ -279,6 +279,7 @@
 }
 
 .timeDiff {
+  font-weight: 500;
 }
 
 .dark .timeDiff {
@@ -552,47 +553,39 @@
   color: #1a1a2e;
 }
 
+/* ============================================
+   Fullscreen Mode
+   ============================================ */
 .worldClockContainer.fullscreen {
   position: fixed;
   inset: 0;
   height: 100vh;
   width: 100vw;
-  overflow: hidden;
+  overflow: auto;
   z-index: 9999;
   padding: 30px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.worldClockContainer.fullscreen::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
 }
 
 .worldClockContainer.fullscreen .mainContent {
-  height: calc(100vh - 60px);
-  overflow: hidden;
-  justify-content: flex-start;
-  padding-top: 150px;
-  gap: 160px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  padding-top: 60px;
+  gap: 40px;
 }
 
-.worldClockContainer.fullscreen .mainContent::-webkit-scrollbar {
-  display: none;
+.worldClockContainer.fullscreen .mainClockContainer {
+  padding: clamp(30px, 4vw, 50px) clamp(50px, 6vw, 100px);
 }
 
 .worldClockContainer.fullscreen .subClocksGrid {
   max-height: none;
-  overflow: visible;
 }
 
 .worldClockContainer.fullscreen .addCityBtn {
   display: none;
 }
 
+/* ============================================
+   Control Panel & Main Content
+   ============================================ */
 .controlPanel {
   position: absolute;
   top: 16px;
@@ -606,8 +599,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 160px;
-  padding-top: 150px;
+  gap: 40px;
+  padding-top: 80px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -685,24 +678,141 @@
 }
 
 /* ============================================
-   Responsive
+   Hide zoom controls on mobile
    ============================================ */
-@media (max-width: 600px) {
+.zoomControl {
+  display: flex;
+  gap: 8px;
+}
+
+/* ============================================
+   Responsive - Tablet
+   ============================================ */
+@media (max-width: 768px) {
   .mainClockContainer {
-    padding: 20px;
-    min-height: 220px;
+    padding: 20px 15px;
+    min-height: 200px;
+  }
+
+  .mainContent {
+    padding-top: 70px;
+    gap: 30px;
+  }
+
+  /* Hide zoom controls on tablet/mobile */
+  .zoomControl {
+    display: none;
+  }
+}
+
+/* ============================================
+   Responsive - Mobile
+   ============================================ */
+@media (max-width: 480px) {
+  .worldClockContainer {
+    padding: 10px;
+    padding-left: 60px; /* Space for hamburger button */
+  }
+
+  .mainClockContainer {
+    padding: 12px 8px;
+    min-height: 130px;
+    border-radius: 16px;
+  }
+
+  .mainClockTime {
+    transform: scale(0.55);
+    transform-origin: center;
   }
 
   .controlPanel {
-    top: 10px;
-    right: 10px;
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+
+  .controlBtn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
   }
 
   .mainContent {
     padding-top: 60px;
+    gap: 20px;
   }
 
   .subClocksGrid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .subClockCard {
+    min-height: 160px;
+    padding: 16px;
+  }
+
+  .addCityBtn {
+    min-height: 120px;
+  }
+}
+
+/* ============================================
+   Responsive - Small Mobile (iPhone SE)
+   ============================================ */
+@media (max-width: 375px) {
+  .worldClockContainer {
+    padding: 8px;
+    padding-left: 55px; /* Space for hamburger button */
+  }
+
+  .mainClockContainer {
+    padding: 10px 6px;
+    min-height: 110px;
+    border-radius: 12px;
+  }
+
+  .mainClockTime {
+    transform: scale(0.45);
+    transform-origin: center;
+  }
+
+  .controlPanel {
+    top: 6px;
+    right: 6px;
+    gap: 3px;
+  }
+
+  .controlBtn {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .mainContent {
+    padding-top: 50px;
+    gap: 15px;
+  }
+
+  .subClockCard {
+    min-height: 150px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .addCityBtn {
+    min-height: 100px;
+    border-radius: 12px;
+  }
+
+  .addCityIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .addCityBtn span {
+    font-size: 12px;
   }
 }

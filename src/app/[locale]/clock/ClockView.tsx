@@ -104,6 +104,9 @@ const i18n = {
     exitFullscreen: '전체화면 해제',
     days: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
     dateFormat: (y: number, m: number, d: number, day: string) => `${y}년 ${m}월 ${d}일 ${day}`,
+    removeCity: '도시 삭제',
+    dragToReorder: '드래그하여 순서 변경',
+    closeModal: '닫기',
   },
   en: {
     addCity: 'Add City',
@@ -122,6 +125,9 @@ const i18n = {
     exitFullscreen: 'Exit fullscreen',
     days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     dateFormat: (y: number, m: number, d: number, day: string) => `${day}, ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1]} ${d}, ${y}`,
+    removeCity: 'Remove city',
+    dragToReorder: 'Drag to reorder',
+    closeModal: 'Close',
   }
 };
 
@@ -499,6 +505,7 @@ const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
   const timeDiff = getTimeDifference(mainCity.offset, city.offset, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale);
   const t = i18n[locale];
+  const cityName = getCityName(city, locale);
 
   return (
     <div
@@ -508,30 +515,34 @@ const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
       onClick={onClick}
     >
       {/* Drag Handle */}
-      <div
+      <button
+        type="button"
         {...attributes}
         {...listeners}
         className={styles.dragHandle}
         onClick={(e) => e.stopPropagation()}
+        aria-label={`${cityName} ${t.dragToReorder}`}
       >
-        <FaGripVertical />
-      </div>
+        <FaGripVertical aria-hidden="true" />
+      </button>
 
       {/* Remove Button */}
       <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
         }}
         className={styles.removeBtn}
+        aria-label={`${cityName} ${t.removeCity}`}
       >
-        <FaTimes />
+        <FaTimes aria-hidden="true" />
       </button>
 
       <div className={styles.subClockHeader}>
         <div className={styles.subClockInfo}>
           <div className={styles.subClockCity}>
-            <TwemojiFlag emoji={city.flag} size={20} /> {getCityName(city, locale)}
+            <TwemojiFlag emoji={city.flag} size={20} /> {cityName}
           </div>
           <div className={styles.subClockCountry}>{city.countryCode} {getCountryName(city, locale)}</div>
         </div>
@@ -612,8 +623,12 @@ const CitySearchModal: React.FC<CitySearchModalProps> = ({
       <div className={`${styles.modalContent} ${styles[theme]}`} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2>{t.addCity}</h2>
-          <button onClick={onClose} className={styles.modalClose}>
-            <FaTimes />
+          <button 
+            onClick={onClose} 
+            className={styles.modalClose}
+            aria-label={t.closeModal}
+          >
+            <FaTimes aria-hidden="true" />
           </button>
         </div>
 
@@ -852,18 +867,21 @@ export default function ClockView() {
     <div className={`${styles.worldClockContainer} ${styles[state.theme]} ${isFullscreen ? styles.fullscreen : ''}`}>
       {/* Control Panel */}
       <div className={styles.controlPanel}>
-        <ControlButton
-          icon={<FaMinus />}
-          onClick={() => adjustFontSize(-5)}
-          title={t.decreaseSize}
-          theme={state.theme}
-        />
-        <ControlButton
-          icon={<FaPlus />}
-          onClick={() => adjustFontSize(5)}
-          title={t.increaseSize}
-          theme={state.theme}
-        />
+        {/* Zoom controls - hidden on mobile */}
+        <div className={styles.zoomControl}>
+          <ControlButton
+            icon={<FaMinus />}
+            onClick={() => adjustFontSize(-5)}
+            title={t.decreaseSize}
+            theme={state.theme}
+          />
+          <ControlButton
+            icon={<FaPlus />}
+            onClick={() => adjustFontSize(5)}
+            title={t.increaseSize}
+            theme={state.theme}
+          />
+        </div>
         <ControlButton
           icon={<ThemeToggleIcon />}
           onClick={toggleTheme}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Link, usePathname } from "@/navigation";
-import { FaStopwatch, FaHourglassStart, FaGlobe } from "react-icons/fa";
+import { FaStopwatch, FaHourglassStart, FaGlobe, FaBars, FaTimes } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 
 export default function ClockLayout({ children }: { children: React.ReactNode }) {
@@ -10,6 +10,7 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
     const t = useTranslations('Clock.Layout');
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Hide header and footer on clock pages
@@ -290,18 +291,113 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                     height: 0 !important;
                 }
 
-                /* Mobile Sidebar */
-                @media (max-width: 600px) {
+                /* Mobile - Hamburger Menu & Slide Sidebar */
+                @media (max-width: 768px) {
+                    /* Desktop sidebar hidden on mobile */
                     .sidebar {
-                        width: 60px;
+                        display: none;
                     }
-                    .sidebar-item {
-                        font-size: 0.65rem;
-                        padding: 12px 0;
+                    
+                    /* Mobile slide sidebar */
+                    .mobile-sidebar {
+                        position: fixed;
+                        top: 0;
+                        left: -280px;
+                        width: 280px;
+                        height: 100vh;
+                        background-color: rgba(0, 0, 0, 0.95);
+                        backdrop-filter: blur(20px);
+                        z-index: 1000;
+                        display: flex;
+                        flex-direction: column;
+                        padding-top: 60px;
+                        transition: left 0.3s ease;
+                        border-right: 1px solid rgba(255, 255, 255, 0.1);
                     }
-                    .sidebar-icon {
-                        font-size: 1.2rem;
+                    
+                    body[data-theme="light"] .mobile-sidebar {
+                        background-color: rgba(255, 255, 255, 0.98);
+                        border-right: 1px solid rgba(0, 0, 0, 0.1);
                     }
+                    
+                    .mobile-sidebar.open {
+                        left: 0;
+                    }
+                    
+                    .mobile-sidebar .sidebar-item {
+                        flex-direction: row;
+                        justify-content: flex-start;
+                        padding: 18px 24px;
+                        gap: 16px;
+                        font-size: 1rem;
+                        border-right: none;
+                    }
+                    
+                    .mobile-sidebar .sidebar-item.active {
+                        border-right: none;
+                        border-left: 4px solid #00ff88;
+                    }
+                    
+                    body[data-theme="light"] .mobile-sidebar .sidebar-item.active {
+                        border-left: 4px solid #0891b2;
+                    }
+                    
+                    .mobile-sidebar .sidebar-icon {
+                        font-size: 1.5rem;
+                    }
+                    
+                    /* Overlay */
+                    .mobile-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        z-index: 999;
+                        opacity: 0;
+                        visibility: hidden;
+                        transition: all 0.3s ease;
+                    }
+                    
+                    .mobile-overlay.open {
+                        opacity: 1;
+                        visibility: visible;
+                    }
+                    
+                    /* Hamburger button */
+                    .hamburger-btn {
+                        position: fixed;
+                        top: 12px;
+                        left: 12px;
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 12px;
+                        border: none;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 20px;
+                        z-index: 1001;
+                        transition: all 0.2s ease;
+                        background: rgba(255, 255, 255, 0.1);
+                        color: #fff;
+                    }
+                    
+                    body[data-theme="light"] .hamburger-btn {
+                        background: rgba(0, 0, 0, 0.08);
+                        color: #1a1a2e;
+                    }
+                    
+                    .hamburger-btn:hover {
+                        background: rgba(255, 255, 255, 0.2);
+                    }
+                    
+                    body[data-theme="light"] .hamburger-btn:hover {
+                        background: rgba(0, 0, 0, 0.12);
+                    }
+                    
                     .timer-input {
                         width: 22vw;
                         font-size: 2rem;
@@ -311,9 +407,61 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
                         padding: 10px;
                     }
                 }
+                
+                /* Desktop - hide mobile elements */
+                @media (min-width: 769px) {
+                    .mobile-sidebar,
+                    .mobile-overlay,
+                    .hamburger-btn {
+                        display: none !important;
+                    }
+                }
             `}</style>
 
-            {/* Sidebar Navigation */}
+            {/* Mobile Hamburger Button */}
+            <button 
+                className="hamburger-btn" 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+            >
+                {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+
+            {/* Mobile Overlay */}
+            <div 
+                className={`mobile-overlay ${isMobileMenuOpen ? 'open' : ''}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            {/* Mobile Slide Sidebar */}
+            <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+                <Link 
+                    href="/clock" 
+                    className={`sidebar-item ${isClockActive ? 'active' : ''}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                >
+                    <FaGlobe className="sidebar-icon" />
+                    <span>{t('clock')}</span>
+                </Link>
+                <Link 
+                    href="/clock/stopwatch" 
+                    className={`sidebar-item ${isStopwatchActive ? 'active' : ''}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                >
+                    <FaStopwatch className="sidebar-icon" />
+                    <span>{t('stopwatch')}</span>
+                </Link>
+                <Link 
+                    href="/clock/timer" 
+                    className={`sidebar-item ${isTimerActive ? 'active' : ''}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                >
+                    <FaHourglassStart className="sidebar-icon" />
+                    <span>{t('timer')}</span>
+                </Link>
+            </div>
+
+            {/* Desktop Sidebar Navigation */}
             <div className="sidebar">
                 <Link href="/clock" className={`sidebar-item ${isClockActive ? 'active' : ''}`}>
                     <FaGlobe className="sidebar-icon" />
