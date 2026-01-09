@@ -35,15 +35,14 @@ export default function ClockAdsense() {
                 strategy="afterInteractive"
             />
             
-            {/* 메인_시계_하단_배너 */}
+            {/* 시계 페이지 광고 배너 */}
             <ins
                 ref={adRef}
                 className="adsbygoogle"
-                style={{ display: 'block', width: '100%', minHeight: '90px' }}
+                style={{ display: 'block', width: '100%' }}
+                data-ad-format="autorelaxed"
                 data-ad-client="ca-pub-4836555208250151"
-                data-ad-slot="1672388244"
-                data-ad-format="auto"
-                data-full-width-responsive="true"
+                data-ad-slot="9507781703"
             />
         </>
     );
