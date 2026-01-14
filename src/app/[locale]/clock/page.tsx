@@ -7,15 +7,37 @@ import { getTranslations } from 'next-intl/server';
 export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await props.params;
     const t = await getTranslations({ locale, namespace: 'Clock.Main.meta' });
+    const baseUrl = 'https://teck-tani.com';
 
     return {
         title: t('title'),
         description: t('description'),
         keywords: t('keywords'),
+        alternates: {
+            canonical: `${baseUrl}/${locale}/clock`,
+            languages: {
+                'ko': `${baseUrl}/ko/clock`,
+                'en': `${baseUrl}/en/clock`,
+            },
+        },
         openGraph: {
             title: t('ogTitle'),
             description: t('ogDescription'),
+            url: `${baseUrl}/${locale}/clock`,
+            siteName: 'Teck Tani',
+            type: 'website',
+            locale: locale === 'ko' ? 'ko_KR' : 'en_US',
             images: ["/og-image.png"],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: t('ogTitle'),
+            description: t('ogDescription'),
+            images: ["/og-image.png"],
+        },
+        robots: {
+            index: true,
+            follow: true,
         },
     };
 }
