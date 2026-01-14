@@ -101,7 +101,16 @@ export default function TimerView() {
     };
 
     return (
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ 
+            textAlign: 'center',
+            minHeight: '70vh',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingTop: '5vh',
+            paddingBottom: '15vh',
+        }}>
             <audio ref={audioRef} src="/alarm.mp3" />
 
             {/* Alarm Modal */}

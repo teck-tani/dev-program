@@ -65,7 +65,16 @@ export default function StopwatchView() {
     const textColor = theme === 'dark' ? '#00ff88' : '#0891b2';
 
     return (
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ 
+            textAlign: 'center',
+            minHeight: '70vh',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingTop: '5vh',
+            paddingBottom: '15vh',
+        }}>
             <div className="digital-text" style={{
                 fontSize: 'clamp(3rem, 12vw, 8rem)',
                 marginBottom: '50px',
