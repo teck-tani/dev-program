@@ -3,9 +3,12 @@ import CalculatorWrapper from "@/components/CalculatorWrapper";
 
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+const baseUrl = 'https://teck-tani.com';
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'Calculator.meta' });
+    const otherLocale = locale === 'ko' ? 'en' : 'ko';
 
     return {
         title: t('title'),
@@ -15,6 +18,29 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
             title: t('ogTitle'),
             description: t('ogDescription'),
             type: "website",
+            url: `${baseUrl}/${locale}/calculator`,
+            siteName: locale === 'ko' ? 'Tani DevTool - 웹 도구 모음' : 'Tani DevTool - Web Tools',
+            locale: locale === 'ko' ? 'ko_KR' : 'en_US',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: t('ogTitle'),
+            description: t('ogDescription'),
+        },
+        alternates: {
+            canonical: `${baseUrl}/${locale}/calculator`,
+            languages: {
+                [locale]: `${baseUrl}/${locale}/calculator`,
+                [otherLocale]: `${baseUrl}/${otherLocale}/calculator`,
+            },
+        },
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+            },
         },
     };
 }

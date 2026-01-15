@@ -126,11 +126,11 @@
   },
   "Calculator": {
     "meta": {
-      "title": "Scientific Calculator | Tani DevTool",
-      "description": "Scientific calculator usable directly on the web. Calculate complex formulas including sin, cos, tan, log, root, and exponents instantly. Mobile supported.",
-      "keywords": "scientific calculator, online calculator, trigonometry calculator, log calculator, engineering calculation, sin cos tan, root calculator",
-      "ogTitle": "Scientific Calculator | Trigonometry & Engineering",
-      "ogDescription": "Powerful scientific calculator to use directly on the web without installation. Essential tool for engineers and students."
+      "title": "Free Online Scientific Calculator | Trigonometry, Log & Exponent - Tani DevTool",
+      "description": "Free online scientific calculator with full trigonometry support. Calculate sin, cos, tan, log, ln, square root (√), exponents (x², x³, e^x) and complex math formulas instantly. Works on PC and mobile browsers.",
+      "keywords": "scientific calculator, online calculator, free calculator, trigonometry calculator, log calculator, engineering calculator, sin cos tan calculator, root calculator, math calculator, exponent calculator, ln calculator, square root, online math tool, web calculator",
+      "ogTitle": "Free Scientific Calculator | Sin Cos Tan Log & More",
+      "ogDescription": "Powerful free online scientific calculator - no installation required. Calculate trigonometry, logarithms, roots, and exponents instantly. Perfect for students, engineers, and professionals."
     },
     "title": "Scientific Calculator",
     "description": "Perform complex engineering calculations easily and quickly.<br />Use various functions such as trigonometry, log, and exponents.",
