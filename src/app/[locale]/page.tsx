@@ -33,16 +33,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 <ToolCard href="/korean-age-calculator" icon={<FaUserClock />} title={t('tools.age')} />
             </div>
 
-            <section className="popular-tools">
-                <div className="container">
-                    <h2>{t('popularTools')}</h2>
-                    <div className="tools-container">
-                        <ToolCard href="/calculator" icon={<FaCalculator />} title={t('tools.calculator')} />
-                        <ToolCard href="/clock" icon={<FaClock />} title={t('tools.clock')} />
-                        <ToolCard href="/special-characters" icon={<FaSmile />} title={t('tools.emoji')} />
-                    </div>
-                </div>
-            </section>
+
         </div>
     );
 }

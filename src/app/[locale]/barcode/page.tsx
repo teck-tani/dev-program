@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 import BarcodeTool from "./BarcodeTool"; // 상대 경로로 정확히 지정
+import BarcodeHeader from "./BarcodeHeader";
 import styles from "./barcode.module.css";
 
 export function generateStaticParams() {
@@ -28,10 +29,13 @@ export default async function BarcodePage({ params }: { params: Promise<{ locale
 
     return (
         <div className="container">
-            <section style={{ textAlign: 'center', marginBottom: '40px' }}>
-                <h1>{t('title')}</h1>
-                <p style={{ color: '#666', whiteSpace: 'pre-line' }}>{t('subtitle')}</p>
-            </section>
+            {/* 타이틀 섹션 (클라이언트 컴포넌트로 분리하여 반응형 텍스트 처리) */}
+            <BarcodeHeader 
+                title={t('title')} 
+                mobileTitle={t('mobileTitle')}
+                subtitle={t('subtitle')}
+                mobileSubtitle={t('mobileSubtitle')}
+            />
 
             {/* 클라이언트 컴포넌트 호출 */}
             <BarcodeTool />

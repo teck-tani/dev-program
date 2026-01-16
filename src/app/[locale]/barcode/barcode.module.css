@@ -270,16 +270,85 @@
         border-bottom: 1px solid #ddd;
         padding-bottom: 20px;
         width: 100%;
+        padding: 10px; /* 패딩 축소 */
+    }
+
+    /* 모바일에서 입력창과 결과창 간격 축소 */
+    .barcodeWrapper {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .inputGroup {
+        margin-bottom: 10px;
     }
 
     .barcodeContainer {
         width: 100%;
         margin-top: 20px;
+        padding: 10px;
+        margin-top: 0; 
+        min-height: 140px; /* 미리 영역 확보 (바코드 아이템 높이 고려) */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
+    /* 버튼 공간 확보를 위해 마진 추가 */
     .barcodeGrid {
-        grid-template-columns: repeat(2, 1fr);
         padding: 10px;
+        grid-template-columns: repeat(2, 1fr);
+        min-height: auto;
+        padding-top: 0;
+        margin-top: 40px; /* 버튼 공간 확보 */
+        width: 100%;
+        gap: 0;
+    }
+
+    .barcodeItem {
+         min-height: 120px;
+         padding: 10px;
+         width: 100%;
+         overflow: visible; /* 버튼이 밖으로 나가도 보이게 */
+    }
+
+    /* 바코드(SVG)는 높이 고정, QR(Canvas)는 비율 유지 */
+    .barcodeItem svg {
+        height: 60px !important;
+        width: auto !important;
+        max-width: 100%;
+    }
+
+    .barcodeItem canvas {
+        height: auto !important; /* QR코드는 정사각 비율 유지 */
+        width: auto !important;
+        max-width: 120px !important; /* 너무 커지지 않게 제한 */
+        max-height: 120px !important;
+    }
+
+    .downloadButtonMobile {
+        position: absolute;
+        top: -40px; /* 카드 위로 이동 */
+        right: 0;   /* 오른쪽 정렬 */
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px; /* 약간 둥글게 */
+        padding: 0;
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        z-index: 20;
+    }
+
+    .downloadButtonMobile:active {
+        background-color: #0056b3;
+        transform: translateY(1px);
     }
 }
 
@@ -293,11 +362,6 @@
     .barcodeWrapper {
         padding: 15px;
     }
-
-    .controlsContainer,
-    .barcodeContainer {
-        padding: 15px;
-    }
 }
 
 /* [수정] 태그 대신 클래스명(.articleSection) 사용 */
@@ -307,8 +371,4 @@
     contain-intrinsic-size: 0 500px;
 }
 
-.barcodeItem {
-    min-height: auto;
-    contain: content;
-    contain-intrinsic-size: 0 160px;
-}
+/* .barcodeItem { contain: content; } 제거됨 (오버플로우 문제 해결) */

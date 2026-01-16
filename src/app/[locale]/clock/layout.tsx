@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Link, usePathname } from "@/navigation";
-import { FaStopwatch, FaHourglassStart, FaGlobe, FaBars, FaTimes } from "react-icons/fa";
+import { FaStopwatch, FaHourglassStart, FaGlobe, FaBars, FaTimes, FaHome } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 
 export default function ClockLayout({ children }: { children: React.ReactNode }) {
@@ -64,6 +64,9 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
         return () => {
             window.removeEventListener('storage', handleStorageChange);
             window.removeEventListener('clockThemeChange', handleThemeChange);
+            // Reset body theme when leaving clock pages
+            document.body.removeAttribute('data-theme');
+            document.body.style.background = '';
         };
     }, []);
 
@@ -438,6 +441,14 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
             {/* Mobile Slide Sidebar */}
             <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
                 <Link 
+                    href="/" 
+                    className="sidebar-item"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                >
+                    <FaHome className="sidebar-icon" />
+                    <span>{t('home')}</span>
+                </Link>
+                <Link 
                     href="/clock" 
                     className={`sidebar-item ${isClockActive ? 'active' : ''}`}
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -465,6 +476,10 @@ export default function ClockLayout({ children }: { children: React.ReactNode })
 
             {/* Desktop Sidebar Navigation */}
             <div className="sidebar">
+                <Link href="/" className="sidebar-item">
+                    <FaHome className="sidebar-icon" />
+                    <span>{t('home')}</span>
+                </Link>
                 <Link href="/clock" className={`sidebar-item ${isClockActive ? 'active' : ''}`}>
                     <FaGlobe className="sidebar-icon" />
                     <span>{t('clock')}</span>

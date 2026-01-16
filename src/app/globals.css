@@ -233,6 +233,10 @@ footer p {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+    header {
+        display: none;
+    }
+
     header .container {
         flex-direction: row;
         align-items: center;
