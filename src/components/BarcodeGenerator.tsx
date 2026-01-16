@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect, memo, useCallback } from "react";
 import styles from "@/app/[locale]/barcode/barcode.module.css";
 import { useTranslations } from "next-intl";
-import { FaDownload } from "react-icons/fa";
+import { HiOutlineSave } from "react-icons/hi";
+import { IoCopyOutline } from "react-icons/io5";
 
 // 모바일 감지 훅
 const useIsMobile = () => {
@@ -43,6 +44,7 @@ export default function BarcodeGenerator() {
     const [error, setError] = useState("");
     const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
     const isMobile = useIsMobile();
+    const barcodeRef = useRef<HTMLDivElement>(null);
 
     // 입력값 변경 핸들러 (모바일 vs PC 분기)
     const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,6 +119,48 @@ export default function BarcodeGenerator() {
         setDraggedItemIndex(null);
     };
 
+    // 모바일 다운로드 함수
+    const downloadBarcode = useCallback(() => {
+        if (!barcodeRef.current || barcodes.length === 0) return;
+        const item = barcodes[0];
+        const filename = `barcode_${item.value}.png`;
+
+        if (item.type === "QR") {
+            const canvas = barcodeRef.current.querySelector('canvas');
+            if (canvas) {
+                const url = canvas.toDataURL("image/png");
+                const link = document.createElement("a");
+                link.download = filename;
+                link.href = url;
+                link.click();
+            }
+        } else {
+            const svg = barcodeRef.current.querySelector('svg');
+            if (svg) {
+                const svgData = new XMLSerializer().serializeToString(svg);
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                const img = new Image();
+                const svgRect = svg.getBoundingClientRect();
+                canvas.width = svgRect.width + 20;
+                canvas.height = svgRect.height + 20;
+                img.onload = () => {
+                    if(ctx) {
+                        ctx.fillStyle = "white";
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 10, 10);
+                        const pngUrl = canvas.toDataURL("image/png");
+                        const link = document.createElement("a");
+                        link.download = filename;
+                        link.href = pngUrl;
+                        link.click();
+                    }
+                };
+                img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+            }
+        }
+    }, [barcodes]);
+
     return (
         <div className={styles.barcodeWrapper}>
             <div className={styles.controlsContainer}>
@@ -124,14 +168,23 @@ export default function BarcodeGenerator() {
                     <label htmlFor="barcodeType">{t("labelType")}</label>
                     <select id="barcodeType" value={barcodeType} onChange={handleTypeChange}>
                         <option value="CODE128">CODE128</option>
-                        <option value="QR">QR Code</option>
-                        <option value="EAN13">EAN-13</option>
-                        <option value="EAN8">EAN-8</option>
+                        <option value="CODE128A">CODE128 A</option>
+                        <option value="CODE128B">CODE128 B</option>
+                        <option value="CODE128C">CODE128 C</option>
+                        <option value="EAN13">EAN</option>
+                        <option value="EAN8">EAN8</option>
                         <option value="UPC">UPC</option>
-                        <option value="ITF">ITF (Interleaved 2 of 5)</option>
+                        <option value="CODE39">CODE39</option>
+                        <option value="ITF14">ITF14</option>
+                        <option value="ITF">ITF</option>
                         <option value="MSI">MSI</option>
+                        <option value="MSI10">MSI10</option>
+                        <option value="MSI11">MSI11</option>
+                        <option value="MSI1010">MSI1010</option>
+                        <option value="MSI1110">MSI1110</option>
                         <option value="pharmacode">Pharmacode</option>
                         <option value="codabar">Codabar</option>
+                        <option value="QR">QR Code</option>
                     </select>
                 </div>
                 <div className={styles.inputGroup}>
@@ -148,7 +201,25 @@ export default function BarcodeGenerator() {
                 )}
                 <div className={styles.error}>{error}</div>
             </div>
-            <div className={styles.barcodeContainer}>
+
+            {/* 모바일: 바코드 박스 위에 클립보드 복사 버튼 */}
+            {isMobile && barcodes.length > 0 && (
+                <div className={styles.copyButtonRow}>
+                    <button 
+                        className={styles.copyButtonOutside} 
+                        onClick={() => {
+                            if (barcodes.length > 0) {
+                                navigator.clipboard.writeText(barcodes[0].value);
+                            }
+                        }}
+                        aria-label="Copy to Clipboard"
+                    >
+                        <IoCopyOutline />
+                    </button>
+                </div>
+            )}
+
+            <div className={styles.barcodeContainer} ref={barcodeRef}>
                 <div className={styles.barcodeGrid}>
                     {barcodes.map((item, index) => (
                         <BarcodeItemComponent
@@ -160,6 +231,16 @@ export default function BarcodeGenerator() {
                     ))}
                 </div>
             </div>
+            {/* 모바일 다운로드 버튼 - 하단에 크게 */}
+            {isMobile && barcodes.length > 0 && (
+                <button 
+                    className={styles.downloadButtonLarge} 
+                    onClick={downloadBarcode}
+                >
+                    <HiOutlineSave />
+                    <span>다운로드</span>
+                </button>
+            )}
         </div>
     );
 }
@@ -240,17 +321,6 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
             
             {!isMobile && (
                 <button className={styles.removeBarcode} onClick={() => onRemove(index)} aria-label={removeLabel}></button>
-            )}
-
-            {/* 다운로드 버튼 (모바일용) - 우측 상단 배치 (영역 밖) */}
-            {isMobile && (
-                 <button 
-                 className={styles.downloadButtonMobile} 
-                 onClick={downloadImage}
-                 aria-label="Download Barcode"
-             >
-                 <FaDownload />
-             </button>
             )}
 
             {item.type === "QR" ? <canvas ref={canvasRef} /> : <svg ref={svgRef} />}
