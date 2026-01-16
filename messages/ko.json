@@ -26,7 +26,12 @@
     }
   },
   "Header": {
-    "menu": "웹도구"
+    "menu": "웹도구",
+    "categories": {
+      "calculators": "계산기",
+      "time": "시계",
+      "utilities": "유틸리티"
+    }
   },
   "Footer": {
     "copyright": "© 2024 적정인. 모든 권리 보유."

@@ -26,7 +26,12 @@
     }
   },
   "Header": {
-    "menu": "Web Tools"
+    "menu": "Web Tools",
+    "categories": {
+      "calculators": "Calculators",
+      "time": "Clock",
+      "utilities": "Utilities"
+    }
   },
   "Footer": {
     "copyright": "© 2024 Jeokjeongin. All rights reserved."
