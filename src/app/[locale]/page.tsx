@@ -1,6 +1,49 @@
+import type { Metadata } from "next";
 import ToolCard from "@/components/ToolCard";
 import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaSpellCheck, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf } from "react-icons/fa";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+
+const baseUrl = 'https://teck-tani.com';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Meta' });
+    const otherLocale = locale === 'ko' ? 'en' : 'ko';
+
+    return {
+        title: t('defaultTitle'),
+        description: t('defaultDescription'),
+        keywords: t('keywords'),
+        openGraph: {
+            title: t('ogTitle'),
+            description: t('ogDescription'),
+            type: "website",
+            url: `${baseUrl}/${locale}`,
+            siteName: locale === 'ko' ? 'Tani DevTool - 웹 도구 모음' : 'Tani DevTool - Web Tools',
+            locale: locale === 'ko' ? 'ko_KR' : 'en_US',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: t('ogTitle'),
+            description: t('ogDescription'),
+        },
+        alternates: {
+            canonical: `${baseUrl}/${locale}`,
+            languages: {
+                [locale]: `${baseUrl}/${locale}`,
+                [otherLocale]: `${baseUrl}/${otherLocale}`,
+            },
+        },
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+            },
+        },
+    };
+}
 
 interface ToolItem {
     href: string;
