@@ -35,6 +35,8 @@ export default function Header() {
       icon: <FaClock />,
       items: [
         { href: '/clock', labelKey: 'clock' },
+        { href: '/stopwatch', labelKey: 'stopwatch' },
+        { href: '/timer', labelKey: 'timer' },
       ]
     },
     {

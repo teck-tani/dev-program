@@ -1,5 +1,5 @@
 import ToolCard from "@/components/ToolCard";
-import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaSpellCheck, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock } from "react-icons/fa";
+import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaSpellCheck, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf } from "react-icons/fa";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 interface ToolItem {
@@ -29,6 +29,8 @@ const toolCategories: ToolCategory[] = [
         titleKey: 'time',
         items: [
             { href: '/clock', icon: <FaClock />, labelKey: 'clock' },
+            { href: '/stopwatch', icon: <FaStopwatch />, labelKey: 'stopwatch' },
+            { href: '/timer', icon: <FaHourglassHalf />, labelKey: 'timer' },
         ]
     },
     {

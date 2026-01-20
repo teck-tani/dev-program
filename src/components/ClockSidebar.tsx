@@ -9,8 +9,8 @@ export default function ClockSidebar() {
     const t = useTranslations('Clock.Layout');
 
     const isClockActive = pathname === '/clock';
-    const isStopwatchActive = pathname === '/clock/stopwatch';
-    const isTimerActive = pathname === '/clock/timer';
+    const isStopwatchActive = pathname === '/stopwatch';
+    const isTimerActive = pathname === '/timer';
 
     return (
         <div className="sidebar">
@@ -67,11 +67,11 @@ export default function ClockSidebar() {
                 <FaRegClock className="sidebar-icon" />
                 <span>{t('clock')}</span>
             </Link>
-            <Link href="/clock/stopwatch" className={`sidebar-item ${isStopwatchActive ? 'active' : ''}`}>
+            <Link href="/stopwatch" className={`sidebar-item ${isStopwatchActive ? 'active' : ''}`}>
                 <FaStopwatch className="sidebar-icon" />
                 <span>{t('stopwatch')}</span>
             </Link>
-            <Link href="/clock/timer" className={`sidebar-item ${isTimerActive ? 'active' : ''}`}>
+            <Link href="/timer" className={`sidebar-item ${isTimerActive ? 'active' : ''}`}>
                 <FaHourglassStart className="sidebar-icon" />
                 <span>{t('timer')}</span>
             </Link>
