@@ -297,51 +297,48 @@
 @media (max-width: 768px) {
     .barcodeWrapper {
         flex-direction: column;
+        padding: 10px;
+        gap: 6px;
     }
 
     .controlsContainer {
         border-right: none;
         border-bottom: 1px solid #ddd;
-        padding-bottom: 20px;
-        width: 100%;
-        padding: 10px; /* 패딩 축소 */
-    }
-
-    /* 모바일에서 입력창과 결과창 간격 축소 */
-    .barcodeWrapper {
         padding: 10px;
-        gap: 10px;
+        padding-bottom: 15px;
+        width: 100%;
     }
 
     .inputGroup {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .barcodeContainer {
         width: 100%;
-        padding: 15px;
+        padding: 12px 8px;
         margin-top: 0; 
-        min-height: 180px;
+        min-height: auto;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         position: relative;
-        background: #f1f5f9; /* 회색 배경 */
+        background: #f1f5f9;
         border-radius: 12px;
     }
 
-    /* 클립보드 복사 버튼 - 박스 밖 우측 정렬 */
+    /* 클립보드 복사 버튼 - 박스와 바짝 붙이기 */
     .copyButtonRow {
         width: 100%;
         display: flex;
         justify-content: flex-end;
-        margin-bottom: 8px;
+        margin-bottom: 0;
+        margin-top: -4px;
     }
 
     .copyButtonOutside {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         background: transparent;
         color: #64748b;
         border: none;
@@ -349,8 +346,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: 22px;
         transition: all 0.2s ease;
+        padding: 0;
     }
 
     .copyButtonOutside:active {
@@ -358,11 +356,11 @@
         transform: scale(0.95);
     }
 
-    /* 하단 다운로드 버튼 - 크게 */
+    /* 하단 다운로드 버튼 */
     .downloadButtonLarge {
         width: 100%;
-        margin-top: 12px;
-        padding: 14px 20px;
+        margin-top: 8px;
+        padding: 12px 20px;
         background: white;
         color: #1e293b;
         border: 1px solid #e2e8f0;
@@ -388,10 +386,10 @@
         transform: scale(0.98);
     }
 
-    /* 버튼 공간 확보를 위해 마진 추가 */
+    /* 바코드 그리드 - 위로 최대한 붙이기 */
     .barcodeGrid {
-        padding: 10px;
-        grid-template-columns: repeat(2, 1fr);
+        padding: 0;
+        grid-template-columns: 1fr;
         min-height: auto;
         padding-top: 0;
         margin-top: 0;
@@ -400,19 +398,20 @@
     }
 
     .barcodeItem {
-         height: auto;
-         min-height: 160px;
-         padding: 5px; /* 여백 최소화 */
-         width: 100%;
-         overflow: visible;
-         position: relative;
-         border: none;
-         box-shadow: none;
+        height: auto;
+        min-height: auto;
+        padding: 8px 0;
+        width: 100%;
+        overflow: visible;
+        position: relative;
+        border: none;
+        box-shadow: none;
+        background: transparent;
     }
 
-    /* 바코드(SVG)를 더 크고 넓게 */
+    /* 바코드(SVG) 최대한 크게 */
     .barcodeItem svg {
-        height: 100px !important; /* 더 크게 */
+        height: 110px !important;
         width: 100% !important;
         max-width: 100%;
     }
@@ -420,13 +419,19 @@
     .barcodeItem canvas {
         height: auto !important;
         width: auto !important;
-        max-width: 150px !important;
-        max-height: 150px !important;
+        max-width: 180px !important;
+        max-height: 180px !important;
+    }
+
+    .barcodeValue {
+        font-size: 14px;
+        margin-top: 8px;
+        color: #475569;
     }
 
     .downloadButtonMobile {
         position: absolute;
-        top: -36px; /* 카드 위 밖으로 이동 */
+        top: -36px;
         right: 8px;
         background: #f1f5f9;
         color: #0ea5e9;
@@ -455,12 +460,16 @@
 @media (max-width: 480px) {
     .barcodeGrid {
         grid-template-columns: 1fr;
-        padding: 5px;
-        gap: 15px;
+        padding: 0;
+        gap: 0;
     }
 
     .barcodeWrapper {
-        padding: 15px;
+        padding: 10px;
+    }
+
+    .barcodeItem svg {
+        height: 120px !important;
     }
 }
 
@@ -472,3 +481,62 @@
 }
 
 /* .barcodeItem { contain: content; } 제거됨 (오버플로우 문제 해결) */
+
+/* ========== Header Section (SSR 친화적 반응형) ========== */
+.headerSection {
+    text-align: center;
+    margin-bottom: 40px;
+    margin-top: 0;
+    padding: 0;
+}
+
+.headerTitle {
+    font-size: 2rem;
+    word-break: keep-all;
+    margin-bottom: 16px;
+    color: #1e293b;
+}
+
+.headerSubtitle {
+    color: #64748b;
+    white-space: pre-line;
+    font-size: 1rem;
+    word-break: keep-all;
+    line-height: 1.5;
+}
+
+/* 반응형 표시 (CSS로 처리 - SSR 친화적) */
+.desktopOnly {
+    display: inline;
+}
+
+.mobileOnly {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .headerSection {
+        margin-bottom: 6px;
+        margin-top: -8px;
+        padding: 0 8px;
+    }
+
+    .headerTitle {
+        font-size: 1.2rem;
+        margin-bottom: 2px;
+    }
+
+    .headerSubtitle {
+        font-size: 0.8rem;
+        margin-top: 0;
+        line-height: 1.3;
+    }
+
+    .desktopOnly {
+        display: none;
+    }
+
+    .mobileOnly {
+        display: inline;
+    }
+}
