@@ -631,3 +631,86 @@ footer p {
     scrollbar-width: thin;
     scrollbar-color: #e2e8f0 transparent;
 }
+
+/* ============================================
+   Clock/Timer/Stopwatch Global Styles
+   FOUC 방지를 위해 글로벌 CSS로 이동
+   ============================================ */
+
+/* Timer Input */
+.timer-input {
+    background-color: transparent;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    color: #00ff88;
+    font-size: 3rem;
+    width: 100px;
+    text-align: center;
+    border-radius: 8px;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+body[data-theme="light"] .timer-input {
+    border: 1px solid rgba(8, 145, 178, 0.3);
+    color: #0891b2;
+}
+
+@media (max-width: 768px) {
+    .timer-input {
+        width: 22vw;
+        font-size: 2rem;
+        padding: 5px;
+    }
+}
+
+/* Shared Digital Style */
+.digital-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    color: #00ff88;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease;
+}
+
+body[data-theme="light"] .digital-text {
+    color: #0891b2;
+}
+
+/* Digital Button Style */
+.digital-btn {
+    padding: 15px 32px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    min-width: 120px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.digital-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-green { 
+    background-color: #00b894; 
+    color: white; 
+}
+.btn-green:hover { background-color: #00a383; }
+
+.btn-yellow { 
+    background-color: #fdcb6e; 
+    color: #2d3436; 
+}
+.btn-yellow:hover { background-color: #e1b12c; }
+
+.btn-red { 
+    background-color: #ff7675; 
+    color: white; 
+}
+.btn-red:hover { background-color: #d63031; }
