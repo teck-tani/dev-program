@@ -299,9 +299,15 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
                 QRCode.toCanvas(canvasRef.current, item.value, { width: 100, margin: 0 });
             });
         } else if (svgRef.current) {
-            // any 대신 Record<string, unknown>을 사용해 안정성 확보
             const options: Record<string, string | number | boolean> = {
-                width: 2, height: 60, displayValue: false, margin: 0,
+                width: 2,
+                height: 80,
+                displayValue: true,
+                margin: 5,
+                fontSize: 18,
+                fontOptions: "bold",
+                textMargin: 8,
+                font: "monospace",
             };
             import("jsbarcode").then((module) => {
                 const JsBarcode = module.default;
@@ -324,7 +330,7 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
             )}
 
             {item.type === "QR" ? <canvas ref={canvasRef} /> : <svg ref={svgRef} />}
-            <div className={styles.barcodeValue}>{item.value}</div>
+            {item.type === "QR" && <div className={styles.barcodeValue}>{item.value}</div>}
         </div>
     );
 });
