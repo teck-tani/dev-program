@@ -1,5 +1,3 @@
-"use client";
-
 import SharedClockLayout from "@/components/SharedClockLayout";
 
 export default function ClockLayout({ children }: { children: React.ReactNode }) {
