@@ -18,13 +18,21 @@
       "stopwatch": "Stopwatch",
       "timer": "Timer",
       "emoji": "Emoji Collection",
-      "lotto": "Lotto AI Recommendation",
+      "lotto": "Lotto Generator",
       "salary": "Salary Calculator",
-      "spellCheck": "Spell Checker",
       "exchange": "Exchange Rate Calculator",
       "severance": "Severance Pay Calculator",
       "interest": "Interest Calculator",
-      "age": "Korean Age Calculator"
+      "age": "Korean Age Calculator",
+      "unitConverter": "Unit Converter",
+      "fileSizeConverter": "File Size Converter",
+      "base64": "Base64 Encoder",
+      "imageCompressor": "Image Compressor",
+      "colorConverter": "Color Code Converter",
+      "characterCounter": "Character Counter",
+      "jsonFormatter": "JSON Formatter",
+      "urlEncoder": "URL Encoder",
+      "pdfManager": "PDF Merge/Split"
     }
   },
   "Header": {
@@ -352,6 +360,35 @@
       "title": "⚠️ Caution",
       "desc": "This service uses the Export-Import Bank of Korea API. Data may not be updated on non-business days.<br />Information is for reference only."
     },
+    "guide": {
+      "title": "How to Use",
+      "steps": {
+        "step1": "<strong>Select Currency:</strong> Choose your desired currency from the dropdown in each row. Supports 40+ currencies including USD, EUR, JPY, and more.",
+        "step2": "<strong>Enter Amount:</strong> Enter an amount in any row, and the other currencies will be automatically calculated using real-time exchange rates.",
+        "step3": "<strong>Compare Results:</strong> View converted amounts for all currencies at a glance. Useful for travel budgeting or comparing international prices."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "update": {
+          "q": "How often is the exchange rate updated?",
+          "a": "This service uses the <strong>Export-Import Bank of Korea API</strong>, updated around 11 AM on business days (KST). Data is not updated on weekends and Korean holidays."
+        },
+        "actual": {
+          "q": "Can I exchange money at the rate shown here?",
+          "a": "The displayed rate is the <strong>standard rate</strong> for reference only. Actual exchange rates vary by bank's preferential rates and fees. Please check with your bank for actual rates."
+        },
+        "jpy100": {
+          "q": "What does JPY(100) mean?",
+          "a": "Japanese Yen is quoted per <strong>100 units</strong> due to its small value. For example, if JPY(100) = 900 KRW, then 1 JPY ≈ 9 KRW."
+        },
+        "save": {
+          "q": "How can I save on exchange fees?",
+          "a": "Use bank mobile apps (up to 90% discount), visit private exchange offices in Korea, or use <strong>travel cards</strong> like Travel Wallet for fee-free transactions abroad."
+        }
+      }
+    },
     "disqus": {
       "title": "Exchange Rate Calculator"
     }
@@ -470,6 +507,27 @@
       "title": "💡 Investment Tips",
       "desc": "For short-term (under 1 year) savings, the difference between simple and compound interest is small. However, for long-term (3+ years) investments, compound interest is significantly more advantageous. Utilizing tax-advantaged savings accounts can also save on the 15.4% interest income tax."
     },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "difference": {
+          "q": "What is the difference between simple and compound interest?",
+          "a": "<strong>Simple interest</strong> is calculated only on the principal, so interest stays the same each period. <strong>Compound interest</strong> is calculated on principal plus accumulated interest, growing exponentially over time."
+        },
+        "tax": {
+          "q": "What is the interest income tax rate?",
+          "a": "In Korea, the standard interest income tax is <strong>15.4%</strong> (14% income tax + 1.4% local tax). Tax-free or tax-advantaged products may have different rates."
+        },
+        "which": {
+          "q": "Which is better: savings account or time deposit?",
+          "a": "If you have a lump sum, <strong>time deposits</strong> earn more interest. For monthly savings, <strong>installment savings</strong> help build saving habits. Choose based on your situation."
+        },
+        "compound": {
+          "q": "Do monthly compound interest products actually exist?",
+          "a": "Most bank deposits use simple interest. Monthly compounding is mainly offered by <strong>CMA accounts</strong> and some special financial products. Always check product details before signing up."
+        }
+      }
+    },
     "disqus": {
       "title": "Interest Calculator"
     }
@@ -562,6 +620,27 @@
         "desc": "Starts at 1 from birth and adds 1 year on every January 1st. Still commonly used in daily life in Korea."
       }
     },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "difference": {
+          "q": "What is the difference between International Age and Korean Age?",
+          "a": "<strong>International Age</strong> starts at 0 at birth and adds 1 on each birthday. <strong>Korean Age</strong> starts at 1 at birth and adds 1 every January 1st. So Korean Age is typically 1-2 years older than International Age."
+        },
+        "law": {
+          "q": "What is Korea's 2023 Age Unification Law?",
+          "a": "Since <strong>June 28, 2023</strong>, Korea unified legal age to 'International Age' (Man-nai). Contracts, official documents, and legal applications now use International Age as the standard."
+        },
+        "yearAge": {
+          "q": "When is Year Age used?",
+          "a": "Year Age (Current Year - Birth Year) is used in some Korean laws like <strong>Military Service Act</strong> (determining conscription eligibility) and <strong>Youth Protection Act</strong> (alcohol/tobacco purchase age)."
+        },
+        "global": {
+          "q": "How do other countries calculate age?",
+          "a": "Most countries use <strong>International Age</strong>. The Korean counting age system is quite unique - only a few East Asian countries had similar traditions historically."
+        }
+      }
+    },
     "disqus": {
       "title": "International Age Calculator"
     }
@@ -597,62 +676,646 @@
       }
     },
     "faq": {
-      "title": "FAQ",
+      "title": "Frequently Asked Questions",
       "q1": "Q. Emojis show as squares (□).",
       "a1": "Old devices or browsers may not support the latest emojis and display them as boxes. Try updating your OS or browser to the latest version.",
       "q2": "Q. Can I use them commercially?",
-      "a2": "Emojis are Unicode standard characters and can be used freely like text. However, using the emoji design (font) itself as a logo may require checking the copyright policy of the platform (Apple, Google, etc.)."
+      "a2": "Emojis are Unicode standard characters and can be used freely like text. However, using the emoji design (font) itself as a logo may require checking the copyright policy of the platform (Apple, Google, etc.).",
+      "q3": "Q. How can I type emojis on PC?",
+      "a3": "On <strong>Windows</strong>, press <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">Windows key + .(Period)</code>. On <strong>Mac</strong>, press <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">Control + Command + Space</code> to open the emoji picker.",
+      "q4": "Q. The same emoji looks different on different devices.",
+      "a4": "While emojis follow Unicode standards, the actual designs vary by platform (Apple, Google, Samsung, etc.). The same emoji code may look different depending on your device."
     },
     "disqus": {
       "title": "Emoji Collection"
     }
   },
-  "SpellChecker": {
+  "UnitConverter": {
     "meta": {
-      "title": "Korean Spell Checker | Grammar & Spacing Check",
-      "description": "Essential for resumes and reports! Real-time Korean spelling and spacing checker. Correct your grammar automatically.",
-      "keywords": "korean spell checker, grammar check, spacing check, hangul spelling, resume proofreading",
-      "ogTitle": "Korean Spell Checker | Proofread your text",
-      "ogDescription": "Confused about Korean spelling? Use our AI-powered checker to perfect your sentences."
+      "title": "Unit Converter | Length Weight Temperature Speed - Free Online",
+      "description": "Convert length (cm, m, km, inch, feet, mile), weight (g, kg, lb), temperature (Celsius, Fahrenheit), and speed (km/h, mph) in real-time with this free online tool.",
+      "keywords": "unit converter, length conversion, weight conversion, temperature conversion, speed conversion, cm to inch, kg to lb, celsius fahrenheit, mile km",
+      "ogTitle": "Unit Converter | Length Weight Temperature Speed",
+      "ogDescription": "All unit conversions for travel, cooking, and study! Convert length, weight, temperature, and speed in real-time."
     },
-    "title": "Korean Spell Checker",
-    "subtitle": "Fix confusing spelling and spacing errors at once.<br />Must-check before sending emails or submitting resumes!",
-    "input": {
-      "title": "Text Input",
-      "count": "Total <strong>{count}</strong> chars",
-      "placeholder": "Enter text to check... (Max 5,000 chars)",
-      "check": "Check Spelling",
-      "checking": "Checking...",
-      "reset": "Reset",
-      "alertEmpty": "Please enter text to check."
+    "title": "Unit Converter",
+    "subtitle": "Convert length, weight, temperature, speed and more in real-time.<br />All the unit conversions you need for travel, cooking, and study in one place!",
+    "categories": {
+      "length": "Length",
+      "weight": "Weight",
+      "temperature": "Temperature",
+      "speed": "Speed"
     },
-    "result": {
-      "title": "Check Result",
-      "found": "Errors Found: {count}",
-      "empty": "Enter text and click 'Check Spelling' to see results.",
-      "perfect": "No errors found. Perfect sentence! 🎉",
-      "errorLabel": "Error:",
-      "suggestionLabel": "Suggestion:",
-      "apply": "Apply",
-      "ignore": "Ignore"
+    "units": {
+      "mm": "Millimeter (mm)",
+      "cm": "Centimeter (cm)",
+      "m": "Meter (m)",
+      "km": "Kilometer (km)",
+      "inch": "Inch (in)",
+      "ft": "Feet (ft)",
+      "yard": "Yard (yd)",
+      "mile": "Mile (mi)",
+      "mg": "Milligram (mg)",
+      "g": "Gram (g)",
+      "kg": "Kilogram (kg)",
+      "ton": "Ton (t)",
+      "oz": "Ounce (oz)",
+      "lb": "Pound (lb)",
+      "celsius": "Celsius (°C)",
+      "fahrenheit": "Fahrenheit (°F)",
+      "kelvin": "Kelvin (K)",
+      "mps": "m/s",
+      "kmph": "km/h",
+      "mph": "mph",
+      "knot": "Knot"
     },
-    "common": {
-      "title": "Top 5 Common Korean Spelling Mistakes",
-      "list": {
-        "1": "<strong>되 (Doe) / 돼 (Dwae)</strong>: Rule of thumb - replace with 'Ha' (Doe) or 'Hae' (Dwae). If 'Hae' makes sense, use 'Dwae'.",
-        "2": "<strong>Example</strong>: Sentences usually end with 'Dwae' (e.g., An-dwae).",
-        "3": "<strong>Myeot-il (X) / Myeo-chil (O)</strong>: Always use 'Myeo-chil' for dates. 'Myeot-il' is incorrect.",
-        "4": "<strong>Eotteokhae (O)</strong>: Calculated as abbreviation of 'Eotteoke Hae'. 'Eotteoh-hae' is wrong.",
-        "5": "<strong>Yeok-hal (Role)</strong>: The correct spelling for 'Role' is 'Yeok-hal', not 'Yeok-hwal'."
+    "from": "From",
+    "to": "To",
+    "swap": "Swap Units",
+    "quickReference": "Quick Reference",
+    "info": {
+      "title": "Unit Conversion Guide",
+      "length": {
+        "title": "📏 Length Units",
+        "desc": "Convert between metric (mm, cm, m, km) and imperial (inch, feet, yard, mile) length units."
+      },
+      "weight": {
+        "title": "⚖️ Weight Units",
+        "desc": "Convert gram, kilogram, ton and other metric units with ounce, pound imperial units."
+      },
+      "temperature": {
+        "title": "🌡️ Temperature Units",
+        "desc": "Convert between Celsius (°C), Fahrenheit (°F), and Kelvin (K). Useful for cooking, weather, and scientific calculations."
+      },
+      "speed": {
+        "title": "🚀 Speed Units",
+        "desc": "Convert various speed units including km/h, mph, m/s, and knots."
       }
     },
-    "why": {
-      "title": "Why Spelling Matters",
-      "desc1": "Correct spelling is fundamental to credibility. Errors in resumes or business emails can look unprofessional.",
-      "desc2": "Use this tool to prevent minor mistakes and write polished Korean text."
+    "faq": {
+      "title": "FAQ",
+      "q1": "Q. How many kilometers is 1 mile?",
+      "a1": "1 mile is approximately 1.609 km. To roughly convert miles to kilometers, multiply by 1.6.",
+      "q2": "Q. How do I convert Celsius to Fahrenheit?",
+      "a2": "Celsius to Fahrenheit: (Celsius × 9/5) + 32. For example, 25°C equals 77°F. Fahrenheit to Celsius: (Fahrenheit - 32) × 5/9.",
+      "q3": "Q. How many kilograms is 1 pound?",
+      "a3": "1 pound (lb) is approximately 0.454 kg. Conversely, 1 kg is approximately 2.2 pounds.",
+      "q4": "Q. How many centimeters is 1 inch?",
+      "a4": "1 inch is exactly 2.54 cm. This unit is commonly used for TV and monitor screen sizes."
     },
     "disqus": {
-      "title": "Spell Checker"
+      "title": "Unit Converter"
+    }
+  },
+  "FileSizeConverter": {
+    "meta": {
+      "title": "File Size Converter | KB MB GB TB Calculator - Free Online",
+      "description": "Convert file size units including Bytes, KB, MB, GB, TB, PB in real-time. Useful for USB, hard drive capacity calculation and download file size checking.",
+      "keywords": "file size converter, storage calculator, KB MB conversion, GB TB conversion, byte converter, file capacity calculator",
+      "ogTitle": "File Size Converter | KB MB GB TB Conversion",
+      "ogDescription": "Confused about file sizes? Convert and compare KB, MB, GB, TB in real-time!"
+    },
+    "title": "File Size Converter",
+    "subtitle": "KB, MB, GB, TB... Confused about file sizes?<br />Convert and compare various storage units in real-time.",
+    "units": {
+      "bit": "Bit",
+      "byte": "Byte (B)",
+      "kb": "Kilobyte (KB)",
+      "mb": "Megabyte (MB)",
+      "gb": "Gigabyte (GB)",
+      "tb": "Terabyte (TB)",
+      "pb": "Petabyte (PB)"
+    },
+    "input": {
+      "label": "Enter value to convert",
+      "quick": "Quick Select"
+    },
+    "result": {
+      "title": "Conversion Results (click to change base)",
+      "summary": "Conversion in Bytes"
+    },
+    "info": {
+      "title": "Understanding File Size Units",
+      "table": {
+        "unit": "Unit",
+        "bytes": "In Bytes",
+        "description": "Common Use",
+        "kb": "Text documents, icons",
+        "mb": "MP3 music, high-res photos",
+        "gb": "Movies, game installations",
+        "tb": "Large backups, NAS storage",
+        "pb": "Data centers, cloud storage"
+      },
+      "note": "* Computers use binary system where 1KB = 1,024B. (Hard drive manufacturers often use 1,000-based calculation)"
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": "Q. How many MB is 1GB?",
+      "a1": "1GB equals 1,024MB. Computers use binary (base-2), so calculations are based on 1,024 (2^10) rather than 1,000.",
+      "q2": "Q. How many GB is 1TB?",
+      "a2": "1TB equals 1,024GB. Terabytes are commonly used for large hard drives and cloud storage.",
+      "q3": "Q. Why does my hard drive show less space than advertised?",
+      "a3": "Hard drive manufacturers calculate 1GB = 1,000MB, while operating systems (Windows) use 1GB = 1,024MB. This difference causes the displayed capacity to appear smaller.",
+      "q4": "Q. What's the difference between KB and KiB?",
+      "a4": "KB (kilobyte) is 1,000 bytes, while KiB (kibibyte) is 1,024 bytes. This tool uses the 1,024-based calculation commonly used in computing."
+    },
+    "disqus": {
+      "title": "File Size Converter"
+    }
+  },
+  "Base64": {
+    "meta": {
+      "title": "Base64 Encoder/Decoder | Text Converter - Free Online Developer Tool",
+      "description": "Free online tool to encode or decode text and files to/from Base64. Supports URL-Safe option, UTF-8, and file upload. Essential developer tool!",
+      "keywords": "Base64 encoder, Base64 decoder, Base64 converter, text encoding, developer tool, URL-Safe Base64, online encoding",
+      "ogTitle": "Base64 Encoder/Decoder | Free Developer Tool",
+      "ogDescription": "Easily convert text and files to Base64. Full support for URL-Safe option and UTF-8."
+    },
+    "title": "Base64 Encoder/Decoder",
+    "subtitle": "Easily encode or decode text and files to/from Base64.<br />Perfect for API development, data transfer, image embedding, and more.",
+    "encode": "Encode",
+    "decode": "Decode",
+    "encodeBtn": "Encode →",
+    "decodeBtn": "Decode →",
+    "urlSafe": "URL-Safe Mode (uses -, _ characters)",
+    "plainText": "Plain Text",
+    "base64Text": "Base64 Text",
+    "placeholder": {
+      "encode": "Enter text to encode...",
+      "decode": "Enter Base64 string to decode...",
+      "result": "Conversion result will appear here..."
+    },
+    "characters": "Characters",
+    "bytes": "Bytes",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "upload": "Upload File",
+    "swap": "Swap Input/Output",
+    "clear": "Clear All",
+    "error": {
+      "encode": "Error during encoding. Please check your input.",
+      "decode": "Error during decoding. Please verify the Base64 string is valid."
+    },
+    "info": {
+      "title": "What is Base64?",
+      "desc": "Base64 is an encoding scheme that converts binary data into ASCII string format. It uses 64 characters (A-Z, a-z, 0-9, +, /) to represent data and is widely used for safely transmitting binary data in email attachments, web APIs, and data transfer."
+    },
+    "useCases": {
+      "title": "Use Cases",
+      "api": {
+        "title": "API Authentication",
+        "desc": "HTTP Basic Auth encodes username:password in Base64 for transmission."
+      },
+      "image": {
+        "title": "Image Embedding",
+        "desc": "Used to embed images directly in HTML/CSS as Data URIs."
+      },
+      "email": {
+        "title": "Email Attachments",
+        "desc": "MIME format converts binary attachments to text."
+      },
+      "jwt": {
+        "title": "JWT Tokens",
+        "desc": "JSON Web Token headers and payloads are Base64 encoded."
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": {
+        "q": "Q. Is Base64 encoding encryption?",
+        "a": "No, Base64 is encoding, not encryption. Anyone can easily decode it, so it's not suitable for protecting sensitive data. It should only be used for data format conversion purposes."
+      },
+      "q2": {
+        "q": "Q. What is URL-Safe Base64?",
+        "a": "URL-Safe Base64 is a variant that replaces unsafe URL characters (+, /, =) with safe characters (-, _). It's useful when using Base64 strings in URL parameters or filenames."
+      },
+      "q3": {
+        "q": "Q. Why does Base64 encoding increase size?",
+        "a": "Base64 converts 6 bits into 8-bit ASCII characters, so the encoded data size increases by approximately 33%. (3 bytes → 4 characters)"
+      }
+    },
+    "disqus": {
+      "title": "Base64 Encoder/Decoder"
+    }
+  },
+  "ImageCompressor": {
+    "title": "Image Compressor",
+    "subtitle": "Reduce image file size! Compressed safely in your browser without server upload.",
+    "upload": {
+      "title": "Drag or click to upload images",
+      "subtitle": "Supports JPG, PNG, WebP and more"
+    },
+    "settings": {
+      "title": "Compression Settings",
+      "quality": "Quality",
+      "maxWidth": "Max Width"
+    },
+    "buttons": {
+      "compress": "Compress",
+      "compressing": "Compressing...",
+      "downloadAll": "Download All",
+      "clearAll": "Clear All"
+    },
+    "summary": {
+      "images": "Images",
+      "original": "Original Size",
+      "compressed": "Compressed",
+      "saved": "Saved"
+    },
+    "list": {
+      "reduced": "reduced",
+      "compressing": "Compressing...",
+      "error": "Error",
+      "download": "Download"
+    },
+    "info": {
+      "title": "Features",
+      "privacy": {
+        "title": "Privacy Protected",
+        "desc": "All compression happens in your browser. Your images are never uploaded to any server."
+      },
+      "quality": {
+        "title": "Adjustable Quality",
+        "desc": "Use the slider to balance between file size and image quality."
+      },
+      "bulk": {
+        "title": "Bulk Processing",
+        "desc": "Upload and compress multiple images at once."
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": "Q. Will compression reduce image quality?",
+      "a1": "With 80%+ quality setting, the difference is barely noticeable. You get much smaller files while maintaining clean images.",
+      "q2": "Q. What format are compressed images saved in?",
+      "a2": "Compressed images are saved as JPEG format, which provides the most efficient compression for photos.",
+      "q3": "Q. Can I compress transparent PNG images?",
+      "a3": "PNG transparency is replaced with white background when converting to JPEG. Keep the original PNG if transparency is needed."
+    }
+  },
+  "ColorConverter": {
+    "meta": {
+      "title": "Color Code Converter | HEX RGB HSL Real-time Conversion - Tani DevTool",
+      "description": "Free online tool to convert between HEX, RGB, and HSL color codes in real-time. Includes color picker, preset colors, and one-click copy. Essential for web designers and developers.",
+      "keywords": "color converter, HEX to RGB, RGB to HSL, color picker, web color, CSS color code, color code conversion, design tool",
+      "ogTitle": "Color Code Converter | HEX RGB HSL Conversion",
+      "ogDescription": "Convert HEX, RGB, HSL color codes in real-time. Includes color picker and one-click copy!"
+    },
+    "title": "Color Code Converter",
+    "subtitle": "Convert between HEX, RGB, and HSL color codes in real-time.<br />Essential for web design and CSS styling!",
+    "clickToChange": "Click to pick color",
+    "presets": "Preset Colors",
+    "colorPicker": "Color Picker",
+    "presetColors": "Preset Colors",
+    "hexCode": "HEX Code",
+    "rgbCode": "RGB Code",
+    "hslCode": "HSL Code",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "preview": "Color Preview",
+    "info": {
+      "title": "Understanding Color Codes",
+      "hex": {
+        "title": "🎨 HEX (Hexadecimal)",
+        "desc": "Uses # followed by 6 hexadecimal digits (00-FF) representing Red, Green, Blue values. Example: #FF5733 means R=255, G=87, B=51."
+      },
+      "rgb": {
+        "title": "🔴🟢🔵 RGB (Red, Green, Blue)",
+        "desc": "Represents colors using Red, Green, Blue values ranging from 0-255. Commonly used in CSS. Example: rgb(255, 87, 51)."
+      },
+      "hsl": {
+        "title": "🌈 HSL (Hue, Saturation, Lightness)",
+        "desc": "Defines colors using Hue (0-360°), Saturation (0-100%), Lightness (0-100%). Intuitive for adjusting color brightness and intensity."
+      }
+    },
+    "tips": {
+      "title": "💡 Tips for Web Designers",
+      "desc": "For web accessibility, maintain a <strong>contrast ratio</strong> of at least 4.5:1 between text and background. Using HSL makes it easy to create variations of the same color by simply adjusting saturation and lightness values."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "Q. What is a HEX color code?",
+      "a1": "HEX (hexadecimal) represents colors using base-16 numbers in #RRGGBB format. Each pair represents Red, Green, Blue from 00-FF (0-255). Example: #FF0000 is pure red.",
+      "q2": "Q. What's the difference between RGB and HSL?",
+      "a2": "RGB defines colors by mixing Red, Green, and Blue values. HSL uses Hue (color type), Saturation (intensity), and Lightness (brightness), making it more intuitive for color adjustments.",
+      "q3": "Q. Which color format should I use for web?",
+      "a3": "CSS supports HEX, RGB, and HSL. HEX is compact and commonly used, RGB is great with alpha transparency, and HSL is useful when you need to adjust colors programmatically.",
+      "q4": "Q. How do I copy color codes?",
+      "a4": "Click the copy button next to any color format (HEX, RGB, HSL) to copy it to your clipboard. You can then paste it directly into CSS or design tools."
+    },
+    "disqus": {
+      "title": "Color Code Converter"
+    }
+  },
+  "UrlEncoder": {
+    "meta": {
+      "title": "URL Encoder/Decoder | Percent Encoding Tool - Free Online",
+      "description": "Free online tool to safely encode or decode URLs with special characters. Supports encodeURIComponent and encodeURI methods. Essential for developers and marketers!",
+      "keywords": "URL encoder, URL decoder, URL converter, percent encoding, encodeURIComponent, encodeURI, URL encoding, URL decoding",
+      "ogTitle": "URL Encoder/Decoder | Online URL Conversion Tool",
+      "ogDescription": "Easily encode or decode URLs with special characters. Free online tool!"
+    },
+    "title": "URL Encoder/Decoder",
+    "subtitle": "Safely encode or decode URLs with special characters and non-ASCII text.<br />Perfect for web development, API testing, and marketing link creation.",
+    "encode": "Encode",
+    "decode": "Decode",
+    "encodeBtn": "Encode →",
+    "decodeBtn": "Decode →",
+    "modeComponent": "Component (Recommended)",
+    "modeUri": "URI (Full URL)",
+    "example": "Fill Example",
+    "originalText": "Original Text",
+    "encodedText": "Encoded Text",
+    "placeholder": {
+      "encode": "Enter URL or text to encode...",
+      "decode": "Enter URL to decode...",
+      "result": "Conversion result will appear here..."
+    },
+    "characters": "Characters",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "swap": "Swap Input/Output",
+    "clear": "Clear All",
+    "error": {
+      "encode": "Error during encoding. Please check your input.",
+      "decode": "Error during decoding. Please verify it's a valid URL encoding."
+    },
+    "reference": {
+      "title": "Special Character Encoding Reference",
+      "char": "Character",
+      "encoded": "Encoded",
+      "desc": "Description",
+      "space": "Space",
+      "exclamation": "Exclamation mark",
+      "hash": "Hash/Pound (anchor)",
+      "dollar": "Dollar sign",
+      "ampersand": "Ampersand (parameter separator)",
+      "quote": "Single quote",
+      "slash": "Slash (path separator)",
+      "question": "Question mark (query string start)",
+      "equal": "Equals sign (value assignment)",
+      "at": "At sign (email)"
+    },
+    "info": {
+      "title": "What is URL Encoding?",
+      "desc": "URL encoding (percent encoding) converts characters that cannot be used in URLs (non-ASCII characters, special characters, spaces) into safe ASCII format using %XX notation. This allows any character to be safely included in a URL."
+    },
+    "difference": {
+      "title": "encodeURIComponent vs encodeURI Difference",
+      "component": {
+        "title": "encodeURIComponent (Recommended)",
+        "desc": "Use for query parameter values. Encodes all special characters (:, /, ?, #, etc.) for safety.",
+        "example": "Input: a=1&b=2 → Output: a%3D1%26b%3D2"
+      },
+      "uri": {
+        "title": "encodeURI",
+        "desc": "Use for complete URLs. Preserves URL structure characters (:, /, ?, #) and only encodes non-ASCII characters.",
+        "example": "Input: https://ex.com/search → Output: https://ex.com/search (preserved)"
+      }
+    },
+    "useCases": {
+      "title": "Use Cases",
+      "queryParam": {
+        "title": "Query Parameters",
+        "desc": "Encode search terms or filter values when passing them as URL parameters."
+      },
+      "api": {
+        "title": "API Requests",
+        "desc": "Use when sending data containing special characters to REST APIs."
+      },
+      "form": {
+        "title": "Form Data",
+        "desc": "HTML forms automatically encode data when submitted via GET method."
+      },
+      "share": {
+        "title": "Share Links",
+        "desc": "Encode titles or descriptions with special characters for social media sharing."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "Q. Why is URL encoding necessary?",
+        "a": "URLs were originally designed to use only ASCII characters. To include special characters or non-ASCII text in URLs, they must be converted to %XX format so browsers and servers can process them correctly."
+      },
+      "q2": {
+        "q": "Q. Is space %20 or +?",
+        "a": "In URL paths, spaces are encoded as %20. In form data (application/x-www-form-urlencoded), spaces may be represented as +. Generally, using %20 is safer."
+      },
+      "q3": {
+        "q": "Q. Should I use encodeURIComponent or encodeURI?",
+        "a": "Use encodeURIComponent when encoding query parameter values. Use encodeURI for complete URLs, but in most cases, encodeURIComponent is safer."
+      },
+      "q4": {
+        "q": "Q. Is it a problem if URLs become long with %XX encoding?",
+        "a": "Long encoded URLs work fine functionally. Browsers display them decoded in the address bar for readability. However, some older systems may have URL length limits."
+      }
+    },
+    "disqus": {
+      "title": "URL Encoder/Decoder"
+    }
+  },
+  "CharacterCounter": {
+    "title": "Character Counter",
+    "subtitle": "Enter text to count characters with/without spaces, bytes, and words in real-time.",
+    "stats": {
+      "charWithSpace": "With Spaces",
+      "charWithoutSpace": "Without Spaces",
+      "bytes": "Bytes",
+      "words": "Words"
+    },
+    "input": {
+      "title": "Text Input",
+      "placeholder": "Enter text to count characters...",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "clear": "Clear"
+    },
+    "details": {
+      "title": "Detailed Analysis",
+      "lines": "Lines",
+      "paragraphs": "Paragraphs",
+      "korean": "Korean",
+      "english": "English",
+      "numbers": "Numbers",
+      "special": "Special"
+    },
+    "info": {
+      "title": "How to Use",
+      "withSpace": {
+        "title": "Characters with Spaces",
+        "desc": "Total character count including spaces and line breaks. Used for general document writing."
+      },
+      "withoutSpace": {
+        "title": "Characters without Spaces",
+        "desc": "Pure character count only. Often used when there are character limits for essays or applications."
+      },
+      "bytes": {
+        "title": "Byte Calculation",
+        "desc": "Size in UTF-8 encoding. Korean characters are 3 bytes, English/numbers are 1 byte each."
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": "Q. How many bytes is one Korean character?",
+      "a1": "In UTF-8 encoding, one Korean character is 3 bytes. English letters, numbers, and basic special characters are 1 byte each.",
+      "q2": "Q. How are character limits calculated for applications?",
+      "a2": "Most applications use \"characters with spaces\" as the standard. However, some may use \"without spaces\", so check the requirements.",
+      "q3": "Q. How is the word count calculated?",
+      "a3": "Words are counted as units separated by spaces. Useful for checking word count in English essays."
+    }
+  },
+  "JsonFormatter": {
+    "meta": {
+      "title": "JSON Formatter | Online Validator & Beautifier - Free Tool",
+      "description": "Free online JSON formatter and validator. Beautify, minify, and validate JSON data in real-time. Essential tool for developers and API testing.",
+      "keywords": "JSON formatter, JSON validator, JSON beautifier, JSON minifier, online JSON tool, JSON parser, API testing, developer tool",
+      "ogTitle": "JSON Formatter | Beautify & Validate JSON Online",
+      "ogDescription": "Format, validate, and minify JSON data in real-time. Free online tool for developers!"
+    },
+    "title": "JSON Formatter",
+    "subtitle": "Format, validate, and minify JSON data in real-time.<br />Essential tool for API development and debugging!",
+    "btn": {
+      "format": "Format",
+      "minify": "Minify",
+      "validate": "Validate",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "clear": "Clear",
+      "sample": "Sample"
+    },
+    "indent": "Indent",
+    "input": {
+      "label": "Input JSON",
+      "placeholder": "Paste your JSON here..."
+    },
+    "output": {
+      "label": "Output",
+      "placeholder": "Formatted result will appear here..."
+    },
+    "validate": {
+      "success": "Valid JSON!"
+    },
+    "error": {
+      "empty": "Please enter JSON data.",
+      "invalid": "Invalid JSON"
+    },
+    "stats": {
+      "success": "Formatted successfully",
+      "lines": "lines",
+      "chars": "characters"
+    },
+    "info": {
+      "title": "What is JSON?",
+      "desc": "JSON (JavaScript Object Notation) is a lightweight data interchange format. It's easy for humans to read and write, and easy for machines to parse and generate. Widely used in web APIs and configuration files.",
+      "format": {
+        "title": "Format",
+        "desc": "Beautify compressed JSON with proper indentation for better readability."
+      },
+      "validate": {
+        "title": "Validate",
+        "desc": "Check if your JSON is syntactically correct and find errors."
+      },
+      "minify": {
+        "title": "Minify",
+        "desc": "Remove whitespace to reduce file size for production use."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "Q. What is JSON?",
+      "a1": "JSON (JavaScript Object Notation) is a lightweight text-based format for storing and transmitting data. It's easy for humans to read and machines to parse, widely used in web APIs and configuration files.",
+      "q2": "Q. What is a JSON formatter used for?",
+      "a2": "It's used to prettify compressed JSON for readability or to find and fix JSON syntax errors. Useful for API response analysis, config file editing, and data validation.",
+      "q3": "Q. What's the difference between JSON and JavaScript objects?",
+      "a3": "JSON is a string-based data format, while JavaScript objects are a programming language data type. In JSON, keys must be wrapped in double quotes, and functions or undefined cannot be values."
+    },
+    "disqus": {
+      "title": "JSON Formatter"
+    }
+  },
+  "PDFManager": {
+    "meta": {
+      "title": "PDF Merge & Split | Free Online PDF Tool",
+      "description": "Merge multiple PDF files into one or split a PDF into individual pages. Free online tool that works in your browser without uploads.",
+      "keywords": "PDF merge, PDF split, PDF combine, PDF editor, free PDF tool, online PDF merge, extract PDF pages",
+      "ogTitle": "PDF Merge & Split | Free Online Tool",
+      "ogDescription": "Merge and split PDFs without installation. All processing happens in your browser for complete privacy."
+    },
+    "title": "PDF Merge & Split",
+    "subtitle": "Merge multiple PDF files into one or split a PDF into individual pages.<br />All processing happens in your browser - files are never uploaded to a server.",
+    "tabs": {
+      "merge": "Merge PDF",
+      "split": "Split PDF"
+    },
+    "merge": {
+      "upload": {
+        "title": "Drag PDF files here or click to upload",
+        "subtitle": "You can select multiple files at once"
+      },
+      "summary": {
+        "files": "Files",
+        "pages": "Total Pages",
+        "size": "Total Size"
+      },
+      "file": {
+        "pages": "{count} pages"
+      },
+      "button": "Merge PDFs",
+      "processing": "Processing...",
+      "addMore": "Add More",
+      "clearAll": "Clear All"
+    },
+    "split": {
+      "upload": {
+        "title": "Upload PDF file to split",
+        "subtitle": "Click or drag file here"
+      },
+      "file": {
+        "info": "{pages} pages · {size}"
+      },
+      "change": "Change File",
+      "options": {
+        "title": "Split Options",
+        "all": "Split all pages into separate PDFs",
+        "range": "Extract specific pages only",
+        "rangePlaceholder": "e.g., 1-3, 5, 7-9"
+      },
+      "button": "Split PDF",
+      "processing": "Processing..."
+    },
+    "error": {
+      "loadFailed": "Failed to load PDF file.",
+      "notPdf": "Only PDF files are allowed.",
+      "minFiles": "Please select at least 2 files.",
+      "noFile": "Please upload a file first.",
+      "invalidRange": "Please enter a valid page range.",
+      "mergeFailed": "Failed to merge PDF files.",
+      "splitFailed": "Failed to split PDF file."
+    },
+    "info": {
+      "title": "PDF Merge/Split Tool Features",
+      "privacy": {
+        "title": "🔒 Secure Processing",
+        "desc": "All processing happens in your browser. Files are never uploaded to any server, keeping your data private."
+      },
+      "free": {
+        "title": "💰 Completely Free",
+        "desc": "Use unlimited without registration or payment."
+      },
+      "easy": {
+        "title": "✨ Easy to Use",
+        "desc": "Drag and drop to add files and reorder them easily."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": "Q. Is there a file size limit?",
+      "a1": "Since processing happens in your browser, limits depend on your device's memory. Generally, files under 50MB are recommended.",
+      "q2": "Q. Does merging reduce PDF quality?",
+      "a2": "No, the original quality is preserved. Images and text are merged without any loss in quality.",
+      "q3": "Q. Where are split PDF files saved?",
+      "a3": "Files are automatically saved to your browser's download folder. Each page is downloaded as a separate PDF file."
     }
   }
 }

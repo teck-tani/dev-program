@@ -26,7 +26,7 @@ export default function Header() {
         { href: '/money-converter', labelKey: 'exchange' },
         { href: '/severance-calculator', labelKey: 'severance' },
         { href: '/interest-calculator', labelKey: 'interest' },
-        { href: '/pay-cal', labelKey: 'salary' },
+        { href: '/salary-calculator', labelKey: 'salary' },
         { href: '/korean-age-calculator', labelKey: 'age' },
       ]
     },
@@ -45,8 +45,16 @@ export default function Header() {
       items: [
         { href: '/barcode', labelKey: 'barcode' },
         { href: '/special-characters', labelKey: 'emoji' },
-        { href: '/lotto', labelKey: 'lotto' },
-        { href: '/spell-checker', labelKey: 'spellCheck' },
+        { href: '/lotto-generator', labelKey: 'lotto' },
+        { href: '/character-counter', labelKey: 'characterCounter' },
+        { href: '/unit-converter', labelKey: 'unitConverter' },
+        { href: '/file-size-converter', labelKey: 'fileSizeConverter' },
+        { href: '/image-compressor', labelKey: 'imageCompressor' },
+        { href: '/base64-encoder', labelKey: 'base64' },
+        { href: '/color-converter', labelKey: 'colorConverter' },
+        { href: '/json-formatter', labelKey: 'jsonFormatter' },
+        { href: '/pdf-manager', labelKey: 'pdfManager' },
+        { href: '/url-encoder', labelKey: 'urlEncoder' },
       ]
     }
   ];

@@ -14,12 +14,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/timer',
         '/interest-calculator',
         '/korean-age-calculator',
-        '/lotto',
+        '/lotto-generator',
         '/money-converter',
-        '/pay-cal',
+        '/salary-calculator',
         '/severance-calculator',
         '/special-characters',
         '/spell-checker',
+        '/unit-converter',
+        '/file-size-converter',
+        '/base64-encoder',
+        '/color-converter',
+        '/json-formatter',
     ];
 
     return tools.flatMap((tool) =>

@@ -1,4 +1,4 @@
-import SpecialCharactersClient from "./SpecialCharactersClient";
+import ColorConverterClient from "./ColorConverterClient";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
@@ -15,12 +15,12 @@ const baseUrl = 'https://teck-tani.com';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
-    const t = await getTranslations({ locale, namespace: 'SpecialCharacters.meta' });
+    const t = await getTranslations({ locale, namespace: 'ColorConverter.meta' });
     const isKo = locale === 'ko';
 
     const title = t('title');
     const description = t('description');
-    const url = `${baseUrl}/${locale}/special-characters`;
+    const url = `${baseUrl}/${locale}/color-converter`;
 
     return {
         title,
@@ -29,9 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         alternates: {
             canonical: url,
             languages: {
-                'ko': `${baseUrl}/ko/special-characters`,
-                'en': `${baseUrl}/en/special-characters`,
-                'x-default': `${baseUrl}/ko/special-characters`,
+                'ko': `${baseUrl}/ko/color-converter`,
+                'en': `${baseUrl}/en/color-converter`,
+                'x-default': `${baseUrl}/ko/color-converter`,
             },
         },
         openGraph: {
@@ -66,37 +66,37 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 function generateFaqSchema(locale: string) {
     const faqData = locale === 'ko' ? [
         {
-            question: "이모지가 네모(□)로 보여요.",
-            answer: "오래된 기기나 브라우저에서는 최신 이모지가 지원되지 않아 네모 박스로 보일 수 있습니다. OS나 브라우저를 최신 버전으로 업데이트해보세요."
+            question: "HEX 색상 코드란 무엇인가요?",
+            answer: "HEX(헥사데시멀)는 16진수로 색상을 표현하는 방식입니다. #RRGGBB 형태로, 각각 빨강(R), 초록(G), 파랑(B)을 00~FF(0~255)로 나타냅니다. 예: #FF0000은 순수한 빨간색입니다."
         },
         {
-            question: "상업적으로 사용해도 되나요?",
-            answer: "이모지는 유니코드 표준 문자로, 텍스트처럼 자유롭게 사용할 수 있습니다. 다만 이모지 디자인(폰트) 자체를 로고 등으로 사용하는 것은 플랫폼(Apple, Google 등)의 저작권 정책을 확인해야 합니다."
+            question: "RGB와 HSL의 차이점은 무엇인가요?",
+            answer: "RGB는 빨강, 초록, 파랑의 조합으로 색상을 표현합니다. HSL은 색조(Hue), 채도(Saturation), 명도(Lightness)로 표현하여 직관적으로 색상을 조절하기 쉽습니다."
         },
         {
-            question: "PC에서 이모지를 입력하는 방법이 있나요?",
-            answer: "Windows에서는 윈도우키 + 마침표(.)를, Mac에서는 Control + Command + Space를 누르면 이모지 입력 창이 열립니다."
+            question: "웹에서 어떤 색상 형식을 사용해야 하나요?",
+            answer: "CSS에서는 HEX, RGB, HSL 모두 사용 가능합니다. HEX는 간결하여 자주 쓰이고, RGB는 투명도(alpha)와 함께 사용할 때, HSL은 색상 조절이 필요할 때 유용합니다."
         },
         {
-            question: "같은 이모지인데 기기마다 다르게 보여요.",
-            answer: "이모지는 유니코드 표준이지만, 실제 디자인은 Apple, Google, Samsung 등 각 플랫폼마다 다릅니다. 같은 코드의 이모지도 기기에 따라 모양이 다를 수 있습니다."
+            question: "색상 코드를 어떻게 복사하나요?",
+            answer: "원하는 색상 형식(HEX, RGB, HSL) 옆의 복사 버튼을 클릭하면 클립보드에 복사됩니다. 바로 CSS나 디자인 툴에 붙여넣기 할 수 있습니다."
         }
     ] : [
         {
-            question: "Emojis show as squares (□).",
-            answer: "Old devices or browsers may not support the latest emojis and display them as boxes. Try updating your OS or browser to the latest version."
+            question: "What is a HEX color code?",
+            answer: "HEX (hexadecimal) represents colors using base-16 numbers in #RRGGBB format. Each pair represents Red, Green, Blue from 00-FF (0-255). Example: #FF0000 is pure red."
         },
         {
-            question: "Can I use them commercially?",
-            answer: "Emojis are Unicode standard characters and can be used freely like text. However, using the emoji design (font) itself as a logo may require checking the copyright policy of the platform (Apple, Google, etc.)."
+            question: "What's the difference between RGB and HSL?",
+            answer: "RGB defines colors by mixing Red, Green, and Blue. HSL uses Hue (color type), Saturation (intensity), and Lightness (brightness), making it more intuitive for color adjustments."
         },
         {
-            question: "How can I type emojis on PC?",
-            answer: "On Windows, press Windows key + Period (.). On Mac, press Control + Command + Space to open the emoji picker."
+            question: "Which color format should I use for web?",
+            answer: "CSS supports HEX, RGB, and HSL. HEX is compact and commonly used, RGB is great with alpha transparency, and HSL is useful when you need to adjust colors programmatically."
         },
         {
-            question: "The same emoji looks different on different devices.",
-            answer: "While emojis follow Unicode standards, the actual designs vary by platform (Apple, Google, Samsung, etc.). The same emoji code may look different depending on your device."
+            question: "How do I copy color codes?",
+            answer: "Click the copy button next to any color format (HEX, RGB, HSL) to copy it to your clipboard. You can then paste it directly into CSS or design tools."
         }
     ];
 
@@ -121,12 +121,12 @@ function generateWebAppSchema(locale: string) {
     return {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": isKo ? "이모지 모음" : "Emoji Collection",
+        "name": isKo ? "색상 코드 변환기" : "Color Code Converter",
         "description": isKo
-            ? "인스타그램, SNS용 이모지와 특수문자를 클릭 한 번으로 복사하는 무료 온라인 도구"
-            : "Free online tool to copy emojis and special characters for Instagram and SNS with one click",
-        "url": `${baseUrl}/${locale}/special-characters`,
-        "applicationCategory": "UtilitiesApplication",
+            ? "HEX, RGB, HSL 색상 코드를 실시간으로 상호 변환하는 무료 온라인 도구"
+            : "Free online tool to convert between HEX, RGB, and HSL color codes in real-time",
+        "url": `${baseUrl}/${locale}/color-converter`,
+        "applicationCategory": "DesignApplication",
         "operatingSystem": "Any",
         "offers": {
             "@type": "Offer",
@@ -134,43 +134,68 @@ function generateWebAppSchema(locale: string) {
             "priceCurrency": "KRW"
         },
         "featureList": isKo
-            ? ["클릭 한 번으로 복사", "카테고리별 분류", "표정/하트/동물/음식 이모지", "특수문자 포함", "모바일 최적화"]
-            : ["One-click copy", "Categorized emojis", "Faces/Hearts/Animals/Food emojis", "Special characters included", "Mobile optimized"],
+            ? ["HEX/RGB/HSL 실시간 변환", "컬러 피커 지원", "원클릭 복사", "프리셋 색상 제공", "모바일 최적화"]
+            : ["Real-time HEX/RGB/HSL conversion", "Color picker support", "One-click copy", "Preset colors", "Mobile optimized"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"
     };
 }
 
-// ItemList 구조화 데이터 (이모지 카테고리)
-function generateItemListSchema(locale: string) {
+// HowTo 구조화 데이터
+function generateHowToSchema(locale: string) {
     const isKo = locale === 'ko';
 
     return {
         "@context": "https://schema.org",
-        "@type": "ItemList",
-        "name": isKo ? "이모지 카테고리" : "Emoji Categories",
-        "description": isKo ? "카테고리별 이모지 모음" : "Emoji collection by category",
-        "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": isKo ? "😀 표정" : "😀 Faces" },
-            { "@type": "ListItem", "position": 2, "name": isKo ? "❤️ 하트" : "❤️ Hearts" },
-            { "@type": "ListItem", "position": 3, "name": isKo ? "👋 손동작" : "👋 Hands" },
-            { "@type": "ListItem", "position": 4, "name": isKo ? "🐶 동물" : "🐶 Animals" },
-            { "@type": "ListItem", "position": 5, "name": isKo ? "🍎 음식" : "🍎 Food" },
-            { "@type": "ListItem", "position": 6, "name": isKo ? "⚽ 스포츠" : "⚽ Sports" },
-            { "@type": "ListItem", "position": 7, "name": isKo ? "🚗 교통" : "🚗 Transport" },
-            { "@type": "ListItem", "position": 8, "name": isKo ? "⭐ 기호" : "⭐ Symbols" }
+        "@type": "HowTo",
+        "name": isKo ? "색상 코드 변환하는 방법" : "How to Convert Color Codes",
+        "description": isKo
+            ? "HEX, RGB, HSL 색상 코드를 상호 변환하는 방법"
+            : "How to convert between HEX, RGB, and HSL color codes",
+        "step": isKo ? [
+            {
+                "@type": "HowToStep",
+                "name": "색상 선택",
+                "text": "컬러 피커를 클릭하여 원하는 색상을 선택하거나, 프리셋 색상 중 하나를 클릭합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "값 입력",
+                "text": "HEX, RGB, HSL 중 원하는 형식에 직접 값을 입력할 수도 있습니다. 다른 형식은 자동으로 계산됩니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "코드 복사",
+                "text": "변환된 색상 코드 옆의 복사 버튼을 클릭하여 클립보드에 복사합니다."
+            }
+        ] : [
+            {
+                "@type": "HowToStep",
+                "name": "Select Color",
+                "text": "Click the color picker to choose a color, or click one of the preset colors."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Enter Values",
+                "text": "You can also directly enter values in HEX, RGB, or HSL format. Other formats will be calculated automatically."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Copy Code",
+                "text": "Click the copy button next to the converted color code to copy it to your clipboard."
+            }
         ]
     };
 }
 
-export default async function SpecialCharactersPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function ColorConverterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
-    const tFaq = await getTranslations('SpecialCharacters.faq');
+    const tFaq = await getTranslations('ColorConverter.faq');
 
     const faqSchema = generateFaqSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
-    const itemListSchema = generateItemListSchema(locale);
+    const howToSchema = generateHowToSchema(locale);
 
     return (
         <>
@@ -185,10 +210,10 @@ export default async function SpecialCharactersPage({ params }: { params: Promis
             />
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
 
-            <SpecialCharactersClient />
+            <ColorConverterClient />
 
             {/* FAQ 섹션 (SEO용 추가 콘텐츠) */}
             <div className="container" style={{ maxWidth: "800px", padding: "0 20px 40px" }}>
@@ -209,7 +234,7 @@ export default async function SpecialCharactersPage({ params }: { params: Promis
 
                     <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
                         <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('q3')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('a3') }} />
+                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>{tFaq('a3')}</p>
                     </details>
 
                     <details style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>

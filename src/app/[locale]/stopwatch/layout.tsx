@@ -1,5 +1,3 @@
-import SharedClockLayout from "@/components/SharedClockLayout";
-
 export default function StopwatchLayout({ children }: { children: React.ReactNode }) {
-    return <SharedClockLayout>{children}</SharedClockLayout>;
+    return <>{children}</>;
 }

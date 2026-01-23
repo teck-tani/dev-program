@@ -1,0 +1,285 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
+
+export default function JsonFormatterClient() {
+    const t = useTranslations('JsonFormatter');
+    const [input, setInput] = useState<string>('');
+    const [output, setOutput] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const [indentSize, setIndentSize] = useState<number>(2);
+    const [copied, setCopied] = useState<boolean>(false);
+    const [stats, setStats] = useState<{ lines: number; chars: number; size: string } | null>(null);
+
+    const formatJson = useCallback(() => {
+        if (!input.trim()) {
+            setError(t('error.empty'));
+            setOutput('');
+            setStats(null);
+            return;
+        }
+
+        try {
+            const parsed = JSON.parse(input);
+            const formatted = JSON.stringify(parsed, null, indentSize);
+            setOutput(formatted);
+            setError('');
+            setStats({
+                lines: formatted.split('\n').length,
+                chars: formatted.length,
+                size: formatBytes(new Blob([formatted]).size)
+            });
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+            setError(`${t('error.invalid')}: ${errorMessage}`);
+            setOutput('');
+            setStats(null);
+        }
+    }, [input, indentSize, t]);
+
+    const minifyJson = useCallback(() => {
+        if (!input.trim()) {
+            setError(t('error.empty'));
+            setOutput('');
+            setStats(null);
+            return;
+        }
+
+        try {
+            const parsed = JSON.parse(input);
+            const minified = JSON.stringify(parsed);
+            setOutput(minified);
+            setError('');
+            setStats({
+                lines: 1,
+                chars: minified.length,
+                size: formatBytes(new Blob([minified]).size)
+            });
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+            setError(`${t('error.invalid')}: ${errorMessage}`);
+            setOutput('');
+            setStats(null);
+        }
+    }, [input, t]);
+
+    const validateJson = useCallback(() => {
+        if (!input.trim()) {
+            setError(t('error.empty'));
+            return;
+        }
+
+        try {
+            JSON.parse(input);
+            setError('');
+            setOutput(t('validate.success'));
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+            setError(`${t('error.invalid')}: ${errorMessage}`);
+            setOutput('');
+        }
+    }, [input, t]);
+
+    const copyToClipboard = async () => {
+        if (!output) return;
+        try {
+            await navigator.clipboard.writeText(output);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            // Fallback
+        }
+    };
+
+    const clearAll = () => {
+        setInput('');
+        setOutput('');
+        setError('');
+        setStats(null);
+    };
+
+    const loadSample = () => {
+        const sample = {
+            name: "JSON Formatter",
+            version: "1.0.0",
+            features: ["Format", "Validate", "Minify"],
+            config: {
+                indentSize: 2,
+                sortKeys: false
+            },
+            active: true
+        };
+        setInput(JSON.stringify(sample));
+    };
+
+    const formatBytes = (bytes: number): string => {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
+    return (
+        <div style={{ background: 'white', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', padding: '25px', marginBottom: '30px' }}>
+            {/* 컨트롤 바 */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
+                <button onClick={formatJson} style={buttonStyle('#3b82f6')}>{t('btn.format')}</button>
+                <button onClick={minifyJson} style={buttonStyle('#8b5cf6')}>{t('btn.minify')}</button>
+                <button onClick={validateJson} style={buttonStyle('#10b981')}>{t('btn.validate')}</button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+                    <label style={{ fontSize: '0.85rem', color: '#666' }}>{t('indent')}:</label>
+                    <select
+                        value={indentSize}
+                        onChange={(e) => setIndentSize(Number(e.target.value))}
+                        style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.9rem' }}
+                    >
+                        <option value={2}>2 spaces</option>
+                        <option value={4}>4 spaces</option>
+                        <option value={1}>1 tab</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* 에디터 영역 */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                {/* 입력 */}
+                <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>{t('input.label')}</label>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button onClick={loadSample} style={smallButtonStyle}>{t('btn.sample')}</button>
+                            <button onClick={clearAll} style={smallButtonStyle}>{t('btn.clear')}</button>
+                        </div>
+                    </div>
+                    <textarea
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder={t('input.placeholder')}
+                        style={{
+                            width: '100%',
+                            height: '350px',
+                            padding: '15px',
+                            fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
+                            fontSize: '0.85rem',
+                            lineHeight: 1.5,
+                            border: error ? '2px solid #ef4444' : '2px solid #e5e7eb',
+                            borderRadius: '10px',
+                            resize: 'vertical',
+                            outline: 'none',
+                            transition: 'border-color 0.2s',
+                        }}
+                        onFocus={(e) => { if (!error) e.target.style.borderColor = '#3b82f6'; }}
+                        onBlur={(e) => { if (!error) e.target.style.borderColor = '#e5e7eb'; }}
+                        spellCheck={false}
+                    />
+                </div>
+
+                {/* 출력 */}
+                <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>{t('output.label')}</label>
+                        <button
+                            onClick={copyToClipboard}
+                            disabled={!output}
+                            style={{
+                                ...smallButtonStyle,
+                                background: copied ? '#10b981' : '#f3f4f6',
+                                color: copied ? 'white' : '#374151',
+                            }}
+                        >
+                            {copied ? t('btn.copied') : t('btn.copy')}
+                        </button>
+                    </div>
+                    <textarea
+                        value={output}
+                        readOnly
+                        placeholder={t('output.placeholder')}
+                        style={{
+                            width: '100%',
+                            height: '350px',
+                            padding: '15px',
+                            fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
+                            fontSize: '0.85rem',
+                            lineHeight: 1.5,
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '10px',
+                            background: '#fafafa',
+                            resize: 'vertical',
+                            outline: 'none',
+                        }}
+                        spellCheck={false}
+                    />
+                </div>
+            </div>
+
+            {/* 상태 표시 */}
+            {error && (
+                <div style={{
+                    padding: '12px 16px',
+                    background: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    borderRadius: '8px',
+                    color: '#dc2626',
+                    fontSize: '0.9rem',
+                    marginBottom: '10px',
+                }}>
+                    ❌ {error}
+                </div>
+            )}
+
+            {stats && !error && (
+                <div style={{
+                    padding: '12px 16px',
+                    background: '#f0fdf4',
+                    border: '1px solid #bbf7d0',
+                    borderRadius: '8px',
+                    color: '#16a34a',
+                    fontSize: '0.9rem',
+                    display: 'flex',
+                    gap: '20px',
+                    flexWrap: 'wrap',
+                }}>
+                    <span>✅ {t('stats.success')}</span>
+                    <span>📄 {stats.lines} {t('stats.lines')}</span>
+                    <span>📝 {stats.chars} {t('stats.chars')}</span>
+                    <span>💾 {stats.size}</span>
+                </div>
+            )}
+
+            {/* 모바일 스타일 */}
+            <style jsx>{`
+                @media (max-width: 768px) {
+                    div[style*="grid-template-columns: 1fr 1fr"] {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            `}</style>
+        </div>
+    );
+}
+
+const buttonStyle = (color: string): React.CSSProperties => ({
+    padding: '10px 20px',
+    borderRadius: '8px',
+    border: 'none',
+    background: color,
+    color: 'white',
+    fontWeight: 600,
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    transition: 'opacity 0.2s',
+});
+
+const smallButtonStyle: React.CSSProperties = {
+    padding: '6px 12px',
+    borderRadius: '6px',
+    border: 'none',
+    background: '#f3f4f6',
+    color: '#374151',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    transition: 'background 0.2s',
+};

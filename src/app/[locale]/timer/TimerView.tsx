@@ -13,34 +13,6 @@ export default function TimerView() {
     const [isSetting, setIsSetting] = useState(true);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [showAlarmModal, setShowAlarmModal] = useState(false);
-    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-
-    // Load theme from localStorage
-    useEffect(() => {
-        const loadTheme = () => {
-            const saved = localStorage.getItem('worldClockState');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    setTheme(parsed.theme || 'dark');
-                } catch (e) {
-                    console.error('Failed to parse theme:', e);
-                }
-            }
-        };
-
-        loadTheme();
-
-        const handleThemeChange = () => loadTheme();
-        window.addEventListener('clockThemeChange', handleThemeChange);
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'worldClockState') loadTheme();
-        });
-
-        return () => {
-            window.removeEventListener('clockThemeChange', handleThemeChange);
-        };
-    }, []);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -101,15 +73,9 @@ export default function TimerView() {
     };
 
     return (
-        <div style={{ 
-            textAlign: 'center',
-            minHeight: '70vh',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingTop: '5vh',
-            paddingBottom: '15vh',
+        <div style={{
+            minHeight: '100vh',
+            background: 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)',
         }}>
             <audio ref={audioRef} src="/alarm.mp3" />
 
@@ -121,72 +87,73 @@ export default function TimerView() {
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
                     zIndex: 1000
                 }}>
                     <div style={{
-                        backgroundColor: '#444',
+                        backgroundColor: 'white',
                         width: '90%',
                         maxWidth: '400px',
-                        borderRadius: '8px',
+                        borderRadius: '16px',
                         overflow: 'hidden',
-                        boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
                         fontFamily: "'Noto Sans KR', sans-serif"
                     }}>
                         <div style={{
-                            padding: '15px 20px',
-                            backgroundColor: '#555',
+                            padding: '20px 24px',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            borderBottom: '1px solid #666'
                         }}>
                             <span style={{ fontSize: '1.2rem', fontWeight: 600, color: 'white' }}>{t('modal.title')}</span>
-                            <span style={{ cursor: 'pointer', color: '#aaa', fontSize: '1.5rem' }} onClick={handleStopAlarm}>&times;</span>
+                            <span style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.8)', fontSize: '1.5rem' }} onClick={handleStopAlarm}>&times;</span>
                         </div>
                         <div style={{
-                            padding: '30px 20px',
+                            padding: '40px 20px',
                             textAlign: 'center',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            gap: '15px'
+                            gap: '20px'
                         }}>
                             <div style={{
-                                width: '60px',
-                                height: '60px',
+                                width: '70px',
+                                height: '70px',
                                 borderRadius: '50%',
-                                border: '2px solid #ff7675',
+                                background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%)',
                                 display: 'flex',
                                 justifyContent: 'center',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                boxShadow: '0 4px 15px rgba(238, 90, 90, 0.4)'
                             }}>
-                                <FaHourglassStart style={{ fontSize: '30px', color: '#ff7675' }} />
+                                <FaHourglassStart style={{ fontSize: '30px', color: 'white' }} />
                             </div>
-                            <div style={{ fontSize: '2rem', color: 'white', fontWeight: 300 }}>
+                            <div style={{ fontSize: '2.5rem', color: '#333', fontWeight: 600 }}>
                                 00:00:00
                             </div>
                         </div>
                         <div style={{
-                            padding: '15px 20px',
-                            borderTop: '1px solid #666',
+                            padding: '20px 24px',
+                            borderTop: '1px solid #eee',
                             display: 'flex',
                             justifyContent: 'center'
                         }}>
                             <button
                                 onClick={handleStopAlarm}
                                 style={{
-                                    backgroundColor: '#ff7675',
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                                     color: 'white',
                                     border: 'none',
-                                    padding: '10px 30px',
-                                    borderRadius: '4px',
+                                    padding: '12px 40px',
+                                    borderRadius: '25px',
                                     fontSize: '1rem',
                                     cursor: 'pointer',
-                                    fontWeight: 'bold'
+                                    fontWeight: 'bold',
+                                    boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
                                 }}
                             >
                                 {t('controls.confirm')}
@@ -196,33 +163,119 @@ export default function TimerView() {
                 </div>
             )}
 
-            {isSetting ? (
-                <div style={{ marginBottom: '40px', display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
-                    <TimeInput value={inputValues.h} onChange={(v) => setInputValues({ ...inputValues, h: v })} label={t('labels.hour')} />
-                    <span style={{ fontSize: '2rem', color: '#666' }}>:</span>
-                    <TimeInput value={inputValues.m} onChange={(v) => setInputValues({ ...inputValues, m: v })} label={t('labels.minute')} max={59} />
-                    <span style={{ fontSize: '2rem', color: '#666' }}>:</span>
-                    <TimeInput value={inputValues.s} onChange={(v) => setInputValues({ ...inputValues, s: v })} label={t('labels.second')} max={59} />
-                </div>
-            ) : (
-                <div className="digital-text" style={{ 
-                    fontSize: 'clamp(4rem, 15vw, 10rem)', 
-                    marginBottom: '40px',
-                    color: theme === 'dark' ? '#00ff88' : '#0891b2',
-                    transition: 'color 0.3s ease',
+            {/* Header */}
+            <section style={{ textAlign: "center", paddingTop: "40px", paddingBottom: "20px" }}>
+                <h1 style={{
+                    fontSize: '2rem',
+                    color: '#2c3e50',
+                    marginBottom: "15px",
+                    fontWeight: 700
                 }}>
-                    {formatTime(timeLeft)}
-                </div>
-            )}
+                    {t('seo.title')}
+                </h1>
+                <p style={{
+                    color: '#666',
+                    fontSize: '1.1rem',
+                    maxWidth: '600px',
+                    margin: '0 auto',
+                    padding: '0 20px'
+                }}>
+                    {t('meta.description')}
+                </p>
+            </section>
 
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-                {!isRunning && (
-                    <button className="digital-btn btn-green" onClick={handleStart}>{isSetting ? t('controls.start') : t('controls.continue')}</button>
-                )}
-                {isRunning && (
-                    <button className="digital-btn btn-red" onClick={() => setIsRunning(false)}>{t('controls.stop')}</button>
-                )}
-                <button className="digital-btn btn-yellow" onClick={handleReset}>{t('controls.reset')}</button>
+            {/* Timer Container */}
+            <div style={{
+                maxWidth: '500px',
+                margin: '0 auto',
+                padding: '0 20px',
+            }}>
+                <div style={{
+                    background: 'white',
+                    borderRadius: '20px',
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+                    padding: '40px 30px',
+                    textAlign: 'center',
+                }}>
+                    {isSetting ? (
+                        <div style={{ marginBottom: '30px', display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
+                            <TimeInput value={inputValues.h} onChange={(v) => setInputValues({ ...inputValues, h: v })} label={t('labels.hour')} />
+                            <span style={{ fontSize: '2rem', color: '#ccc', fontWeight: 300 }}>:</span>
+                            <TimeInput value={inputValues.m} onChange={(v) => setInputValues({ ...inputValues, m: v })} label={t('labels.minute')} max={59} />
+                            <span style={{ fontSize: '2rem', color: '#ccc', fontWeight: 300 }}>:</span>
+                            <TimeInput value={inputValues.s} onChange={(v) => setInputValues({ ...inputValues, s: v })} label={t('labels.second')} max={59} />
+                        </div>
+                    ) : (
+                        <div style={{
+                            fontSize: 'clamp(3rem, 12vw, 5rem)',
+                            marginBottom: '30px',
+                            color: '#667eea',
+                            fontWeight: 700,
+                            fontFamily: "'SF Mono', 'Fira Code', monospace",
+                            letterSpacing: '2px',
+                        }}>
+                            {formatTime(timeLeft)}
+                        </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        {!isRunning && (
+                            <button
+                                onClick={handleStart}
+                                style={{
+                                    background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '14px 35px',
+                                    borderRadius: '25px',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 15px rgba(17, 153, 142, 0.4)',
+                                    transition: 'transform 0.2s, box-shadow 0.2s',
+                                }}
+                            >
+                                {isSetting ? t('controls.start') : t('controls.continue')}
+                            </button>
+                        )}
+                        {isRunning && (
+                            <button
+                                onClick={() => setIsRunning(false)}
+                                style={{
+                                    background: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '14px 35px',
+                                    borderRadius: '25px',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 15px rgba(255, 65, 108, 0.4)',
+                                    transition: 'transform 0.2s, box-shadow 0.2s',
+                                }}
+                            >
+                                {t('controls.stop')}
+                            </button>
+                        )}
+                        <button
+                            onClick={handleReset}
+                            style={{
+                                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                                color: 'white',
+                                border: 'none',
+                                padding: '14px 35px',
+                                borderRadius: '25px',
+                                fontSize: '1.1rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)',
+                                transition: 'transform 0.2s, box-shadow 0.2s',
+                            }}
+                        >
+                            {t('controls.reset')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -249,9 +302,27 @@ function TimeInput({ value, onChange, label, max }: { value: number, onChange: (
                     if (max && val > max) val = max;
                     onChange(val);
                 }}
-                className="timer-input"
+                style={{
+                    width: '70px',
+                    height: '70px',
+                    textAlign: 'center',
+                    fontSize: '1.8rem',
+                    fontWeight: 600,
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '12px',
+                    outline: 'none',
+                    color: '#333',
+                    background: '#f8f9fa',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#667eea';
+                }}
+                onMouseLeave={(e) => {
+                    if (!isFocused) e.currentTarget.style.borderColor = '#e0e0e0';
+                }}
             />
-            <span style={{ color: '#888', marginTop: '5px' }}>{label}</span>
+            <span style={{ color: '#888', marginTop: '8px', fontSize: '0.9rem' }}>{label}</span>
         </div>
     );
 }

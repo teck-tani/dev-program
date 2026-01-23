@@ -7,36 +7,8 @@ export default function StopwatchView() {
     const t = useTranslations('Clock.Stopwatch.controls');
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
-    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
-
-    // Load theme from localStorage
-    useEffect(() => {
-        const loadTheme = () => {
-            const saved = localStorage.getItem('worldClockState');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    setTheme(parsed.theme || 'dark');
-                } catch (e) {
-                    console.error('Failed to parse theme:', e);
-                }
-            }
-        };
-
-        loadTheme();
-
-        const handleThemeChange = () => loadTheme();
-        window.addEventListener('clockThemeChange', handleThemeChange);
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'worldClockState') loadTheme();
-        });
-
-        return () => {
-            window.removeEventListener('clockThemeChange', handleThemeChange);
-        };
-    }, []);
 
     const update = () => {
         setTime(Date.now() - startTimeRef.current);
@@ -62,41 +34,81 @@ export default function StopwatchView() {
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
     };
 
-    const textColor = theme === 'dark' ? '#00ff88' : '#0891b2';
-
     return (
-        <div style={{ 
+        <div style={{
             textAlign: 'center',
-            minHeight: '70vh',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            paddingTop: '5vh',
-            paddingBottom: '15vh',
+            padding: '20px 0',
         }}>
-            <div className="digital-text" style={{
-                fontSize: 'clamp(3rem, 12vw, 8rem)',
-                marginBottom: '50px',
-                fontVariantNumeric: 'tabular-nums', // 숫자 너비를 고정하여 떨림 방지
-                minHeight: '1.2em', // 폰트 로딩 CLS 방지
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                lineHeight: 1,
-                willChange: 'content', // 렌더링 최적화 힌트
-                color: textColor,
-                transition: 'color 0.3s ease',
+            <div style={{
+                fontSize: 'clamp(3rem, 12vw, 6rem)',
+                marginBottom: '40px',
+                fontVariantNumeric: 'tabular-nums',
+                fontFamily: "'SF Mono', 'Roboto Mono', 'Consolas', monospace",
+                fontWeight: 600,
+                color: '#0891b2',
+                letterSpacing: '0.02em',
             }}>
                 {formatTime(time)}
             </div>
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 {!isRunning ? (
-                    <button className="digital-btn px-8 py-3 rounded-xl text-xl font-bold shadow-md bg-green-700 text-white hover:bg-green-800 active:bg-green-900 transition-colors" onClick={() => setIsRunning(true)}>{t('start')}</button>
+                    <button
+                        onClick={() => setIsRunning(true)}
+                        style={{
+                            padding: '14px 40px',
+                            borderRadius: '12px',
+                            fontSize: '1.1rem',
+                            fontWeight: 'bold',
+                            border: 'none',
+                            cursor: 'pointer',
+                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                            color: 'white',
+                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                            transition: 'all 0.2s ease',
+                        }}
+                    >
+                        {t('start')}
+                    </button>
                 ) : (
-                    <button className="digital-btn px-8 py-3 rounded-xl text-xl font-bold shadow-md bg-red-700 text-white hover:bg-red-800 active:bg-red-900 transition-colors" onClick={() => setIsRunning(false)}>{t('stop')}</button>
+                    <button
+                        onClick={() => setIsRunning(false)}
+                        style={{
+                            padding: '14px 40px',
+                            borderRadius: '12px',
+                            fontSize: '1.1rem',
+                            fontWeight: 'bold',
+                            border: 'none',
+                            cursor: 'pointer',
+                            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                            color: 'white',
+                            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+                            transition: 'all 0.2s ease',
+                        }}
+                    >
+                        {t('stop')}
+                    </button>
                 )}
-                <button className="digital-btn px-8 py-3 rounded-xl text-xl font-bold shadow-md bg-yellow-400 text-black hover:bg-yellow-500 active:bg-yellow-600 transition-colors" onClick={() => { setIsRunning(false); setTime(0); }}>{t('reset')}</button>
+                <button
+                    onClick={() => { setIsRunning(false); setTime(0); }}
+                    style={{
+                        padding: '14px 40px',
+                        borderRadius: '12px',
+                        fontSize: '1.1rem',
+                        fontWeight: 'bold',
+                        border: 'none',
+                        cursor: 'pointer',
+                        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                        color: 'white',
+                        boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+                        transition: 'all 0.2s ease',
+                    }}
+                >
+                    {t('reset')}
+                </button>
             </div>
         </div>
     );

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(find:*)",
+      "Bash(npx next build)",
+      "Bash(ls:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(npx next build:*)"
+    ]
+  }
+}
