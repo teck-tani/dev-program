@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ToolCard from "@/components/ToolCard";
-import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaSpellCheck, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf } from "react-icons/fa";
+import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette, FaLink } from "react-icons/fa";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 const baseUrl = 'https://teck-tani.com';
@@ -82,9 +82,15 @@ const toolCategories: ToolCategory[] = [
             { href: '/barcode', icon: <FaBarcode />, labelKey: 'barcode' },
             { href: '/special-characters', icon: <FaSmile />, labelKey: 'emoji' },
             { href: '/lotto-generator', icon: <FaDice />, labelKey: 'lotto' },
-            { href: '/spell-checker', icon: <FaSpellCheck />, labelKey: 'spellCheck' },
+            { href: '/character-counter', icon: <FaFont />, labelKey: 'characterCounter' },
+            { href: '/unit-converter', icon: <FaRuler />, labelKey: 'unitConverter' },
+            { href: '/file-size-converter', icon: <FaHdd />, labelKey: 'fileSizeConverter' },
+            { href: '/image-compressor', icon: <FaCompress />, labelKey: 'imageCompressor' },
             { href: '/base64-encoder', icon: <FaCode />, labelKey: 'base64' },
+            { href: '/color-converter', icon: <FaPalette />, labelKey: 'colorConverter' },
+            { href: '/json-formatter', icon: <FaCode />, labelKey: 'jsonFormatter' },
             { href: '/pdf-manager', icon: <FaFilePdf />, labelKey: 'pdfManager' },
+            { href: '/url-encoder', icon: <FaLink />, labelKey: 'urlEncoder' },
         ]
     }
 ];
