@@ -28,6 +28,8 @@ export default function Header() {
         { href: '/interest-calculator', labelKey: 'interest' },
         { href: '/salary-calculator', labelKey: 'salary' },
         { href: '/korean-age-calculator', labelKey: 'age' },
+        { href: '/ovulation-calculator', labelKey: 'ovulationCalculator' },
+        { href: '/dutch-pay', labelKey: 'dutchPay' },
       ]
     },
     {
@@ -55,6 +57,8 @@ export default function Header() {
         { href: '/json-formatter', labelKey: 'jsonFormatter' },
         { href: '/pdf-manager', labelKey: 'pdfManager' },
         { href: '/url-encoder', labelKey: 'urlEncoder' },
+        { href: '/text-diff', labelKey: 'textDiff' },
+        { href: '/ladder-game', labelKey: 'ladderGame' },
       ]
     }
   ];

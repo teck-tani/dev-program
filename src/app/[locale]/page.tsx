@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ToolCard from "@/components/ToolCard";
-import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette, FaLink } from "react-icons/fa";
+import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette, FaLink, FaColumns, FaRandom, FaFemale, FaUsers } from "react-icons/fa";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 const baseUrl = 'https://teck-tani.com';
@@ -66,6 +66,8 @@ const toolCategories: ToolCategory[] = [
             { href: '/interest-calculator', icon: <FaPercent />, labelKey: 'interest' },
             { href: '/salary-calculator', icon: <FaMoneyBillWave />, labelKey: 'salary' },
             { href: '/korean-age-calculator', icon: <FaUserClock />, labelKey: 'age' },
+            { href: '/ovulation-calculator', icon: <FaFemale />, labelKey: 'ovulationCalculator' },
+            { href: '/dutch-pay', icon: <FaUsers />, labelKey: 'dutchPay' },
         ]
     },
     {
@@ -91,6 +93,8 @@ const toolCategories: ToolCategory[] = [
             { href: '/json-formatter', icon: <FaCode />, labelKey: 'jsonFormatter' },
             { href: '/pdf-manager', icon: <FaFilePdf />, labelKey: 'pdfManager' },
             { href: '/url-encoder', icon: <FaLink />, labelKey: 'urlEncoder' },
+            { href: '/text-diff', icon: <FaColumns />, labelKey: 'textDiff' },
+            { href: '/ladder-game', icon: <FaRandom />, labelKey: 'ladderGame' },
         ]
     }
 ];

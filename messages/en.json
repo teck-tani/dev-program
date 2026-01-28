@@ -32,7 +32,11 @@
       "characterCounter": "Character Counter",
       "jsonFormatter": "JSON Formatter",
       "urlEncoder": "URL Encoder",
-      "pdfManager": "PDF Merge/Split"
+      "pdfManager": "PDF Merge/Split",
+      "textDiff": "Text Diff",
+      "ladderGame": "Ladder Game",
+      "ovulationCalculator": "Ovulation Calculator",
+      "dutchPay": "Bill Splitter"
     }
   },
   "Header": {
@@ -1316,6 +1320,249 @@
       "a2": "No, the original quality is preserved. Images and text are merged without any loss in quality.",
       "q3": "Q. Where are split PDF files saved?",
       "a3": "Files are automatically saved to your browser's download folder. Each page is downloaded as a separate PDF file."
+    }
+  },
+  "TextDiff": {
+    "meta": {
+      "title": "Text Diff Tool | Compare Two Texts Online - Free",
+      "description": "Free online tool to compare two texts line by line and show added, removed, and changed sections visually. Perfect for code comparison and document version comparison.",
+      "keywords": "text compare, diff, text difference, code compare, document compare, online diff tool, line comparison, text comparator",
+      "ogTitle": "Text Diff Tool | Compare Two Texts Online",
+      "ogDescription": "Visually compare the differences between two texts. Added and removed lines are highlighted with colors."
+    },
+    "title": "Text Diff Tool",
+    "subtitle": "Compare two texts line by line to find differences.<br />Added lines are shown in green, removed lines in red.",
+    "options": {
+      "ignoreWhitespace": "Ignore Whitespace",
+      "ignoreCase": "Ignore Case"
+    },
+    "input": {
+      "original": "Original Text",
+      "modified": "Modified Text",
+      "placeholder1": "Enter original text...",
+      "placeholder2": "Enter text to compare..."
+    },
+    "buttons": {
+      "swap": "Swap Texts",
+      "clear": "Clear All",
+      "copyDiff": "Copy Result",
+      "copied": "Copied!"
+    },
+    "status": {
+      "identical": "Both texts are identical"
+    },
+    "stats": {
+      "added": "Added: {count} lines",
+      "removed": "Removed: {count} lines",
+      "unchanged": "Unchanged: {count} lines"
+    },
+    "result": {
+      "title": "Comparison Result"
+    },
+    "features": {
+      "title": "Key Features",
+      "desc": "This <strong>online text comparison tool</strong> is designed for developers, writers, editors, and anyone who needs to review text changes.",
+      "list": {
+        "instant": {
+          "title": "⚡ Real-time Comparison",
+          "desc": "See comparison results instantly as you type. No button clicks needed - analysis happens automatically."
+        },
+        "lineByLine": {
+          "title": "📝 Line-by-Line Comparison",
+          "desc": "Clearly shows changes for each line. View added/removed content along with line numbers."
+        },
+        "options": {
+          "title": "⚙️ Flexible Options",
+          "desc": "Compare the way you want with ignore whitespace and ignore case options."
+        }
+      }
+    },
+    "instruction": {
+      "title": "How to Use",
+      "step1": "<strong>Enter Original</strong>: Paste the original text in the left input area.",
+      "step2": "<strong>Enter Comparison</strong>: Paste the text to compare in the right input area.",
+      "step3": "<strong>Set Options</strong>: If needed, select ignore whitespace or ignore case options.",
+      "step4": "<strong>View Results</strong>: Check the differences in the comparison result below. Green indicates additions, red indicates deletions."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "what": {
+        "q": "Q. What is a text diff tool?",
+        "a": "A text diff tool finds and visually displays the differences between two texts line by line. It's widely used in programming to review code changes and in document work to compare versions."
+      },
+      "privacy": {
+        "q": "Q. Is my text data safe?",
+        "a": "Yes, all comparison operations are processed within your browser. The text you enter is not sent to any server, and all data is deleted when you close the page."
+      },
+      "limits": {
+        "q": "Q. Are there any limits on text size?",
+        "a": "There are no specific limits, but very large texts (tens of thousands of lines) may process slower depending on your browser's performance."
+      }
+    }
+  },
+  "LadderGame": {
+    "meta": {
+      "title": "Ladder Game | Free Online Random Decision Maker",
+      "description": "Make fair decisions with the online ladder game! Perfect for selecting winners, assigning roles, and penalty games. Support up to 10 players.",
+      "keywords": "ladder game, ghost leg, random picker, winner selection, draw lots, random decision, online ladder, amidakuji",
+      "ogTitle": "Ladder Game | Fair Random Decision Maker",
+      "ogDescription": "Make fair decisions with the online ladder game! Perfect for selecting winners, assigning roles, and penalty games."
+    },
+    "title": "Ladder Game",
+    "description": "Enter player names and results, then climb the ladder to make fair decisions!",
+    "players": "Players",
+    "results": "Results",
+    "player": "Player",
+    "result": "Result",
+    "addPlayer": "Add Player",
+    "generateLadder": "Generate Ladder",
+    "startGame": "Start Game",
+    "playing": "Playing...",
+    "reset": "Reset",
+    "gameResults": "Game Results"
+  },
+  "OvulationCalculator": {
+    "meta": {
+      "title": "Ovulation Calculator | Fertile Window & Safe Period - Free Online",
+      "description": "Enter your last period date and cycle length to automatically calculate ovulation date, fertile window, and safe periods. View results on a visual calendar. Free online ovulation calculator.",
+      "keywords": "ovulation calculator, fertile window calculator, safe period calculator, ovulation date, pregnancy planning, menstrual cycle calculator, ovulation calendar, fertility tracker",
+      "ogTitle": "Ovulation Calculator | Fertile Window & Safe Period",
+      "ogDescription": "Enter your last period date and cycle length to instantly calculate ovulation day, fertile window, and safe periods with a visual calendar!"
+    },
+    "title": "Ovulation Calculator",
+    "subtitle": "Enter your last period start date and cycle length<br />to automatically calculate your ovulation date, fertile window, and safe periods.",
+    "input": {
+      "title": "Enter Period Information",
+      "lastPeriod": "Last Period Start Date",
+      "cycleLength": "Cycle Length",
+      "days": "days",
+      "cycleDesc": "* Typically 21-35 days, with an average of 28 days.",
+      "calculate": "Calculate",
+      "alertDate": "Please enter your last period start date.",
+      "alertCycle": "Please enter a cycle length between 20 and 45 days."
+    },
+    "result": {
+      "ovulationDate": "Estimated Ovulation Date",
+      "fertilePeriod": "Fertile Window",
+      "nextPeriod": "Next Expected Period",
+      "detailTitle": "Detailed Results",
+      "lastPeriod": "Last Period Start Date",
+      "safePeriodEarly": "Safe Period (Early)",
+      "safePeriodLate": "Safe Period (Late)"
+    },
+    "calendar": {
+      "title": "Ovulation Calendar",
+      "legendOvulation": "Ovulation Day",
+      "legendFertile": "Fertile Window",
+      "legendSafe": "Safe Period",
+      "legendPeriod": "Period Day"
+    },
+    "info": {
+      "title": "How Ovulation Calculation Works",
+      "ovulation": {
+        "title": "🌸 What is Ovulation?",
+        "desc": "Ovulation is the release of an egg from the ovary. It typically occurs <strong>14 days before the next expected period</strong>. This calculator estimates the ovulation date based on this principle."
+      },
+      "fertile": {
+        "title": "🔶 Fertile Window",
+        "desc": "The fertile window spans from <strong>5 days before ovulation to 1 day after</strong>. Sperm can survive up to 5 days in the female body, and the egg survives about 12-24 hours after ovulation, making this the highest probability period for conception."
+      },
+      "safe": {
+        "title": "🔵 Safe Period",
+        "desc": "The safe period refers to days outside the fertile window. It is divided into early (from period start to before fertile window) and late (after fertile window to before next period). However, it is <strong>not 100% safe</strong>, so use this information as a reference only."
+      }
+    },
+    "caution": {
+      "title": "⚠️ Important Notice",
+      "desc": "This calculator provides <strong>estimates</strong> based on regular menstrual cycles. Ovulation timing can vary due to stress, weight changes, illness, and other factors.<br />For accurate ovulation tracking, consider using <strong>ovulation test kits</strong> or <strong>consulting a gynecologist</strong>.<br />Do not use this as medical basis for contraception or pregnancy planning."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "calculation": {
+          "q": "Q. How is the ovulation date calculated?",
+          "a": "Ovulation typically occurs <strong>14 days before the next expected period</strong>. For example, with a 28-day cycle, ovulation is expected around day 14 from the last period start date."
+        },
+        "fertile": {
+          "q": "Q. When is the fertile window?",
+          "a": "The fertile window spans from <strong>5 days before ovulation to 1 day after</strong>, approximately 6-7 days total. Sperm can survive up to 5 days in the body, and an egg survives about 24 hours after ovulation."
+        },
+        "irregular": {
+          "q": "Q. Can I use this with irregular cycles?",
+          "a": "This calculator is based on regular menstrual cycles. For irregular cycles, use it as a reference only and consider <strong>ovulation test kits</strong> or <strong>consulting a gynecologist</strong> for accurate tracking."
+        },
+        "safe": {
+          "q": "Q. Is the safe period really safe?",
+          "a": "The safe period has a relatively lower chance of pregnancy, but it is <strong>not 100% safe</strong>. Ovulation can vary from predictions, so relying solely on this for contraception is not recommended."
+        }
+      }
+    },
+    "disqus": {
+      "title": "Ovulation Calculator"
+    }
+  },
+  "DutchPay": {
+    "meta": {
+      "title": "Bill Splitting Calculator | Split Expenses Fairly - Free Online",
+      "description": "Split group expenses fairly! Enter what each person paid and automatically calculate who owes whom. Minimizes the number of transactions needed.",
+      "keywords": "bill splitter, dutch pay calculator, split bill, expense calculator, group expense, bill splitting, cost sharing, going dutch",
+      "ogTitle": "Bill Splitting Calculator | Split Group Expenses Fairly",
+      "ogDescription": "Split group expenses fairly! Enter what each person paid and automatically calculate who owes whom."
+    },
+    "title": "Bill Splitting Calculator",
+    "subtitle": "Split group expenses fairly. Enter what each person paid and we'll calculate who owes whom automatically.",
+    "modeLabel": "Split Mode",
+    "modeEqual": "Equal Split",
+    "modeCustom": "Custom Input",
+    "totalAmountLabel": "Total Amount",
+    "totalAmountPlaceholder": "Enter total amount",
+    "currency": "",
+    "perPersonPreview": "{amount} per person",
+    "participantsLabel": "Participants",
+    "peopleUnit": "",
+    "addPerson": "Add",
+    "person": "Person",
+    "paidPlaceholder": "Amount paid",
+    "totalPaidSummary": "Total paid: {total} | Per person: {perPerson}",
+    "calculateBtn": "Calculate",
+    "resetBtn": "Reset",
+    "alertNoAmount": "Please enter the amount.",
+    "alertMinPeople": "Please enter at least 2 participant names.",
+    "resultTitle": "Settlement Result",
+    "resultTotal": "Total Amount",
+    "resultPeople": "Participants",
+    "resultPerPerson": "Per Person",
+    "settlementTitle": "Transfers Needed",
+    "noSettlement": "Everyone paid the same amount. No settlement needed!",
+    "guideTitle": "How to Use",
+    "guideStep1Title": "Choose Split Mode",
+    "guideStep1Desc": "Equal Split: Enter the total and it will be divided equally. Custom Input: Enter the actual amount each person paid.",
+    "guideStep2Title": "Enter Participant Info",
+    "guideStep2Desc": "Enter names and amounts paid. Use the Add button to include more participants.",
+    "guideStep3Title": "Calculate",
+    "guideStep3Desc": "Click Calculate to see the per-person cost and settlement details.",
+    "guideStep4Title": "View Results",
+    "guideStep4Desc": "See who owes whom, with the minimum number of transfers needed.",
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "howTo": {
+          "q": "How do I use the bill splitting calculator?",
+          "a": "Enter participant names and amounts each person paid. The calculator automatically determines who owes whom and how much."
+        },
+        "difference": {
+          "q": "What is the difference between Equal Split and Custom Input?",
+          "a": "Equal Split divides the total evenly among all participants. Custom Input lets you enter the actual amount each person paid and calculates the differences."
+        },
+        "multiple": {
+          "q": "Can I split bills among more than 3 people?",
+          "a": "Yes, you can add as many participants as needed using the Add button. The calculator minimizes the number of transactions needed."
+        },
+        "meaning": {
+          "q": "What does Dutch Pay mean?",
+          "a": "Dutch Pay means splitting the bill equally among all participants at a meal or gathering. It's also commonly called 'splitting the bill' or 'going Dutch'."
+        }
+      }
     }
   }
 }

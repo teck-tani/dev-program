@@ -19,12 +19,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/salary-calculator',
         '/severance-calculator',
         '/special-characters',
-        '/spell-checker',
         '/unit-converter',
         '/file-size-converter',
         '/base64-encoder',
         '/color-converter',
         '/json-formatter',
+        '/character-counter',
+        '/image-compressor',
+        '/pdf-manager',
+        '/url-encoder',
+        '/ovulation-calculator',
+        '/dutch-pay',
     ];
 
     return tools.flatMap((tool) =>
