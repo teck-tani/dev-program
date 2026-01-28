@@ -40,11 +40,19 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
             type: 'website',
             locale: isKo ? 'ko_KR' : 'en_US',
             alternateLocale: isKo ? 'en_US' : 'ko_KR',
+            images: [{
+                url: `${baseUrl}/og/clock.png`,
+                width: 1200,
+                height: 630,
+                alt: isKo ? '온라인 시계 - 초단위 서버시간' : 'Online Clock - Accurate Server Time',
+            }],
         },
         twitter: {
             card: 'summary_large_image',
             title: t('ogTitle'),
             description: t('ogDescription'),
+            site: '@teck_tani',
+            creator: '@teck_tani',
         },
         robots: {
             index: true,
@@ -163,6 +171,29 @@ const seoContent = {
     }
 };
 
+// BreadcrumbList 구조화 데이터 생성
+function generateBreadcrumbSchema(locale: string) {
+    const isKo = locale === 'ko';
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": isKo ? "홈" : "Home",
+                "item": `${baseUrl}/${locale}`
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": isKo ? "온라인 시계" : "Online Clock",
+                "item": `${baseUrl}/${locale}/clock`
+            }
+        ]
+    };
+}
+
 // FAQ 구조화 데이터 생성
 function generateFaqSchema(locale: string) {
     const seo = seoContent[locale as 'ko' | 'en'] || seoContent.en;
@@ -272,6 +303,7 @@ export default async function ClockPage(props: { params: Promise<{ locale: strin
     const features = featureLists[locale as 'ko' | 'en'] || featureLists.en;
     const seo = seoContent[locale as 'ko' | 'en'] || seoContent.en;
 
+    const breadcrumbSchema = generateBreadcrumbSchema(locale);
     const faqSchema = generateFaqSchema(locale);
     const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
@@ -283,6 +315,10 @@ export default async function ClockPage(props: { params: Promise<{ locale: strin
             minHeight: '100vh'
         }}>
             {/* 구조화된 데이터 (JSON-LD) */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ToolCard from "@/components/ToolCard";
-import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette, FaLink, FaColumns, FaRandom, FaFemale, FaUsers } from "react-icons/fa";
+import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette, FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase, FaTerminal, FaYoutube, FaGlobe } from "react-icons/fa";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 const baseUrl = 'https://teck-tani.com';
@@ -95,6 +95,15 @@ const toolCategories: ToolCategory[] = [
             { href: '/url-encoder', icon: <FaLink />, labelKey: 'urlEncoder' },
             { href: '/text-diff', icon: <FaColumns />, labelKey: 'textDiff' },
             { href: '/ladder-game', icon: <FaRandom />, labelKey: 'ladderGame' },
+            { href: '/youtube-thumbnail', icon: <FaYoutube />, labelKey: 'youtubeThumbnail' },
+            { href: '/ip-address', icon: <FaGlobe />, labelKey: 'ipAddress' },
+        ]
+    },
+    {
+        titleKey: 'devtools',
+        items: [
+            { href: '/sql-formatter', icon: <FaDatabase />, labelKey: 'sqlFormatter' },
+            { href: '/cron-generator', icon: <FaTerminal />, labelKey: 'cronGenerator' },
         ]
     }
 ];

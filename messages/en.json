@@ -36,7 +36,11 @@
       "textDiff": "Text Diff",
       "ladderGame": "Ladder Game",
       "ovulationCalculator": "Ovulation Calculator",
-      "dutchPay": "Bill Splitter"
+      "dutchPay": "Bill Splitter",
+      "sqlFormatter": "SQL Formatter",
+      "cronGenerator": "Cron Expression Generator",
+      "youtubeThumbnail": "YouTube Thumbnail Extractor",
+      "ipAddress": "My IP Address"
     }
   },
   "Header": {
@@ -44,7 +48,8 @@
     "categories": {
       "calculators": "Calculators",
       "time": "Clock",
-      "utilities": "Utilities"
+      "utilities": "Utilities",
+      "devtools": "Dev Tools"
     }
   },
   "Footer": {
@@ -1561,6 +1566,342 @@
         "meaning": {
           "q": "What does Dutch Pay mean?",
           "a": "Dutch Pay means splitting the bill equally among all participants at a meal or gathering. It's also commonly called 'splitting the bill' or 'going Dutch'."
+        }
+      }
+    }
+  },
+  "SqlFormatter": {
+    "meta": {
+      "title": "SQL Formatter | Query Beautifier & Prettifier - Free Online",
+      "description": "Free online SQL formatter to beautify messy SQL queries from logs. Uppercase keywords, custom indentation, and minify options. All processing in browser - no data sent to server.",
+      "keywords": "SQL formatter, SQL beautifier, SQL prettifier, query formatter, SQL format online, SQL indent, developer tool, SQL query beautify",
+      "ogTitle": "SQL Formatter | Beautify Messy SQL Queries",
+      "ogDescription": "Transform messy single-line SQL queries into beautifully formatted, readable SQL with proper indentation and keyword highlighting."
+    },
+    "title": "SQL Formatter",
+    "subtitle": "Beautify messy SQL queries from logs into clean, readable format.<br />Automatic keyword uppercasing and indentation in one click.",
+    "indent": "Indent",
+    "spaces": "spaces",
+    "uppercase": "Uppercase keywords (SELECT, FROM...)",
+    "inputLabel": "SQL Input",
+    "outputLabel": "Formatted Output",
+    "inputPlaceholder": "Paste your SQL query here...",
+    "outputPlaceholder": "Formatted result will appear here...",
+    "lines": "lines",
+    "formatBtn": "Format",
+    "minifyBtn": "Minify",
+    "copyBtn": "Copy",
+    "copied": "Copied!",
+    "swapBtn": "Swap to input",
+    "sampleBtn": "Sample",
+    "clearBtn": "Clear",
+    "guideTitle": "How to Use",
+    "guideStep1Title": "Enter SQL Query",
+    "guideStep1Desc": "Paste the SQL query you want to format in the left input area. Single-line queries from logs work great!",
+    "guideStep2Title": "Configure Options",
+    "guideStep2Desc": "Set indent size (2, 4, or 8 spaces) and toggle keyword uppercase conversion as needed.",
+    "guideStep3Title": "Click Format",
+    "guideStep3Desc": "Click 'Format' to display the beautifully formatted SQL on the right.",
+    "guideStep4Title": "Copy Result",
+    "guideStep4Desc": "Use 'Copy' to copy to clipboard, or click ↕ to send the result back to the input for further editing.",
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "support": {
+          "q": "What SQL dialects does the formatter support?",
+          "a": "It supports standard SQL syntax used in MySQL, PostgreSQL, Oracle, SQL Server, SQLite, and more. It can format SELECT, INSERT, UPDATE, DELETE queries with JOINs and subqueries."
+        },
+        "oneline": {
+          "q": "Can I format a single-line SQL from logs?",
+          "a": "Yes, paste the single-line SQL query and click 'Format'. Keywords will be separated with line breaks and indentation for easy reading."
+        },
+        "privacy": {
+          "q": "Is my SQL sent to any server?",
+          "a": "No. All processing happens in your browser. Your SQL is never transmitted to any server."
+        },
+        "uppercase": {
+          "q": "What does uppercase keywords mean?",
+          "a": "It automatically converts SQL keywords (SELECT, FROM, WHERE, etc.) to uppercase. This is a common convention to improve SQL readability."
+        }
+      }
+    }
+  },
+  "CronGenerator": {
+    "meta": {
+      "title": "Cron Expression Generator | Crontab Schedule Builder - Free Online",
+      "description": "Easily generate Cron expressions with a visual UI. Configure minute/hour/day/month/weekday, use presets, and preview in real-time. Works with Linux crontab, Jenkins, GitHub Actions and more.",
+      "keywords": "cron expression, cron generator, crontab builder, cron schedule, cron job, linux cron, cron maker, server scheduling, task scheduler",
+      "ogTitle": "Cron Expression Generator | Visual Crontab Builder",
+      "ogDescription": "Stop guessing * * * * * syntax! Build Cron expressions visually with clicks. Free online tool for developers and sysadmins."
+    },
+    "title": "Cron Expression Generator",
+    "subtitle": "Stop guessing <code>* * * * *</code> syntax!<br />Click to configure minute/hour/day/month/weekday and generate Cron expressions automatically.",
+    "copyBtn": "Copy",
+    "copied": "Copied!",
+    "resetBtn": "Reset",
+    "manualInput": "Manual Input",
+    "applyBtn": "Apply",
+    "presetsTitle": "Common Presets",
+    "presets": {
+      "everyMinute": "Every minute",
+      "every5Min": "Every 5 min",
+      "every15Min": "Every 15 min",
+      "every30Min": "Every 30 min",
+      "everyHour": "Every hour",
+      "everyDay": "Daily at midnight",
+      "everyWeek": "Weekly (Sun midnight)",
+      "everyMonth": "Monthly (1st midnight)",
+      "weekdays9am": "Weekdays at 9 AM",
+      "every6hours": "Every 6 hours"
+    },
+    "fields": {
+      "minute": "Minute",
+      "hour": "Hour",
+      "dayOfMonth": "Day",
+      "month": "Month",
+      "dayOfWeek": "Weekday"
+    },
+    "types": {
+      "every": "Every (*)",
+      "specific": "Specific",
+      "range": "Range",
+      "interval": "Interval"
+    },
+    "rangeFrom": "From",
+    "rangeTo": "To",
+    "intervalStart": "Start",
+    "intervalEvery": "Every",
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "desc": {
+      "everyMinute": "Every minute",
+      "everyNMin": "Every {n} minutes",
+      "atMinute": "At minute {min}",
+      "everyHour": "every hour",
+      "everyNHour": "every {n} hours",
+      "atHour": "at {hour}:00",
+      "everyNDay": "every {n} days",
+      "onDay": "on day {day}",
+      "inMonth": "in {month}",
+      "onWeekday": "on {day}"
+    },
+    "guideTitle": "What is a Cron Expression?",
+    "cronStructure": "┌──────── Minute (0-59)\n│ ┌────── Hour (0-23)\n│ │ ┌──── Day of Month (1-31)\n│ │ │ ┌── Month (1-12)\n│ │ │ │ ┌ Day of Week (0-6, 0=Sun)\n│ │ │ │ │\n* * * * *",
+    "guideStep1Title": "Cron Expression Structure",
+    "guideStep1Desc": "A Cron expression consists of 5 fields (minute, hour, day, month, weekday), separated by spaces.",
+    "guideStep2Title": "How to Set Fields",
+    "guideStep2Desc": "For each field, choose between 'Every (*)', 'Specific values', 'Range (1-5)', or 'Interval (*/5)'.",
+    "guideStep3Title": "Use Presets",
+    "guideStep3Desc": "Click preset buttons for commonly used schedules to auto-fill all fields.",
+    "guideStep4Title": "Copy Result",
+    "guideStep4Desc": "Check the generated Cron expression at the top and click 'Copy' to copy to clipboard.",
+    "syntaxTitle": "Cron Special Characters",
+    "syntaxChar": "Character",
+    "syntaxMeaning": "Meaning",
+    "syntaxExample": "Example",
+    "syntax": {
+      "star": {
+        "char": "*",
+        "meaning": "Every value (run always)",
+        "example": "* * * * * → Run every minute"
+      },
+      "comma": {
+        "char": ",",
+        "meaning": "Multiple specific values",
+        "example": "1,15,30 * * * * → Run at minute 1, 15, 30"
+      },
+      "dash": {
+        "char": "-",
+        "meaning": "Range of values",
+        "example": "0 9-17 * * * → Run every hour from 9 AM to 5 PM"
+      },
+      "slash": {
+        "char": "/",
+        "meaning": "Step/interval",
+        "example": "*/10 * * * * → Run every 10 minutes"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "what": {
+          "q": "What is a Cron expression?",
+          "a": "A Cron expression is a time-based scheduling format used in Linux/Unix systems to automate recurring tasks. It consists of 5 fields (minute, hour, day of month, month, day of week) using numbers and special characters to define execution timing."
+        },
+        "range": {
+          "q": "What ranges do each Cron field accept?",
+          "a": "Minute (0-59), Hour (0-23), Day of Month (1-31), Month (1-12), Day of Week (0-6, where 0=Sunday)."
+        },
+        "where": {
+          "q": "Where can I use the generated Cron expression?",
+          "a": "You can use it in Linux crontab, Proxmox scheduler, Jenkins, GitHub Actions, AWS CloudWatch, Kubernetes CronJob, and most scheduling systems."
+        },
+        "privacy": {
+          "q": "Is my data sent to any server?",
+          "a": "No. All processing happens in your browser. No data is transmitted to any server."
+        }
+      }
+    }
+  },
+  "YoutubeThumbnail": {
+    "meta": {
+      "title": "YouTube Thumbnail Extractor | HD Download - Free Online",
+      "description": "Free online tool to extract and download high-quality (1280x720) YouTube video thumbnails. Just paste the URL. All processing happens in your browser - no server upload.",
+      "keywords": "YouTube thumbnail extractor, YouTube thumbnail download, video thumbnail, YouTube preview image, thumbnail saver, HD thumbnail, YouTube tool",
+      "ogTitle": "YouTube Thumbnail Extractor | HD Download",
+      "ogDescription": "Paste a YouTube URL to instantly download high-quality thumbnails. Free online tool."
+    },
+    "title": "YouTube Thumbnail Extractor",
+    "subtitle": "Paste a YouTube video URL to instantly download high-quality thumbnail images.<br />All processing happens in your browser - no server upload needed.",
+    "inputLabel": "Enter YouTube URL",
+    "placeholder": "e.g., https://www.youtube.com/watch?v=...",
+    "extractBtn": "Extract",
+    "resultTitle": "Thumbnail Preview",
+    "downloadBtn": "Download",
+    "loading": "Loading image...",
+    "errorEmpty": "Please enter a YouTube URL.",
+    "errorInvalid": "Please enter a valid YouTube URL.",
+    "qualities": {
+      "maxres": "Max Resolution (1280×720)",
+      "sd": "SD Quality (640×480)",
+      "hq": "HQ Quality (480×360)",
+      "mq": "MQ Quality (320×180)",
+      "default": "Default Quality (120×90)"
+    },
+    "info": {
+      "title": "Key Features",
+      "easy": {
+        "title": "⚡ Easy to Use",
+        "desc": "Just paste a YouTube URL and click extract. No signup or installation required."
+      },
+      "quality": {
+        "title": "🖼️ Multiple Qualities",
+        "desc": "5 quality options from Max Resolution (1280×720) to Default (120×90)."
+      },
+      "privacy": {
+        "title": "🔒 Secure Processing",
+        "desc": "All processing happens in your browser. No URLs or images are sent to any server."
+      }
+    },
+    "guide": {
+      "title": "How to Use",
+      "step1": "<strong>Copy URL</strong>: Copy the URL of the YouTube video you want. (From address bar or share button)",
+      "step2": "<strong>Paste URL</strong>: Paste the URL in the input field above and click 'Extract'.",
+      "step3": "<strong>Download</strong>: Click 'Download' on your preferred quality to save the thumbnail image."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "Q. What YouTube URL formats are supported?",
+        "a": "All formats are supported: standard links (youtube.com/watch?v=...), short links (youtu.be/...), embed links (youtube.com/embed/...), and Shorts links (youtube.com/shorts/...)."
+      },
+      "q2": {
+        "q": "Q. Which thumbnail quality should I choose?",
+        "a": "We recommend Max Resolution (maxresdefault, 1280×720). Some videos may not offer the highest quality; in that case, use SD (640×480) or HQ (480×360)."
+      },
+      "q3": {
+        "q": "Q. Can I use thumbnails commercially?",
+        "a": "Thumbnail copyrights belong to the video creator. You can freely use them for personal reference, but commercial use requires permission from the original creator."
+      },
+      "q4": {
+        "q": "Q. Is any data stored on the server?",
+        "a": "No, all processing happens in your browser. URLs you enter and images you download are never sent to or stored on any server."
+      }
+    }
+  },
+  "IpAddress": {
+    "meta": {
+      "title": "My IP Address Checker | Geolocation & ISP Info - Free Online",
+      "description": "Instantly check your public IP address with geolocation (country/city), ISP info, and map view. Auto-detected on page load. Free online IP lookup tool.",
+      "keywords": "my IP address, IP address checker, what is my IP, IP geolocation, public IP lookup, ISP info, IP location, find my IP, IP tracker",
+      "ogTitle": "My IP Address Checker | Location & ISP Info",
+      "ogDescription": "Instantly check your public IP address and approximate location. Auto-detected on page load!"
+    },
+    "title": "My IP Address Checker",
+    "subtitle": "Instantly check your public IP address and approximate location just by visiting this page.",
+    "yourIp": "Your IP Address",
+    "loading": "Detecting IP address...",
+    "error": "Unable to retrieve IP information.",
+    "retry": "Retry",
+    "copyBtn": "Copy IP",
+    "copied": "Copied!",
+    "locationTitle": "Location Info",
+    "country": "Country",
+    "region": "Region",
+    "city": "City",
+    "zip": "Zip Code",
+    "coordinates": "Coordinates",
+    "timezone": "Timezone",
+    "networkTitle": "Network Info",
+    "isp": "Internet Service Provider (ISP)",
+    "org": "Organization",
+    "asn": "AS Number",
+    "mapTitle": "Approximate Location",
+    "mapDesc": "This is an estimated location based on IP. Actual location may differ.",
+    "refreshBtn": "Refresh",
+    "infoTitle": "About IP Addresses",
+    "info": {
+      "whatIs": {
+        "title": "What is an IP Address?",
+        "desc": "An IP address (Internet Protocol Address) is a unique numerical address assigned to every device connected to the internet. It enables data to be sent and received between devices."
+      },
+      "privacy": {
+        "title": "Privacy",
+        "desc": "This tool uses external APIs to look up IP information. No data is stored, and all information disappears when you close the page."
+      },
+      "accuracy": {
+        "title": "Location Accuracy",
+        "desc": "IP-based geolocation can only determine city-level approximate locations. It may differ from your exact address. If using a VPN, the VPN server location will be shown."
+      }
+    },
+    "guideTitle": "How to Use",
+    "guideStep1Title": "Auto Detection",
+    "guideStep1Desc": "Your IP address and location are automatically detected when you visit the page. No input required.",
+    "guideStep2Title": "Copy IP Address",
+    "guideStep2Desc": "Click 'Copy IP' to copy your current IP address to the clipboard.",
+    "guideStep3Title": "View Location Info",
+    "guideStep3Desc": "Check approximate location details including country, region, city, coordinates, and ISP information.",
+    "guideStep4Title": "View on Map",
+    "guideStep4Desc": "See the estimated IP-based location visually on the map below.",
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "whatIs": {
+          "q": "What is my IP address?",
+          "a": "An IP address (Internet Protocol Address) is a unique numerical address assigned to every device connected to the internet. It enables data to be sent and received across the network."
+        },
+        "accuracy": {
+          "q": "Is the location shown accurate?",
+          "a": "IP-based geolocation can determine your approximate location (city level). It may differ from your exact street address or GPS coordinates, and may show your ISP's server location instead."
+        },
+        "vpn": {
+          "q": "Does using a VPN change my IP?",
+          "a": "Yes, when using a VPN, the VPN server's IP address is displayed instead of your real one. This hides your actual IP and location."
+        },
+        "ipv6": {
+          "q": "What is the difference between IPv4 and IPv6?",
+          "a": "IPv4 uses 32-bit addresses (e.g., 192.168.0.1) providing about 4.3 billion addresses. IPv6 uses 128-bit addresses (e.g., 2001:0db8::1) providing virtually unlimited addresses."
         }
       }
     }

@@ -12,7 +12,8 @@
       "Bash(npm run lint:*)",
       "mcp__ide__getDiagnostics",
       "Bash(cmd.exe /c \"npm run build\")",
-      "Bash(powershell.exe -Command \"cd C:\\\\tani\\\\dev-program; npm run build 2>&1\")"
+      "Bash(powershell.exe -Command \"cd C:\\\\tani\\\\dev-program; npm run build 2>&1\")",
+      "Bash(cmd.exe /c \"cd /d C:\\\\tani\\\\dev-program && npm run build\")"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

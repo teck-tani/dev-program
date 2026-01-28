@@ -2,7 +2,7 @@
 
 import { Link } from "@/navigation";
 import { useState, useEffect } from "react";
-import { FaHome, FaBars, FaTimes, FaCalculator, FaClock, FaTools, FaChevronDown } from "react-icons/fa";
+import { FaHome, FaBars, FaTimes, FaCalculator, FaClock, FaTools, FaChevronDown, FaCode } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 
 interface MenuCategory {
@@ -59,6 +59,16 @@ export default function Header() {
         { href: '/url-encoder', labelKey: 'urlEncoder' },
         { href: '/text-diff', labelKey: 'textDiff' },
         { href: '/ladder-game', labelKey: 'ladderGame' },
+        { href: '/youtube-thumbnail', labelKey: 'youtubeThumbnail' },
+        { href: '/ip-address', labelKey: 'ipAddress' },
+      ]
+    },
+    {
+      key: 'devtools',
+      icon: <FaCode />,
+      items: [
+        { href: '/sql-formatter', labelKey: 'sqlFormatter' },
+        { href: '/cron-generator', labelKey: 'cronGenerator' },
       ]
     }
   ];

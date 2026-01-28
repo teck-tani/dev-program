@@ -30,6 +30,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/url-encoder',
         '/ovulation-calculator',
         '/dutch-pay',
+        '/sql-formatter',
+        '/youtube-thumbnail',
+        '/ip-address',
     ];
 
     return tools.flatMap((tool) =>
