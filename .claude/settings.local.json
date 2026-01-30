@@ -13,7 +13,14 @@
       "mcp__ide__getDiagnostics",
       "Bash(cmd.exe /c \"npm run build\")",
       "Bash(powershell.exe -Command \"cd C:\\\\tani\\\\dev-program; npm run build 2>&1\")",
-      "Bash(cmd.exe /c \"cd /d C:\\\\tani\\\\dev-program && npm run build\")"
+      "Bash(cmd.exe /c \"cd /d C:\\\\tani\\\\dev-program && npm run build\")",
+      "Bash(npm run dev:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_resize",
+      "mcp__playwright__browser_close"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

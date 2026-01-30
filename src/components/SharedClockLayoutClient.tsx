@@ -85,60 +85,62 @@ export default function SharedClockLayoutClient({ children }: { children: React.
             ref={containerRef} 
             className={`${styles.innerContainer} ${isFullscreen ? styles.fullscreen : ''} ${theme === 'light' ? styles.lightTheme : ''}`}
         >
-            {/* Mobile Hamburger Button */}
-            <button 
-                className={styles.hamburgerBtn}
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
-            >
-                {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
-            </button>
-
-            {/* Mobile Overlay */}
-            <div 
-                className={`${styles.mobileOverlay} ${isMobileMenuOpen ? styles.open : ''}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-            />
-
-            {/* Mobile Slide Sidebar */}
-            <div className={`${styles.mobileSidebar} ${isMobileMenuOpen ? styles.open : ''}`}>
-                <Link 
-                    href="/" 
-                    className={styles.sidebarItem}
-                    onClick={() => setIsMobileMenuOpen(false)}
+            {/* Mobile Hamburger Button - Hidden on clock page */}
+            {!isClockActive && (
+                <button
+                    className={styles.hamburgerBtn}
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    aria-label={isMobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
                 >
-                    <FaHome className={styles.sidebarIcon} />
-                    <span>{t('home')}</span>
-                </Link>
-                {!isClockActive && (
-                    <>
-                        <Link 
-                            href="/clock" 
-                            className={`${styles.sidebarItem} ${isClockActive ? styles.active : ''}`}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <FaGlobe className={styles.sidebarIcon} />
-                            <span>{t('clock')}</span>
-                        </Link>
-                        <Link 
-                            href="/stopwatch" 
-                            className={`${styles.sidebarItem} ${isStopwatchActive ? styles.active : ''}`}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <FaStopwatch className={styles.sidebarIcon} />
-                            <span>{t('stopwatch')}</span>
-                        </Link>
-                        <Link 
-                            href="/timer" 
-                            className={`${styles.sidebarItem} ${isTimerActive ? styles.active : ''}`}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <FaHourglassStart className={styles.sidebarIcon} />
-                            <span>{t('timer')}</span>
-                        </Link>
-                    </>
-                )}
-            </div>
+                    {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+                </button>
+            )}
+
+            {/* Mobile Overlay - Hidden on clock page */}
+            {!isClockActive && (
+                <div
+                    className={`${styles.mobileOverlay} ${isMobileMenuOpen ? styles.open : ''}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
+            {/* Mobile Slide Sidebar - Hidden on clock page */}
+            {!isClockActive && (
+                <div className={`${styles.mobileSidebar} ${isMobileMenuOpen ? styles.open : ''}`}>
+                    <Link
+                        href="/"
+                        className={styles.sidebarItem}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        <FaHome className={styles.sidebarIcon} />
+                        <span>{t('home')}</span>
+                    </Link>
+                    <Link
+                        href="/clock"
+                        className={`${styles.sidebarItem} ${isClockActive ? styles.active : ''}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        <FaGlobe className={styles.sidebarIcon} />
+                        <span>{t('clock')}</span>
+                    </Link>
+                    <Link
+                        href="/stopwatch"
+                        className={`${styles.sidebarItem} ${isStopwatchActive ? styles.active : ''}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        <FaStopwatch className={styles.sidebarIcon} />
+                        <span>{t('stopwatch')}</span>
+                    </Link>
+                    <Link
+                        href="/timer"
+                        className={`${styles.sidebarItem} ${isTimerActive ? styles.active : ''}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        <FaHourglassStart className={styles.sidebarIcon} />
+                        <span>{t('timer')}</span>
+                    </Link>
+                </div>
+            )}
 
             {/* Desktop Sidebar Navigation */}
             <div className={styles.sidebar}>

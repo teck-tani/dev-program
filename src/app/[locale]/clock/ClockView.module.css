@@ -538,8 +538,8 @@
 }
 
 .controlBtn.light {
-  background: rgba(0, 0, 0, 0.05);
-  color: #1a1a2e;
+  background: rgba(8, 145, 178, 0.1);
+  color: #0891b2;
 }
 
 .controlBtn:hover {
@@ -551,7 +551,7 @@
 }
 
 .light.controlBtn:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(8, 145, 178, 0.2);
 }
 
 /* ============================================
@@ -632,8 +632,8 @@
 }
 
 .mobileHomeBtn.light {
-  background: rgba(0, 0, 0, 0.05);
-  color: #1a1a2e;
+  background: rgba(8, 145, 178, 0.1);
+  color: #0891b2;
 }
 
 .mobileHomeBtn:hover {
@@ -645,7 +645,7 @@
 }
 
 .mobileHomeBtn.light:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(8, 145, 178, 0.2);
 }
 
 /* ============================================
@@ -695,12 +695,29 @@
   width: 100%;
   font-size: 0.9rem;
   line-height: 1.6;
-  opacity: 0.8;
+}
+
+.dark .seoSection {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.light .seoSection {
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .seoSection h1,
 .seoSection h2 {
   margin: 20px 0 10px;
+}
+
+.dark .seoSection h1,
+.dark .seoSection h2 {
+  color: #00ff88;
+}
+
+.light .seoSection h1,
+.light .seoSection h2 {
+  color: #0891b2;
 }
 
 .seoSection p {
@@ -816,13 +833,13 @@
 @media (max-width: 480px) {
   .worldClockContainer {
     padding: 10px;
-    padding-top: 60px; /* Space for home button */
+    padding-top: 80px; /* Space for home button */
   }
 
   /* Show mobile home button */
   .mobileHomeBtn {
     display: flex;
-    top: 24px;
+    top: 42px;
     left: 12px;
     width: 38px;
     height: 38px;
@@ -841,7 +858,7 @@
   }
 
   .controlPanel {
-    top: 24px;
+    top: 42px;
     right: 12px;
     gap: 6px;
   }
@@ -878,13 +895,13 @@
 @media (max-width: 375px) {
   .worldClockContainer {
     padding: 8px;
-    padding-top: 50px; /* Space for home button */
+    padding-top: 70px; /* Space for home button */
   }
 
   /* Show mobile home button */
   .mobileHomeBtn {
     display: flex;
-    top: 20px;
+    top: 38px;
     left: 10px;
     width: 34px;
     height: 34px;
@@ -904,7 +921,7 @@
   }
 
   .controlPanel {
-    top: 20px;
+    top: 38px;
     right: 10px;
     gap: 4px;
   }

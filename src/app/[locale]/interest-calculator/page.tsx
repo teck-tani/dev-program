@@ -227,31 +227,194 @@ export default async function InterestCalculatorPage({ params }: { params: Promi
             <InterestCalculatorClient />
 
             {/* FAQ 섹션 (SEO용 추가 콘텐츠) */}
-            <div className="container" style={{ maxWidth: "800px", padding: "0 20px 40px" }}>
-                <section className="faq-section" style={{ background: '#f0f4f8', padding: '30px', borderRadius: '15px' }}>
-                    <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', textAlign: 'center' }}>
+            <div style={{
+                maxWidth: "900px",
+                margin: "0 auto",
+                padding: "0 16px 48px"
+            }}>
+                <section style={{
+                    background: 'linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%)',
+                    padding: '32px',
+                    borderRadius: '24px',
+                    border: '1px solid rgba(30, 58, 95, 0.08)',
+                    boxShadow: '0 4px 24px rgba(30, 58, 95, 0.06)',
+                }}>
+                    <h2 style={{
+                        fontSize: '1.5rem',
+                        fontWeight: '700',
+                        color: '#1e3a5f',
+                        marginBottom: '24px',
+                        textAlign: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '10px',
+                    }}>
+                        <span style={{ fontSize: '1.75rem' }}>💬</span>
                         {tFaq('title')}
                     </h2>
 
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.difference.q')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.difference.a') }} />
-                    </details>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <details style={{
+                            background: 'white',
+                            padding: '20px',
+                            borderRadius: '16px',
+                            border: '1px solid #e2e8f0',
+                            transition: 'all 0.2s ease',
+                        }}>
+                            <summary style={{
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                                color: '#1e3a5f',
+                                fontSize: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '6px',
+                                    background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
+                                    color: '#fff',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    flexShrink: 0,
+                                }}>Q</span>
+                                {tFaq('list.difference.q')}
+                            </summary>
+                            <p style={{
+                                marginTop: '14px',
+                                color: '#64748b',
+                                paddingLeft: '32px',
+                                lineHeight: '1.7',
+                                fontSize: '0.95rem',
+                            }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.difference.a') }} />
+                        </details>
 
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.tax.q')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.tax.a') }} />
-                    </details>
+                        <details style={{
+                            background: 'white',
+                            padding: '20px',
+                            borderRadius: '16px',
+                            border: '1px solid #e2e8f0',
+                            transition: 'all 0.2s ease',
+                        }}>
+                            <summary style={{
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                                color: '#1e3a5f',
+                                fontSize: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '6px',
+                                    background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
+                                    color: '#fff',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    flexShrink: 0,
+                                }}>Q</span>
+                                {tFaq('list.tax.q')}
+                            </summary>
+                            <p style={{
+                                marginTop: '14px',
+                                color: '#64748b',
+                                paddingLeft: '32px',
+                                lineHeight: '1.7',
+                                fontSize: '0.95rem',
+                            }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.tax.a') }} />
+                        </details>
 
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.which.q')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.which.a') }} />
-                    </details>
+                        <details style={{
+                            background: 'white',
+                            padding: '20px',
+                            borderRadius: '16px',
+                            border: '1px solid #e2e8f0',
+                            transition: 'all 0.2s ease',
+                        }}>
+                            <summary style={{
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                                color: '#1e3a5f',
+                                fontSize: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '6px',
+                                    background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
+                                    color: '#fff',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    flexShrink: 0,
+                                }}>Q</span>
+                                {tFaq('list.which.q')}
+                            </summary>
+                            <p style={{
+                                marginTop: '14px',
+                                color: '#64748b',
+                                paddingLeft: '32px',
+                                lineHeight: '1.7',
+                                fontSize: '0.95rem',
+                            }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.which.a') }} />
+                        </details>
 
-                    <details style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.compound.q')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.compound.a') }} />
-                    </details>
+                        <details style={{
+                            background: 'white',
+                            padding: '20px',
+                            borderRadius: '16px',
+                            border: '1px solid #e2e8f0',
+                            transition: 'all 0.2s ease',
+                        }}>
+                            <summary style={{
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                                color: '#1e3a5f',
+                                fontSize: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                            }}>
+                                <span style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '6px',
+                                    background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
+                                    color: '#fff',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    flexShrink: 0,
+                                }}>Q</span>
+                                {tFaq('list.compound.q')}
+                            </summary>
+                            <p style={{
+                                marginTop: '14px',
+                                color: '#64748b',
+                                paddingLeft: '32px',
+                                lineHeight: '1.7',
+                                fontSize: '0.95rem',
+                            }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.compound.a') }} />
+                        </details>
+                    </div>
                 </section>
             </div>
         </>
