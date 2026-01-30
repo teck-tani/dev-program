@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const tools = [
         '', // 메인 홈
         '/barcode',
+        '/qr-generator',
         '/calculator',
         '/clock',
         '/stopwatch',

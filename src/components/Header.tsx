@@ -46,6 +46,7 @@ export default function Header() {
       icon: <FaTools />,
       items: [
         { href: '/barcode', labelKey: 'barcode' },
+        { href: '/qr-generator', labelKey: 'qrGenerator' },
         { href: '/special-characters', labelKey: 'emoji' },
         { href: '/lotto-generator', labelKey: 'lotto' },
         { href: '/character-counter', labelKey: 'characterCounter' },

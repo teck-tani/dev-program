@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ToolCard from "@/components/ToolCard";
-import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette, FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase, FaTerminal, FaYoutube, FaGlobe } from "react-icons/fa";
+import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette, FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase, FaTerminal, FaYoutube, FaGlobe, FaQrcode } from "react-icons/fa";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 const baseUrl = 'https://teck-tani.com';
@@ -82,6 +82,7 @@ const toolCategories: ToolCategory[] = [
         titleKey: 'utilities',
         items: [
             { href: '/barcode', icon: <FaBarcode />, labelKey: 'barcode' },
+            { href: '/qr-generator', icon: <FaQrcode />, labelKey: 'qrGenerator' },
             { href: '/special-characters', icon: <FaSmile />, labelKey: 'emoji' },
             { href: '/lotto-generator', icon: <FaDice />, labelKey: 'lotto' },
             { href: '/character-counter', icon: <FaFont />, labelKey: 'characterCounter' },

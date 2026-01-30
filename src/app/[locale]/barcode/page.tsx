@@ -16,13 +16,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     setRequestLocale(locale);
     const isKo = locale === 'ko';
     
-    const title = isKo 
-        ? "대량 바코드 생성기 - 엑셀 지원 무료 온라인 도구" 
+    const title = isKo
+        ? "대량 바코드 생성기 - 엑셀 지원 무료 온라인 도구"
         : "Bulk Barcode Generator - Free Online Tool with Excel Support";
-    
-    const description = isKo 
-        ? "엑셀 데이터를 복사해서 붙여넣기만 하면 수백 개의 바코드와 QR코드를 한 번에 생성합니다. CODE128, EAN-13, QR코드 등 17종 포맷 지원. 무료, 설치 없이 웹에서 바로 사용하세요."
-        : "Generate hundreds of barcodes and QR codes at once by pasting Excel data. Supports CODE128, EAN-13, QR Code and 17 formats. Free, no installation required.";
+
+    const description = isKo
+        ? "엑셀 데이터를 복사해서 붙여넣기만 하면 수백 개의 바코드를 한 번에 생성합니다. CODE128, EAN-13, ITF 등 16종 포맷 지원. 무료, 설치 없이 웹에서 바로 사용하세요."
+        : "Generate hundreds of barcodes at once by pasting Excel data. Supports CODE128, EAN-13, ITF and 16 formats. Free, no installation required.";
 
     const baseUrl = 'https://teck-tani.com';
     const url = `${baseUrl}/${locale}/barcode`;
@@ -30,9 +30,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     return {
         title,
         description,
-        keywords: isKo 
-            ? "바코드 생성기, QR코드 생성기, 대량 바코드, 엑셀 바코드, CODE128, EAN-13, 무료 바코드, 온라인 바코드"
-            : "barcode generator, QR code generator, bulk barcode, excel barcode, CODE128, EAN-13, free barcode, online barcode",
+        keywords: isKo
+            ? "바코드 생성기, 대량 바코드, 엑셀 바코드, CODE128, EAN-13, 무료 바코드, 온라인 바코드, ITF, UPC"
+            : "barcode generator, bulk barcode, excel barcode, CODE128, EAN-13, free barcode, online barcode, ITF, UPC",
         alternates: { 
             canonical: url,
             languages: {
@@ -126,19 +126,19 @@ function generateFaqSchema(locale: string) {
 // HowTo 구조화 데이터 생성 함수
 function generateHowToSchema(locale: string) {
     const isKo = locale === 'ko';
-    
+
     return {
         "@context": "https://schema.org",
         "@type": "HowTo",
-        "name": isKo ? "바코드 및 QR코드 생성 방법" : "How to Generate Barcodes and QR Codes",
-        "description": isKo 
-            ? "엑셀 데이터를 사용하여 대량의 바코드와 QR코드를 생성하는 방법"
-            : "How to generate bulk barcodes and QR codes using Excel data",
+        "name": isKo ? "바코드 생성 방법" : "How to Generate Barcodes",
+        "description": isKo
+            ? "엑셀 데이터를 사용하여 대량의 바코드를 생성하는 방법"
+            : "How to generate bulk barcodes using Excel data",
         "step": isKo ? [
             {
                 "@type": "HowToStep",
                 "name": "바코드 형식 선택",
-                "text": "생성하려는 바코드의 종류를 선택합니다. 일반적인 용도라면 CODE128을, 웹사이트 링크라면 QR Code를 선택하세요."
+                "text": "생성하려는 바코드의 종류를 선택합니다. 일반적인 용도라면 CODE128을 선택하세요."
             },
             {
                 "@type": "HowToStep",
@@ -154,7 +154,7 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "Select Barcode Format",
-                "text": "Choose the type of barcode you want to generate. Use CODE128 for general purposes or QR Code for website links."
+                "text": "Choose the type of barcode you want to generate. Use CODE128 for general purposes."
             },
             {
                 "@type": "HowToStep",
@@ -174,14 +174,14 @@ function generateHowToSchema(locale: string) {
 function generateWebAppSchema(locale: string) {
     const isKo = locale === 'ko';
     const baseUrl = 'https://teck-tani.com';
-    
+
     return {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": isKo ? "대량 바코드 생성기" : "Bulk Barcode Generator",
-        "description": isKo 
-            ? "엑셀 데이터로 수백 개의 바코드와 QR코드를 한 번에 생성하는 무료 온라인 도구"
-            : "Free online tool to generate hundreds of barcodes and QR codes at once from Excel data",
+        "description": isKo
+            ? "엑셀 데이터로 수백 개의 바코드를 한 번에 생성하는 무료 온라인 도구"
+            : "Free online tool to generate hundreds of barcodes at once from Excel data",
         "url": `${baseUrl}/${locale}/barcode`,
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Any",
@@ -190,9 +190,9 @@ function generateWebAppSchema(locale: string) {
             "price": "0",
             "priceCurrency": "KRW"
         },
-        "featureList": isKo 
-            ? ["CODE128 바코드", "EAN-13 바코드", "QR코드", "엑셀 대량 생성", "무료 사용"]
-            : ["CODE128 barcode", "EAN-13 barcode", "QR code", "Excel bulk generation", "Free to use"],
+        "featureList": isKo
+            ? ["CODE128 바코드", "EAN-13 바코드", "ITF 바코드", "엑셀 대량 생성", "무료 사용"]
+            : ["CODE128 barcode", "EAN-13 barcode", "ITF barcode", "Excel bulk generation", "Free to use"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"
     };

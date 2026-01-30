@@ -40,7 +40,8 @@
       "sqlFormatter": "SQL Formatter",
       "cronGenerator": "Cron Expression Generator",
       "youtubeThumbnail": "YouTube Thumbnail Extractor",
-      "ipAddress": "My IP Address"
+      "ipAddress": "My IP Address",
+      "qrGenerator": "QR Code Generator"
     }
   },
   "Header": {
@@ -56,10 +57,10 @@
     "copyright": "© 2024 Jeokjeongin. All rights reserved."
   },
   "Barcode": {
-    "title": "Bulk Barcode & QR Code Generator (Excel Support)",
-    "mobileTitle": "Barcode & QR Code Generator",
-    "subtitle": "Create various types of barcodes and QR codes quickly and easily.\n Copy and paste Excel data to create hundreds of barcodes at once.",
-    "mobileSubtitle": "Create barcodes and QR codes quickly and easily.",
+    "title": "Bulk Barcode Generator (Excel Support)",
+    "mobileTitle": "Barcode Generator",
+    "subtitle": "Create various types of barcodes quickly and easily.\n Copy and paste Excel data to create hundreds of barcodes at once.",
+    "mobileSubtitle": "Create barcodes quickly and easily.",
     "whyUse": {
       "title": "Why use this barcode generator?",
       "desc": "When you need a barcode for business or personal use, you don't need to install complex software or pay for services. This <strong>Online Barcode Generator</strong> is available instantly, anytime, anywhere, with just a web browser.",
@@ -69,7 +70,7 @@
       },
       "format": {
         "title": "🎨 Various Formats Supported",
-        "desc": "Fully supports all standard formats, from the widely used CODE128 to EAN-13 for products, and QR codes."
+        "desc": "Fully supports 16 standard formats, from the widely used CODE128 to EAN-13 for products and ITF for logistics."
       },
       "security": {
         "title": "🔒 Secure & Safe",
@@ -128,7 +129,7 @@
     "generator": {
       "labelType": "Barcode Type:",
       "labelValue": "Barcode Value:",
-      "placeholderValue": "Enter barcode/QR code value",
+      "placeholderValue": "Enter barcode value",
       "btnAdd": "Add",
       "labelExcel": "Excel Data (One value per line):",
       "placeholderExcel": "Paste data copied from Excel here",
@@ -148,6 +149,64 @@
       "default": "Default",
       "qr": "QR Code",
       "barcodeLabel": "Barcode: {value}"
+    }
+  },
+  "QRGenerator": {
+    "title": "QR Code Generator - Free Online QR Code Maker",
+    "mobileTitle": "QR Code Generator",
+    "subtitle": "Convert URLs, text, and contact info to QR codes.\nCustomize colors and download in high resolution - all for free.",
+    "mobileSubtitle": "Create QR codes for free.",
+    "labelValue": "QR Code Content",
+    "placeholderValue": "Enter URL, text, contact info, etc.",
+    "labelSize": "Size",
+    "labelFgColor": "QR Code Color",
+    "labelBgColor": "Background Color",
+    "btnGenerate": "Generate QR Code",
+    "btnClear": "Clear",
+    "btnDownload": "Download",
+    "btnCopy": "Copy Image",
+    "copied": "Copied!",
+    "emptyState": "Enter content above to generate a QR code",
+    "errorEmpty": "Please enter content to convert to QR code",
+    "errorGenerate": "Error generating QR code",
+    "errorBulkEmpty": "Please enter Excel data",
+    "bulkTitle": "Bulk Generation (Paste Excel Data)",
+    "placeholderBulk": "Paste data copied from Excel (one per line)",
+    "btnBulkGenerate": "Bulk Generate",
+    "whyUse": {
+      "title": "Why use this QR code generator?",
+      "desc": "Generate <strong>QR codes for free</strong> directly in your web browser without installing any apps. Color customization, high-resolution download, and bulk generation - all features are free."
+    },
+    "useCases": {
+      "title": "QR Code Use Cases",
+      "url": "Share website/blog URLs",
+      "contact": "Exchange business cards and contact info",
+      "wifi": "Share Wi-Fi connection details",
+      "payment": "Payment links and transfer info",
+      "event": "Event registration and attendance tracking"
+    },
+    "faq": {
+      "title": "FAQ",
+      "free": {
+        "q": "Q. Is the QR code generator free?",
+        "a": "Yes, it's completely free. You can generate and download unlimited QR codes without registration."
+      },
+      "expiry": {
+        "q": "Q. Do generated QR codes expire?",
+        "a": "No, generated QR codes are image files and can be used permanently."
+      },
+      "korean": {
+        "q": "Q. Can I include Korean text in QR codes?",
+        "a": "Yes, QR codes support all text including Korean, English, numbers, special characters, and URLs."
+      },
+      "color": {
+        "q": "Q. Can I change the QR code color?",
+        "a": "Yes, you can freely change the foreground and background colors. Just maintain enough contrast."
+      },
+      "bulk": {
+        "q": "Q. Can I create multiple QR codes at once?",
+        "a": "Yes, on PC you can paste Excel data to generate multiple QR codes at once."
+      }
     }
   },
   "Calculator": {

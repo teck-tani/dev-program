@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { HiOutlineSave } from "react-icons/hi";
 import { IoCopyOutline } from "react-icons/io5";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 // 모바일 감지 훅
 const useIsMobile = () => {
     const [isMobile, setIsMobile] = useState(false);
@@ -32,7 +34,6 @@ interface BarcodeItemProps {
     onDragOver: (e: React.DragEvent, index: number) => void;
     onDrop: (e: React.DragEvent, index: number) => void;
     removeLabel: string;
-    ariaLabel: string;
 }
 
 export default function BarcodeGenerator() {
@@ -125,39 +126,28 @@ export default function BarcodeGenerator() {
         const item = barcodes[0];
         const filename = `barcode_${item.value}.png`;
 
-        if (item.type === "QR") {
-            const canvas = barcodeRef.current.querySelector('canvas');
-            if (canvas) {
-                const url = canvas.toDataURL("image/png");
-                const link = document.createElement("a");
-                link.download = filename;
-                link.href = url;
-                link.click();
-            }
-        } else {
-            const svg = barcodeRef.current.querySelector('svg');
-            if (svg) {
-                const svgData = new XMLSerializer().serializeToString(svg);
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-                const img = new Image();
-                const svgRect = svg.getBoundingClientRect();
-                canvas.width = svgRect.width + 20;
-                canvas.height = svgRect.height + 20;
-                img.onload = () => {
-                    if(ctx) {
-                        ctx.fillStyle = "white";
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(img, 10, 10);
-                        const pngUrl = canvas.toDataURL("image/png");
-                        const link = document.createElement("a");
-                        link.download = filename;
-                        link.href = pngUrl;
-                        link.click();
-                    }
-                };
-                img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
-            }
+        const svg = barcodeRef.current.querySelector('svg');
+        if (svg) {
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const img = new Image();
+            const svgRect = svg.getBoundingClientRect();
+            canvas.width = svgRect.width + 20;
+            canvas.height = svgRect.height + 20;
+            img.onload = () => {
+                if(ctx) {
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 10, 10);
+                    const pngUrl = canvas.toDataURL("image/png");
+                    const link = document.createElement("a");
+                    link.download = filename;
+                    link.href = pngUrl;
+                    link.click();
+                }
+            };
+            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
         }
     }, [barcodes]);
 
@@ -184,7 +174,6 @@ export default function BarcodeGenerator() {
                         <option value="MSI1110">MSI1110</option>
                         <option value="pharmacode">Pharmacode</option>
                         <option value="codabar">Codabar</option>
-                        <option value="QR">QR Code</option>
                     </select>
                 </div>
                 <div className={styles.inputGroup}>
@@ -225,7 +214,7 @@ export default function BarcodeGenerator() {
                         <BarcodeItemComponent
                             key={item.id} item={item} index={index} onRemove={removeBarcode}
                             onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop}
-                            removeLabel={t("remove")} ariaLabel={t("barcodeLabel", { value: item.value })}
+                            removeLabel={t("remove")}
                             isMobile={isMobile}
                         />
                     ))}
@@ -246,59 +235,12 @@ export default function BarcodeGenerator() {
 }
 
 const BarcodeItemComponent = memo(function BarcodeItemComponent({
-    item, index, onRemove, onDragStart, onDragOver, onDrop, removeLabel, ariaLabel, isMobile
+    item, index, onRemove, onDragStart, onDragOver, onDrop, removeLabel, isMobile
 }: BarcodeItemProps & { isMobile: boolean }) {
     const svgRef = useRef<SVGSVGElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-
-    const downloadImage = useCallback(() => {
-        let url = '';
-        const filename = `barcode_${item.value}.png`;
-
-        if (item.type === "QR" && canvasRef.current) {
-            url = canvasRef.current.toDataURL("image/png");
-        } else if (svgRef.current) {
-            // SVG -> Canvas -> PNG 변환
-            const svgData = new XMLSerializer().serializeToString(svgRef.current);
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            const img = new Image();
-            
-            // SVG 크기 가져오기
-            const svgRect = svgRef.current.getBoundingClientRect();
-            canvas.width = svgRect.width + 20; // 여백 추가
-            canvas.height = svgRect.height + 20;
-            
-            img.onload = () => {
-                if(ctx) {
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 10, 10);
-                    const pngUrl = canvas.toDataURL("image/png");
-                    const link = document.createElement("a");
-                    link.download = filename;
-                    link.href = pngUrl;
-                    link.click();
-                }
-            };
-            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
-            return; // 비동기 처리되므로 여기서 반환
-        }
-
-        if (url) {
-            const link = document.createElement("a");
-            link.download = filename;
-            link.href = url;
-            link.click();
-        }
-    }, [item.value, item.type]);
 
     useEffect(() => {
-        if (item.type === "QR" && canvasRef.current) {
-            import("qrcode").then((QRCode) => {
-                QRCode.toCanvas(canvasRef.current, item.value, { width: 100, margin: 0 });
-            });
-        } else if (svgRef.current) {
+        if (svgRef.current) {
             const options: Record<string, string | number | boolean> = {
                 width: 2,
                 height: 80,
@@ -324,13 +266,12 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
             onDrop={(e) => onDrop(e, index)}
         >
             {!isMobile && <div className={styles.barcodeNumber}>{index + 1}</div>}
-            
+
             {!isMobile && (
                 <button className={styles.removeBarcode} onClick={() => onRemove(index)} aria-label={removeLabel}></button>
             )}
 
-            {item.type === "QR" ? <canvas ref={canvasRef} /> : <svg ref={svgRef} />}
-            {item.type === "QR" && <div className={styles.barcodeValue}>{item.value}</div>}
+            <svg ref={svgRef} />
         </div>
     );
 });
