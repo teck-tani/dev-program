@@ -962,3 +962,265 @@ body[data-theme="light"] .digital-text {
         display: none;
     }
 }
+
+/* ============================================
+   Feedback Button Styles
+   ============================================ */
+.feedback-floating-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.feedback-floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 28px rgba(59, 130, 246, 0.5);
+}
+
+.feedback-floating-btn:active {
+    transform: scale(0.95);
+}
+
+.feedback-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.feedback-modal {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: feedbackSlideUp 0.3s ease;
+}
+
+@keyframes feedbackSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.feedback-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.feedback-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 4px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.feedback-close:hover {
+    color: #6b7280;
+}
+
+.feedback-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feedback-page-tag {
+    display: inline-block;
+    background: #f0f9ff;
+    color: #0369a1;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    align-self: flex-start;
+}
+
+.feedback-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px 14px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 15px;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.feedback-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.feedback-textarea:disabled {
+    background: #f9fafb;
+    color: #9ca3af;
+}
+
+.feedback-email {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.feedback-email:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.feedback-email:disabled {
+    background: #f9fafb;
+    color: #9ca3af;
+}
+
+.feedback-submit {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.feedback-submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.feedback-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.feedback-error {
+    color: #ef4444;
+    font-size: 0.85rem;
+    text-align: center;
+    margin: 0;
+}
+
+.feedback-success {
+    padding: 40px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.feedback-success-icon {
+    width: 60px;
+    height: 60px;
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    animation: feedbackCheckmark 0.4s ease;
+}
+
+@keyframes feedbackCheckmark {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.feedback-success p {
+    font-size: 1rem;
+    color: #374151;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .feedback-floating-btn {
+        bottom: 16px;
+        right: 16px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .feedback-modal {
+        max-width: 100%;
+        margin: 0 12px;
+    }
+
+    .feedback-body {
+        padding: 16px;
+    }
+
+    .feedback-textarea {
+        min-height: 80px;
+    }
+}
+
+/* Hide on clock page fullscreen */
+body.clock-page .feedback-floating-btn {
+    display: none;
+}

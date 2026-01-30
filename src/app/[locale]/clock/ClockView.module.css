@@ -822,7 +822,7 @@
   /* Show mobile home button */
   .mobileHomeBtn {
     display: flex;
-    top: 12px;
+    top: 24px;
     left: 12px;
     width: 38px;
     height: 38px;
@@ -841,7 +841,7 @@
   }
 
   .controlPanel {
-    top: 12px;
+    top: 24px;
     right: 12px;
     gap: 6px;
   }
@@ -884,7 +884,7 @@
   /* Show mobile home button */
   .mobileHomeBtn {
     display: flex;
-    top: 10px;
+    top: 20px;
     left: 10px;
     width: 34px;
     height: 34px;
@@ -904,7 +904,7 @@
   }
 
   .controlPanel {
-    top: 10px;
+    top: 20px;
     right: 10px;
     gap: 4px;
   }

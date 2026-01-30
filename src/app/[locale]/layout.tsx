@@ -7,6 +7,7 @@ import "../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GoogleAdsense from "@/components/GoogleAdsense";
+import FeedbackButton from "@/components/FeedbackButton";
 
 // [핵심] 구글 폰트를 버리고 시스템 폰트와 Pretendard 조합으로 변경
 // 폰트 파일 다운로드 대기 시간을 아예 없앱니다.
@@ -49,6 +50,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
           <div id="top-container"><Header /></div>
           <main>{children}</main>
           <div id="footer-container"><Footer /></div>
+          <FeedbackButton />
         </NextIntlClientProvider>
         {/* 애드센스는 사용자 상호작용 후에만 로드되도록 기존 전략 유지 */}
         <GoogleAdsense />

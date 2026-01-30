@@ -254,9 +254,15 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
             import("jsbarcode").then((module) => {
                 const JsBarcode = module.default;
                 JsBarcode(svgRef.current, item.value, options);
+
+                // 모바일에서 SVG가 컨테이너 가로를 꽉 채우도록 설정
+                if (isMobile && svgRef.current) {
+                    // none: 비율 무시하고 컨테이너에 완전히 맞춤 (가로 꽉 참)
+                    svgRef.current.setAttribute('preserveAspectRatio', 'none');
+                }
             });
         }
-    }, [item]);
+    }, [item, isMobile]);
 
     return (
         <div
