@@ -955,3 +955,10 @@ body[data-theme="light"] .digital-text {
         display: flex;
     }
 }
+
+/* Hide header hamburger menu on clock page (mobile) */
+@media (max-width: 768px) {
+    body.clock-page .new-header {
+        display: none;
+    }
+}

@@ -20,10 +20,11 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { FaPlus, FaMinus, FaExpand, FaCompress, FaTimes, FaSearch, FaGripVertical } from 'react-icons/fa';
+import { FaPlus, FaMinus, FaExpand, FaCompress, FaTimes, FaSearch, FaGripVertical, FaHome } from 'react-icons/fa';
 import twemoji from 'twemoji';
 import styles from './ClockView.module.css';
 import ClockAdsense from '@/components/ClockAdsense';
+import { Link } from '@/navigation';
 
 // ============================================
 // Twemoji Flag Component
@@ -777,6 +778,14 @@ export default function ClockView() {
     return () => clearInterval(interval);
   }, []);
 
+  // Hide header hamburger menu on clock page (mobile)
+  useEffect(() => {
+    document.body.classList.add('clock-page');
+    return () => {
+      document.body.classList.remove('clock-page');
+    };
+  }, []);
+
   // Fullscreen change listener
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -884,7 +893,12 @@ export default function ClockView() {
 
   return (
     <div className={`${styles.worldClockContainer} ${styles[state.theme]} ${isFullscreen ? styles.fullscreen : ''}`}>
-      {/* Control Panel */}
+      {/* Mobile Home Button - Left side */}
+      <Link href="/" className={`${styles.mobileHomeBtn} ${styles[state.theme]}`}>
+        <FaHome />
+      </Link>
+
+      {/* Control Panel - Right side */}
       <div className={styles.controlPanel}>
         {/* Zoom controls - hidden on mobile */}
         <div className={styles.zoomControl}>
