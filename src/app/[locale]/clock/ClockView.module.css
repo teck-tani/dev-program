@@ -23,6 +23,25 @@
   transition: opacity 0.15s ease;
 }
 
+/* CSS-based colon blink animation (replaces JS state for performance) */
+.colonBlink {
+  animation: colonBlink 1s step-end infinite;
+}
+
+@keyframes colonBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* Native emoji flag (replaces Twemoji for performance) */
+.nativeFlag {
+  display: inline-flex;
+  align-items: center;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
+  font-size: 1em;
+  line-height: 1;
+}
+
 /* ============================================
    Main Clock Container
    ============================================ */
