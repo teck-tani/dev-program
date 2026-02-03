@@ -1,0 +1,661 @@
+/* ===== Animations ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes countUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Mobile Base Styles ===== */
+.container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 16px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    animation: slideUp 0.5s ease-out;
+}
+
+.headerIcon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 10px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.2);
+}
+
+.headerIcon svg {
+    width: 24px;
+    height: 24px;
+    color: #38bdf8;
+}
+
+.title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+    letter-spacing: -0.03em;
+}
+
+.subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.mainCard {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
+    padding: 20px;
+    margin-bottom: 16px;
+    animation: slideUp 0.5s ease-out 0.1s both;
+}
+
+.formSection {
+    margin-bottom: 16px;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+}
+
+.sectionTitle svg {
+    width: 14px;
+    height: 14px;
+    color: #3b82f6;
+}
+
+.inputGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+@media (max-width: 400px) {
+    .inputGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.field {
+    margin-bottom: 0;
+}
+
+.label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 5px;
+}
+
+.inputWrap {
+    position: relative;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #0f172a;
+    transition: all 0.15s ease;
+    outline: none;
+}
+
+.input:focus {
+    border-color: #3b82f6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input::placeholder {
+    color: #94a3b8;
+}
+
+.inputSuffix {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: #64748b;
+    pointer-events: none;
+}
+
+.hasSuffix {
+    padding-right: 32px;
+}
+
+.hint {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 16px 0;
+}
+
+.calcBtn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.calcBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.3);
+}
+
+.calcBtn:active {
+    transform: translateY(0);
+}
+
+.calcBtn.loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 1s infinite;
+}
+
+/* Result Card - Mobile */
+.resultPanel {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    animation: popIn 0.4s ease-out;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.resultPanel::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -40%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.resultTitle {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+
+.resultAmount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    animation: countUp 0.5s ease-out;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.resultAmount .unit {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-left: 2px;
+    opacity: 0.9;
+}
+
+.resultPeriod {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.resultPeriod svg {
+    width: 14px;
+    height: 14px;
+}
+
+.resultNote {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 10px;
+}
+
+/* Waiting Panel - Hidden on Mobile */
+.waitingPanel {
+    display: none;
+}
+
+/* Info Section - Mobile */
+.infoSection {
+    animation: slideUp 0.5s ease-out 0.2s both;
+}
+
+.infoCard {
+    background: #f1f5f9;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.infoTitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.infoTitle svg {
+    width: 16px;
+    height: 16px;
+    color: #3b82f6;
+}
+
+.infoList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.infoList li {
+    position: relative;
+    padding-left: 16px;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.infoList li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 5px;
+    height: 5px;
+    background: #3b82f6;
+    border-radius: 50%;
+}
+
+.faqItem {
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.faqItem summary {
+    padding: 12px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #334155;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.faqItem summary::-webkit-details-marker {
+    display: none;
+}
+
+.faqItem summary::after {
+    content: '+';
+    font-size: 1.1rem;
+    color: #3b82f6;
+    transition: transform 0.2s;
+}
+
+.faqItem[open] summary::after {
+    transform: rotate(45deg);
+}
+
+.faqAnswer {
+    padding: 0 14px 12px;
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+/* ===== Desktop Styles (900px+) ===== */
+@media (min-width: 900px) {
+    .container {
+        max-width: 1100px;
+        padding: 32px 40px;
+        min-height: calc(100vh - 200px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        text-align: left;
+        margin-bottom: 28px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .headerIcon {
+        margin: 0;
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+    }
+
+    .headerIcon svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    .headerText {
+        flex: 1;
+    }
+
+    .title {
+        font-size: 1.6rem;
+        margin-bottom: 2px;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    /* Main Layout: Left Input / Right Result */
+    .mainLayout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 28px;
+        flex: 1;
+        align-items: start;
+    }
+
+    .mainCard {
+        padding: 28px;
+        border-radius: 24px;
+        margin-bottom: 0;
+    }
+
+    /* Input Form - All Visible at Once */
+    .formRow {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .formSection {
+        margin-bottom: 0;
+    }
+
+    .sectionTitle {
+        font-size: 0.75rem;
+        margin-bottom: 14px;
+    }
+
+    .sectionTitle svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .inputGrid {
+        gap: 14px;
+    }
+
+    .label {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+
+    .input {
+        padding: 12px 14px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+
+    .hint {
+        font-size: 0.75rem;
+    }
+
+    .divider {
+        margin: 20px 0;
+    }
+
+    .calcBtn {
+        padding: 16px;
+        font-size: 1.05rem;
+        border-radius: 14px;
+    }
+
+    /* Right Result Panel */
+    .resultSide {
+        position: sticky;
+        top: 24px;
+    }
+
+    .resultPanel {
+        border-radius: 24px;
+        padding: 32px 28px;
+        margin-bottom: 0;
+    }
+
+    .resultTitle {
+        font-size: 0.8rem;
+        margin-bottom: 12px;
+    }
+
+    .resultAmount {
+        font-size: 2.75rem;
+    }
+
+    .resultAmount .unit {
+        font-size: 1.25rem;
+    }
+
+    .resultPeriod {
+        margin-top: 16px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .resultPeriod svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .resultNote {
+        font-size: 0.8rem;
+        margin-top: 14px;
+    }
+
+    /* Waiting Panel - Show on Desktop */
+    .waitingPanel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        border-radius: 24px;
+        padding: 48px 28px;
+        text-align: center;
+        border: 2px dashed #cbd5e1;
+    }
+
+    .waitingIcon {
+        width: 64px;
+        height: 64px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .waitingIcon svg {
+        width: 32px;
+        height: 32px;
+        color: #94a3b8;
+    }
+
+    .waitingText {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 6px;
+    }
+
+    .waitingHint {
+        font-size: 0.85rem;
+        color: #94a3b8;
+    }
+
+    /* Info Section - Move to Bottom */
+    .infoSection {
+        grid-column: 1 / -1;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .infoGrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .infoCard {
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 0;
+    }
+
+    .infoTitle {
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+    }
+
+    .infoTitle svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .infoList li {
+        font-size: 0.875rem;
+        margin-bottom: 8px;
+        padding-left: 18px;
+    }
+
+    .infoList li::before {
+        width: 6px;
+        height: 6px;
+    }
+
+    .faqWrap {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .faqItem {
+        border-radius: 12px;
+        margin-bottom: 0;
+    }
+
+    .faqItem summary {
+        padding: 14px 16px;
+        font-size: 0.875rem;
+    }
+
+    .faqAnswer {
+        padding: 0 16px 14px;
+        font-size: 0.875rem;
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px;
+        padding: 40px 48px;
+    }
+
+    .mainLayout {
+        grid-template-columns: 1fr 420px;
+        gap: 36px;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .resultAmount {
+        font-size: 3rem;
+    }
+}

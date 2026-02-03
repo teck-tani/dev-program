@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 
 interface ExchangeRate {
@@ -39,6 +39,7 @@ export default function ExchangeRateClient() {
     const t = useTranslations('MoneyConverter.client');
     const [rates, setRates] = useState<ExchangeRate[]>([]);
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     // Core State: Base Value in KRW
     const [baseKrwValue, setBaseKrwValue] = useState<number>(0);
@@ -47,8 +48,15 @@ export default function ExchangeRateClient() {
     const [rowCurrencies, setRowCurrencies] = useState<string[]>(["USD", "KRW", "JPY(100)", "EUR", "CNH"]);
 
     useEffect(() => {
+        setMounted(true);
         fetchRates();
     }, []);
+
+    // Client-side only date to avoid hydration mismatch
+    const dateString = useMemo(() => {
+        if (!mounted) return '';
+        return new Date().toLocaleDateString();
+    }, [mounted]);
 
     // Set default to 1 USD once rates are loaded
     useEffect(() => {
@@ -236,7 +244,7 @@ export default function ExchangeRateClient() {
 
             {/* 1. Synced Exchange Rate Dashboard (Bottom) */}
             <div className="mobile-hidden">
-                <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "15px", color: "#333" }}>{t('dashboardTitle', { date: new Date().toLocaleDateString() })}</h2>
+                <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "15px", color: "#333" }}>{t('dashboardTitle', { date: dateString })}</h2>
                 {loading ? (
                     <div style={{ textAlign: "center", padding: "40px" }}>{t('loading')}</div>
                 ) : (

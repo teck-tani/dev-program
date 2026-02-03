@@ -71,10 +71,26 @@ export default function FeedbackButton() {
     const [message, setMessage] = useState("");
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+    const [isVisible, setIsVisible] = useState(false);
 
     const pathname = usePathname();
     const locale = (useLocale() as Locale) || 'ko';
     const t = i18n[locale];
+
+    // 스크롤에 따라 버튼 표시/숨김
+    useEffect(() => {
+        const handleScroll = () => {
+            // 스크롤이 400px 이상 내려가면 버튼 표시
+            const scrollThreshold = 400;
+            setIsVisible(window.scrollY > scrollThreshold);
+        };
+
+        // 초기 상태 확인
+        handleScroll();
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // 현재 페이지명 가져오기
     const getPageName = useCallback(() => {
@@ -145,7 +161,7 @@ export default function FeedbackButton() {
         <>
             {/* 플로팅 버튼 */}
             <button
-                className="feedback-floating-btn"
+                className={`feedback-floating-btn ${!isVisible ? 'hidden' : ''}`}
                 onClick={() => setIsOpen(true)}
                 aria-label="Feedback"
             >

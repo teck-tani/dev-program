@@ -216,9 +216,9 @@ export default async function CalculatorPage({ params }: { params: Promise<{ loc
             />
 
             <div className="container">
-                <section style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h1>{t('title')}</h1>
-                    <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '10px auto 0' }}
+                <section className="calc-header-section">
+                    <h1 className="calc-title">{t('title')}</h1>
+                    <p className="calc-description"
                         dangerouslySetInnerHTML={{ __html: t.raw('description') }}
                     />
                 </section>
