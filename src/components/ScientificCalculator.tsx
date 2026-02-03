@@ -183,8 +183,20 @@ const ScientificCalculator = () => {
     }
   };
 
+  // 진동 피드백 (Android만 지원, iOS는 미지원)
+  const vibrate = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate(10); // 10ms 짧은 진동
+    }
+  };
+
   // Button components
   const Button = ({ label, onClick, className = "", styleType = "default", ariaLabel = "" }: any) => {
+    const handleClick = () => {
+      vibrate();
+      onClick();
+    };
+
     const baseStyle = "h-12 sm:h-14 rounded-lg font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none shadow-sm cursor-pointer";
     
     // Increased contrast and better visual separation
@@ -201,8 +213,8 @@ const ScientificCalculator = () => {
     const appliedStyle = styles[styleType] || styles.default;
 
     return (
-      <button 
-        onClick={onClick}
+      <button
+        onClick={handleClick}
         className={`${baseStyle} ${appliedStyle} ${className}`}
         aria-label={ariaLabel || (typeof label === 'string' ? label : undefined)}
         type="button"
