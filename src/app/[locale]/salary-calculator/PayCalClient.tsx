@@ -38,11 +38,11 @@ function AnimatedNumber({ value, duration = 600 }: { value: number; duration?: n
 function SalaryDonutChart({
     netSalary,
     totalDeduction,
-    locale
+    tResult
 }: {
     netSalary: number;
     totalDeduction: number;
-    locale: string;
+    tResult: (key: string) => string;
 }) {
     const total = netSalary + totalDeduction;
     const netPercent = (netSalary / total) * 100;
@@ -75,7 +75,7 @@ function SalaryDonutChart({
                         cy="18"
                         r="15.915"
                         fill="none"
-                        stroke="#10b981"
+                        stroke="#4f6dc5"
                         strokeWidth="3"
                         strokeDasharray={`${netPercent} ${100 - netPercent}`}
                         strokeDashoffset={netOffset}
@@ -104,12 +104,12 @@ function SalaryDonutChart({
                     textAlign: 'center',
                 }}>
                     <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>
-                        {locale === 'ko' ? '실수령률' : 'Net Rate'}
+                        {tResult('netRate')}
                     </div>
                     <div style={{
                         fontSize: '1.5rem',
                         fontWeight: '800',
-                        color: '#10b981',
+                        color: '#4f6dc5',
                     }}>
                         {netPercent.toFixed(1)}%
                     </div>
@@ -117,12 +117,12 @@ function SalaryDonutChart({
             </div>
             <div style={{ display: 'flex', gap: '20px', fontSize: '0.8rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }} />
-                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>{locale === 'ko' ? '실수령액' : 'Net'}</span>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4f6dc5' }} />
+                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>{tResult('chartNet')}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f43f5e' }} />
-                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>{locale === 'ko' ? '공제액' : 'Deduction'}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>{tResult('chartDeduction')}</span>
                 </div>
             </div>
         </div>
@@ -142,13 +142,14 @@ function Stepper({
     label: string;
 }) {
     return (
-        <div>
-            <label style={{
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <label className="paycal-label" style={{
                 display: 'block',
-                fontSize: '0.875rem',
+                fontSize: '0.8rem',
                 fontWeight: '600',
                 color: '#374151',
                 marginBottom: '8px',
+                textAlign: 'center',
             }}>
                 {label}
             </label>
@@ -168,7 +169,7 @@ function Stepper({
                         height: '40px',
                         border: 'none',
                         borderRadius: '10px',
-                        background: value > min ? '#10b981' : '#d1d5db',
+                        background: value > min ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : '#d1d5db',
                         color: '#fff',
                         fontSize: '1.25rem',
                         fontWeight: '700',
@@ -197,7 +198,7 @@ function Stepper({
                         height: '40px',
                         border: 'none',
                         borderRadius: '10px',
-                        background: '#10b981',
+                        background: 'linear-gradient(135deg, #3d5cb9, #4f6dc5)',
                         color: '#fff',
                         fontSize: '1.25rem',
                         fontWeight: '700',
@@ -223,7 +224,7 @@ export default function PayCalClient() {
     const tFaq = useTranslations('PayCal.faq');
 
     const [annualSalary, setAnnualSalary] = useState("");
-    const [nonTaxable, setNonTaxable] = useState("200000");
+    const [nonTaxable, setNonTaxable] = useState("");
     const [retirementIncluded, setRetirementIncluded] = useState(false);
     const [dependents, setDependents] = useState(1);
     const [children, setChildren] = useState(0);
@@ -314,26 +315,24 @@ export default function PayCalClient() {
         }, 300);
     };
 
-    // Get locale from the title
-    const locale = t('title').includes('연봉') ? 'ko' : 'en';
-
     return (
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 16px' }}>
+        <div className="paycal-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
             {/* Header */}
-            <section style={{ textAlign: 'center', marginBottom: '36px' }}>
-                <h1 style={{
+            <section className="paycal-header" style={{ textAlign: 'center', marginBottom: '16px' }}>
+                <h1 className="paycal-title" style={{
                     fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
                     fontWeight: '800',
-                    background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+                    background: 'linear-gradient(135deg, #3d5cb9 0%, #4f6dc5 50%, #5a7fd6 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
+                    marginTop: 0,
                     marginBottom: '12px',
                     letterSpacing: '-0.02em',
                 }}>
                     {t('title').replace('2025 ', '')}
                 </h1>
-                <p style={{
+                <p className="paycal-subtitle" style={{
                     color: '#6b7280',
                     fontSize: '0.95rem',
                     lineHeight: '1.6',
@@ -343,19 +342,19 @@ export default function PayCalClient() {
             </section>
 
             {/* Calculator Card */}
-            <div style={{
-                background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+            <div className="paycal-card" style={{
+                background: 'linear-gradient(145deg, #ffffff 0%, #f0f4ff 100%)',
                 borderRadius: '24px',
-                boxShadow: '0 4px 24px rgba(16, 185, 129, 0.08), 0 1px 3px rgba(0,0,0,0.04)',
+                boxShadow: '0 4px 24px rgba(61, 92, 185, 0.12), 0 1px 3px rgba(0,0,0,0.04)',
                 padding: '28px',
                 marginBottom: '24px',
-                border: '1px solid rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(61, 92, 185, 0.15)',
             }}>
                 {/* Annual Salary Input */}
-                <div style={{ marginBottom: '24px' }}>
-                    <label style={{
+                <div className="paycal-section" style={{ marginBottom: '24px' }}>
+                    <label className="paycal-label" style={{
                         display: 'block',
-                        fontSize: '0.875rem',
+                        fontSize: '0.8rem',
                         fontWeight: '600',
                         color: '#374151',
                         marginBottom: '8px',
@@ -364,6 +363,7 @@ export default function PayCalClient() {
                     </label>
                     <div style={{ position: 'relative' }}>
                         <input
+                            className="paycal-input"
                             type="text"
                             inputMode="numeric"
                             value={annualSalary}
@@ -384,6 +384,7 @@ export default function PayCalClient() {
                                 background: '#fff',
                                 boxSizing: 'border-box',
                                 outline: 'none',
+                                textAlign: 'right',
                             }}
                         />
                         <span style={{
@@ -394,22 +395,22 @@ export default function PayCalClient() {
                             color: '#9ca3af',
                             fontSize: '0.9rem',
                             fontWeight: '500',
-                        }}>원</span>
+                        }}>{tResult('currency')}</span>
                     </div>
                 </div>
 
                 {/* Retirement Toggle */}
-                <div style={{ marginBottom: '24px' }}>
-                    <label style={{
+                <div className="paycal-section" style={{ marginBottom: '24px' }}>
+                    <label className="paycal-label" style={{
                         display: 'block',
-                        fontSize: '0.875rem',
+                        fontSize: '0.8rem',
                         fontWeight: '600',
                         color: '#374151',
                         marginBottom: '10px',
                     }}>
                         {tInput('retirement')}
                     </label>
-                    <div style={{
+                    <div className="paycal-toggle-group" style={{
                         display: 'flex',
                         gap: '8px',
                         padding: '4px',
@@ -417,37 +418,39 @@ export default function PayCalClient() {
                         borderRadius: '14px',
                     }}>
                         <button
+                            className="paycal-toggle-btn"
                             onClick={() => setRetirementIncluded(false)}
                             style={{
                                 flex: 1,
                                 padding: '12px 16px',
                                 border: 'none',
                                 borderRadius: '10px',
-                                fontSize: '0.9rem',
+                                fontSize: '0.85rem',
                                 fontWeight: '600',
                                 cursor: 'pointer',
                                 transition: 'all 0.25s',
-                                background: !retirementIncluded ? 'linear-gradient(135deg, #059669, #10b981)' : 'transparent',
+                                background: !retirementIncluded ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : 'transparent',
                                 color: !retirementIncluded ? '#fff' : '#6b7280',
-                                boxShadow: !retirementIncluded ? '0 4px 12px rgba(16, 185, 129, 0.3)' : 'none',
+                                boxShadow: !retirementIncluded ? '0 4px 12px rgba(61, 92, 185, 0.35)' : 'none',
                             }}
                         >
                             {tInput('separate')}
                         </button>
                         <button
+                            className="paycal-toggle-btn"
                             onClick={() => setRetirementIncluded(true)}
                             style={{
                                 flex: 1,
                                 padding: '12px 16px',
                                 border: 'none',
                                 borderRadius: '10px',
-                                fontSize: '0.9rem',
+                                fontSize: '0.85rem',
                                 fontWeight: '600',
                                 cursor: 'pointer',
                                 transition: 'all 0.25s',
-                                background: retirementIncluded ? 'linear-gradient(135deg, #059669, #10b981)' : 'transparent',
+                                background: retirementIncluded ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : 'transparent',
                                 color: retirementIncluded ? '#fff' : '#6b7280',
-                                boxShadow: retirementIncluded ? '0 4px 12px rgba(16, 185, 129, 0.3)' : 'none',
+                                boxShadow: retirementIncluded ? '0 4px 12px rgba(61, 92, 185, 0.35)' : 'none',
                             }}
                         >
                             {tInput('included')}
@@ -456,10 +459,10 @@ export default function PayCalClient() {
                 </div>
 
                 {/* Non-taxable Input */}
-                <div style={{ marginBottom: '24px' }}>
-                    <label style={{
+                <div className="paycal-section" style={{ marginBottom: '24px' }}>
+                    <label className="paycal-label" style={{
                         display: 'block',
-                        fontSize: '0.875rem',
+                        fontSize: '0.8rem',
                         fontWeight: '600',
                         color: '#374151',
                         marginBottom: '8px',
@@ -468,6 +471,7 @@ export default function PayCalClient() {
                     </label>
                     <div style={{ position: 'relative' }}>
                         <input
+                            className="paycal-input"
                             type="text"
                             inputMode="numeric"
                             value={nonTaxable}
@@ -475,6 +479,7 @@ export default function PayCalClient() {
                                 const value = e.target.value.replace(/[^\d]/g, "");
                                 setNonTaxable(value ? parseInt(value).toLocaleString("ko-KR") : "");
                             }}
+                            placeholder="200,000"
                             style={{
                                 width: '100%',
                                 padding: '14px 16px',
@@ -486,6 +491,7 @@ export default function PayCalClient() {
                                 background: '#fff',
                                 boxSizing: 'border-box',
                                 outline: 'none',
+                                textAlign: 'right',
                             }}
                         />
                         <span style={{
@@ -495,10 +501,10 @@ export default function PayCalClient() {
                             transform: 'translateY(-50%)',
                             color: '#9ca3af',
                             fontSize: '0.875rem',
-                        }}>원</span>
+                        }}>{tResult('currency')}</span>
                     </div>
-                    <p style={{
-                        fontSize: '0.8rem',
+                    <p className="paycal-hint" style={{
+                        fontSize: '0.75rem',
                         color: '#9ca3af',
                         marginTop: '6px',
                     }}>{tInput('nonTaxableDesc')}</p>
@@ -506,9 +512,9 @@ export default function PayCalClient() {
 
                 {/* Steppers Row */}
                 <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-                    gap: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
                     marginBottom: '28px',
                 }}>
                     <Stepper
@@ -527,6 +533,7 @@ export default function PayCalClient() {
 
                 {/* Calculate Button */}
                 <button
+                    className="paycal-calc-btn"
                     onClick={calculate}
                     disabled={isCalculating}
                     style={{
@@ -537,9 +544,9 @@ export default function PayCalClient() {
                         fontSize: '1.1rem',
                         fontWeight: '700',
                         cursor: 'pointer',
-                        background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+                        background: 'linear-gradient(135deg, #3d5cb9 0%, #4f6dc5 50%, #5a7fd6 100%)',
                         color: '#fff',
-                        boxShadow: '0 8px 24px rgba(16, 185, 129, 0.35), 0 4px 8px rgba(16, 185, 129, 0.2)',
+                        boxShadow: '0 8px 24px rgba(61, 92, 185, 0.4), 0 4px 8px rgba(61, 92, 185, 0.25)',
                         transition: 'all 0.3s',
                         letterSpacing: '0.02em',
                         opacity: isCalculating ? 0.8 : 1,
@@ -556,7 +563,7 @@ export default function PayCalClient() {
                                 borderRadius: '50%',
                                 animation: 'spin 0.8s linear infinite',
                             }} />
-                            {locale === 'ko' ? '계산 중...' : 'Calculating...'}
+                            {tInput('calculating')}
                         </span>
                     ) : (
                         tInput('calculate')
@@ -566,7 +573,7 @@ export default function PayCalClient() {
 
             {/* Result Card */}
             {result && (
-                <div style={{
+                <div className="paycal-result-card" style={{
                     background: 'linear-gradient(145deg, #1f2937 0%, #111827 50%, #0f172a 100%)',
                     borderRadius: '24px',
                     padding: '32px',
@@ -581,7 +588,7 @@ export default function PayCalClient() {
                         right: '-60px',
                         width: '180px',
                         height: '180px',
-                        background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle, rgba(61,92,185,0.15) 0%, transparent 70%)',
                         borderRadius: '50%',
                     }} />
 
@@ -601,13 +608,13 @@ export default function PayCalClient() {
                             <SalaryDonutChart
                                 netSalary={result.netSalary}
                                 totalDeduction={result.totalDeduction}
-                                locale={locale}
+                                tResult={tResult}
                             />
                         </div>
 
                         {/* Details Section */}
                         <div>
-                            <h2 style={{
+                            <h2 className="paycal-result-title" style={{
                                 fontSize: '1.1rem',
                                 fontWeight: '700',
                                 color: '#fff',
@@ -618,15 +625,15 @@ export default function PayCalClient() {
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {/* Gross */}
-                                <div style={{
+                                <div className="paycal-result-row" style={{
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     padding: '10px 0',
                                     borderBottom: '1px solid rgba(255,255,255,0.1)',
                                 }}>
-                                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>{tResult('gross')}</span>
-                                    <span style={{ color: '#fff', fontWeight: '600' }}>
-                                        <AnimatedNumber value={result.monthlyGross} />원
+                                    <span className="paycal-result-label" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>{tResult('gross')}</span>
+                                    <span className="paycal-result-value" style={{ color: '#fff', fontWeight: '600' }}>
+                                        <AnimatedNumber value={result.monthlyGross} />{tResult('currency')}
                                     </span>
                                 </div>
 
@@ -639,21 +646,21 @@ export default function PayCalClient() {
                                     { label: tResult('incomeTax'), value: result.incomeTax },
                                     { label: tResult('localTax'), value: result.localIncomeTax },
                                 ].map((item, idx) => (
-                                    <div key={idx} style={{
+                                    <div key={idx} className="paycal-result-row" style={{
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         padding: '8px 0',
                                         borderBottom: '1px solid rgba(255,255,255,0.05)',
                                     }}>
-                                        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>{item.label}</span>
-                                        <span style={{ color: '#f87171', fontSize: '0.9rem' }}>
-                                            -<AnimatedNumber value={item.value} />원
+                                        <span className="paycal-result-label" style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>{item.label}</span>
+                                        <span className="paycal-result-value" style={{ color: '#f87171', fontSize: '0.9rem' }}>
+                                            -<AnimatedNumber value={item.value} />{tResult('currency')}
                                         </span>
                                     </div>
                                 ))}
 
                                 {/* Total Deduction */}
-                                <div style={{
+                                <div className="paycal-result-row" style={{
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     padding: '12px 0',
@@ -662,7 +669,7 @@ export default function PayCalClient() {
                                 }}>
                                     <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '600' }}>{tResult('totalDeduction')}</span>
                                     <span style={{ color: '#f43f5e', fontWeight: '700' }}>
-                                        -<AnimatedNumber value={result.totalDeduction} />원
+                                        -<AnimatedNumber value={result.totalDeduction} />{tResult('currency')}
                                     </span>
                                 </div>
 
@@ -672,17 +679,17 @@ export default function PayCalClient() {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '16px',
-                                    background: 'linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(16,185,129,0.1) 100%)',
+                                    background: 'linear-gradient(135deg, rgba(61,92,185,0.2) 0%, rgba(61,92,185,0.1) 100%)',
                                     borderRadius: '12px',
                                     marginTop: '8px',
                                 }}>
                                     <span style={{ color: '#fff', fontWeight: '700', fontSize: '1rem' }}>{tResult('net')}</span>
-                                    <span style={{
-                                        color: '#10b981',
+                                    <span className="paycal-net-value" style={{
+                                        color: '#4f6dc5',
                                         fontWeight: '800',
                                         fontSize: '1.5rem',
                                     }}>
-                                        <AnimatedNumber value={result.netSalary} duration={800} />원
+                                        <AnimatedNumber value={result.netSalary} duration={800} />{tResult('currency')}
                                     </span>
                                 </div>
                             </div>
@@ -692,14 +699,14 @@ export default function PayCalClient() {
             )}
 
             {/* Info Section */}
-            <section style={{ marginTop: '48px' }}>
+            <section className="paycal-info-section" style={{ marginTop: '48px' }}>
                 <h2 style={{
                     fontSize: '1.5rem',
                     fontWeight: '700',
-                    color: '#059669',
+                    color: '#3d5cb9',
                     marginBottom: '24px',
                     paddingBottom: '12px',
-                    borderBottom: '3px solid #10b981',
+                    borderBottom: '3px solid #4f6dc5',
                     display: 'inline-block',
                 }}>
                     {tInfo('title')}
@@ -742,17 +749,17 @@ export default function PayCalClient() {
             </section>
 
             {/* FAQ Section */}
-            <section style={{
+            <section className="paycal-faq-section" style={{
                 marginTop: '40px',
-                background: 'linear-gradient(145deg, #f0fdf4 0%, #ecfdf5 100%)',
+                background: 'linear-gradient(145deg, #f0f4ff 0%, #e8f0fe 100%)',
                 borderRadius: '24px',
                 padding: '32px',
-                border: '1px solid rgba(16, 185, 129, 0.15)',
+                border: '1px solid rgba(61, 92, 185, 0.15)',
             }}>
                 <h2 style={{
                     fontSize: '1.35rem',
                     fontWeight: '700',
-                    color: '#059669',
+                    color: '#3d5cb9',
                     marginBottom: '20px',
                     textAlign: 'center',
                     display: 'flex',
@@ -770,12 +777,12 @@ export default function PayCalClient() {
                             background: '#fff',
                             padding: '18px',
                             borderRadius: '14px',
-                            border: '1px solid #d1fae5',
+                            border: '1px solid #c7d2fe',
                         }}>
                             <summary style={{
                                 cursor: 'pointer',
                                 fontWeight: '600',
-                                color: '#065f46',
+                                color: '#1e3a8a',
                                 fontSize: '0.95rem',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -788,7 +795,7 @@ export default function PayCalClient() {
                                     width: '22px',
                                     height: '22px',
                                     borderRadius: '6px',
-                                    background: 'linear-gradient(135deg, #059669, #10b981)',
+                                    background: 'linear-gradient(135deg, #3d5cb9, #4f6dc5)',
                                     color: '#fff',
                                     fontSize: '0.7rem',
                                     fontWeight: '700',
@@ -817,12 +824,12 @@ export default function PayCalClient() {
                     to { transform: rotate(360deg); }
                 }
 
-                input:focus {
-                    border-color: #10b981 !important;
-                    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12) !important;
+                .paycal-input:focus {
+                    border-color: #4f6dc5 !important;
+                    box-shadow: 0 0 0 3px rgba(61, 92, 185, 0.15) !important;
                 }
 
-                input::placeholder {
+                .paycal-input::placeholder {
                     color: #9ca3af;
                 }
 
@@ -846,7 +853,7 @@ export default function PayCalClient() {
                     content: '+';
                     float: right;
                     font-weight: bold;
-                    color: #10b981;
+                    color: #4f6dc5;
                 }
 
                 details[open] summary::after {
@@ -867,6 +874,83 @@ export default function PayCalClient() {
                     .result-grid {
                         grid-template-columns: 1fr !important;
                         gap: 24px !important;
+                    }
+                }
+
+                @media (max-width: 640px) {
+                    .paycal-container {
+                        padding: 8px 12px !important;
+                    }
+                    .paycal-header {
+                        margin-bottom: 16px !important;
+                    }
+                    .paycal-title {
+                        font-size: 1.35rem !important;
+                        margin-bottom: 6px !important;
+                    }
+                    .paycal-subtitle {
+                        display: none !important;
+                    }
+                    .paycal-card {
+                        padding: 16px !important;
+                        border-radius: 16px !important;
+                        margin-bottom: 16px !important;
+                    }
+                    .paycal-section {
+                        margin-bottom: 16px !important;
+                    }
+                    .paycal-label {
+                        font-size: 0.75rem !important;
+                        margin-bottom: 6px !important;
+                    }
+                    .paycal-toggle-group {
+                        gap: 4px !important;
+                        padding: 3px !important;
+                    }
+                    .paycal-toggle-btn {
+                        padding: 10px 8px !important;
+                        font-size: 0.75rem !important;
+                        border-radius: 8px !important;
+                    }
+                    .paycal-input {
+                        padding: 12px 14px !important;
+                        padding-right: 45px !important;
+                        font-size: 1rem !important;
+                        border-radius: 12px !important;
+                    }
+                    .paycal-calc-btn {
+                        padding: 14px 18px !important;
+                        font-size: 1rem !important;
+                        border-radius: 12px !important;
+                    }
+                    .paycal-result-card {
+                        padding: 20px !important;
+                        border-radius: 16px !important;
+                    }
+                    .paycal-result-title {
+                        font-size: 1rem !important;
+                        margin-bottom: 12px !important;
+                    }
+                    .paycal-result-row {
+                        padding: 8px 0 !important;
+                    }
+                    .paycal-result-label {
+                        font-size: 0.8rem !important;
+                    }
+                    .paycal-result-value {
+                        font-size: 0.85rem !important;
+                    }
+                    .paycal-net-value {
+                        font-size: 1.3rem !important;
+                    }
+                    .paycal-info-section {
+                        display: none !important;
+                    }
+                    .paycal-faq-section {
+                        display: none !important;
+                    }
+                    .paycal-hint {
+                        font-size: 0.7rem !important;
                     }
                 }
             `}</style>

@@ -485,6 +485,7 @@
       "dependents": "Dependents (Inc. Self)",
       "children": "Children (8-20 yrs)",
       "calculate": "Calculate Net Income",
+      "calculating": "Calculating...",
       "alertSalary": "Please enter your annual salary."
     },
     "result": {
@@ -497,7 +498,11 @@
       "incomeTax": "Income Tax",
       "localTax": "Local Income Tax (10%)",
       "totalDeduction": "Total Deductions",
-      "net": "Net Monthly Pay"
+      "net": "Net Monthly Pay",
+      "currency": "KRW",
+      "netRate": "Net Rate",
+      "chartNet": "Net",
+      "chartDeduction": "Deduction"
     },
     "info": {
       "title": "Deduction Items Explained",
@@ -542,21 +547,23 @@
     "title": "Interest Calculator (Deposit/Savings)",
     "subtitle": "Start maximizing your savings!<br />Compare deposit and savings interest with simple and compound calculations.",
     "input": {
-      "typeLabel": "Calculation Method",
-      "typeDeposit": "Deposit (Lump Sum)",
-      "typeSavings": "Savings (Monthly)",
+      "typeLabel": "Type",
+      "typeDeposit": "Deposit",
+      "typeSavings": "Savings",
       "interestTypeLabel": "Interest Type",
-      "simple": "Simple Interest",
-      "compound": "Compound Interest (Monthly)",
-      "principalDeposit": "Deposit Amount (Principal)",
-      "principalSavings": "Monthly Savings Amount",
+      "simple": "Simple",
+      "compound": "Compound",
+      "principalDeposit": "Deposit Amount",
+      "principalSavings": "Monthly Amount",
       "principalPlaceholderDeposit": "Ex: 10,000,000",
       "principalPlaceholderSavings": "Ex: 1,000,000",
-      "period": "Period (Months)",
+      "period": "Period",
       "periodPlaceholder": "Ex: 12",
-      "rate": "Annual Interest Rate (%)",
+      "periodSuffix": "mo",
+      "rate": "Rate (%)",
       "ratePlaceholder": "Ex: 3.5",
       "calculate": "Calculate Interest",
+      "calculating": "Calculating...",
       "alertInput": "Please enter all values."
     },
     "result": {
@@ -564,7 +571,8 @@
       "totalPrincipal": "Total Principal",
       "beforeTax": "Pre-tax Interest",
       "tax": "Interest Income Tax (15.4%)",
-      "finalAmount": "Final Payout"
+      "finalAmount": "Final Payout",
+      "currency": "KRW"
     },
     "info": {
       "title": "Simple vs Compound Interest?",

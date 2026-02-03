@@ -108,7 +108,7 @@ export default function SeveranceCalculatorClient() {
                         margin-bottom: 4px !important;
                     }
                     .sev-input {
-                        padding: 10px 12px !important;
+                        padding: 10px 45px 10px 12px !important;
                         font-size: 0.9rem !important;
                         border-radius: 8px !important;
                     }
@@ -266,7 +266,8 @@ export default function SeveranceCalculatorClient() {
                                     background: "white",
                                     color: "#1f2937",
                                     outline: "none",
-                                    transition: "all 0.15s ease"
+                                    transition: "all 0.15s ease",
+                                    textAlign: "right"
                                 }}
                             />
                             <span style={{
@@ -307,7 +308,8 @@ export default function SeveranceCalculatorClient() {
                                         background: "white",
                                         color: "#1f2937",
                                         outline: "none",
-                                        transition: "all 0.15s ease"
+                                        transition: "all 0.15s ease",
+                                        textAlign: "right"
                                     }}
                                 />
                                 <span style={{
@@ -341,7 +343,8 @@ export default function SeveranceCalculatorClient() {
                                         background: "white",
                                         color: "#1f2937",
                                         outline: "none",
-                                        transition: "all 0.15s ease"
+                                        transition: "all 0.15s ease",
+                                        textAlign: "right"
                                     }}
                                 />
                                 <span style={{

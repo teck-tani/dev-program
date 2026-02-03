@@ -196,11 +196,11 @@ export default function InterestCalculatorClient() {
         container: {
             maxWidth: "900px",
             margin: "0 auto",
-            padding: "24px 16px",
+            padding: "0 16px",
         },
         header: {
             textAlign: "center" as const,
-            marginBottom: "40px",
+            marginBottom: "16px",
         },
         title: {
             fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
@@ -209,6 +209,7 @@ export default function InterestCalculatorClient() {
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
+            marginTop: 0,
             marginBottom: "12px",
             letterSpacing: "-0.02em",
         },
@@ -410,47 +411,51 @@ export default function InterestCalculatorClient() {
     };
 
     return (
-        <div style={styles.container}>
+        <div className="interest-container" style={styles.container}>
             {/* Header */}
-            <section style={styles.header}>
-                <h1 style={styles.title}>{t('title')}</h1>
-                <p style={styles.subtitle} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
+            <section className="interest-header" style={styles.header}>
+                <h1 className="interest-title" style={styles.title}>{t('title')}</h1>
+                <p className="interest-subtitle" style={styles.subtitle} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
             </section>
 
             {/* Calculator Card */}
-            <div style={styles.card}>
+            <div className="interest-card" style={styles.card}>
                 {/* Type Selection */}
-                <div style={{ marginBottom: "24px" }}>
-                    <label style={styles.label}>{tInput('typeLabel')}</label>
-                    <div style={styles.toggleGroup}>
+                <div className="interest-section" style={{ marginBottom: "24px" }}>
+                    <label className="interest-label" style={styles.label}>{tInput('typeLabel')}</label>
+                    <div className="interest-toggle-group" style={styles.toggleGroup}>
                         <button
+                            className="interest-toggle-btn"
                             onClick={() => setType("deposit")}
                             style={styles.toggleButton(type === "deposit")}
                         >
-                            <span style={{ marginRight: "6px" }}>🏦</span>
+                            <span className="toggle-emoji" style={{ marginRight: "6px" }}>🏦</span>
                             {tInput('typeDeposit')}
                         </button>
                         <button
+                            className="interest-toggle-btn"
                             onClick={() => setType("savings")}
                             style={styles.toggleButton(type === "savings")}
                         >
-                            <span style={{ marginRight: "6px" }}>💰</span>
+                            <span className="toggle-emoji" style={{ marginRight: "6px" }}>💰</span>
                             {tInput('typeSavings')}
                         </button>
                     </div>
                 </div>
 
                 {/* Interest Type Selection */}
-                <div style={{ marginBottom: "24px" }}>
-                    <label style={styles.label}>{tInput('interestTypeLabel')}</label>
-                    <div style={styles.toggleGroup}>
+                <div className="interest-section" style={{ marginBottom: "24px" }}>
+                    <label className="interest-label" style={styles.label}>{tInput('interestTypeLabel')}</label>
+                    <div className="interest-toggle-group" style={styles.toggleGroup}>
                         <button
+                            className="interest-toggle-btn"
                             onClick={() => setInterestType("simple")}
                             style={styles.toggleButton(interestType === "simple")}
                         >
                             {tInput('simple')}
                         </button>
                         <button
+                            className="interest-toggle-btn"
                             onClick={() => setInterestType("compound")}
                             style={styles.toggleButton(interestType === "compound")}
                         >
@@ -460,12 +465,13 @@ export default function InterestCalculatorClient() {
                 </div>
 
                 {/* Principal Input */}
-                <div style={{ marginBottom: "20px" }}>
-                    <label style={styles.label}>
+                <div className="interest-section" style={{ marginBottom: "20px" }}>
+                    <label className="interest-label" style={styles.label}>
                         {type === "deposit" ? tInput('principalDeposit') : tInput('principalSavings')}
                     </label>
                     <div style={styles.inputWrapper}>
                         <input
+                            className="interest-input"
                             type="text"
                             inputMode="numeric"
                             value={principal}
@@ -474,39 +480,41 @@ export default function InterestCalculatorClient() {
                                 setPrincipal(val ? parseInt(val).toLocaleString("ko-KR") : "");
                             }}
                             placeholder={type === "deposit" ? tInput('principalPlaceholderDeposit') : tInput('principalPlaceholderSavings')}
-                            style={styles.input}
+                            style={{ ...styles.input, textAlign: 'right' }}
                         />
-                        <span style={styles.inputSuffix}>원</span>
+                        <span style={styles.inputSuffix}>{tResult('currency')}</span>
                     </div>
                 </div>
 
                 {/* Period & Rate */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "28px" }}>
+                <div className="interest-section" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
                     <div>
-                        <label style={styles.label}>{tInput('period')}</label>
+                        <label className="interest-label" style={styles.label}>{tInput('period')}</label>
                         <div style={styles.inputWrapper}>
                             <input
+                                className="interest-input"
                                 type="number"
                                 inputMode="numeric"
                                 value={period}
                                 onChange={(e) => setPeriod(e.target.value)}
                                 placeholder={tInput('periodPlaceholder')}
-                                style={styles.input}
+                                style={{ ...styles.input, textAlign: 'right' }}
                             />
-                            <span style={styles.inputSuffix}>개월</span>
+                            <span style={styles.inputSuffix}>{tInput('periodSuffix')}</span>
                         </div>
                     </div>
                     <div>
-                        <label style={styles.label}>{tInput('rate')}</label>
+                        <label className="interest-label" style={styles.label}>{tInput('rate')}</label>
                         <div style={styles.inputWrapper}>
                             <input
+                                className="interest-input"
                                 type="number"
                                 inputMode="decimal"
                                 step="0.1"
                                 value={rate}
                                 onChange={(e) => setRate(e.target.value)}
                                 placeholder={tInput('ratePlaceholder')}
-                                style={styles.input}
+                                style={{ ...styles.input, textAlign: 'right' }}
                             />
                             <span style={styles.inputSuffix}>%</span>
                         </div>
@@ -515,6 +523,7 @@ export default function InterestCalculatorClient() {
 
                 {/* Calculate Button */}
                 <button
+                    className="interest-calc-btn"
                     onClick={calculateInterest}
                     disabled={isCalculating}
                     style={{
@@ -533,7 +542,7 @@ export default function InterestCalculatorClient() {
                                 borderRadius: "50%",
                                 animation: "spin 0.8s linear infinite",
                             }} />
-                            계산 중...
+                            {tInput('calculating')}
                         </span>
                     ) : (
                         tInput('calculate')
@@ -543,7 +552,7 @@ export default function InterestCalculatorClient() {
 
             {/* Result Card */}
             {result && (
-                <div style={styles.resultCard}>
+                <div className="interest-result-card" style={styles.resultCard}>
                     {/* Decorative elements */}
                     <div style={{
                         position: "absolute",
@@ -564,7 +573,7 @@ export default function InterestCalculatorClient() {
                         borderRadius: "50%",
                     }} />
 
-                    <h2 style={{
+                    <h2 className="interest-result-title" style={{
                         fontSize: "1.25rem",
                         fontWeight: "700",
                         color: "#fff",
@@ -575,46 +584,48 @@ export default function InterestCalculatorClient() {
                     </h2>
 
                     <div style={{ position: "relative" }}>
-                        <div style={styles.resultRow}>
-                            <span style={styles.resultLabel}>{tResult('totalPrincipal')}</span>
-                            <span style={styles.resultValue}>
-                                <AnimatedNumber value={result.totalPrincipal} />원
+                        <div className="interest-result-row" style={styles.resultRow}>
+                            <span className="interest-result-label" style={styles.resultLabel}>{tResult('totalPrincipal')}</span>
+                            <span className="interest-result-value" style={styles.resultValue}>
+                                <AnimatedNumber value={result.totalPrincipal} />{tResult('currency')}
                             </span>
                         </div>
 
-                        <div style={styles.resultRow}>
-                            <span style={styles.resultLabel}>{tResult('beforeTax')}</span>
-                            <span style={{ ...styles.resultValue, color: "#d4a574" }}>
-                                +<AnimatedNumber value={result.beforeTaxInterest} />원
+                        <div className="interest-result-row" style={styles.resultRow}>
+                            <span className="interest-result-label" style={styles.resultLabel}>{tResult('beforeTax')}</span>
+                            <span className="interest-result-value" style={{ ...styles.resultValue, color: "#d4a574" }}>
+                                +<AnimatedNumber value={result.beforeTaxInterest} />{tResult('currency')}
                             </span>
                         </div>
 
-                        <div style={styles.resultRow}>
-                            <span style={styles.resultLabel}>{tResult('tax')}</span>
-                            <span style={{ ...styles.resultValue, color: "#f87171" }}>
-                                -<AnimatedNumber value={result.tax} />원
+                        <div className="interest-result-row" style={styles.resultRow}>
+                            <span className="interest-result-label" style={styles.resultLabel}>{tResult('tax')}</span>
+                            <span className="interest-result-value" style={{ ...styles.resultValue, color: "#f87171" }}>
+                                -<AnimatedNumber value={result.tax} />{tResult('currency')}
                             </span>
                         </div>
 
-                        <div style={styles.finalRow}>
-                            <span style={styles.finalLabel}>{tResult('finalAmount')}</span>
-                            <span style={styles.finalValue}>
-                                <AnimatedNumber value={result.totalAmount} duration={1000} />원
+                        <div className="interest-result-row" style={styles.finalRow}>
+                            <span className="interest-result-label" style={styles.finalLabel}>{tResult('finalAmount')}</span>
+                            <span className="interest-final-value" style={styles.finalValue}>
+                                <AnimatedNumber value={result.totalAmount} duration={1000} />{tResult('currency')}
                             </span>
                         </div>
 
                         {/* Growth Chart */}
-                        <GrowthChart
-                            principal={result.totalPrincipal}
-                            interest={result.afterTaxInterest}
-                            months={parseInt(period) || 0}
-                        />
+                        <div className="interest-growth-chart">
+                            <GrowthChart
+                                principal={result.totalPrincipal}
+                                interest={result.afterTaxInterest}
+                                months={parseInt(period) || 0}
+                            />
+                        </div>
                     </div>
                 </div>
             )}
 
             {/* Info Section */}
-            <section style={styles.infoSection}>
+            <section className="interest-info-section" style={styles.infoSection}>
                 <h2 style={styles.infoTitle}>{tInfo('title')}</h2>
 
                 <div style={styles.infoGrid}>
@@ -714,6 +725,81 @@ export default function InterestCalculatorClient() {
                 @media (max-width: 640px) {
                     .grid-2-cols {
                         grid-template-columns: 1fr !important;
+                    }
+                    .interest-header {
+                        margin-bottom: 12px !important;
+                    }
+                    .interest-title {
+                        font-size: 1.35rem !important;
+                        margin-bottom: 4px !important;
+                    }
+                    .interest-subtitle {
+                        display: none !important;
+                    }
+                    .interest-card {
+                        padding: 14px !important;
+                        border-radius: 14px !important;
+                        margin-bottom: 14px !important;
+                    }
+                    .interest-section {
+                        margin-bottom: 12px !important;
+                    }
+                    .interest-label {
+                        font-size: 0.75rem !important;
+                        margin-bottom: 5px !important;
+                    }
+                    .interest-toggle-group {
+                        gap: 4px !important;
+                        padding: 3px !important;
+                    }
+                    .interest-toggle-btn {
+                        padding: 10px 6px !important;
+                        font-size: 0.8rem !important;
+                        border-radius: 8px !important;
+                    }
+                    .toggle-emoji {
+                        display: none !important;
+                    }
+                    .interest-input {
+                        padding: 10px 12px !important;
+                        padding-right: 40px !important;
+                        font-size: 0.9rem !important;
+                        border-radius: 10px !important;
+                        border-width: 1.5px !important;
+                    }
+                    .interest-calc-btn {
+                        padding: 12px 16px !important;
+                        font-size: 0.95rem !important;
+                        border-radius: 10px !important;
+                    }
+                    .interest-container {
+                        padding: 8px 10px !important;
+                    }
+                    .interest-info-section {
+                        display: none !important;
+                    }
+                    .interest-result-card {
+                        padding: 20px !important;
+                        border-radius: 16px !important;
+                    }
+                    .interest-result-title {
+                        font-size: 1rem !important;
+                        margin-bottom: 14px !important;
+                    }
+                    .interest-result-row {
+                        padding: 10px 0 !important;
+                    }
+                    .interest-result-label {
+                        font-size: 0.85rem !important;
+                    }
+                    .interest-result-value {
+                        font-size: 0.9rem !important;
+                    }
+                    .interest-final-value {
+                        font-size: 1.4rem !important;
+                    }
+                    .interest-growth-chart {
+                        margin-top: 16px !important;
                     }
                 }
             `}</style>

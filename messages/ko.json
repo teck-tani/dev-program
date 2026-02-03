@@ -485,6 +485,7 @@
       "dependents": "부양가족수 (본인포함)",
       "children": "8세 이상 20세 이하 자녀수",
       "calculate": "월 실수령액 계산하기",
+      "calculating": "계산 중...",
       "alertSalary": "연봉을 입력해주세요."
     },
     "result": {
@@ -497,7 +498,11 @@
       "incomeTax": "소득세",
       "localTax": "지방소득세 (10%)",
       "totalDeduction": "총 공제액",
-      "net": "실수령액 (월)"
+      "net": "실수령액 (월)",
+      "currency": "원",
+      "netRate": "실수령률",
+      "chartNet": "실수령액",
+      "chartDeduction": "공제액"
     },
     "info": {
       "title": "급여 공제 항목 알아보기",
@@ -543,8 +548,8 @@
     "subtitle": "목돈 굴리기와 종잣돈 모으기의 시작!<br />예금과 적금의 이자를 단리와 복리로 비교하여 계산해보세요.",
     "input": {
       "typeLabel": "계산 방식",
-      "typeDeposit": "예금 (목돈 거치)",
-      "typeSavings": "적금 (매월 적립)",
+      "typeDeposit": "예금 (목돈)",
+      "typeSavings": "적금 (월적립)",
       "interestTypeLabel": "이자 방식",
       "simple": "단리",
       "compound": "복리 (월복리)",
@@ -554,9 +559,11 @@
       "principalPlaceholderSavings": "예: 1,000,000",
       "period": "기간 (개월)",
       "periodPlaceholder": "예: 12",
+      "periodSuffix": "개월",
       "rate": "연 이자율 (%)",
       "ratePlaceholder": "예: 3.5",
       "calculate": "이자 계산하기",
+      "calculating": "계산 중...",
       "alertInput": "모든 값을 입력해주세요."
     },
     "result": {
@@ -564,7 +571,8 @@
       "totalPrincipal": "원금 합계",
       "beforeTax": "세전 이자",
       "tax": "이자 소득세 (15.4%)",
-      "finalAmount": "최종 수령액"
+      "finalAmount": "최종 수령액",
+      "currency": "원"
     },
     "info": {
       "title": "단리 vs 복리, 무엇이 다를까?",

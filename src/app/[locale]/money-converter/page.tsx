@@ -194,14 +194,14 @@ export default async function MoneyConverterPage({ params }: { params: Promise<{
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(financialServiceSchema) }}
             />
 
-            <div className="container page-container" style={{ maxWidth: "1000px", padding: "20px" }}>
+            <div className="container page-container" style={{ maxWidth: "1000px", padding: "0 20px" }}>
                 <style>{`
                     @media (max-width: 600px) {
                         .mobile-hidden-text {
                             display: none !important;
                         }
                         .page-container {
-                            padding: 10px !important;
+                            padding: 0 10px !important;
                         }
                         .page-title {
                             margin-bottom: 10px !important;
@@ -211,7 +211,7 @@ export default async function MoneyConverterPage({ params }: { params: Promise<{
                     }
                 `}</style>
                 <section style={{ textAlign: "center", marginBottom: "10px" }}>
-                    <h1 className="page-title" style={{ marginBottom: "20px" }}>{t('title')}</h1>
+                    <h1 className="page-title" style={{ marginTop: 0, marginBottom: "12px" }}>{t('title')}</h1>
                     <p className="mobile-hidden-text" style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }} dangerouslySetInnerHTML={{ __html: t.raw('description') }}>
                     </p>
                 </section>
