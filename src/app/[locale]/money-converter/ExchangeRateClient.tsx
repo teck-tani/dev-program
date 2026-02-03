@@ -182,8 +182,28 @@ export default function ExchangeRateClient() {
         return (baseKrwValue / rate).toFixed(2);
     };
 
+    // Show loading skeleton until mounted to prevent hydration mismatch
+    if (!mounted) {
+        return (
+            <div style={{ background: "#f8f9fa", padding: "30px", borderRadius: "16px", border: "1px solid #e9ecef" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} style={{
+                            background: "white",
+                            padding: "12px",
+                            borderRadius: "10px",
+                            height: "50px",
+                            animation: "pulse 1.5s ease-in-out infinite"
+                        }} />
+                    ))}
+                </div>
+                <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
+            </div>
+        );
+    }
+
     return (
-        <div suppressHydrationWarning>
+        <div>
             <style>{`
                 .mobile-dashboard {
                     display: none;
