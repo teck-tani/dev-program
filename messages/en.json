@@ -628,7 +628,12 @@
     },
     "result": {
       "title": "Estimated Severance Pay",
-      "disclaimer": "* This is an estimate. Actual amount may vary depending on company regulations and tax deductions."
+      "disclaimer": "* This is an estimate. Actual amount may vary depending on company regulations and tax deductions.",
+      "servicePeriod": "Service Period",
+      "calculating": "Calculating...",
+      "year": "yr",
+      "months": "mo",
+      "currency": "KRW"
     },
     "info": {
       "title": "Eligibility Criteria",
@@ -637,13 +642,35 @@
         "2": "<strong>15+ Hours/Week</strong>: Average weekly working hours over a 4-week period must be 15 hours or more.",
         "3": "<strong>Employee Status</strong>: Contract workers and part-timers are eligible if they meet the above conditions."
       },
+      "requirements": {
+        "1": { "title": "1+ Year Continuous Service", "desc": "Period from join date to leave date must be at least 1 full year." },
+        "2": { "title": "15+ Hours/Week", "desc": "Average weekly working hours must be 15 hours or more over a 4-week period." },
+        "3": { "title": "All Employment Types", "desc": "Full-time, contract, and part-time workers are all eligible if conditions are met." }
+      },
       "faq": {
         "title": "FAQ",
         "q1": "Q. Can I get an interim settlement (mid-term withdrawal)?",
         "a1": "In principle, interim settlement is prohibited. Exceptions exist for specific reasons like purchasing a home (for non-homeowners), medical care for 6+ months, etc.",
         "q2": "Q. When must severance pay be paid?",
-        "a2": "Employers must pay severance within 14 days of retirement. The deadline can be extended by mutual agreement."
+        "a2": "Employers must pay severance within 14 days of retirement. The deadline can be extended by mutual agreement.",
+        "q3": "Q. Can part-time workers receive severance pay?",
+        "a3": "Yes, they can. Not only full-time employees but also contract workers and part-timers can receive severance pay if they work for more than 1 year and work at least 15 hours per week.",
+        "q4": "Q. Is bonus included in severance calculation?",
+        "a4": "Yes, 3/12 (3 months' worth) of annual bonus is included in the average wage calculation. Annual leave allowance is also included."
       }
+    },
+    "guide": {
+      "title": "How to Use the Calculator",
+      "steps": {
+        "1": { "label": "Enter Join Date", "desc": "Enter the date you first joined the company." },
+        "2": { "label": "Enter Leave Date", "desc": "Enter your planned resignation date (the day after your last working day)." },
+        "3": { "label": "Enter Salary Info", "desc": "Enter your total pre-tax salary for the last 3 months before resignation." },
+        "4": { "label": "View Results", "desc": "Click the button to see your estimated severance pay." }
+      }
+    },
+    "notice": {
+      "title": "Important Notice",
+      "content": "This calculator provides estimates only. Actual severance pay may vary depending on company policies and collective agreements. For accurate calculation, please contact your HR department or the Ministry of Employment and Labor (1350)."
     },
     "disqus": {
       "title": "Severance Pay Calculator"

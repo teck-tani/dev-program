@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface ExchangeRate {
     result: number;
@@ -37,11 +37,38 @@ const getFlagUrl = (cur_unit: string) => {
 
 const STORAGE_KEY = 'exchangeRateSettings';
 
+// English currency names mapping
+const currencyNamesEn: Record<string, string> = {
+    "USD": "US Dollar", "EUR": "Euro", "JPY(100)": "Japanese Yen",
+    "CNY": "Chinese Yuan", "CNH": "Chinese Yuan (Offshore)", "HKD": "Hong Kong Dollar",
+    "TWD": "Taiwan Dollar", "GBP": "British Pound", "OMR": "Omani Rial",
+    "CAD": "Canadian Dollar", "CHF": "Swiss Franc", "SEK": "Swedish Krona",
+    "AUD": "Australian Dollar", "NZD": "New Zealand Dollar", "CZK": "Czech Koruna",
+    "TRY": "Turkish Lira", "MNT": "Mongolian Tugrik", "ILS": "Israeli Shekel",
+    "DKK": "Danish Krone", "NOK": "Norwegian Krone", "SAR": "Saudi Riyal",
+    "KWD": "Kuwaiti Dinar", "BHD": "Bahraini Dinar", "AED": "UAE Dirham",
+    "JOD": "Jordanian Dinar", "EGP": "Egyptian Pound", "THB": "Thai Baht",
+    "SGD": "Singapore Dollar", "MYR": "Malaysian Ringgit", "IDR(100)": "Indonesian Rupiah",
+    "QAR": "Qatari Riyal", "KZT": "Kazakhstani Tenge", "BND": "Brunei Dollar",
+    "INR": "Indian Rupee", "PKR": "Pakistani Rupee", "BDT": "Bangladeshi Taka",
+    "PHP": "Philippine Peso", "MXN": "Mexican Peso", "BRL": "Brazilian Real",
+    "VND(100)": "Vietnamese Dong", "ZAR": "South African Rand", "RUB": "Russian Ruble",
+    "HUF": "Hungarian Forint", "PLN": "Polish Zloty", "KRW": "Korean Won"
+};
+
 export default function ExchangeRateClient() {
     const t = useTranslations('MoneyConverter.client');
+    const locale = useLocale();
     const [rates, setRates] = useState<ExchangeRate[]>([]);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
+
+    // Get currency name based on locale
+    const getCurrencyName = (code: string, apiName?: string) => {
+        if (code === "KRW") return t('krwName');
+        if (locale === 'en' && currencyNamesEn[code]) return currencyNamesEn[code];
+        return apiName || code;
+    };
 
     // Core State: Base Value in KRW (null means empty/cleared)
     const [baseKrwValue, setBaseKrwValue] = useState<number | null>(null);
@@ -160,12 +187,11 @@ export default function ExchangeRateClient() {
     // Filter currencies based on search query
     const getFilteredCurrencies = () => {
         const query = searchQuery.toLowerCase();
-        const krwName = t('krwName');
         // Filter out KRW from rates if it exists, then add it manually at the start
         const ratesWithoutKRW = rates.filter(r => r.cur_unit !== "KRW");
         const allCurrencies = [
-            { cur_unit: "KRW", cur_nm: krwName },
-            ...ratesWithoutKRW.map(r => ({ cur_unit: r.cur_unit, cur_nm: r.cur_nm }))
+            { cur_unit: "KRW", cur_nm: getCurrencyName("KRW") },
+            ...ratesWithoutKRW.map(r => ({ cur_unit: r.cur_unit, cur_nm: getCurrencyName(r.cur_unit, r.cur_nm) }))
         ];
         if (!query) return allCurrencies;
         return allCurrencies.filter(c =>
@@ -301,7 +327,7 @@ export default function ExchangeRateClient() {
                                             style={{ width: "24px", height: "16px", objectFit: "cover", borderRadius: "2px" }}
                                         />
                                         <span style={{ fontWeight: "600", fontSize: "1rem", color: "#374151" }}>
-                                            {currentCode.replace("(100)", "")} {currentCode === "KRW" ? t('krwName') : rates.find(r => r.cur_unit === currentCode)?.cur_nm || ""}
+                                            {currentCode.replace("(100)", "")} {getCurrencyName(currentCode, rates.find(r => r.cur_unit === currentCode)?.cur_nm)}
                                         </span>
                                         <span style={{ marginLeft: "auto", color: "#9ca3af" }}>▼</span>
                                     </div>
@@ -419,7 +445,7 @@ export default function ExchangeRateClient() {
                             // If KRW, it's just 1. If Foreign, show rate.
                             const rate = rates.find((r) => r.cur_unit === code);
                             const displayRate = code === "KRW" ? "1.00" : rate?.deal_bas_r || "-";
-                            const curName = code === "KRW" ? t('krwName') : rate?.cur_nm || code;
+                            const curName = getCurrencyName(code, rate?.cur_nm);
 
                             return (
                                 <div key={`${code}-${idx}`} style={{
