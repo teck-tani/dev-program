@@ -698,6 +698,7 @@
       "birthDate": "Birth Date",
       "referenceDate": "Reference Date (Default: Today)",
       "calculate": "Calculate Age",
+      "calculating": "Calculating...",
       "alertInput": "Please enter your birth date."
     },
     "result": {

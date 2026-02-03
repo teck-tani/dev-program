@@ -698,6 +698,7 @@
       "birthDate": "생년월일",
       "referenceDate": "기준일 (기본값: 오늘)",
       "calculate": "나이 계산하기",
+      "calculating": "계산 중...",
       "alertInput": "생년월일을 입력해주세요."
     },
     "result": {

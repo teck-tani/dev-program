@@ -162,43 +162,64 @@ export default function DutchPayClient() {
         : (totalPaid > 0 ? Math.round(totalPaid / people.length) : 0);
 
     return (
-        <div className="container" style={{ maxWidth: "800px", padding: "20px" }}>
-            <section style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1 style={{ marginBottom: "20px" }}>{t('title')}</h1>
-                <p style={{ color: "#666", fontSize: "1.1rem", maxWidth: "700px", margin: "0 auto" }}>
+        <div className="dutch-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
+            {/* Header */}
+            <section className="dutch-header" style={{ textAlign: 'center', marginBottom: '16px' }}>
+                <h1 className="dutch-title" style={{
+                    fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
+                    fontWeight: '800',
+                    background: 'linear-gradient(135deg, #4A90D9 0%, #357ABD 50%, #2E6BA6 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    marginTop: 0,
+                    marginBottom: '8px',
+                    letterSpacing: '-0.02em',
+                }}>
+                    {t('title')}
+                </h1>
+                <p className="dutch-subtitle" style={{
+                    color: '#6b7280',
+                    fontSize: '0.9rem',
+                    lineHeight: '1.5',
+                    maxWidth: '500px',
+                    margin: '0 auto',
+                }}>
                     {t('subtitle')}
                 </p>
             </section>
 
             {/* 정산 모드 선택 */}
-            <div style={{
-                background: "white", borderRadius: "10px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
+            <div className="dutch-card" style={{
+                background: 'white', borderRadius: '14px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
             }}>
-                <label style={{ display: "block", marginBottom: "10px", fontWeight: 600, fontSize: "1.05rem" }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '0.9rem', color: '#374151' }}>
                     {t('modeLabel')}
                 </label>
-                <div style={{ display: "flex", gap: "10px" }}>
+                <div className="dutch-toggle-group" style={{ display: 'flex', gap: '8px' }}>
                     <button
+                        className="dutch-toggle-btn"
                         onClick={() => { setSplitMode("equal"); setCalculated(false); }}
                         style={{
-                            flex: 1, padding: "12px", borderRadius: "8px", border: "2px solid",
-                            borderColor: splitMode === "equal" ? "#4A90D9" : "#ddd",
-                            background: splitMode === "equal" ? "#EBF4FF" : "white",
-                            color: splitMode === "equal" ? "#4A90D9" : "#666",
-                            fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
+                            flex: 1, padding: '10px', borderRadius: '8px', border: '2px solid',
+                            borderColor: splitMode === "equal" ? '#4A90D9' : '#e5e7eb',
+                            background: splitMode === "equal" ? '#EBF4FF' : 'white',
+                            color: splitMode === "equal" ? '#4A90D9' : '#6b7280',
+                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.9rem'
                         }}
                     >
                         {t('modeEqual')}
                     </button>
                     <button
+                        className="dutch-toggle-btn"
                         onClick={() => { setSplitMode("custom"); setCalculated(false); }}
                         style={{
-                            flex: 1, padding: "12px", borderRadius: "8px", border: "2px solid",
-                            borderColor: splitMode === "custom" ? "#4A90D9" : "#ddd",
-                            background: splitMode === "custom" ? "#EBF4FF" : "white",
-                            color: splitMode === "custom" ? "#4A90D9" : "#666",
-                            fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
+                            flex: 1, padding: '10px', borderRadius: '8px', border: '2px solid',
+                            borderColor: splitMode === "custom" ? '#4A90D9' : '#e5e7eb',
+                            background: splitMode === "custom" ? '#EBF4FF' : 'white',
+                            color: splitMode === "custom" ? '#4A90D9' : '#6b7280',
+                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.9rem'
                         }}
                     >
                         {t('modeCustom')}
@@ -208,35 +229,36 @@ export default function DutchPayClient() {
 
             {/* 총 금액 입력 (균등 분할 모드) */}
             {splitMode === "equal" && (
-                <div style={{
-                    background: "white", borderRadius: "10px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
+                <div className="dutch-card" style={{
+                    background: 'white', borderRadius: '14px',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
                 }}>
-                    <label style={{ display: "block", marginBottom: "10px", fontWeight: 600, fontSize: "1.05rem" }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '0.9rem', color: '#374151' }}>
                         {t('totalAmountLabel')}
                     </label>
-                    <div style={{ position: "relative" }}>
+                    <div style={{ position: 'relative' }}>
                         <input
+                            className="dutch-input"
                             type="text"
                             inputMode="numeric"
                             value={totalAmount}
                             onChange={(e) => handleTotalInput(e.target.value)}
                             placeholder={t('totalAmountPlaceholder')}
                             style={{
-                                width: "100%", padding: "12px 40px 12px 12px",
-                                border: "1px solid #ddd", borderRadius: "8px", fontSize: "1.1rem",
-                                boxSizing: "border-box"
+                                width: '100%', padding: '12px 40px 12px 12px',
+                                border: '2px solid #e5e7eb', borderRadius: '10px', fontSize: '1rem',
+                                boxSizing: 'border-box', outline: 'none'
                             }}
                         />
                         <span style={{
-                            position: "absolute", right: "12px", top: "50%",
-                            transform: "translateY(-50%)", color: "#999"
+                            position: 'absolute', right: '12px', top: '50%',
+                            transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '0.9rem'
                         }}>
                             {t('currency')}
                         </span>
                     </div>
                     {perPerson > 0 && (
-                        <p style={{ marginTop: "10px", color: "#4A90D9", fontSize: "0.95rem" }}>
+                        <p style={{ marginTop: '8px', color: '#4A90D9', fontSize: '0.85rem', fontWeight: 500 }}>
                             {t('perPersonPreview', { amount: formatNumber(perPerson) })}
                         </p>
                     )}
@@ -244,58 +266,60 @@ export default function DutchPayClient() {
             )}
 
             {/* 참가자 목록 */}
-            <div style={{
-                background: "white", borderRadius: "10px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
+            <div className="dutch-card" style={{
+                background: 'white', borderRadius: '14px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
             }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-                    <label style={{ fontWeight: 600, fontSize: "1.05rem" }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.9rem', color: '#374151' }}>
                         {t('participantsLabel')} ({people.length}{t('peopleUnit')})
                     </label>
                     <button
                         onClick={addPerson}
                         style={{
-                            padding: "8px 16px", background: "#4A90D9", color: "white",
-                            border: "none", borderRadius: "6px", cursor: "pointer",
-                            fontWeight: 500, fontSize: "0.9rem"
+                            padding: '6px 12px', background: '#4A90D9', color: 'white',
+                            border: 'none', borderRadius: '6px', cursor: 'pointer',
+                            fontWeight: 500, fontSize: '0.8rem'
                         }}
                     >
                         + {t('addPerson')}
                     </button>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {people.map((person, index) => (
                         <div key={person.id} style={{
-                            display: "flex", gap: "10px", alignItems: "center",
-                            padding: "10px", background: "#f8f9fa", borderRadius: "8px"
+                            display: 'flex', gap: '8px', alignItems: 'center',
+                            padding: '8px', background: '#f8f9fa', borderRadius: '8px'
                         }}>
                             <input
+                                className="dutch-input"
                                 type="text"
                                 value={person.name}
                                 onChange={(e) => updatePerson(person.id, "name", e.target.value)}
                                 placeholder={`${t('person')} ${index + 1}`}
                                 style={{
-                                    flex: 1, padding: "10px", border: "1px solid #ddd",
-                                    borderRadius: "6px", minWidth: 0
+                                    flex: 1, padding: '10px', border: '1.5px solid #e5e7eb',
+                                    borderRadius: '6px', minWidth: 0, fontSize: '0.9rem', outline: 'none'
                                 }}
                             />
-                            <div style={{ position: "relative", flex: 1.5 }}>
+                            <div style={{ position: 'relative', flex: 1.5 }}>
                                 <input
+                                    className="dutch-input"
                                     type="text"
                                     inputMode="numeric"
                                     value={person.paid}
                                     onChange={(e) => handleAmountInput(person.id, e.target.value)}
                                     placeholder={t('paidPlaceholder')}
                                     style={{
-                                        width: "100%", padding: "10px 35px 10px 10px",
-                                        border: "1px solid #ddd", borderRadius: "6px",
-                                        boxSizing: "border-box"
+                                        width: '100%', padding: '10px 32px 10px 10px',
+                                        border: '1.5px solid #e5e7eb', borderRadius: '6px',
+                                        boxSizing: 'border-box', fontSize: '0.9rem', outline: 'none'
                                     }}
                                 />
                                 <span style={{
-                                    position: "absolute", right: "10px", top: "50%",
-                                    transform: "translateY(-50%)", color: "#999", fontSize: "0.9rem"
+                                    position: 'absolute', right: '8px', top: '50%',
+                                    transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '0.8rem'
                                 }}>
                                     {t('currency')}
                                 </span>
@@ -304,10 +328,10 @@ export default function DutchPayClient() {
                                 onClick={() => removePerson(person.id)}
                                 disabled={people.length <= 2}
                                 style={{
-                                    padding: "8px 12px", background: people.length <= 2 ? "#eee" : "#ff6b6b",
-                                    color: people.length <= 2 ? "#999" : "white",
-                                    border: "none", borderRadius: "6px", cursor: people.length <= 2 ? "default" : "pointer",
-                                    fontWeight: "bold", fontSize: "1rem", flexShrink: 0
+                                    padding: '8px 10px', background: people.length <= 2 ? '#eee' : '#ff6b6b',
+                                    color: people.length <= 2 ? '#999' : 'white',
+                                    border: 'none', borderRadius: '6px', cursor: people.length <= 2 ? 'default' : 'pointer',
+                                    fontWeight: 'bold', fontSize: '0.9rem', flexShrink: 0
                                 }}
                             >
                                 ×
@@ -317,20 +341,23 @@ export default function DutchPayClient() {
                 </div>
 
                 {splitMode === "custom" && totalPaid > 0 && (
-                    <p style={{ marginTop: "10px", color: "#666", fontSize: "0.95rem" }}>
+                    <p style={{ marginTop: '8px', color: '#6b7280', fontSize: '0.85rem' }}>
                         {t('totalPaidSummary', { total: formatNumber(totalPaid), perPerson: formatNumber(perPerson) })}
                     </p>
                 )}
             </div>
 
             {/* 계산 / 초기화 버튼 */}
-            <div style={{ display: "flex", gap: "10px", marginBottom: "30px" }}>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                 <button
+                    className="dutch-calc-btn"
                     onClick={calculate}
                     style={{
-                        flex: 2, padding: "15px", background: "#4A90D9", color: "white",
-                        border: "none", borderRadius: "8px", fontSize: "1.1rem",
-                        fontWeight: 600, cursor: "pointer"
+                        flex: 2, padding: '14px',
+                        background: 'linear-gradient(135deg, #4A90D9 0%, #357ABD 100%)',
+                        color: 'white', border: 'none', borderRadius: '12px', fontSize: '1rem',
+                        fontWeight: 700, cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(74, 144, 217, 0.35)'
                     }}
                 >
                     {t('calculateBtn')}
@@ -338,9 +365,9 @@ export default function DutchPayClient() {
                 <button
                     onClick={reset}
                     style={{
-                        flex: 1, padding: "15px", background: "#f1f3f5", color: "#666",
-                        border: "none", borderRadius: "8px", fontSize: "1rem",
-                        fontWeight: 500, cursor: "pointer"
+                        flex: 1, padding: '14px', background: '#f1f3f5', color: '#6b7280',
+                        border: 'none', borderRadius: '12px', fontSize: '0.95rem',
+                        fontWeight: 500, cursor: 'pointer'
                     }}
                 >
                     {t('resetBtn')}
@@ -349,31 +376,31 @@ export default function DutchPayClient() {
 
             {/* 정산 결과 */}
             {calculated && (
-                <div style={{
-                    background: "white", borderRadius: "10px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "30px"
+                <div className="dutch-result-card" style={{
+                    background: 'linear-gradient(145deg, #1f2937 0%, #111827 100%)',
+                    borderRadius: '16px', padding: '20px', marginBottom: '20px'
                 }}>
-                    <h2 style={{ marginBottom: "20px", fontSize: "1.3rem", color: "#333" }}>
+                    <h2 style={{ marginBottom: '16px', fontSize: '1.1rem', color: '#fff', fontWeight: 700 }}>
                         {t('resultTitle')}
                     </h2>
 
                     {/* 요약 */}
                     <div style={{
-                        background: "#f0f4f8", padding: "15px", borderRadius: "8px", marginBottom: "20px"
+                        background: 'rgba(255,255,255,0.08)', padding: '14px', borderRadius: '10px', marginBottom: '16px'
                     }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                            <span style={{ color: "#666" }}>{t('resultTotal')}</span>
-                            <span style={{ fontWeight: 600 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>{t('resultTotal')}</span>
+                            <span style={{ fontWeight: 600, color: '#fff' }}>
                                 {formatNumber(splitMode === "equal" ? parseAmount(totalAmount) : totalPaid)}{t('currency')}
                             </span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                            <span style={{ color: "#666" }}>{t('resultPeople')}</span>
-                            <span style={{ fontWeight: 600 }}>{people.length}{t('peopleUnit')}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>{t('resultPeople')}</span>
+                            <span style={{ fontWeight: 600, color: '#fff' }}>{people.length}{t('peopleUnit')}</span>
                         </div>
-                        <div style={{ display: "flex", justifyContent: "space-between" }}>
-                            <span style={{ color: "#666" }}>{t('resultPerPerson')}</span>
-                            <span style={{ fontWeight: 600, color: "#4A90D9" }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>{t('resultPerPerson')}</span>
+                            <span style={{ fontWeight: 700, color: '#60a5fa', fontSize: '1.1rem' }}>
                                 {formatNumber(perPerson)}{t('currency')}
                             </span>
                         </div>
@@ -382,32 +409,33 @@ export default function DutchPayClient() {
                     {/* 정산 내역 */}
                     {settlements.length > 0 ? (
                         <div>
-                            <h3 style={{ marginBottom: "12px", fontSize: "1.05rem", color: "#555" }}>
+                            <h3 style={{ marginBottom: '10px', fontSize: '0.95rem', color: 'rgba(255,255,255,0.8)' }}>
                                 {t('settlementTitle')}
                             </h3>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {settlements.map((s, i) => (
                                     <div key={i} style={{
-                                        display: "flex", alignItems: "center", justifyContent: "space-between",
-                                        padding: "15px", background: "#fff8f0", borderRadius: "8px",
-                                        border: "1px solid #ffe0b2"
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px',
                                     }}>
-                                        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                             <span style={{
-                                                fontWeight: 600, color: "#e74c3c",
-                                                background: "#fde8e8", padding: "4px 10px", borderRadius: "4px"
+                                                fontWeight: 600, color: '#f87171',
+                                                background: 'rgba(248,113,113,0.15)', padding: '4px 10px', borderRadius: '4px',
+                                                fontSize: '0.85rem'
                                             }}>
                                                 {s.from}
                                             </span>
-                                            <span style={{ color: "#999" }}>→</span>
+                                            <span style={{ color: 'rgba(255,255,255,0.5)' }}>→</span>
                                             <span style={{
-                                                fontWeight: 600, color: "#27ae60",
-                                                background: "#e8f8f0", padding: "4px 10px", borderRadius: "4px"
+                                                fontWeight: 600, color: '#4ade80',
+                                                background: 'rgba(74,222,128,0.15)', padding: '4px 10px', borderRadius: '4px',
+                                                fontSize: '0.85rem'
                                             }}>
                                                 {s.to}
                                             </span>
                                         </div>
-                                        <span style={{ fontWeight: 700, fontSize: "1.1rem", color: "#333", flexShrink: 0, marginLeft: "10px" }}>
+                                        <span style={{ fontWeight: 700, fontSize: '1rem', color: '#fff', flexShrink: 0, marginLeft: '10px' }}>
                                             {formatNumber(s.amount)}{t('currency')}
                                         </span>
                                     </div>
@@ -415,7 +443,7 @@ export default function DutchPayClient() {
                             </div>
                         </div>
                     ) : (
-                        <p style={{ textAlign: "center", color: "#27ae60", fontWeight: 600 }}>
+                        <p style={{ textAlign: 'center', color: '#4ade80', fontWeight: 600 }}>
                             {t('noSettlement')}
                         </p>
                     )}
@@ -423,32 +451,80 @@ export default function DutchPayClient() {
             )}
 
             {/* 사용법 안내 */}
-            <div style={{
-                background: "white", borderRadius: "10px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px"
+            <div className="dutch-guide" style={{
+                background: 'white', borderRadius: '14px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '20px'
             }}>
-                <h2 style={{ marginBottom: "15px", fontSize: "1.2rem", color: "#333" }}>
+                <h2 style={{ marginBottom: '12px', fontSize: '1.1rem', color: '#374151', fontWeight: 700 }}>
                     {t('guideTitle')}
                 </h2>
-                <div style={{ color: "#555", lineHeight: 1.8 }}>
-                    <p style={{ marginBottom: "10px" }}>
-                        <strong>1. {t('guideStep1Title')}</strong><br />
+                <div style={{ color: '#6b7280', lineHeight: 1.7, fontSize: '0.9rem' }}>
+                    <p style={{ marginBottom: '8px' }}>
+                        <strong style={{ color: '#4A90D9' }}>1. {t('guideStep1Title')}</strong><br />
                         {t('guideStep1Desc')}
                     </p>
-                    <p style={{ marginBottom: "10px" }}>
-                        <strong>2. {t('guideStep2Title')}</strong><br />
+                    <p style={{ marginBottom: '8px' }}>
+                        <strong style={{ color: '#4A90D9' }}>2. {t('guideStep2Title')}</strong><br />
                         {t('guideStep2Desc')}
                     </p>
-                    <p style={{ marginBottom: "10px" }}>
-                        <strong>3. {t('guideStep3Title')}</strong><br />
+                    <p style={{ marginBottom: '8px' }}>
+                        <strong style={{ color: '#4A90D9' }}>3. {t('guideStep3Title')}</strong><br />
                         {t('guideStep3Desc')}
                     </p>
                     <p>
-                        <strong>4. {t('guideStep4Title')}</strong><br />
+                        <strong style={{ color: '#4A90D9' }}>4. {t('guideStep4Title')}</strong><br />
                         {t('guideStep4Desc')}
                     </p>
                 </div>
             </div>
+
+            {/* CSS */}
+            <style>{`
+                .dutch-input:focus {
+                    border-color: #4A90D9 !important;
+                    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15) !important;
+                }
+
+                .dutch-calc-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(74, 144, 217, 0.45) !important;
+                }
+
+                @media (max-width: 640px) {
+                    .dutch-container {
+                        padding: 8px 12px !important;
+                    }
+                    .dutch-header {
+                        margin-bottom: 12px !important;
+                    }
+                    .dutch-title {
+                        font-size: 1.35rem !important;
+                        margin-bottom: 4px !important;
+                    }
+                    .dutch-subtitle {
+                        display: none !important;
+                    }
+                    .dutch-card {
+                        padding: 12px !important;
+                        border-radius: 12px !important;
+                        margin-bottom: 10px !important;
+                    }
+                    .dutch-toggle-btn {
+                        padding: 8px !important;
+                        font-size: 0.8rem !important;
+                    }
+                    .dutch-calc-btn {
+                        padding: 12px !important;
+                        font-size: 0.95rem !important;
+                    }
+                    .dutch-result-card {
+                        padding: 16px !important;
+                    }
+                    .dutch-guide {
+                        display: none !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }

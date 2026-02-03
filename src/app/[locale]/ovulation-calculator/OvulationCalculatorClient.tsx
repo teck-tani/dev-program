@@ -159,11 +159,29 @@ export default function OvulationCalculatorClient() {
     };
 
     return (
-        <div className="container" style={{ maxWidth: "800px", padding: "20px" }}>
-            <section style={{ textAlign: "center", marginBottom: "16px" }}>
-                <h1 style={{ marginBottom: "8px", fontSize: '1.5rem' }}>{t('title')}</h1>
-                <p style={{ color: '#666', fontSize: '0.95rem', maxWidth: '700px', margin: '0 auto' }}
-                    dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
+        <div className="ovulation-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
+            {/* Header */}
+            <section className="ovulation-header" style={{ textAlign: 'center', marginBottom: '16px' }}>
+                <h1 className="ovulation-title" style={{
+                    fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
+                    fontWeight: '800',
+                    background: 'linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #a8385d 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    marginTop: 0,
+                    marginBottom: '12px',
+                    letterSpacing: '-0.02em',
+                }}>
+                    {t('title')}
+                </h1>
+                <p className="ovulation-subtitle" style={{
+                    color: '#6b7280',
+                    fontSize: '0.95rem',
+                    lineHeight: '1.6',
+                    maxWidth: '550px',
+                    margin: '0 auto',
+                }} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
             </section>
 
             {/* 입력 폼 */}
@@ -485,6 +503,25 @@ export default function OvulationCalculatorClient() {
                 <p style={{ color: '#8c6d1f', lineHeight: '1.7', fontSize: '0.95rem' }}
                     dangerouslySetInnerHTML={{ __html: t.raw('caution.desc') }} />
             </section>
+
+            {/* CSS */}
+            <style>{`
+                @media (max-width: 640px) {
+                    .ovulation-container {
+                        padding: 8px 12px !important;
+                    }
+                    .ovulation-header {
+                        margin-bottom: 12px !important;
+                    }
+                    .ovulation-title {
+                        font-size: 1.35rem !important;
+                        margin-bottom: 6px !important;
+                    }
+                    .ovulation-subtitle {
+                        display: none !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
