@@ -3,6 +3,29 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 
+// 숫자 입력을 YYYY-MM-DD 형식으로 변환
+function formatDateInput(value: string): string {
+    // 숫자만 추출
+    const numbers = value.replace(/\D/g, '');
+
+    // 최대 8자리
+    const limited = numbers.slice(0, 8);
+
+    // 포맷팅
+    if (limited.length <= 4) {
+        return limited;
+    } else if (limited.length <= 6) {
+        return `${limited.slice(0, 4)}-${limited.slice(4)}`;
+    } else {
+        return `${limited.slice(0, 4)}-${limited.slice(4, 6)}-${limited.slice(6)}`;
+    }
+}
+
+// YYYY-MM-DD 형식이 완전한지 확인
+function isValidDateFormat(value: string): boolean {
+    return /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
 export default function KoreanAgeCalculatorClient() {
     const t = useTranslations('KoreanAgeCalculator');
     const tInput = useTranslations('KoreanAgeCalculator.input');
@@ -10,8 +33,11 @@ export default function KoreanAgeCalculatorClient() {
     const tInfo = useTranslations('KoreanAgeCalculator.info');
     const locale = useLocale();
 
+    const today = new Date();
+    const todayFormatted = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
     const [birthDate, setBirthDate] = useState("");
-    const [referenceDate, setReferenceDate] = useState(new Date().toISOString().split("T")[0]);
+    const [referenceDate, setReferenceDate] = useState(todayFormatted);
     const [result, setResult] = useState<any>(null);
     const [isCalculating, setIsCalculating] = useState(false);
 
@@ -19,9 +45,24 @@ export default function KoreanAgeCalculatorClient() {
         ? ["원숭이", "닭", "개", "돼지", "쥐", "소", "호랑이", "토끼", "용", "뱀", "말", "양"]
         : ["Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Sheep"];
 
+    const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const formatted = formatDateInput(e.target.value);
+        setBirthDate(formatted);
+    };
+
+    const handleReferenceDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const formatted = formatDateInput(e.target.value);
+        setReferenceDate(formatted);
+    };
+
     const calculateAge = () => {
-        if (!birthDate) {
+        if (!birthDate || !isValidDateFormat(birthDate)) {
             alert(tInput('alertInput'));
+            return;
+        }
+
+        if (!isValidDateFormat(referenceDate)) {
+            alert(locale === 'ko' ? '기준일을 올바르게 입력해주세요.' : 'Please enter a valid reference date.');
             return;
         }
 
@@ -30,6 +71,13 @@ export default function KoreanAgeCalculatorClient() {
         setTimeout(() => {
             const birth = new Date(birthDate);
             const today = new Date(referenceDate);
+
+            // 유효한 날짜인지 확인
+            if (isNaN(birth.getTime()) || isNaN(today.getTime())) {
+                alert(locale === 'ko' ? '올바른 날짜를 입력해주세요.' : 'Please enter a valid date.');
+                setIsCalculating(false);
+                return;
+            }
 
             // 만나이 계산
             let manAge = today.getFullYear() - birth.getFullYear();
@@ -117,21 +165,35 @@ export default function KoreanAgeCalculatorClient() {
                     </label>
                     <input
                         className="age-input"
-                        type="date"
+                        type="text"
+                        inputMode="numeric"
                         value={birthDate}
-                        onChange={(e) => setBirthDate(e.target.value)}
+                        onChange={handleBirthDateChange}
+                        placeholder="1990-01-01"
+                        maxLength={10}
                         style={{
                             width: '100%',
                             padding: '14px 16px',
                             border: '2px solid #e5e7eb',
                             borderRadius: '14px',
-                            fontSize: '1rem',
+                            fontSize: '1.1rem',
+                            fontWeight: '500',
+                            letterSpacing: '0.05em',
                             transition: 'all 0.2s',
                             background: '#fff',
                             boxSizing: 'border-box',
                             outline: 'none',
+                            textAlign: 'center',
                         }}
                     />
+                    <p style={{
+                        fontSize: '0.75rem',
+                        color: '#9ca3af',
+                        marginTop: '6px',
+                        textAlign: 'center',
+                    }}>
+                        {locale === 'ko' ? '숫자 8자리 입력 (예: 19900101)' : 'Enter 8 digits (e.g., 19900101)'}
+                    </p>
                 </div>
 
                 {/* Reference Date Input */}
@@ -147,19 +209,25 @@ export default function KoreanAgeCalculatorClient() {
                     </label>
                     <input
                         className="age-input"
-                        type="date"
+                        type="text"
+                        inputMode="numeric"
                         value={referenceDate}
-                        onChange={(e) => setReferenceDate(e.target.value)}
+                        onChange={handleReferenceDateChange}
+                        placeholder="2024-01-01"
+                        maxLength={10}
                         style={{
                             width: '100%',
                             padding: '14px 16px',
                             border: '2px solid #e5e7eb',
                             borderRadius: '14px',
-                            fontSize: '1rem',
+                            fontSize: '1.1rem',
+                            fontWeight: '500',
+                            letterSpacing: '0.05em',
                             transition: 'all 0.2s',
                             background: '#fff',
                             boxSizing: 'border-box',
                             outline: 'none',
+                            textAlign: 'center',
                         }}
                     />
                 </div>
@@ -495,6 +563,11 @@ export default function KoreanAgeCalculatorClient() {
                     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
                 }
 
+                .age-input::placeholder {
+                    color: #d1d5db;
+                    font-weight: 400;
+                }
+
                 button:hover:not(:disabled) {
                     transform: translateY(-2px);
                 }
@@ -531,7 +604,7 @@ export default function KoreanAgeCalculatorClient() {
                     }
                     .age-input {
                         padding: 12px 14px !important;
-                        font-size: 0.95rem !important;
+                        font-size: 1rem !important;
                         border-radius: 12px !important;
                     }
                     .age-calc-btn {
