@@ -187,7 +187,7 @@ function generateWebAppSchema(locale: string) {
         "@type": "WebApplication",
         "name": isKo ? "연봉 실수령액 계산기" : "Salary Calculator",
         "description": isKo
-            ? "2025년 기준 연봉 실수령액 계산기. 4대보험과 소득세를 자동으로 계산하여 월 실수령액을 알려드립니다."
+            ? "2026년 기준 연봉 실수령액 계산기. 4대보험과 소득세를 자동으로 계산하여 월 실수령액을 알려드립니다."
             : "Calculate your take-home salary after deducting 4 major insurances and income tax based on 2025 rates.",
         "url": `${baseUrl}/${locale}/salary-calculator`,
         "applicationCategory": "FinanceApplication",
@@ -200,7 +200,7 @@ function generateWebAppSchema(locale: string) {
         "featureList": isKo
             ? [
                 "4대보험 자동 계산 (국민연금, 건강보험, 장기요양, 고용보험)",
-                "2025년 최신 세율 적용",
+                "2026년 최신 세율 적용",
                 "퇴직금 포함/별도 선택",
                 "부양가족 공제 반영",
                 "비과세액 설정",
@@ -226,7 +226,7 @@ function generateSalaryTableSchema(locale: string) {
     return {
         "@context": "https://schema.org",
         "@type": "Table",
-        "name": isKo ? "2025년 연봉별 실수령액표" : "2025 Salary to Net Pay Table",
+        "name": isKo ? "2026년 연봉별 실수령액표" : "2025 Salary to Net Pay Table",
         "description": isKo
             ? "연봉 구간별 예상 월 실수령액 (비과세 20만원, 부양가족 1인 기준)"
             : "Estimated monthly net pay by annual salary range"
@@ -239,8 +239,8 @@ const seoContent = {
         ariaLabel: "페이지 설명",
         section1Title: "연봉 실수령액이란?",
         section1Desc: "연봉 실수령액은 회사에서 지급하는 세전 연봉에서 국민연금, 건강보험, 장기요양보험, 고용보험(4대보험)과 소득세, 지방소득세를 공제한 후 실제로 통장에 들어오는 금액입니다. 같은 연봉이라도 부양가족 수, 비과세 항목에 따라 실수령액이 달라질 수 있습니다.",
-        section2Title: "2025년 4대보험 요율",
-        section2Desc: "2025년 기준 근로자가 부담하는 4대보험 요율입니다. 국민연금 4.5%, 건강보험 3.545%, 장기요양보험은 건강보험료의 12.27%, 고용보험 0.9%가 적용됩니다. 회사도 동일한 비율(고용보험 제외)을 부담하므로 실제 납부 총액은 이의 2배입니다.",
+        section2Title: "2026년 4대보험 요율",
+        section2Desc: "2026년 기준 근로자가 부담하는 4대보험 요율입니다. 국민연금 4.5%, 건강보험 3.545%, 장기요양보험은 건강보험료의 12.27%, 고용보험 0.9%가 적용됩니다. 회사도 동일한 비율(고용보험 제외)을 부담하므로 실제 납부 총액은 이의 2배입니다.",
         featuresTitle: "계산기 사용 방법",
         featureItems: [
             "세전 연봉을 입력합니다 (예: 3,600만원)",
@@ -252,7 +252,7 @@ const seoContent = {
         ],
         tipsTitle: "실수령액 높이는 팁",
         tipsDesc: "비과세 항목을 최대한 활용하면 실수령액을 높일 수 있습니다. 식대(월 20만원), 자가운전보조금(월 20만원) 등을 급여 항목에 포함시켜 달라고 회사에 요청해보세요. 또한 연말정산 시 소득공제와 세액공제 항목을 꼼꼼히 챙기면 환급을 받을 수 있습니다.",
-        salaryTableTitle: "2025년 연봉별 실수령액표 (참고용)",
+        salaryTableTitle: "2026년 연봉별 실수령액표 (참고용)",
         salaryTableDesc: "부양가족 1인, 비과세 20만원 기준의 예상 월 실수령액입니다. 실제 금액은 개인 상황에 따라 다를 수 있습니다.",
         salaryTable: [
             { annual: "2,400만원", monthly: "약 185만원" },
