@@ -407,7 +407,9 @@
       "noData": "오늘은 환율 정보가 고시되지 않는 날입니다 (주말/공휴일).",
       "dashboardTitle": "주요 통화 환율 정보 ({date})",
       "standardRate": "매매 기준율",
-      "krwName": "한국 원"
+      "krwName": "한국 원",
+      "searchCurrency": "통화 검색...",
+      "noResults": "검색 결과 없음"
     },
     "tips": {
       "title": "환전 싸게 하는 꿀팁",

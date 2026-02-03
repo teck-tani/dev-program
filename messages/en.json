@@ -407,7 +407,9 @@
       "noData": "Exchange rate data is not available today (Weekend/Holiday).",
       "dashboardTitle": "Exchange Rates ({date})",
       "standardRate": "Standard Rate",
-      "krwName": "Korean Won"
+      "krwName": "Korean Won",
+      "searchCurrency": "Search currency...",
+      "noResults": "No results"
     },
     "tips": {
       "title": "Tips for Better Exchange Rates",
