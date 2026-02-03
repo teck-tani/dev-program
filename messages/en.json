@@ -613,6 +613,8 @@
     "title": "Severance Pay Calculator",
     "subtitle": "Planning to leave? Check your retirement benefit.<br />Easily calculate estimated severance pay by entering your dates.",
     "input": {
+      "workPeriod": "Work Period",
+      "salaryInfo": "Salary Information",
       "joinDate": "Join Date",
       "leaveDate": "Resignation Date (Day after last work)",
       "baseSalary": "Total Salary for Last 3 Months (Pre-tax)",

@@ -201,6 +201,7 @@ function generateWebAppSchema(locale: string) {
 export default async function SeveranceCalculatorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const t = await getTranslations('SeveranceCalculator');
 
     const faqSchema = generateFaqSchema(locale);
     const howToSchema = generateHowToSchema(locale);
@@ -222,7 +223,30 @@ export default async function SeveranceCalculatorPage({ params }: { params: Prom
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
-            <SeveranceCalculatorClient />
+            <div className="container page-container" style={{ maxWidth: "800px", padding: "20px" }}>
+                <style>{`
+                    @media (max-width: 600px) {
+                        .mobile-hidden-text {
+                            display: none !important;
+                        }
+                        .page-container {
+                            padding: 10px !important;
+                        }
+                        .page-title {
+                            margin-bottom: 10px !important;
+                            font-size: 1.5rem !important;
+                            margin-top: 0 !important;
+                        }
+                    }
+                `}</style>
+                <section style={{ textAlign: "center", marginBottom: "20px" }}>
+                    <h1 className="page-title" style={{ marginBottom: "16px" }}>{t('title')}</h1>
+                    <p className="mobile-hidden-text" style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }}>
+                    </p>
+                </section>
+
+                <SeveranceCalculatorClient />
+            </div>
         </>
     );
 }
