@@ -46,7 +46,7 @@ export const CITY_DATABASE: City[] = [
   { id: 'auckland', name: 'Auckland', nameKo: '오클랜드', timezone: 'Pacific/Auckland', offset: 13, country: 'New Zealand', countryCode: 'NZ', countryKo: '뉴질랜드', flag: '🇳🇿' },
   { id: 'guam', name: 'Guam', nameKo: '괌', timezone: 'Pacific/Guam', offset: 10, country: 'USA', countryCode: 'GU', countryKo: '미국령', flag: '🇬🇺' },
   { id: 'ulaanbaatar', name: 'Ulaanbaatar', nameKo: '울란바토르', timezone: 'Asia/Ulaanbaatar', offset: 8, country: 'Mongolia', countryCode: 'MN', countryKo: '몽골', flag: '🇲🇳' },
-  { id: 'almaty', name: 'Almaty', nameKo: '알마티', timezone: 'Asia/Almaty', offset: 6, country: 'Kazakhstan', countryCode: 'KZ', countryKo: '카자흐스탄', flag: '🇰🇿' },
+  { id: 'almaty', name: 'Almaty', nameKo: '알마티', timezone: 'Asia/Almaty', offset: 5, country: 'Kazakhstan', countryCode: 'KZ', countryKo: '카자흐스탄', flag: '🇰🇿' },
   { id: 'tashkent', name: 'Tashkent', nameKo: '타슈켄트', timezone: 'Asia/Tashkent', offset: 5, country: 'Uzbekistan', countryCode: 'UZ', countryKo: '우즈베키스탄', flag: '🇺🇿' },
   { id: 'vladivostok', name: 'Vladivostok', nameKo: '블라디보스토크', timezone: 'Asia/Vladivostok', offset: 10, country: 'Russia', countryCode: 'RU', countryKo: '러시아', flag: '🇷🇺' },
 
@@ -143,6 +143,29 @@ const CloseIcon = () => (
   </svg>
 );
 
+// Flag Image Component using Flagcdn
+interface FlagImageProps {
+  countryCode: string;
+  size?: number;
+}
+
+const FlagImage: React.FC<FlagImageProps> = React.memo(({ countryCode, size = 20 }) => {
+  const code = countryCode.toLowerCase();
+  return (
+    <img
+      src={`https://flagcdn.com/w40/${code}.png`}
+      srcSet={`https://flagcdn.com/w80/${code}.png 2x`}
+      width={size}
+      height={Math.round(size * 0.75)}
+      alt={countryCode}
+      style={{ borderRadius: 2, objectFit: 'cover' }}
+      loading="lazy"
+    />
+  );
+});
+
+FlagImage.displayName = 'FlagImage';
+
 // ============================================
 // City Search Modal Component
 // ============================================
@@ -225,7 +248,7 @@ export default function CitySearchModal({
                   onClose();
                 }}
               >
-                <span className={styles.cityFlag}>{city.flag}</span>
+                <span className={styles.cityFlag}><FlagImage countryCode={city.countryCode} size={24} /></span>
                 <div className={styles.cityDetails}>
                   <div className={styles.cityName}>{getCityName(city, locale)}</div>
                   <div className={styles.cityMeta}>{city.name}, {getCountryName(city, locale)}</div>

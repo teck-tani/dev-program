@@ -247,6 +247,43 @@
   color: #fff;
 }
 
+/* Set as main button */
+.setMainBtn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  z-index: 5;
+}
+
+.dark .setMainBtn {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.light .setMainBtn {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.dark .setMainBtn:hover {
+  background: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+}
+
+.light .setMainBtn:hover {
+  background: rgba(8, 145, 178, 0.2);
+  color: #0891b2;
+}
+
 .subClockHeader {
   display: flex;
   align-items: center;
@@ -696,6 +733,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.subClocksWrapper {
+  width: 100%;
 }
 
 .subClocksGrid {

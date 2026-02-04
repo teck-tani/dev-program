@@ -68,6 +68,29 @@ const GripIcon = () => (
   </svg>
 );
 
+// Flag Image Component using Flagcdn
+interface FlagImageProps {
+  countryCode: string;
+  size?: number;
+}
+
+const FlagImage: React.FC<FlagImageProps> = React.memo(({ countryCode, size = 20 }) => {
+  const code = countryCode.toLowerCase();
+  return (
+    <img
+      src={`https://flagcdn.com/w40/${code}.png`}
+      srcSet={`https://flagcdn.com/w80/${code}.png 2x`}
+      width={size}
+      height={Math.round(size * 0.75)}
+      alt={countryCode}
+      style={{ borderRadius: 2, objectFit: 'cover' }}
+      loading="lazy"
+    />
+  );
+});
+
+FlagImage.displayName = 'FlagImage';
+
 // ============================================
 // Types & Interfaces
 // ============================================
@@ -98,6 +121,7 @@ const i18n = {
     dateFormat: (y: number, m: number, d: number, day: string) => `${y}년 ${m}월 ${d}일 ${day}`,
     removeCity: '도시 삭제',
     dragToReorder: '드래그하여 순서 변경',
+    clickToSetMain: '메인으로 설정',
   },
   en: {
     addCity: 'Add City',
@@ -115,6 +139,7 @@ const i18n = {
     dateFormat: (y: number, m: number, d: number, day: string) => `${day}, ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1]} ${d}, ${y}`,
     removeCity: 'Remove city',
     dragToReorder: 'Drag to reorder',
+    clickToSetMain: 'Set as main',
   }
 };
 
@@ -171,23 +196,33 @@ const formatDate = (date: Date, locale: Locale): string => {
   return t.dateFormat(year, month, day, dayOfWeek);
 };
 
-const getTimeDifference = (mainOffset: number, targetOffset: number, locale: Locale): string => {
+// Calculate actual timezone offset (accounts for DST)
+const getActualOffset = (timezone: string): number => {
+  const now = new Date();
+  const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const tzDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+  return (tzDate.getTime() - utcDate.getTime()) / (1000 * 60 * 60);
+};
+
+const getTimeDifference = (mainTimezone: string, targetTimezone: string, locale: Locale): string => {
   const t = i18n[locale];
+  const mainOffset = getActualOffset(mainTimezone);
+  const targetOffset = getActualOffset(targetTimezone);
   const diff = targetOffset - mainOffset;
-  if (diff === 0) return t.reference;
+  if (Math.abs(diff) < 0.01) return t.reference; // Handle floating point precision
   const sign = diff > 0 ? '+' : '';
   const hours = Math.floor(Math.abs(diff));
-  const minutes = (Math.abs(diff) % 1) * 60;
+  const minutes = Math.round((Math.abs(diff) % 1) * 60);
   if (minutes > 0) {
     if (locale === 'ko') {
       return `${sign}${diff > 0 ? '' : '-'}${hours}시간 ${minutes}분`;
     }
-    return `${sign}${diff}h ${minutes}m`;
+    return `${sign}${diff > 0 ? '' : '-'}${hours}h ${minutes}m`;
   }
   if (locale === 'ko') {
-    return `${sign}${diff}시간`;
+    return `${sign}${Math.round(diff)}시간`;
   }
-  return `${sign}${diff}${t.hour}`;
+  return `${sign}${Math.round(diff)}${t.hour}`;
 };
 
 const getDayStatus = (mainTimezone: string, targetTimezone: string, locale: Locale): string => {
@@ -299,7 +334,7 @@ const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fon
       <div className={styles.mainClockHeader}>
         <div className={styles.mainClockInfo}>
           <div className={styles.mainClockCity} style={{ fontSize: `${fontSize * 0.5}px` }}>
-            <span className={styles.nativeFlag}>{city.flag}</span> {getCityName(city, locale)}
+            <FlagImage countryCode={city.countryCode} size={Math.round(fontSize * 0.55)} /> {getCityName(city, locale)}
           </div>
           <div className={styles.mainClockCountry} style={{ fontSize: `${fontSize * 0.28}px` }}>
             {city.countryCode} {getCountryName(city, locale)}
@@ -348,7 +383,7 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
 }) => {
   const { hours, minutes, seconds } = formatTime(time);
   const digitSize = 32;
-  const timeDiff = getTimeDifference(mainCity.offset, city.offset, locale);
+  const timeDiff = getTimeDifference(mainCity.timezone, city.timezone, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale);
   const t = i18n[locale];
   const cityName = getCityName(city, locale);
@@ -385,7 +420,7 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
       <div className={styles.subClockHeader}>
         <div className={styles.subClockInfo}>
           <div className={styles.subClockCity}>
-            <span className={styles.nativeFlag}>{city.flag}</span> {cityName}
+            <FlagImage countryCode={city.countryCode} size={18} /> {cityName}
           </div>
           <div className={styles.subClockCountry}>{city.countryCode} {getCountryName(city, locale)}</div>
         </div>
@@ -411,6 +446,23 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
         </span>
         <span className={styles.timeDiff}>{timeDiff}</span>
       </div>
+
+      {/* Set as main button */}
+      <button
+        type="button"
+        className={styles.setMainBtn}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+        aria-label={t.clickToSetMain}
+        title={t.clickToSetMain}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 14v6h6M20 14v6h-6M4 10V4h6M20 10V4h-6"/>
+          <path d="M4 20l5-5M20 20l-5-5M4 4l5 5M20 4l-5 5"/>
+        </svg>
+      </button>
     </div>
   );
 });
@@ -666,8 +718,45 @@ export default function ClockView() {
         </div>
 
         {/* Sub Clocks Grid - with lazy loaded DnD */}
-        {dndReady ? (
-          <Suspense fallback={
+        <div className={styles.subClocksWrapper}>
+          {dndReady ? (
+            <Suspense fallback={
+              <div className={styles.subClocksGrid}>
+                {state.subClocks.map((city) => (
+                  <SubClockCard
+                    key={city.id}
+                    city={city}
+                    time={getTimeForTimezone(city.timezone)}
+                    mainCity={state.mainClock}
+                    theme={state.theme}
+                    locale={locale}
+                    onClick={() => handleSwapToMain(city)}
+                    onRemove={() => handleRemoveCity(city.id)}
+                  />
+                ))}
+                {/* Add City Button inside fallback grid */}
+                <div className={`${styles.addCityBtn} ${styles[state.theme]}`} onClick={() => setIsModalOpen(true)}>
+                  <div className={styles.addCityIcon}>
+                    <PlusIcon />
+                  </div>
+                  <span>{t.addCity}</span>
+                </div>
+              </div>
+            }>
+              <DndWrapper
+                subClocks={state.subClocks}
+                mainCity={state.mainClock}
+                theme={state.theme}
+                locale={locale}
+                onReorder={handleReorder}
+                onSwapToMain={handleSwapToMain}
+                onRemoveCity={handleRemoveCity}
+                getTimeForTimezone={getTimeForTimezone}
+                onAddCity={() => setIsModalOpen(true)}
+                addCityLabel={t.addCity}
+              />
+            </Suspense>
+          ) : (
             <div className={styles.subClocksGrid}>
               {state.subClocks.map((city) => (
                 <SubClockCard
@@ -681,42 +770,15 @@ export default function ClockView() {
                   onRemove={() => handleRemoveCity(city.id)}
                 />
               ))}
+              {/* Add City Button */}
+              <div className={`${styles.addCityBtn} ${styles[state.theme]}`} onClick={() => setIsModalOpen(true)}>
+                <div className={styles.addCityIcon}>
+                  <PlusIcon />
+                </div>
+                <span>{t.addCity}</span>
+              </div>
             </div>
-          }>
-            <DndWrapper
-              subClocks={state.subClocks}
-              mainCity={state.mainClock}
-              theme={state.theme}
-              locale={locale}
-              onReorder={handleReorder}
-              onSwapToMain={handleSwapToMain}
-              onRemoveCity={handleRemoveCity}
-              getTimeForTimezone={getTimeForTimezone}
-            />
-          </Suspense>
-        ) : (
-          <div className={styles.subClocksGrid}>
-            {state.subClocks.map((city) => (
-              <SubClockCard
-                key={city.id}
-                city={city}
-                time={getTimeForTimezone(city.timezone)}
-                mainCity={state.mainClock}
-                theme={state.theme}
-                locale={locale}
-                onClick={() => handleSwapToMain(city)}
-                onRemove={() => handleRemoveCity(city.id)}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Add City Button */}
-        <div className={styles.addCityBtn} onClick={() => setIsModalOpen(true)}>
-          <div className={styles.addCityIcon}>
-            <PlusIcon />
-          </div>
-          <span>{t.addCity}</span>
+          )}
         </div>
       </div>
 

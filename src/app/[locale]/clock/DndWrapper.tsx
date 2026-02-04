@@ -39,6 +39,29 @@ const GripIcon = () => (
   </svg>
 );
 
+// Flag Image Component using Flagcdn
+interface FlagImageProps {
+  countryCode: string;
+  size?: number;
+}
+
+const FlagImage: React.FC<FlagImageProps> = React.memo(({ countryCode, size = 20 }) => {
+  const code = countryCode.toLowerCase();
+  return (
+    <img
+      src={`https://flagcdn.com/w40/${code}.png`}
+      srcSet={`https://flagcdn.com/w80/${code}.png 2x`}
+      width={size}
+      height={Math.round(size * 0.75)}
+      alt={countryCode}
+      style={{ borderRadius: 2, objectFit: 'cover' }}
+      loading="lazy"
+    />
+  );
+});
+
+FlagImage.displayName = 'FlagImage';
+
 // ============================================
 // Localization
 // ============================================
@@ -51,6 +74,7 @@ const i18n = {
     reference: '기준',
     removeCity: '도시 삭제',
     dragToReorder: '드래그하여 순서 변경',
+    clickToSetMain: '클릭하여 메인으로',
   },
   en: {
     today: 'Today',
@@ -60,6 +84,7 @@ const i18n = {
     reference: 'Base',
     removeCity: 'Remove city',
     dragToReorder: 'Drag to reorder',
+    clickToSetMain: 'Click to set as main',
   }
 };
 
@@ -76,23 +101,33 @@ const formatTime = (date: Date): { hours: string; minutes: string; seconds: stri
   };
 };
 
-const getTimeDifference = (mainOffset: number, targetOffset: number, locale: Locale): string => {
+// Calculate actual timezone offset (accounts for DST)
+const getActualOffset = (timezone: string): number => {
+  const now = new Date();
+  const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const tzDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+  return (tzDate.getTime() - utcDate.getTime()) / (1000 * 60 * 60);
+};
+
+const getTimeDifference = (mainTimezone: string, targetTimezone: string, locale: Locale): string => {
   const t = i18n[locale];
+  const mainOffset = getActualOffset(mainTimezone);
+  const targetOffset = getActualOffset(targetTimezone);
   const diff = targetOffset - mainOffset;
-  if (diff === 0) return t.reference;
+  if (Math.abs(diff) < 0.01) return t.reference; // Handle floating point precision
   const sign = diff > 0 ? '+' : '';
   const hours = Math.floor(Math.abs(diff));
-  const minutes = (Math.abs(diff) % 1) * 60;
+  const minutes = Math.round((Math.abs(diff) % 1) * 60);
   if (minutes > 0) {
     if (locale === 'ko') {
       return `${sign}${diff > 0 ? '' : '-'}${hours}시간 ${minutes}분`;
     }
-    return `${sign}${diff}h ${minutes}m`;
+    return `${sign}${diff > 0 ? '' : '-'}${hours}h ${minutes}m`;
   }
   if (locale === 'ko') {
-    return `${sign}${diff}시간`;
+    return `${sign}${Math.round(diff)}시간`;
   }
-  return `${sign}${diff}${t.hour}`;
+  return `${sign}${Math.round(diff)}${t.hour}`;
 };
 
 const getDayStatus = (mainTimezone: string, targetTimezone: string, locale: Locale, getTimeForTimezone: (tz: string) => Date): string => {
@@ -217,7 +252,7 @@ const SortableSubClockCard: React.FC<SortableSubClockCardProps> = React.memo(({
 
   const { hours, minutes, seconds } = formatTime(time);
   const digitSize = 32;
-  const timeDiff = getTimeDifference(mainCity.offset, city.offset, locale);
+  const timeDiff = getTimeDifference(mainCity.timezone, city.timezone, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale, getTimeForTimezone);
   const t = i18n[locale];
   const cityName = getCityName(city, locale);
@@ -257,7 +292,7 @@ const SortableSubClockCard: React.FC<SortableSubClockCardProps> = React.memo(({
       <div className={styles.subClockHeader}>
         <div className={styles.subClockInfo}>
           <div className={styles.subClockCity}>
-            <span className={styles.nativeFlag}>{city.flag}</span> {cityName}
+            <FlagImage countryCode={city.countryCode} size={18} /> {cityName}
           </div>
           <div className={styles.subClockCountry}>{city.countryCode} {getCountryName(city, locale)}</div>
         </div>
@@ -283,6 +318,23 @@ const SortableSubClockCard: React.FC<SortableSubClockCardProps> = React.memo(({
         </span>
         <span className={styles.timeDiff}>{timeDiff}</span>
       </div>
+
+      {/* Set as main button */}
+      <button
+        type="button"
+        className={styles.setMainBtn}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+        aria-label={t.clickToSetMain}
+        title={t.clickToSetMain}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 14v6h6M20 14v6h-6M4 10V4h6M20 10V4h-6"/>
+          <path d="M4 20l5-5M20 20l-5-5M4 4l5 5M20 4l-5 5"/>
+        </svg>
+      </button>
     </div>
   );
 });
@@ -292,6 +344,13 @@ SortableSubClockCard.displayName = 'SortableSubClockCard';
 // ============================================
 // DnD Wrapper Component
 // ============================================
+// Plus Icon for Add City button
+const PlusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 5v14M5 12h14"/>
+  </svg>
+);
+
 interface DndWrapperProps {
   subClocks: City[];
   mainCity: City;
@@ -301,6 +360,8 @@ interface DndWrapperProps {
   onSwapToMain: (city: City) => void;
   onRemoveCity: (cityId: string) => void;
   getTimeForTimezone: (tz: string) => Date;
+  onAddCity: () => void;
+  addCityLabel: string;
 }
 
 export default function DndWrapper({
@@ -312,6 +373,8 @@ export default function DndWrapper({
   onSwapToMain,
   onRemoveCity,
   getTimeForTimezone,
+  onAddCity,
+  addCityLabel,
 }: DndWrapperProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -363,6 +426,13 @@ export default function DndWrapper({
               getTimeForTimezone={getTimeForTimezone}
             />
           ))}
+          {/* Add City Button */}
+          <div className={`${styles.addCityBtn} ${styles[theme]}`} onClick={onAddCity}>
+            <div className={styles.addCityIcon}>
+              <PlusIcon />
+            </div>
+            <span>{addCityLabel}</span>
+          </div>
         </div>
       </SortableContext>
     </DndContext>
