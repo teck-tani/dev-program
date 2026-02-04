@@ -41,9 +41,17 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <link rel="icon" href="/favicon.ico" />
         {/* 광고 및 분석 스크립트를 더 뒤로 미룸 */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-7TCWX4SNV8"
-          strategy="worker" // 메인 스레드 점유 방지
+          src="https://www.googletagmanager.com/gtag/js?id=G-4K4035NP84"
+          strategy="afterInteractive"
         />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-4K4035NP84');
+          `}
+        </Script>
       </head>
       <body style={{ fontFamily: systemFontStack }}>
         <NextIntlClientProvider messages={messages}>
