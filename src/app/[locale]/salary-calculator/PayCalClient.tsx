@@ -330,7 +330,7 @@ export default function PayCalClient() {
                     marginBottom: '12px',
                     letterSpacing: '-0.02em',
                 }}>
-                    {t('title').replace('2025 ', '')}
+                    {t('title').replace('2026 ', '')}
                 </h1>
                 <p className="paycal-subtitle" style={{
                     color: '#6b7280',

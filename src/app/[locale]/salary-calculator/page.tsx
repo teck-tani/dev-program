@@ -188,7 +188,7 @@ function generateWebAppSchema(locale: string) {
         "name": isKo ? "연봉 실수령액 계산기" : "Salary Calculator",
         "description": isKo
             ? "2026년 기준 연봉 실수령액 계산기. 4대보험과 소득세를 자동으로 계산하여 월 실수령액을 알려드립니다."
-            : "Calculate your take-home salary after deducting 4 major insurances and income tax based on 2025 rates.",
+            : "Calculate your take-home salary after deducting 4 major insurances and income tax based on 2026 rates.",
         "url": `${baseUrl}/${locale}/salary-calculator`,
         "applicationCategory": "FinanceApplication",
         "operatingSystem": "Any",
@@ -208,7 +208,7 @@ function generateWebAppSchema(locale: string) {
             ]
             : [
                 "Auto-calculate 4 major insurances",
-                "2025 latest tax rates",
+                "2026 latest tax rates",
                 "Severance pay options",
                 "Dependent deduction support",
                 "Non-taxable amount settings",
@@ -226,7 +226,7 @@ function generateSalaryTableSchema(locale: string) {
     return {
         "@context": "https://schema.org",
         "@type": "Table",
-        "name": isKo ? "2026년 연봉별 실수령액표" : "2025 Salary to Net Pay Table",
+        "name": isKo ? "2026년 연봉별 실수령액표" : "2026 Salary to Net Pay Table",
         "description": isKo
             ? "연봉 구간별 예상 월 실수령액 (비과세 20만원, 부양가족 1인 기준)"
             : "Estimated monthly net pay by annual salary range"
@@ -271,8 +271,8 @@ const seoContent = {
         ariaLabel: "Page description",
         section1Title: "What is Net Salary?",
         section1Desc: "Net salary (take-home pay) is the amount you actually receive after deducting 4 major insurances (National Pension, Health Insurance, Long-term Care Insurance, Employment Insurance) and income taxes from your gross annual salary. The actual amount may vary depending on the number of dependents and non-taxable items.",
-        section2Title: "2025 Insurance Rates",
-        section2Desc: "Employee contribution rates for 2025: National Pension 4.5%, Health Insurance 3.545%, Long-term Care Insurance 12.27% of Health Insurance, Employment Insurance 0.9%. The employer also contributes the same rates (except for employment insurance), so the total contribution is doubled.",
+        section2Title: "2026 Insurance Rates",
+        section2Desc: "Employee contribution rates for 2026: National Pension 4.5%, Health Insurance 3.545%, Long-term Care Insurance 12.27% of Health Insurance, Employment Insurance 0.9%. The employer also contributes the same rates (except for employment insurance), so the total contribution is doubled.",
         featuresTitle: "How to Use",
         featureItems: [
             "Enter your gross annual salary (e.g., 36,000,000 KRW)",
@@ -284,7 +284,7 @@ const seoContent = {
         ],
         tipsTitle: "Tips to Maximize Net Pay",
         tipsDesc: "Maximize non-taxable items to increase your take-home pay. Ask your company to include meal allowance (200,000 KRW/month) and car allowance (200,000 KRW/month) in your salary breakdown. Also, make sure to claim all deductions during year-end tax settlement for potential refunds.",
-        salaryTableTitle: "2025 Salary Reference Table",
+        salaryTableTitle: "2026 Salary Reference Table",
         salaryTableDesc: "Estimated monthly net pay based on 1 dependent and 200,000 KRW non-taxable amount. Actual amounts may vary.",
         salaryTable: [
             { annual: "24M KRW", monthly: "~1.85M KRW" },
