@@ -21,13 +21,19 @@ export default function StopwatchView() {
     const requestRef = useRef<number>(0);
     const lastLapTimeRef = useRef<number>(0);
 
-    // localStorage에서 랩 데이터 로드
+    // localStorage에서 랩 데이터 로드 + 마지막 시간 복원
     useEffect(() => {
         const savedLaps = localStorage.getItem(STORAGE_KEY);
         if (savedLaps) {
             try {
-                const parsed = JSON.parse(savedLaps);
+                const parsed: LapRecord[] = JSON.parse(savedLaps);
                 setLaps(parsed);
+                // 마지막 랩의 totalTime으로 시간 복원
+                if (parsed.length > 0) {
+                    const lastLap = parsed[parsed.length - 1];
+                    setTime(lastLap.totalTime);
+                    lastLapTimeRef.current = lastLap.totalTime;
+                }
             } catch (e) {
                 console.error('Failed to load laps from localStorage');
             }
