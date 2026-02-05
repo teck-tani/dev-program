@@ -1,19 +1,50 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
+
+interface LapRecord {
+    lapNumber: number;
+    lapTime: number;      // 구간 시간 (이전 랩부터 현재까지)
+    totalTime: number;    // 누적 시간
+    timestamp: string;    // 저장 시점
+}
+
+const STORAGE_KEY = 'stopwatch_laps';
 
 export default function StopwatchView() {
     const t = useTranslations('Clock.Stopwatch.controls');
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
+    const [laps, setLaps] = useState<LapRecord[]>([]);
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
+    const lastLapTimeRef = useRef<number>(0);
 
-    const update = () => {
+    // localStorage에서 랩 데이터 로드
+    useEffect(() => {
+        const savedLaps = localStorage.getItem(STORAGE_KEY);
+        if (savedLaps) {
+            try {
+                const parsed = JSON.parse(savedLaps);
+                setLaps(parsed);
+            } catch (e) {
+                console.error('Failed to load laps from localStorage');
+            }
+        }
+    }, []);
+
+    // 랩 데이터가 변경될 때 localStorage에 저장
+    useEffect(() => {
+        if (laps.length > 0) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(laps));
+        }
+    }, [laps]);
+
+    const update = useCallback(() => {
         setTime(Date.now() - startTimeRef.current);
         requestRef.current = requestAnimationFrame(update);
-    };
+    }, []);
 
     useEffect(() => {
         if (isRunning) {
@@ -25,7 +56,7 @@ export default function StopwatchView() {
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
         };
-    }, [isRunning]);
+    }, [isRunning, update]);
 
     const formatTime = (ms: number) => {
         const minutes = Math.floor(ms / 60000);
@@ -34,6 +65,73 @@ export default function StopwatchView() {
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
     };
 
+    const handleLap = () => {
+        if (!isRunning && time === 0) return;
+
+        const currentTime = time;
+        const lapTime = currentTime - lastLapTimeRef.current;
+
+        const newLap: LapRecord = {
+            lapNumber: laps.length + 1,
+            lapTime: lapTime,
+            totalTime: currentTime,
+            timestamp: new Date().toISOString()
+        };
+
+        setLaps(prev => [...prev, newLap]);
+        lastLapTimeRef.current = currentTime;
+    };
+
+    const handleReset = () => {
+        setIsRunning(false);
+        setTime(0);
+        lastLapTimeRef.current = 0;
+    };
+
+    const handleClearLaps = () => {
+        setLaps([]);
+        localStorage.removeItem(STORAGE_KEY);
+        lastLapTimeRef.current = 0;
+    };
+
+    const handleExportExcel = () => {
+        if (laps.length === 0) return;
+
+        // CSV 형식으로 생성 (Excel 호환)
+        const headers = ['Lap #', 'Lap Time', 'Total Time', 'Timestamp'];
+        const rows = laps.map(lap => [
+            lap.lapNumber,
+            formatTime(lap.lapTime),
+            formatTime(lap.totalTime),
+            new Date(lap.timestamp).toLocaleString()
+        ]);
+
+        // BOM 추가하여 한글 깨짐 방지
+        const BOM = '\uFEFF';
+        const csvContent = BOM + [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `stopwatch_laps_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    // 가장 빠른/느린 랩 찾기
+    const fastestLapIndex = laps.length > 1
+        ? laps.reduce((minIdx, lap, idx) => lap.lapTime < laps[minIdx].lapTime ? idx : minIdx, 0)
+        : -1;
+    const slowestLapIndex = laps.length > 1
+        ? laps.reduce((maxIdx, lap, idx) => lap.lapTime > laps[maxIdx].lapTime ? idx : maxIdx, 0)
+        : -1;
+
     return (
         <div style={{
             textAlign: 'center',
@@ -41,11 +139,12 @@ export default function StopwatchView() {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            padding: '20px 0',
+            padding: '12px 0',
         }}>
+            {/* 시간 표시 */}
             <div style={{
-                fontSize: 'clamp(3rem, 12vw, 6rem)',
-                marginBottom: '40px',
+                fontSize: 'clamp(2.5rem, 10vw, 5rem)',
+                marginBottom: '24px',
                 fontVariantNumeric: 'tabular-nums',
                 fontFamily: "'SF Mono', 'Roboto Mono', 'Consolas', monospace",
                 fontWeight: 600,
@@ -54,12 +153,15 @@ export default function StopwatchView() {
             }}>
                 {formatTime(time)}
             </div>
-            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                {!isRunning ? (
+
+            {/* 컨트롤 버튼 */}
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
+                {/* 초기 상태: 시작 버튼만 */}
+                {time === 0 && !isRunning && (
                     <button
                         onClick={() => setIsRunning(true)}
                         style={{
-                            padding: '14px 40px',
+                            padding: '14px 48px',
                             borderRadius: '12px',
                             fontSize: '1.1rem',
                             fontWeight: 'bold',
@@ -73,43 +175,196 @@ export default function StopwatchView() {
                     >
                         {t('start')}
                     </button>
-                ) : (
-                    <button
-                        onClick={() => setIsRunning(false)}
-                        style={{
-                            padding: '14px 40px',
-                            borderRadius: '12px',
-                            fontSize: '1.1rem',
-                            fontWeight: 'bold',
-                            border: 'none',
-                            cursor: 'pointer',
-                            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                            color: 'white',
-                            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
-                            transition: 'all 0.2s ease',
-                        }}
-                    >
-                        {t('stop')}
-                    </button>
                 )}
-                <button
-                    onClick={() => { setIsRunning(false); setTime(0); }}
-                    style={{
-                        padding: '14px 40px',
-                        borderRadius: '12px',
-                        fontSize: '1.1rem',
-                        fontWeight: 'bold',
-                        border: 'none',
-                        cursor: 'pointer',
-                        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                        color: 'white',
-                        boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
-                        transition: 'all 0.2s ease',
-                    }}
-                >
-                    {t('reset')}
-                </button>
+
+                {/* 실행 중: 일시정지 + 랩 */}
+                {isRunning && (
+                    <>
+                        <button
+                            onClick={() => setIsRunning(false)}
+                            style={{
+                                padding: '14px 36px',
+                                borderRadius: '12px',
+                                fontSize: '1rem',
+                                fontWeight: 'bold',
+                                border: 'none',
+                                cursor: 'pointer',
+                                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                                color: 'white',
+                                boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            {t('pause')}
+                        </button>
+                        <button
+                            onClick={handleLap}
+                            style={{
+                                padding: '14px 36px',
+                                borderRadius: '12px',
+                                fontSize: '1rem',
+                                fontWeight: 'bold',
+                                border: 'none',
+                                cursor: 'pointer',
+                                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                                color: 'white',
+                                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            {t('lap')}
+                        </button>
+                    </>
+                )}
+
+                {/* 일시정지 상태: 계속 + 초기화 */}
+                {!isRunning && time > 0 && (
+                    <>
+                        <button
+                            onClick={() => setIsRunning(true)}
+                            style={{
+                                padding: '14px 36px',
+                                borderRadius: '12px',
+                                fontSize: '1rem',
+                                fontWeight: 'bold',
+                                border: 'none',
+                                cursor: 'pointer',
+                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                color: 'white',
+                                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            {t('continue')}
+                        </button>
+                        <button
+                            onClick={handleReset}
+                            style={{
+                                padding: '14px 36px',
+                                borderRadius: '12px',
+                                fontSize: '1rem',
+                                fontWeight: 'bold',
+                                border: 'none',
+                                cursor: 'pointer',
+                                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                                color: 'white',
+                                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            {t('reset')}
+                        </button>
+                    </>
+                )}
             </div>
+
+            {/* 랩 리스트 */}
+            {laps.length > 0 && (
+                <div style={{
+                    width: '100%',
+                    maxWidth: '500px',
+                    marginTop: '16px',
+                }}>
+                    {/* 랩 리스트 헤더 */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginBottom: '12px',
+                        padding: '0 8px',
+                    }}>
+                        <span style={{ fontWeight: 600, color: '#374151', fontSize: '0.95rem' }}>
+                            {t('lapList')} ({laps.length})
+                        </span>
+                    </div>
+
+                    {/* 랩 리스트 테이블 */}
+                    <div style={{
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '12px',
+                        background: '#fafafa',
+                    }}>
+                        {[...laps].reverse().map((lap, idx) => {
+                            const originalIndex = laps.length - 1 - idx;
+                            const isFastest = originalIndex === fastestLapIndex && laps.length > 1;
+                            const isSlowest = originalIndex === slowestLapIndex && laps.length > 1;
+
+                            return (
+                                <div
+                                    key={lap.lapNumber}
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        padding: '12px 16px',
+                                        borderBottom: idx < laps.length - 1 ? '1px solid #e5e7eb' : 'none',
+                                        background: isFastest ? 'rgba(16, 185, 129, 0.1)' : isSlowest ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
+                                    }}
+                                >
+                                    <span style={{
+                                        fontWeight: 600,
+                                        color: isFastest ? '#059669' : isSlowest ? '#dc2626' : '#6b7280',
+                                        minWidth: '60px',
+                                    }}>
+                                        #{lap.lapNumber}
+                                    </span>
+                                    <span style={{
+                                        fontFamily: "'SF Mono', 'Roboto Mono', monospace",
+                                        fontSize: '1rem',
+                                        color: isFastest ? '#059669' : isSlowest ? '#dc2626' : '#374151',
+                                        fontWeight: 500,
+                                    }}>
+                                        {formatTime(lap.lapTime)}
+                                    </span>
+                                    <span style={{
+                                        fontFamily: "'SF Mono', 'Roboto Mono', monospace",
+                                        fontSize: '0.9rem',
+                                        color: '#9ca3af',
+                                    }}>
+                                        {formatTime(lap.totalTime)}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* 버튼들 - 맨 아래 */}
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '16px' }}>
+                        <button
+                            onClick={handleExportExcel}
+                            style={{
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                fontSize: '0.85rem',
+                                fontWeight: 500,
+                                border: '1px solid #10b981',
+                                cursor: 'pointer',
+                                background: 'white',
+                                color: '#10b981',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            {t('exportExcel')}
+                        </button>
+                        <button
+                            onClick={handleClearLaps}
+                            style={{
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                fontSize: '0.85rem',
+                                fontWeight: 500,
+                                border: '1px solid #ef4444',
+                                cursor: 'pointer',
+                                background: 'white',
+                                color: '#ef4444',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            {t('clearLaps')}
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

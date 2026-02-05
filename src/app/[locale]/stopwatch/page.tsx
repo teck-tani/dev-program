@@ -263,25 +263,25 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
-            <div className="container" style={{ maxWidth: '900px', padding: '20px' }}>
-                {/* 헤더 섹션 */}
-                <section style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h1 style={{ marginBottom: '20px' }}>{t('seo.title')}</h1>
-                    <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}>
-                        {c.description}
-                    </p>
-                </section>
+            <div className="container" style={{ maxWidth: '900px', padding: '0 20px' }}>
+                {/* 제목만 상단에 */}
+                <h1 style={{ textAlign: 'center', marginBottom: '10px', fontSize: '1.4rem' }}>{t('seo.title')}</h1>
 
                 {/* 스톱워치 컴포넌트 */}
                 <div style={{
                     background: 'white',
                     borderRadius: '20px',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                    padding: '40px 20px',
-                    marginBottom: '50px'
+                    padding: '20px',
+                    marginBottom: '30px'
                 }}>
                     <StopwatchWrapper />
                 </div>
+
+                {/* 설명 텍스트 - UI 아래로 이동 */}
+                <p style={{ color: '#666', fontSize: '0.95rem', maxWidth: '700px', margin: '0 auto 30px', textAlign: 'center', lineHeight: '1.6' }}>
+                    {c.description}
+                </p>
 
                 {/* SEO 콘텐츠 섹션 */}
                 <article style={{ lineHeight: '1.7' }}>

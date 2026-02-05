@@ -386,12 +386,12 @@ nav ul li.active {
 /* 메인 콘텐츠 스타일 */
 main {
     flex: 1;
-    padding: 30px 0;
+    padding: 12px 0;
 }
 
 @media (max-width: 768px) {
     main {
-        padding: 8px 0;
+        padding: 6px 0;
     }
 }
 
