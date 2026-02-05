@@ -64,11 +64,36 @@ export default function StopwatchView() {
         };
     }, [isRunning, update]);
 
-    const formatTime = (ms: number) => {
-        const minutes = Math.floor(ms / 60000);
+    const formatTime = (ms: number, forceHours: boolean = false) => {
+        const hours = Math.floor(ms / 3600000);
+        const minutes = Math.floor((ms % 3600000) / 60000);
         const seconds = Math.floor((ms % 60000) / 1000);
         const centiseconds = Math.floor((ms % 1000) / 10);
+
+        if (hours > 0 || forceHours) {
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
+        }
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
+    };
+
+    const formatMainTime = (ms: number) => {
+        const hours = Math.floor(ms / 3600000);
+        const minutes = Math.floor((ms % 3600000) / 60000);
+        const seconds = Math.floor((ms % 60000) / 1000);
+        const centiseconds = Math.floor((ms % 1000) / 10);
+
+        if (hours > 0) {
+            return {
+                main: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
+                cs: `.${String(centiseconds).padStart(2, '0')}`,
+                hasHours: true
+            };
+        }
+        return {
+            main: `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
+            cs: `.${String(centiseconds).padStart(2, '0')}`,
+            hasHours: false
+        };
     };
 
     const handleLap = () => {
@@ -100,15 +125,24 @@ export default function StopwatchView() {
         lastLapTimeRef.current = 0;
     };
 
+    const handleDeleteLap = (lapNumber: number) => {
+        setLaps(prev => {
+            const newLaps = prev.filter(lap => lap.lapNumber !== lapNumber);
+            // 랩 번호 재정렬
+            return newLaps.map((lap, idx) => ({ ...lap, lapNumber: idx + 1 }));
+        });
+    };
+
     const handleExportExcel = () => {
         if (laps.length === 0) return;
 
         // CSV 형식으로 생성 (Excel 호환)
         const headers = ['Lap #', 'Lap Time', 'Total Time', 'Timestamp'];
+        const hasHours = laps.some(lap => lap.totalTime >= 3600000);
         const rows = laps.map(lap => [
             lap.lapNumber,
-            formatTime(lap.lapTime),
-            formatTime(lap.totalTime),
+            formatTime(lap.lapTime, hasHours),
+            formatTime(lap.totalTime, hasHours),
             new Date(lap.timestamp).toLocaleString()
         ]);
 
@@ -138,6 +172,9 @@ export default function StopwatchView() {
         ? laps.reduce((maxIdx, lap, idx) => lap.lapTime > laps[maxIdx].lapTime ? idx : maxIdx, 0)
         : -1;
 
+    // 1시간 이상인 기록이 있으면 모든 시간에 시간 형식 적용
+    const hasHoursInLaps = laps.some(lap => lap.totalTime >= 3600000) || time >= 3600000;
+
     return (
         <div style={{
             textAlign: 'center',
@@ -145,23 +182,42 @@ export default function StopwatchView() {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            padding: '12px 0',
+            padding: '8px 0',
         }}>
             {/* 시간 표시 */}
-            <div style={{
-                fontSize: 'clamp(2.5rem, 10vw, 5rem)',
-                marginBottom: '24px',
-                fontVariantNumeric: 'tabular-nums',
-                fontFamily: "'SF Mono', 'Roboto Mono', 'Consolas', monospace",
-                fontWeight: 600,
-                color: '#0891b2',
-                letterSpacing: '0.02em',
-            }}>
-                {formatTime(time)}
-            </div>
+            {(() => {
+                const timeDisplay = formatMainTime(time);
+                const mainFontSize = timeDisplay.hasHours
+                    ? 'clamp(3rem, 15vw, 5.5rem)'
+                    : 'clamp(3rem, 15vw, 6rem)';
+                const csFontSize = timeDisplay.hasHours
+                    ? 'clamp(1.5rem, 7vw, 2.5rem)'
+                    : 'clamp(1.5rem, 7vw, 3rem)';
+
+                return (
+                    <div style={{
+                        marginBottom: '24px',
+                        fontVariantNumeric: 'tabular-nums',
+                        fontFamily: "'SF Mono', 'Roboto Mono', 'Consolas', monospace",
+                        fontWeight: 600,
+                        color: '#0891b2',
+                        letterSpacing: '0.02em',
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        justifyContent: 'center',
+                    }}>
+                        <span style={{ fontSize: mainFontSize }}>
+                            {timeDisplay.main}
+                        </span>
+                        <span style={{ fontSize: csFontSize, opacity: 0.7 }}>
+                            {timeDisplay.cs}
+                        </span>
+                    </div>
+                );
+            })()}
 
             {/* 컨트롤 버튼 */}
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
                 {/* 초기 상태: 시작 버튼만 */}
                 {time === 0 && !isRunning && (
                     <button
@@ -268,18 +324,17 @@ export default function StopwatchView() {
             {laps.length > 0 && (
                 <div style={{
                     width: '100%',
-                    maxWidth: '500px',
-                    marginTop: '16px',
+                    maxWidth: '100%',
+                    marginTop: '12px',
                 }}>
                     {/* 랩 리스트 헤더 */}
                     <div style={{
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        marginBottom: '12px',
-                        padding: '0 8px',
+                        marginBottom: '8px',
                     }}>
-                        <span style={{ fontWeight: 600, color: '#374151', fontSize: '0.95rem' }}>
+                        <span style={{ fontWeight: 600, color: '#374151', fontSize: '0.9rem' }}>
                             {t('lapList')} ({laps.length})
                         </span>
                     </div>
@@ -287,7 +342,7 @@ export default function StopwatchView() {
                     {/* 랩 리스트 테이블 */}
                     <div style={{
                         border: '1px solid #e5e7eb',
-                        borderRadius: '12px',
+                        borderRadius: '10px',
                         background: '#fafafa',
                     }}>
                         {[...laps].reverse().map((lap, idx) => {
@@ -302,40 +357,64 @@ export default function StopwatchView() {
                                         display: 'flex',
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
-                                        padding: '12px 16px',
+                                        padding: '10px 12px',
                                         borderBottom: idx < laps.length - 1 ? '1px solid #e5e7eb' : 'none',
                                         background: isFastest ? 'rgba(16, 185, 129, 0.1)' : isSlowest ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
+                                        gap: '8px',
                                     }}
                                 >
                                     <span style={{
                                         fontWeight: 600,
                                         color: isFastest ? '#059669' : isSlowest ? '#dc2626' : '#6b7280',
-                                        minWidth: '60px',
+                                        fontSize: '0.85rem',
+                                        minWidth: '36px',
                                     }}>
                                         #{lap.lapNumber}
                                     </span>
                                     <span style={{
                                         fontFamily: "'SF Mono', 'Roboto Mono', monospace",
-                                        fontSize: '1rem',
+                                        fontSize: '0.95rem',
                                         color: isFastest ? '#059669' : isSlowest ? '#dc2626' : '#374151',
-                                        fontWeight: 500,
+                                        fontWeight: 600,
+                                        flex: 1,
+                                        textAlign: 'center',
                                     }}>
-                                        {formatTime(lap.lapTime)}
+                                        {formatTime(lap.lapTime, hasHoursInLaps)}
                                     </span>
                                     <span style={{
                                         fontFamily: "'SF Mono', 'Roboto Mono', monospace",
-                                        fontSize: '0.9rem',
+                                        fontSize: '0.8rem',
                                         color: '#9ca3af',
+                                        minWidth: hasHoursInLaps ? '90px' : '65px',
+                                        textAlign: 'right',
                                     }}>
-                                        {formatTime(lap.totalTime)}
+                                        {formatTime(lap.totalTime, hasHoursInLaps)}
                                     </span>
+                                    <button
+                                        onClick={() => handleDeleteLap(lap.lapNumber)}
+                                        style={{
+                                            background: 'transparent',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: '#d1d5db',
+                                            fontSize: '0.9rem',
+                                            padding: '2px 6px',
+                                            borderRadius: '4px',
+                                            transition: 'all 0.2s ease',
+                                            flexShrink: 0,
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                                        onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}
+                                    >
+                                        ✕
+                                    </button>
                                 </div>
                             );
                         })}
                     </div>
 
                     {/* 버튼들 - 맨 아래 */}
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '16px' }}>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '12px' }}>
                         <button
                             onClick={handleExportExcel}
                             style={{
