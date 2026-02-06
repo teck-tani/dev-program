@@ -96,8 +96,13 @@ export function StopwatchSettingsProvider({ children }: { children: ReactNode })
   const triggerVibration = useCallback(() => {
     if (!settings.vibrationEnabled) return;
 
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
+    try {
+      if (navigator.vibrate) {
+        // 50ms - 짧지만 확실히 느껴지는 진동
+        navigator.vibrate(50);
+      }
+    } catch {
+      // 진동 API 미지원 시 무시
     }
   }, [settings.vibrationEnabled]);
 
