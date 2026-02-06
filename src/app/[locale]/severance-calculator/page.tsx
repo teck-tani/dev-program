@@ -239,12 +239,6 @@ export default async function SeveranceCalculatorPage({ params }: { params: Prom
                         }
                     }
                 `}</style>
-                <section style={{ textAlign: "center", marginBottom: "16px" }}>
-                    <h1 className="page-title" style={{ marginTop: 0, marginBottom: "12px" }}>{t('title')}</h1>
-                    <p className="mobile-hidden-text" style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }}>
-                    </p>
-                </section>
-
                 <SeveranceCalculatorClient />
             </div>
         </>

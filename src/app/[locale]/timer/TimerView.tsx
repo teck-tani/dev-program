@@ -163,27 +163,6 @@ export default function TimerView() {
                 </div>
             )}
 
-            {/* Header */}
-            <section style={{ textAlign: "center", paddingTop: "40px", paddingBottom: "20px" }}>
-                <h1 style={{
-                    fontSize: '2rem',
-                    color: '#2c3e50',
-                    marginBottom: "15px",
-                    fontWeight: 700
-                }}>
-                    {t('seo.title')}
-                </h1>
-                <p style={{
-                    color: '#666',
-                    fontSize: '1.1rem',
-                    maxWidth: '600px',
-                    margin: '0 auto',
-                    padding: '0 20px'
-                }}>
-                    {t('meta.description')}
-                </p>
-            </section>
-
             {/* Timer Container */}
             <div style={{
                 maxWidth: '500px',

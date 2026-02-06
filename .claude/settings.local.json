@@ -22,7 +22,10 @@
       "mcp__playwright__browser_resize",
       "mcp__playwright__browser_close",
       "mcp__plugin_Notion_notion__notion-create-pages",
-      "Bash(claude update:*)"
+      "Bash(claude update:*)",
+      "Bash(grep:*)",
+      "Bash(xargs ls:*)",
+      "Bash(dir:*)"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

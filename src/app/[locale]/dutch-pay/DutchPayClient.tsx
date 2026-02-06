@@ -163,32 +163,6 @@ export default function DutchPayClient() {
 
     return (
         <div className="dutch-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
-            {/* Header */}
-            <section className="dutch-header" style={{ textAlign: 'center', marginBottom: '16px' }}>
-                <h1 className="dutch-title" style={{
-                    fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
-                    fontWeight: '800',
-                    background: 'linear-gradient(135deg, #4A90D9 0%, #357ABD 50%, #2E6BA6 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    marginTop: 0,
-                    marginBottom: '8px',
-                    letterSpacing: '-0.02em',
-                }}>
-                    {t('title')}
-                </h1>
-                <p className="dutch-subtitle" style={{
-                    color: '#6b7280',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.5',
-                    maxWidth: '500px',
-                    margin: '0 auto',
-                }}>
-                    {t('subtitle')}
-                </p>
-            </section>
-
             {/* 정산 모드 선택 */}
             <div className="dutch-card" style={{
                 background: 'white', borderRadius: '14px',

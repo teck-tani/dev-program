@@ -32,12 +32,6 @@ export default function SpecialCharactersClient() {
 
     return (
         <div className="container" style={{ padding: "20px" }}>
-            <section style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1 style={{ marginBottom: "20px" }}>{t('title')}</h1>
-                <p style={{ color: "#666", fontSize: "1.1rem", maxWidth: "700px", margin: "0 auto" }} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }}>
-                </p>
-            </section>
-
             {Object.entries(EMOJI_DATA).map(([categoryKey, emojis]) => (
                 <div key={categoryKey} style={{ marginBottom: "40px" }}>
                     <h2 style={{ fontSize: "1.3rem", marginBottom: "15px", color: "#333", borderBottom: "2px solid #74ebd5", paddingBottom: "8px" }}>

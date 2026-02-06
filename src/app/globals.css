@@ -116,14 +116,14 @@ h1 {
 
 .hero-section {
     text-align: center;
-    padding: 50px 20px 40px;
+    padding: 16px 20px 24px;
 }
 
 .hero-title {
     font-size: 2.2rem;
     font-weight: 700;
     color: #1e293b;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     line-height: 1.3;
 }
 
@@ -177,7 +177,7 @@ h1 {
 /* Homepage Mobile Responsive */
 @media (max-width: 768px) {
     .hero-section {
-        padding: 30px 16px 24px;
+        padding: 10px 16px 16px;
     }
 
     .hero-title {
@@ -231,6 +231,8 @@ header .container {
 .header-left {
     display: flex;
     align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 header h1 {
@@ -736,6 +738,7 @@ body[data-theme="light"] .digital-text {
     align-items: center;
     justify-content: space-between;
     height: 60px;
+    position: relative;
 }
 
 .header-logo {
@@ -760,87 +763,8 @@ body[data-theme="light"] .digital-text {
     font-size: 1rem;
 }
 
-/* Desktop Navigation */
-.header-nav {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.nav-dropdown {
-    position: relative;
-}
-
-.nav-dropdown-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border: none;
-    background: transparent;
-    color: #475569;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
-}
-
-.nav-dropdown-btn:hover {
-    background: #f1f5f9;
-    color: #0ea5e9;
-}
-
-.nav-dropdown-btn.active {
-    background: #f0f9ff;
-    color: #0ea5e9;
-}
-
-.nav-dropdown-btn svg:last-child {
-    font-size: 0.7rem;
-    transition: transform 0.2s;
-}
-
-.nav-dropdown-btn.active svg:last-child {
-    transform: rotate(180deg);
-}
-
-.nav-dropdown-content {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
-    min-width: 200px;
-    padding: 8px;
-    display: none;
-    z-index: 1000;
-}
-
-.nav-dropdown.active .nav-dropdown-content {
-    display: block;
-}
-
-.nav-dropdown-content a {
-    display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    color: #475569;
-    text-decoration: none;
-    font-size: 0.9rem;
-    border-radius: 8px;
-    transition: all 0.15s;
-}
-
-.nav-dropdown-content a:hover {
-    background: #f0f9ff;
-    color: #0ea5e9;
-}
-
-/* Mobile Hamburger Button */
-.mobile-menu-btn {
-    display: none;
+/* Header Menu Button (항상 표시되는 햄버거) */
+.header-menu-btn {
     width: 40px;
     height: 40px;
     border: none;
@@ -849,13 +773,33 @@ body[data-theme="light"] .digital-text {
     font-size: 1.3rem;
     cursor: pointer;
     border-radius: 8px;
+    display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
 }
 
-.mobile-menu-btn:hover {
+.header-menu-btn:hover {
     background: #f1f5f9;
+    color: #0ea5e9;
 }
+
+/* Header Center Title */
+.header-center-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50%;
+    text-align: center;
+    pointer-events: none;
+}
+
 
 /* Mobile Slide Menu */
 .mobile-menu-overlay {
@@ -947,12 +891,15 @@ body[data-theme="light"] .digital-text {
 
 /* New Header Responsive */
 @media (max-width: 768px) {
-    .header-nav {
-        display: none;
+    .header-center-title {
+        font-size: 1.25rem;
+        max-width: 45%;
     }
 
-    .mobile-menu-btn {
-        display: flex;
+    .header-menu-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
     }
 }
 
@@ -962,7 +909,7 @@ body[data-theme="light"] .digital-text {
         display: none !important;
     }
 
-    body.clock-page .mobile-menu-btn {
+    body.clock-page .header-menu-btn {
         display: none !important;
     }
 
@@ -1345,19 +1292,7 @@ body.clock-page .feedback-floating-btn {
     color: #0ea5e9;
 }
 
-/* 햄버거 버튼 왼쪽 배치 */
-.mobile-menu-btn-left {
-    order: -1;
-    margin-right: auto;
-}
-
 @media (max-width: 768px) {
-    .header-logo {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
     .header-actions {
         gap: 2px;
     }
@@ -1572,32 +1507,17 @@ body[data-theme="dark"] .header-logo {
     color: #f1f5f9;
 }
 
-body[data-theme="dark"] .nav-dropdown-btn {
+body[data-theme="dark"] .header-menu-btn {
     color: #94a3b8;
 }
 
-body[data-theme="dark"] .nav-dropdown-btn:hover {
+body[data-theme="dark"] .header-menu-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #38bdf8;
 }
 
-body[data-theme="dark"] .nav-dropdown-btn.active {
-    background: rgba(56, 189, 248, 0.1);
-    color: #38bdf8;
-}
-
-body[data-theme="dark"] .nav-dropdown-content {
-    background: #1e293b;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-}
-
-body[data-theme="dark"] .nav-dropdown-content a {
-    color: #94a3b8;
-}
-
-body[data-theme="dark"] .nav-dropdown-content a:hover {
-    background: rgba(56, 189, 248, 0.1);
-    color: #38bdf8;
+body[data-theme="dark"] .header-center-title {
+    color: #f1f5f9;
 }
 
 body[data-theme="dark"] .header-action-btn {
@@ -1607,14 +1527,6 @@ body[data-theme="dark"] .header-action-btn {
 body[data-theme="dark"] .header-action-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #38bdf8;
-}
-
-body[data-theme="dark"] .mobile-menu-btn {
-    color: #94a3b8;
-}
-
-body[data-theme="dark"] .mobile-menu-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
 }
 
 body[data-theme="dark"] .mobile-menu {

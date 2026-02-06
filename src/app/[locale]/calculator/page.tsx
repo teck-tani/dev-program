@@ -216,13 +216,6 @@ export default async function CalculatorPage({ params }: { params: Promise<{ loc
             />
 
             <div className="container">
-                <section className="calc-header-section">
-                    <h1 className="calc-title">{t('title')}</h1>
-                    <p className="calc-description"
-                        dangerouslySetInnerHTML={{ __html: t.raw('description') }}
-                    />
-                </section>
-
                 <div className="flex justify-center w-full">
                     <CalculatorWrapper />
                 </div>

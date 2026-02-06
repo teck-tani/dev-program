@@ -210,12 +210,6 @@ export default async function MoneyConverterPage({ params }: { params: Promise<{
                         }
                     }
                 `}</style>
-                <section style={{ textAlign: "center", marginBottom: "10px" }}>
-                    <h1 className="page-title" style={{ marginTop: 0, marginBottom: "12px" }}>{t('title')}</h1>
-                    <p className="mobile-hidden-text" style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }} dangerouslySetInnerHTML={{ __html: t.raw('description') }}>
-                    </p>
-                </section>
-
                 <ExchangeRateClient />
 
                 <article style={{ maxWidth: '800px', margin: '80px auto 0', lineHeight: '1.7' }}>

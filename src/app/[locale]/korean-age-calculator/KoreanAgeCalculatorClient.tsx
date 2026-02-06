@@ -119,30 +119,6 @@ export default function KoreanAgeCalculatorClient() {
 
     return (
         <div className="age-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
-            {/* Header */}
-            <section className="age-header" style={{ textAlign: 'center', marginBottom: '16px' }}>
-                <h1 className="age-title" style={{
-                    fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
-                    fontWeight: '800',
-                    background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    marginTop: 0,
-                    marginBottom: '12px',
-                    letterSpacing: '-0.02em',
-                }}>
-                    {t('title')}
-                </h1>
-                <p className="age-subtitle" style={{
-                    color: '#6b7280',
-                    fontSize: '0.95rem',
-                    lineHeight: '1.6',
-                    maxWidth: '550px',
-                    margin: '0 auto',
-                }} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
-            </section>
-
             {/* Calculator Card */}
             <div className="age-card" style={{
                 background: 'linear-gradient(145deg, #ffffff 0%, #faf5ff 100%)',

@@ -2,7 +2,7 @@
 
 import { Link, usePathname } from "@/navigation";
 import { useState, useEffect, useCallback } from "react";
-import { FaHome, FaBars, FaTimes, FaCalculator, FaClock, FaTools, FaChevronDown, FaCode, FaCog, FaExpand, FaCompress, FaSun, FaMoon } from "react-icons/fa";
+import { FaHome, FaBars, FaTimes, FaCalculator, FaClock, FaTools, FaCode, FaCog, FaExpand, FaCompress, FaSun, FaMoon } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import SettingsDropdown from "./SettingsDropdown";
@@ -22,7 +22,6 @@ export default function Header() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -86,6 +85,23 @@ export default function Header() {
     }
   ];
 
+  // slug→labelKey 매핑 생성
+  const slugToLabelKey: Record<string, string> = {};
+  menuCategories.forEach(cat => {
+    cat.items.forEach(item => {
+      slugToLabelKey[item.href.replace(/^\//, '')] = item.labelKey;
+    });
+  });
+
+  // pathname으로 페이지 제목 결정
+  const slug = pathname.replace(/^\//, '').split('/')[0];
+  const pageTitle = (!slug) ? 'Tani DevTool' : (slugToLabelKey[slug] ? tTools(slugToLabelKey[slug]) : 'Tani DevTool');
+
+  // pathname 변경 시 사이드바 자동 닫기
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   // 전체화면 토글
   const toggleFullScreen = useCallback(() => {
     if (!document.fullscreenElement) {
@@ -108,12 +124,11 @@ export default function Header() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close settings when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".nav-dropdown") && !target.closest(".settings-dropdown")) {
-        setActiveDropdown(null);
+      if (!target.closest(".settings-dropdown")) {
         setSettingsOpen(false);
       }
     };
@@ -124,58 +139,30 @@ export default function Header() {
   // Close mobile menu on route change (handled by clicking link)
   const handleLinkClick = () => {
     setMobileMenuOpen(false);
-    setActiveDropdown(null);
   };
 
   return (
     <>
       <header className="new-header">
         <div className="header-container">
-          {/* 왼쪽: 햄버거 메뉴 버튼 (모바일) */}
-          <button
-            className="mobile-menu-btn mobile-menu-btn-left"
-            onClick={() => setMobileMenuOpen(true)}
-            aria-label="메뉴 열기"
-          >
-            <FaBars />
-          </button>
-
-          {/* 로고 */}
-          <Link href="/" className="header-logo" onClick={handleLinkClick}>
-            <div className="header-logo-icon">
-              <FaHome />
-            </div>
-            <span>Tani DevTool</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="header-nav">
-            {menuCategories.map((category) => (
-              <div
-                key={category.key}
-                className={`nav-dropdown ${activeDropdown === category.key ? 'active' : ''}`}
-              >
-                <button
-                  className={`nav-dropdown-btn ${activeDropdown === category.key ? 'active' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveDropdown(activeDropdown === category.key ? null : category.key);
-                  }}
-                >
-                  {category.icon}
-                  <span>{t(`categories.${category.key}`)}</span>
-                  <FaChevronDown />
-                </button>
-                <div className="nav-dropdown-content">
-                  {category.items.map((item) => (
-                    <Link key={item.href} href={item.href} onClick={handleLinkClick}>
-                      {tTools(item.labelKey)}
-                    </Link>
-                  ))}
-                </div>
+          {/* 왼쪽: 햄버거 + 로고 */}
+          <div className="header-left">
+            <button
+              className="header-menu-btn"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="메뉴 열기"
+            >
+              <FaBars />
+            </button>
+            <Link href="/" className="header-logo" onClick={handleLinkClick}>
+              <div className="header-logo-icon">
+                <FaHome />
               </div>
-            ))}
-          </nav>
+            </Link>
+          </div>
+
+          {/* 중앙: 페이지 제목 */}
+          <div className="header-center-title">{pageTitle}</div>
 
           {/* 오른쪽: 액션 버튼 그룹 */}
           <div className="header-actions">

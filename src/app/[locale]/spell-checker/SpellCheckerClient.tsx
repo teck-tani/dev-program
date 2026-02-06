@@ -97,12 +97,6 @@ export default function SpellCheckerClient() {
 
     return (
         <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
-            <section style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1 style={{ marginBottom: "20px" }}>{t('title')}</h1>
-                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }}>
-                </p>
-            </section>
-
             <div style={{ background: "white", borderRadius: "10px", boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "30px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                     <h2 style={{ margin: 0, fontSize: "1.2rem" }}>{tInput('title')}</h2>

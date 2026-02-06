@@ -105,17 +105,6 @@ export default function YoutubeThumbnailClient() {
 
   return (
     <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
-      {/* Title Section */}
-      <div style={{ textAlign: "center", marginBottom: "30px" }}>
-        <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#333", marginBottom: "10px" }}>
-          {t("title")}
-        </h1>
-        <p
-          style={{ color: "#666", fontSize: "1rem", lineHeight: "1.6" }}
-          dangerouslySetInnerHTML={{ __html: t("subtitle") }}
-        />
-      </div>
-
       {/* Input Section */}
       <div
         style={{

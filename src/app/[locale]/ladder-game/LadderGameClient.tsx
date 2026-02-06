@@ -293,9 +293,6 @@ export default function LadderGameClient() {
 
     return (
         <div className="tool-container">
-            <h1 className="tool-title">{t('title')}</h1>
-            <p className="tool-description">{t('description')}</p>
-
             <div className="ladder-game-wrapper">
                 {/* Players Input Section */}
                 <div className="ladder-input-section">

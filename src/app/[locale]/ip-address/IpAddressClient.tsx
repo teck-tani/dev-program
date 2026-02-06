@@ -103,13 +103,6 @@ export default function IpAddressClient() {
 
     return (
         <div className="container" style={{ maxWidth: "800px", padding: "20px" }}>
-            <section style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1 style={{ marginBottom: "20px" }}>{t('title')}</h1>
-                <p style={{ color: "#666", fontSize: "1.1rem", maxWidth: "700px", margin: "0 auto" }}>
-                    {t('subtitle')}
-                </p>
-            </section>
-
             {/* IP 주소 표시 카드 */}
             <div style={{
                 background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",

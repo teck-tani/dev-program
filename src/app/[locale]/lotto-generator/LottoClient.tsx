@@ -204,8 +204,7 @@ export default function LottoClient() {
     return (
         <div style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 20px", fontFamily: "'Pretendard', sans-serif", color: "#333" }}>
 
-            <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
-                <h1 style={{ fontSize: "1.8rem", fontWeight: "800" }}>{t('header.title')}</h1>
+            <header style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "30px" }}>
                 <button
                     onClick={startSync}
                     disabled={syncing}

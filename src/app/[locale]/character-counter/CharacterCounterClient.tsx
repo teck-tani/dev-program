@@ -71,15 +71,6 @@ export default function CharacterCounterClient() {
 
     return (
         <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
-            {/* Header */}
-            <section style={{ textAlign: "center", paddingTop: "40px", paddingBottom: "20px" }}>
-                <h1 style={{ fontSize: '2rem', color: '#2c3e50', marginBottom: "15px", fontWeight: 700 }}>
-                    {t('title')}
-                </h1>
-                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', padding: '0 20px' }}
-                   dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
-            </section>
-
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
                 {/* Main Stats Cards */}
                 <div style={{

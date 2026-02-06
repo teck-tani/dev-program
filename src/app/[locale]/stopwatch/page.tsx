@@ -304,11 +304,6 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
             />
 
             <div className="container sw-page">
-                {/* 제목만 상단에 - 짧은 버전 */}
-                <h1 className="sw-title">
-                    {isKo ? '온라인 스톱워치' : 'Online Stopwatch'}
-                </h1>
-
                 {/* 스톱워치 컴포넌트 */}
                 <div className="sw-widget">
                     <StopwatchWrapper />

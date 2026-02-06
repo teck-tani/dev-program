@@ -317,30 +317,6 @@ export default function PayCalClient() {
 
     return (
         <div className="paycal-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
-            {/* Header */}
-            <section className="paycal-header" style={{ textAlign: 'center', marginBottom: '16px' }}>
-                <h1 className="paycal-title" style={{
-                    fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
-                    fontWeight: '800',
-                    background: 'linear-gradient(135deg, #3d5cb9 0%, #4f6dc5 50%, #5a7fd6 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    marginTop: 0,
-                    marginBottom: '12px',
-                    letterSpacing: '-0.02em',
-                }}>
-                    {t('title').replace('2026 ', '')}
-                </h1>
-                <p className="paycal-subtitle" style={{
-                    color: '#6b7280',
-                    fontSize: '0.95rem',
-                    lineHeight: '1.6',
-                    maxWidth: '550px',
-                    margin: '0 auto',
-                }} dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
-            </section>
-
             {/* Calculator Card */}
             <div className="paycal-card" style={{
                 background: 'linear-gradient(145deg, #ffffff 0%, #f0f4ff 100%)',

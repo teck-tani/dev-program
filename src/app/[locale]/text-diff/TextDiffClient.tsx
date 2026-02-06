@@ -134,12 +134,6 @@ export default function TextDiffClient() {
 
     return (
         <div className="container" style={{ maxWidth: "1200px", padding: "20px" }}>
-            <section style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1 style={{ marginBottom: "20px" }}>{t('title')}</h1>
-                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}
-                    dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
-            </section>
-
             {/* Options */}
             <div style={{
                 display: "flex",
