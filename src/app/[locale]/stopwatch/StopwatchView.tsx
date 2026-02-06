@@ -164,6 +164,40 @@ export default function StopwatchView() {
         URL.revokeObjectURL(url);
     };
 
+    // 키보드 단축키 핸들러
+    const handleToggle = useCallback(() => {
+        setIsRunning(prev => !prev);
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // 입력 필드에서는 단축키 무시
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                return;
+            }
+
+            switch (e.code) {
+                case 'Space':
+                    e.preventDefault();
+                    handleToggle();
+                    break;
+                case 'KeyL':
+                    e.preventDefault();
+                    if (isRunning || time > 0) {
+                        handleLap();
+                    }
+                    break;
+                case 'KeyR':
+                    e.preventDefault();
+                    handleReset();
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleToggle, isRunning, time]);
+
     // 가장 빠른/느린 랩 찾기
     const fastestLapIndex = laps.length > 1
         ? laps.reduce((minIdx, lap, idx) => lap.lapTime < laps[minIdx].lapTime ? idx : minIdx, 0)
@@ -215,6 +249,42 @@ export default function StopwatchView() {
                     </div>
                 );
             })()}
+
+            {/* 컨트롤 버튼 */}
+            {/* 단축키 안내 */}
+            <div style={{
+                display: 'flex',
+                gap: '16px',
+                justifyContent: 'center',
+                marginBottom: '16px',
+                fontSize: '0.75rem',
+                color: '#9ca3af',
+            }}>
+                <span><kbd style={{
+                    background: '#f3f4f6',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '4px',
+                    padding: '2px 6px',
+                    fontFamily: 'inherit',
+                    fontSize: '0.7rem',
+                }}>Space</kbd> {t('shortcutStartStop')}</span>
+                <span><kbd style={{
+                    background: '#f3f4f6',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '4px',
+                    padding: '2px 6px',
+                    fontFamily: 'inherit',
+                    fontSize: '0.7rem',
+                }}>L</kbd> {t('shortcutLap')}</span>
+                <span><kbd style={{
+                    background: '#f3f4f6',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '4px',
+                    padding: '2px 6px',
+                    fontFamily: 'inherit',
+                    fontSize: '0.7rem',
+                }}>R</kbd> {t('shortcutReset')}</span>
+            </div>
 
             {/* 컨트롤 버튼 */}
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>

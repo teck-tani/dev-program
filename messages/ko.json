@@ -323,7 +323,10 @@
         "lap": "랩",
         "lapList": "랩 기록",
         "exportExcel": "엑셀 다운로드",
-        "clearLaps": "기록 삭제"
+        "clearLaps": "기록 삭제",
+        "shortcutStartStop": "시작/정지",
+        "shortcutLap": "랩",
+        "shortcutReset": "리셋"
       },
       "seo": {
         "title": "온라인 스톱워치 - 공부 & 운동 시간 측정",

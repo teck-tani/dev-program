@@ -323,7 +323,10 @@
         "lap": "Lap",
         "lapList": "Lap Records",
         "exportExcel": "Export Excel",
-        "clearLaps": "Clear Laps"
+        "clearLaps": "Clear Laps",
+        "shortcutStartStop": "Start/Stop",
+        "shortcutLap": "Lap",
+        "shortcutReset": "Reset"
       },
       "seo": {
         "title": "Online Stopwatch - Study & Workout Time Measurement",
