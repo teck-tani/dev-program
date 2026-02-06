@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useStopwatchSettings } from "@/contexts/StopwatchSettingsContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface LapRecord {
     lapNumber: number;
@@ -14,6 +16,8 @@ const STORAGE_KEY = 'stopwatch_laps';
 
 export default function StopwatchView() {
     const t = useTranslations('Clock.Stopwatch.controls');
+    const { playLapSound, triggerVibration } = useStopwatchSettings();
+    const { theme } = useTheme();
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
     const [laps, setLaps] = useState<LapRecord[]>([]);
@@ -99,10 +103,9 @@ export default function StopwatchView() {
     const handleLap = () => {
         if (!isRunning && time === 0) return;
 
-        // 햅틱 피드백 (모바일)
-        if (navigator.vibrate) {
-            navigator.vibrate(15);
-        }
+        // 소리 + 진동 피드백
+        playLapSound();
+        triggerVibration();
 
         const currentTime = time;
         const lapTime = currentTime - lastLapTimeRef.current;
@@ -250,7 +253,7 @@ export default function StopwatchView() {
                         fontVariantNumeric: 'tabular-nums',
                         fontFamily: "'SF Mono', 'Roboto Mono', 'Consolas', monospace",
                         fontWeight: 600,
-                        color: '#0891b2',
+                        color: theme === 'dark' ? '#67e8f9' : '#0891b2',
                         letterSpacing: '0.02em',
                         display: 'flex',
                         alignItems: 'baseline',

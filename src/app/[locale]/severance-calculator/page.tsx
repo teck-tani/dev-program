@@ -66,37 +66,53 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 function generateFaqSchema(locale: string) {
     const faqData = locale === 'ko' ? [
         {
+            question: "퇴직금은 어떤 공식으로 계산되나요?",
+            answer: "퇴직금 = 1일 평균임금 × 30일 × (재직일수 ÷ 365)로 계산됩니다. 1일 평균임금은 퇴직 전 3개월간 받은 임금 총액을 3개월간의 총 일수(약 91일)로 나눈 값입니다."
+        },
+        {
+            question: "알바(아르바이트)나 계약직도 퇴직금을 받을 수 있나요?",
+            answer: "네, 가능합니다. 고용 형태에 관계없이 1년 이상 계속 근무하고, 4주 평균 주 15시간 이상 일했다면 퇴직금을 받을 수 있습니다."
+        },
+        {
+            question: "퇴직금 계산 시 상여금과 연차수당도 포함되나요?",
+            answer: "네, 포함됩니다. 연간 상여금의 3/12(3개월분)과 연간 연차수당의 3/12이 평균임금 산정에 포함됩니다."
+        },
+        {
+            question: "퇴직금 지급 기한은 언제까지인가요?",
+            answer: "사용자(회사)는 근로자가 퇴직한 날로부터 14일 이내에 퇴직금을 지급해야 합니다. 14일 이내에 지급하지 않으면 지연이자(연 20%)가 발생합니다."
+        },
+        {
             question: "퇴직금 중간정산은 언제 가능한가요?",
             answer: "원칙적으로 퇴직금 중간정산은 금지되어 있습니다. 다만, 무주택자의 주택 구입, 전세금 부담, 본인 또는 부양가족의 6개월 이상 요양 등 법에서 정한 사유에 해당하는 경우에만 예외적으로 허용됩니다."
         },
         {
-            question: "퇴직금 지급 기한은 언제까지인가요?",
-            answer: "사용자는 근로자가 퇴직한 날로부터 14일 이내에 퇴직금을 지급해야 합니다. 당사자 간의 합의가 있다면 지급 기일을 연장할 수 있습니다."
-        },
-        {
-            question: "알바(아르바이트)도 퇴직금을 받을 수 있나요?",
-            answer: "네, 가능합니다. 정규직뿐만 아니라 계약직, 아르바이트도 1년 이상 근무하고 주 15시간 이상 일했다면 퇴직금을 받을 수 있습니다."
-        },
-        {
-            question: "퇴직금 계산 시 상여금도 포함되나요?",
-            answer: "네, 연간 상여금의 3/12(3개월분)이 평균임금 산정에 포함됩니다. 연차수당도 마찬가지로 포함됩니다."
+            question: "퇴직금에 세금이 부과되나요?",
+            answer: "네, 퇴직금에는 퇴직소득세가 부과됩니다. 근속연수가 길수록 공제 혜택이 커지며, 실제 수령액은 세전 금액에서 퇴직소득세를 차감한 금액입니다."
         }
     ] : [
         {
+            question: "How is severance pay calculated?",
+            answer: "Severance Pay = Average Daily Wage × 30 days × (Service days ÷ 365). The average daily wage is the total wages for 3 months before resignation divided by the total days (approximately 91 days)."
+        },
+        {
+            question: "Can part-time or contract workers receive severance pay?",
+            answer: "Yes. Regardless of employment type, workers who have been continuously employed for more than 1 year and worked an average of 15+ hours per week are entitled to severance pay."
+        },
+        {
+            question: "Are bonuses and annual leave pay included in the calculation?",
+            answer: "Yes. 3/12 (three months' worth) of annual bonuses and 3/12 of annual leave allowance are factored into the average wage calculation."
+        },
+        {
+            question: "What is the deadline for severance pay payment?",
+            answer: "Employers must pay severance within 14 days of the employee's resignation date. Late payment incurs penalty interest at 20% per annum."
+        },
+        {
             question: "Can I get an interim settlement (mid-term withdrawal)?",
-            answer: "In principle, interim settlement is prohibited. Exceptions exist for specific reasons like purchasing a home (for non-homeowners), medical care for 6+ months, etc."
+            answer: "In principle, interim settlement is prohibited. Exceptions are allowed for legally specified reasons such as purchasing a home, paying rent deposits, or medical care lasting 6+ months."
         },
         {
-            question: "When must severance pay be paid?",
-            answer: "Employers must pay severance within 14 days of retirement. The deadline can be extended by mutual agreement."
-        },
-        {
-            question: "Can part-time workers receive severance pay?",
-            answer: "Yes. Not only full-time employees but also contract workers and part-timers are eligible if they worked for more than 1 year and 15+ hours per week."
-        },
-        {
-            question: "Is bonus included in severance calculation?",
-            answer: "Yes, 3/12 (3 months' worth) of annual bonus is included in average wage calculation. Annual leave allowance is also included."
+            question: "Is severance pay subject to taxation?",
+            answer: "Yes, severance pay is subject to retirement income tax. Longer service periods receive greater deduction benefits. The calculator shows pre-tax estimates."
         }
     ];
 
@@ -128,44 +144,64 @@ function generateHowToSchema(locale: string) {
         "step": isKo ? [
             {
                 "@type": "HowToStep",
-                "name": "입사일 입력",
-                "text": "회사에 처음 입사한 날짜를 입력합니다."
+                "name": "입사일 선택",
+                "text": "근무 기간 영역에서 회사에 처음 입사한 날짜를 선택합니다. 근로계약서상의 근무 시작일을 기준으로 입력하세요."
             },
             {
                 "@type": "HowToStep",
-                "name": "퇴사일 입력",
-                "text": "퇴사 예정일 또는 실제 퇴사일(마지막 근무일 다음날)을 입력합니다."
+                "name": "퇴사일 선택",
+                "text": "퇴사 예정일을 선택합니다. 퇴사일은 마지막 근무일의 다음 날을 의미합니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "급여 정보 입력",
-                "text": "퇴직 전 최근 3개월간 받은 급여 총액(세전)을 입력합니다. 상여금과 연차수당이 있다면 함께 입력합니다."
+                "name": "3개월 급여 총액 입력",
+                "text": "급여 정보 영역에 퇴직 전 최근 3개월간 받은 급여 총액(세전)을 입력합니다. 기본급과 고정 수당을 합산한 3개월 치 금액입니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "계산 결과 확인",
-                "text": "퇴직금 계산하기 버튼을 클릭하면 예상 퇴직금이 표시됩니다."
+                "name": "상여금·연차수당 입력",
+                "text": "연간 상여금 총액과 연차수당이 있다면 각각 입력합니다. 없으면 비워두셔도 됩니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "퇴직금 계산하기 버튼 클릭",
+                "text": "모든 정보를 입력한 후 하단의 퇴직금 계산하기 버튼을 클릭합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "결과 확인",
+                "text": "예상 퇴직금 금액과 총 근속 기간이 결과 카드에 표시됩니다. 세전 예상 금액이며, 실제 수령액은 퇴직소득세 공제 후 달라질 수 있습니다."
             }
         ] : [
             {
                 "@type": "HowToStep",
-                "name": "Enter Join Date",
-                "text": "Enter the date you first joined the company."
+                "name": "Select Join Date",
+                "text": "In the Work Period section, select the date you first joined the company based on your employment contract."
             },
             {
                 "@type": "HowToStep",
-                "name": "Enter Resignation Date",
-                "text": "Enter your expected or actual resignation date (day after last working day)."
+                "name": "Select Resignation Date",
+                "text": "Select your planned resignation date. This means the day after your last working day."
             },
             {
                 "@type": "HowToStep",
-                "name": "Enter Salary Information",
-                "text": "Enter your total salary for the last 3 months before resignation (pre-tax). Include bonus and annual leave allowance if applicable."
+                "name": "Enter 3-Month Total Salary",
+                "text": "In the Salary Information section, enter your total pre-tax salary for the last 3 months. This includes base salary plus fixed allowances for 3 months."
             },
             {
                 "@type": "HowToStep",
-                "name": "Check Result",
-                "text": "Click the Calculate button to see your estimated severance pay."
+                "name": "Enter Bonus and Leave Allowance",
+                "text": "Enter your total annual bonus and annual leave allowance if applicable. These fields are optional."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Click Calculate Severance Pay",
+                "text": "After entering all information, click the Calculate Severance Pay button at the bottom."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "View Results",
+                "text": "The estimated severance pay amount and total service period will be displayed. This is a pre-tax estimate; actual amount may differ after retirement income tax deductions."
             }
         ]
     };

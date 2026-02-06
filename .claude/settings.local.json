@@ -25,7 +25,8 @@
       "Bash(claude update:*)",
       "Bash(grep:*)",
       "Bash(xargs ls:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "WebSearch"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

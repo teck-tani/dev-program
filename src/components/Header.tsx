@@ -124,13 +124,15 @@ export default function Header() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Close settings when clicking outside
+  // Close settings when clicking outside (but not on settings button or dropdown)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".settings-dropdown")) {
-        setSettingsOpen(false);
+      // 설정 드롭다운 또는 설정 버튼 클릭 시 무시
+      if (target.closest(".settings-dropdown") || target.closest("[aria-label='설정']")) {
+        return;
       }
+      setSettingsOpen(false);
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);

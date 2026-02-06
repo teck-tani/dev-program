@@ -2,8 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useStopwatchSettings } from "@/contexts/StopwatchSettingsContext";
 import { Link, usePathname } from "@/navigation";
-import { FaTimes, FaSun, FaMoon, FaGlobe } from "react-icons/fa";
+import { FaTimes, FaSun, FaMoon, FaGlobe, FaVolumeUp, FaVolumeMute, FaMobileAlt } from "react-icons/fa";
 
 interface SettingsDropdownProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ interface SettingsDropdownProps {
 export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
   const t = useTranslations('Header');
   const { theme, toggleTheme } = useTheme();
+  const { settings, toggleSound, toggleVibration } = useStopwatchSettings();
   const pathname = usePathname();
 
   return (
@@ -44,6 +46,44 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
               </span>
               <span className="toggle-label">
                 {theme === 'dark' ? t('settings.darkMode') : t('settings.lightMode')}
+              </span>
+            </button>
+          </div>
+
+          {/* 랩 소리 설정 */}
+          <div className="settings-item">
+            <div className="settings-label">
+              {settings.soundEnabled ? <FaVolumeUp /> : <FaVolumeMute />}
+              <span>{t('settings.lapSound')}</span>
+            </div>
+            <button
+              className={`settings-toggle ${settings.soundEnabled ? 'active' : ''}`}
+              onClick={toggleSound}
+            >
+              <span className="toggle-track">
+                <span className="toggle-thumb" />
+              </span>
+              <span className="toggle-label">
+                {settings.soundEnabled ? 'ON' : 'OFF'}
+              </span>
+            </button>
+          </div>
+
+          {/* 진동 설정 */}
+          <div className="settings-item">
+            <div className="settings-label">
+              <FaMobileAlt />
+              <span>{t('settings.vibration')}</span>
+            </div>
+            <button
+              className={`settings-toggle ${settings.vibrationEnabled ? 'active' : ''}`}
+              onClick={toggleVibration}
+            >
+              <span className="toggle-track">
+                <span className="toggle-thumb" />
+              </span>
+              <span className="toggle-label">
+                {settings.vibrationEnabled ? 'ON' : 'OFF'}
               </span>
             </button>
           </div>

@@ -57,6 +57,8 @@
       "theme": "Theme",
       "lightMode": "Light Mode",
       "darkMode": "Dark Mode",
+      "lapSound": "Lap Sound",
+      "vibration": "Vibration",
       "language": "Language"
     }
   },
@@ -430,24 +432,24 @@
       "searchCurrency": "Search currency...",
       "noResults": "No results"
     },
-    "tips": {
-      "title": "Tips for Better Exchange Rates",
-      "mobile": {
-        "title": "📱 Mobile App Exchange",
-        "desc": "Using bank mobile apps can give you up to 90% preferential exchange rates. Convenient to pick up at airport branches."
-      },
-      "private": {
-        "title": "💵 Private Exchange Offices",
-        "desc": "Private exchange offices in tourist areas often offer better rates than banks. (Especially for USD, EUR)"
-      },
-      "travelCard": {
-        "title": "💳 Travel Cards",
-        "desc": "Using cards like Travel Wallet allows you to pay or withdraw cash locally without exchange fees."
-      }
+    "definition": {
+      "title": "What is an Exchange Rate Calculator?",
+      "desc": "An exchange rate calculator is an online tool that compares and converts currency values between different countries in real time. This calculator uses <strong>official standard rates from the Export-Import Bank of Korea</strong> and supports over <strong>40 currencies</strong> including USD, EUR, JPY, and CNY. It helps you accurately convert amounts for travel, international shopping, remittances, and study abroad expenses. Note that data may not be updated on non-business days (weekends and Korean holidays)."
     },
-    "caution": {
-      "title": "⚠️ Caution",
-      "desc": "This service uses the Export-Import Bank of Korea API. Data may not be updated on non-business days.<br />Information is for reference only."
+    "useCases": {
+      "title": "Use Cases",
+      "case1": {
+        "title": "Travel Budget Planning",
+        "desc": "Plan your total travel budget by calculating accommodation, transportation, and meal costs in local currency before your trip. For example, instantly check how much 100,000 KRW converts to Japanese Yen for a trip to Japan, helping you decide the right amount and timing for currency exchange."
+      },
+      "case2": {
+        "title": "International Shopping Price Comparison",
+        "desc": "Check the actual KRW price of products on international shopping sites like Amazon and Taobao. Calculate the final cost including shipping and customs duties to make smart purchasing decisions by comparing with domestic prices."
+      },
+      "case3": {
+        "title": "Overseas Remittance & Study Abroad Costs",
+        "desc": "Accurately check the KRW equivalent of monthly tuition and living expenses you need to remit. Monitor exchange rate fluctuations to send money at favorable rates, potentially saving significant amounts and helping with long-term financial planning."
+      }
     },
     "guide": {
       "title": "How to Use",
@@ -675,24 +677,55 @@
         "3": { "title": "All Employment Types", "desc": "Full-time, contract, and part-time workers are all eligible if conditions are met." }
       },
       "faq": {
-        "title": "FAQ",
-        "q1": "Q. Can I get an interim settlement (mid-term withdrawal)?",
-        "a1": "In principle, interim settlement is prohibited. Exceptions exist for specific reasons like purchasing a home (for non-homeowners), medical care for 6+ months, etc.",
-        "q2": "Q. When must severance pay be paid?",
-        "a2": "Employers must pay severance within 14 days of retirement. The deadline can be extended by mutual agreement.",
-        "q3": "Q. Can part-time workers receive severance pay?",
-        "a3": "Yes, they can. Not only full-time employees but also contract workers and part-timers can receive severance pay if they work for more than 1 year and work at least 15 hours per week.",
-        "q4": "Q. Is bonus included in severance calculation?",
-        "a4": "Yes, 3/12 (3 months' worth) of annual bonus is included in the average wage calculation. Annual leave allowance is also included."
+        "title": "Frequently Asked Questions (FAQ)",
+        "q1": "Q. How is severance pay calculated?",
+        "a1": "Severance Pay = Average Daily Wage × 30 days × (Service days ÷ 365). The average daily wage is calculated by dividing the total wages for the 3 months before resignation (including base salary, allowances, bonuses, and leave pay) by the total number of days in those 3 months (approximately 91 days).",
+        "q2": "Q. Can part-time or contract workers receive severance pay?",
+        "a2": "Yes, they can. Regardless of employment type (full-time, contract, or part-time), workers who have been continuously employed for more than 1 year and worked an average of 15+ hours per week over a 4-week period are entitled to severance pay under the Labor Standards Act.",
+        "q3": "Q. Are bonuses and annual leave pay included in the calculation?",
+        "a3": "Yes, they are included. 3/12 (three months' worth) of annual bonuses and 3/12 of annual leave allowance are factored into the average wage calculation. In this calculator, simply enter the amounts in the 'Total Annual Bonus' and 'Annual Leave Allowance' fields to have them automatically reflected.",
+        "q4": "Q. What is the deadline for severance pay payment?",
+        "a4": "Employers must pay severance within 14 days of the employee's resignation date. Late payment incurs penalty interest at 20% per annum. However, the deadline may be extended by mutual agreement between the employer and employee.",
+        "q5": "Q. Can I get an interim settlement (mid-term withdrawal)?",
+        "a5": "In principle, interim settlement of severance pay is prohibited. However, exceptions are allowed for legally specified reasons such as purchasing a home (for non-homeowners), paying rent deposits, medical care for the employee or dependents lasting 6+ months, or natural disasters.",
+        "q6": "Q. Is severance pay subject to taxation?",
+        "a6": "Yes, severance pay is subject to retirement income tax. The tax is calculated based on your years of service and total severance amount, with longer service periods receiving greater deduction benefits. The amount shown in this calculator is pre-tax, so your actual take-home amount will be lower after tax deductions."
+      }
+    },
+    "definition": {
+      "title": "What is Severance Pay?",
+      "desc": "Severance pay is a statutory benefit required under Korea's Employee Retirement Benefit Security Act. Employers must pay severance to any employee who has worked continuously for 1 year or more upon their resignation or retirement. This applies to all employment types, including full-time, contract, and part-time workers, as long as they meet the eligibility requirements.",
+      "formula": {
+        "title": "Severance Pay Formula",
+        "line1": "Average Daily Wage = Total wages for 3 months before resignation ÷ Total days in those 3 months (91 days)",
+        "line2": "Severance Pay = Average Daily Wage × 30 days × (Total service days ÷ 365 days)",
+        "note": "※ Total wages include base salary, allowances, bonuses (3/12 of annual bonus), and annual leave allowance (3/12 of annual leave pay)."
       }
     },
     "guide": {
-      "title": "How to Use the Calculator",
+      "title": "How to Use the Severance Pay Calculator",
       "steps": {
-        "1": { "label": "Enter Join Date", "desc": "Enter the date you first joined the company." },
-        "2": { "label": "Enter Leave Date", "desc": "Enter your planned resignation date (the day after your last working day)." },
-        "3": { "label": "Enter Salary Info", "desc": "Enter your total pre-tax salary for the last 3 months before resignation." },
-        "4": { "label": "View Results", "desc": "Click the button to see your estimated severance pay." }
+        "1": { "label": "STEP 1. Select Join Date", "desc": "In the 'Work Period' section at the top, click the left date field and select the date you first joined the company. Use the start date on your employment contract as the reference." },
+        "2": { "label": "STEP 2. Select Resignation Date", "desc": "Click the right date field and select your planned resignation date. The resignation date means the day after your last working day. For example, if you worked until December 31st, enter January 1st." },
+        "3": { "label": "STEP 3. Enter 3-Month Total Salary", "desc": "In the 'Salary Information' section, enter your total pre-tax salary for the last 3 months in the main input field. This is the sum of your base salary plus fixed allowances (meal, transport, etc.) for 3 months. Example: If your monthly salary is 3 million KRW, enter 9,000,000." },
+        "4": { "label": "STEP 4. Enter Bonus & Leave Allowance (Optional)", "desc": "If you received bonuses or annual leave allowance, enter them in the two smaller fields below. For bonus, enter the total annual amount (e.g., combined holiday bonuses). For leave allowance, enter compensation for unused annual leave days. You can leave these blank if not applicable." },
+        "5": { "label": "STEP 5. Click 'Calculate Severance Pay'", "desc": "After entering all information, click the 'Calculate Severance Pay' button at the bottom. Join date, resignation date, and 3-month salary are required fields. If your service period is less than 1 year, a notification will appear that you are not eligible for severance pay." },
+        "6": { "label": "STEP 6. View Results", "desc": "Once calculated, the estimated severance pay amount and total service period (XX years XX months) will be displayed in the result card. This is a pre-tax estimate; your actual amount may differ after retirement income tax deductions." }
+      }
+    },
+    "useCases": {
+      "title": "Severance Pay Calculator Use Cases",
+      "case1": {
+        "title": "Check Expected Severance Before Resigning",
+        "desc": "If you're planning to resign or change jobs, use the severance calculator to estimate your payout in advance. This is essential information for financial planning, including living expenses and job search period funds. Check your recent payslips for accurate 3-month salary figures to get more precise results."
+      },
+      "case2": {
+        "title": "Verify Eligibility for Part-time & Contract Workers",
+        "desc": "Many part-time and contract workers are unaware they may be entitled to severance pay. If you've worked for more than 1 year and at least 15 hours per week, you're eligible regardless of employment type. Enter your work period and salary in the calculator to instantly check your eligibility and estimated amount."
+      },
+      "case3": {
+        "title": "Compare Total Compensation When Changing Jobs",
+        "desc": "When you receive a job offer, calculate the severance pay you would receive from your current employer as part of your total compensation package. By factoring in your current severance pay plus unused annual leave allowance, you can make a more informed comparison with the new employer's offer."
       }
     },
     "notice": {

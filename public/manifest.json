@@ -1,0 +1,35 @@
+{
+  "name": "Tani DevTool - 온라인 스톱워치 & 웹 도구",
+  "short_name": "Tani DevTool",
+  "description": "스톱워치, 타이머, 계산기 등 다양한 웹 도구를 제공합니다. 오프라인에서도 사용 가능!",
+  "start_url": "/ko/stopwatch",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0891b2",
+  "orientation": "portrait-primary",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "스톱워치",
+      "short_name": "스톱워치",
+      "url": "/ko/stopwatch"
+    },
+    {
+      "name": "타이머",
+      "short_name": "타이머",
+      "url": "/ko/timer"
+    },
+    {
+      "name": "시계",
+      "short_name": "시계",
+      "url": "/ko/clock"
+    }
+  ]
+}

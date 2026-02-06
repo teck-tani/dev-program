@@ -165,16 +165,60 @@ function generateFinancialServiceSchema(locale: string) {
     };
 }
 
+// HowTo 구조화 데이터 생성
+function generateHowToSchema(locale: string) {
+    const isKo = locale === 'ko';
+
+    return {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": isKo ? "환율 계산기 사용 방법" : "How to Use Exchange Rate Calculator",
+        "description": isKo
+            ? "실시간 환율을 조회하고 통화를 환산하는 방법"
+            : "How to check real-time exchange rates and convert currencies",
+        "step": isKo ? [
+            {
+                "@type": "HowToStep",
+                "name": "통화 선택",
+                "text": "각 행의 드롭다운에서 원하는 통화를 선택합니다. USD, EUR, JPY 등 40개 이상의 통화를 지원합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "금액 입력",
+                "text": "아무 행에나 금액을 입력하면, 나머지 통화의 금액이 자동으로 계산됩니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "결과 확인",
+                "text": "모든 통화의 환산 금액을 한눈에 비교할 수 있습니다."
+            }
+        ] : [
+            {
+                "@type": "HowToStep",
+                "name": "Select Currency",
+                "text": "Choose your desired currency from the dropdown in each row. Supports 40+ currencies including USD, EUR, JPY."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Enter Amount",
+                "text": "Enter an amount in any row, and the other currencies will be automatically calculated."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Compare Results",
+                "text": "View converted amounts for all currencies at a glance."
+            }
+        ]
+    };
+}
+
 export default async function MoneyConverterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
     const t = await getTranslations('MoneyConverter');
-    const tTips = await getTranslations('MoneyConverter.tips');
-    const tCaution = await getTranslations('MoneyConverter.caution');
-    const tFaq = await getTranslations('MoneyConverter.faq');
-    const tGuide = await getTranslations('MoneyConverter.guide');
 
     const faqSchema = generateFaqSchema(locale);
+    const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
     const financialServiceSchema = generateFinancialServiceSchema(locale);
 
@@ -184,6 +228,10 @@ export default async function MoneyConverterPage({ params }: { params: Promise<{
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
             <script
                 type="application/ld+json"
@@ -203,81 +251,90 @@ export default async function MoneyConverterPage({ params }: { params: Promise<{
                         .page-container {
                             padding: 0 10px !important;
                         }
-                        .page-title {
-                            margin-bottom: 10px !important;
-                            font-size: 1.5rem !important;
-                            margin-top: 0 !important;
-                        }
                     }
                 `}</style>
                 <ExchangeRateClient />
 
-                <article style={{ maxWidth: '800px', margin: '80px auto 0', lineHeight: '1.7' }}>
-                    {/* 사용 가이드 섹션 */}
-                    <section style={{ marginBottom: '50px' }}>
-                        <h2 style={{ fontSize: '1.8rem', color: '#333', marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                            {tGuide('title')}
-                        </h2>
-                        <ol style={{ paddingLeft: '20px', color: '#444' }}>
-                            <li style={{ marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: tGuide.raw('steps.step1') }} />
-                            <li style={{ marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: tGuide.raw('steps.step2') }} />
-                            <li style={{ marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: tGuide.raw('steps.step3') }} />
-                        </ol>
+                <article className="mc-article">
+                    {/* 1. 정의 섹션 */}
+                    <section className="mc-definition">
+                        <div className="mc-definition-badge">ABOUT</div>
+                        <h2 className="mc-definition-title">{t('definition.title')}</h2>
+                        <div className="mc-definition-content" dangerouslySetInnerHTML={{ __html: t.raw('definition.desc') }} />
                     </section>
 
-                    {/* 환전 팁 섹션 */}
-                    <section style={{ marginBottom: '50px' }}>
-                        <h2 style={{ fontSize: '1.8rem', color: '#333', marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                            {tTips('title')}
-                        </h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-                            <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
-                                <h3 style={{ fontSize: '1.2rem', color: '#3d5cb9', marginBottom: '10px' }}>{tTips('mobile.title')}</h3>
-                                <p style={{ fontSize: '0.95rem', color: '#555' }}>{tTips('mobile.desc')}</p>
+                    {/* 2. 사용법 섹션 */}
+                    <section className="mc-section">
+                        <h2 className="mc-section-title">{t('guide.title')}</h2>
+                        <div className="mc-steps">
+                            <div className="mc-step">
+                                <div className="mc-step-number">1</div>
+                                <div className="mc-step-content" dangerouslySetInnerHTML={{ __html: t.raw('guide.steps.step1') }} />
                             </div>
-                            <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
-                                <h3 style={{ fontSize: '1.2rem', color: '#3d5cb9', marginBottom: '10px' }}>{tTips('private.title')}</h3>
-                                <p style={{ fontSize: '0.95rem', color: '#555' }}>{tTips('private.desc')}</p>
+                            <div className="mc-step">
+                                <div className="mc-step-number">2</div>
+                                <div className="mc-step-content" dangerouslySetInnerHTML={{ __html: t.raw('guide.steps.step2') }} />
                             </div>
-                            <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
-                                <h3 style={{ fontSize: '1.2rem', color: '#3d5cb9', marginBottom: '10px' }}>{tTips('travelCard.title')}</h3>
-                                <p style={{ fontSize: '0.95rem', color: '#555' }}>{tTips('travelCard.desc')}</p>
+                            <div className="mc-step">
+                                <div className="mc-step-number">3</div>
+                                <div className="mc-step-content" dangerouslySetInnerHTML={{ __html: t.raw('guide.steps.step3') }} />
                             </div>
                         </div>
                     </section>
 
-                    {/* FAQ 섹션 */}
-                    <section className="faq-section" style={{ background: '#f0f4f8', padding: '30px', borderRadius: '15px', marginBottom: '50px' }}>
-                        <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', textAlign: 'center' }}>
-                            {tFaq('title')}
-                        </h2>
-
-                        <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.update.q')}</summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.update.a') }} />
-                        </details>
-
-                        <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.actual.q')}</summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.actual.a') }} />
-                        </details>
-
-                        <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.jpy100.q')}</summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.jpy100.a') }} />
-                        </details>
-
-                        <details style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.save.q')}</summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.save.a') }} />
-                        </details>
+                    {/* 3. 활용 사례 섹션 */}
+                    <section className="mc-section">
+                        <h2 className="mc-section-title">{t('useCases.title')}</h2>
+                        <div className="mc-usecase-grid">
+                            <div className="mc-usecase-card">
+                                <span className="mc-usecase-number">01</span>
+                                <h3 className="mc-usecase-card-title">{t('useCases.case1.title')}</h3>
+                                <p className="mc-usecase-card-desc">{t('useCases.case1.desc')}</p>
+                            </div>
+                            <div className="mc-usecase-card">
+                                <span className="mc-usecase-number">02</span>
+                                <h3 className="mc-usecase-card-title">{t('useCases.case2.title')}</h3>
+                                <p className="mc-usecase-card-desc">{t('useCases.case2.desc')}</p>
+                            </div>
+                            <div className="mc-usecase-card">
+                                <span className="mc-usecase-number">03</span>
+                                <h3 className="mc-usecase-card-title">{t('useCases.case3.title')}</h3>
+                                <p className="mc-usecase-card-desc">{t('useCases.case3.desc')}</p>
+                            </div>
+                        </div>
                     </section>
 
-                    {/* 주의사항 섹션 */}
-                    <section style={{ background: '#fff3cd', padding: '20px', borderRadius: '10px', border: '1px solid #ffeeba', color: '#856404' }}>
-                        <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{tCaution('title')}</h3>
-                        <p style={{ fontSize: '0.95rem' }} dangerouslySetInnerHTML={{ __html: tCaution.raw('desc') }}>
-                        </p>
+                    {/* 4. FAQ 섹션 */}
+                    <section className="mc-faq-section">
+                        <h2 className="mc-faq-title">{t('faq.title')}</h2>
+                        <details className="mc-faq-item">
+                            <summary>
+                                <span>{t('faq.list.update.q')}</span>
+                                <svg className="mc-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+                            </summary>
+                            <p dangerouslySetInnerHTML={{ __html: t.raw('faq.list.update.a') }} />
+                        </details>
+                        <details className="mc-faq-item">
+                            <summary>
+                                <span>{t('faq.list.actual.q')}</span>
+                                <svg className="mc-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+                            </summary>
+                            <p dangerouslySetInnerHTML={{ __html: t.raw('faq.list.actual.a') }} />
+                        </details>
+                        <details className="mc-faq-item">
+                            <summary>
+                                <span>{t('faq.list.jpy100.q')}</span>
+                                <svg className="mc-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+                            </summary>
+                            <p dangerouslySetInnerHTML={{ __html: t.raw('faq.list.jpy100.a') }} />
+                        </details>
+                        <details className="mc-faq-item">
+                            <summary>
+                                <span>{t('faq.list.save.q')}</span>
+                                <svg className="mc-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+                            </summary>
+                            <p dangerouslySetInnerHTML={{ __html: t.raw('faq.list.save.a') }} />
+                        </details>
                     </section>
                 </article>
             </div>

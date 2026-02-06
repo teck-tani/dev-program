@@ -1376,6 +1376,381 @@ body[data-theme="dark"] .calc-faq-item p {
 }
 
 /* ============================================
+   Money Converter Article Styles
+   ============================================ */
+.mc-article {
+    max-width: 800px;
+    margin: 60px auto 0;
+    line-height: 1.7;
+}
+
+.mc-section {
+    margin-bottom: 56px;
+}
+
+/* --- 정의 섹션 (Definition) --- */
+.mc-definition {
+    position: relative;
+    background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #f8fafc 100%);
+    border-left: 4px solid #2563eb;
+    border-radius: 0 16px 16px 0;
+    padding: 32px 32px 32px 28px;
+    margin-bottom: 56px;
+}
+
+.mc-definition-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.mc-definition-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 14px;
+}
+
+.mc-definition-content {
+    color: #475569;
+    font-size: 0.98rem;
+    line-height: 1.85;
+}
+
+/* --- 섹션 제목 --- */
+.mc-section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #2563eb;
+    display: inline-block;
+}
+
+/* --- 사용법 스텝 (Steps) --- */
+.mc-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+}
+
+.mc-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 0;
+    position: relative;
+}
+
+.mc-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 56px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #2563eb, #93c5fd);
+}
+
+.mc-step-number {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.mc-step-content {
+    flex: 1;
+    color: #475569;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    padding-top: 8px;
+}
+
+/* --- 활용 사례 카드 (Use Cases) --- */
+.mc-usecase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+}
+
+.mc-usecase-card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 28px 24px 24px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.mc-usecase-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2563eb, #0ea5e9);
+}
+
+.mc-usecase-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.12);
+}
+
+.mc-usecase-number {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: rgba(37, 99, 235, 0.12);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.mc-usecase-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1e40af;
+    margin-bottom: 10px;
+}
+
+.mc-usecase-card-desc {
+    font-size: 0.92rem;
+    color: #64748b;
+    line-height: 1.65;
+}
+
+/* --- FAQ 섹션 --- */
+.mc-faq-section {
+    background: linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%);
+    padding: 36px 32px;
+    border-radius: 18px;
+}
+
+.mc-faq-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.mc-faq-item {
+    margin-bottom: 12px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.mc-faq-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.mc-faq-item:last-child {
+    margin-bottom: 0;
+}
+
+.mc-faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #334155;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    list-style: none;
+    user-select: none;
+}
+
+.mc-faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.mc-faq-item summary::marker {
+    content: '';
+}
+
+.mc-faq-chevron {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: #94a3b8;
+    transition: transform 0.3s ease;
+}
+
+.mc-faq-item[open] .mc-faq-chevron {
+    transform: rotate(180deg);
+    color: #2563eb;
+}
+
+.mc-faq-item p {
+    margin: 0;
+    padding: 0 20px 18px 20px;
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+/* --- 모바일 반응형 --- */
+@media (max-width: 640px) {
+    .mc-definition {
+        padding: 24px 20px 24px 18px;
+    }
+    .mc-definition-title {
+        font-size: 1.3rem;
+    }
+    .mc-section-title {
+        font-size: 1.25rem;
+    }
+    .mc-step {
+        gap: 14px;
+        padding: 16px 0;
+    }
+    .mc-step-number {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+    }
+    .mc-step:not(:last-child)::after {
+        left: 17px;
+        top: 48px;
+    }
+    .mc-usecase-grid {
+        grid-template-columns: 1fr;
+    }
+    .mc-faq-section {
+        padding: 24px 16px;
+    }
+    .mc-faq-item summary {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+    }
+    .mc-faq-item p {
+        padding: 0 16px 14px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* === Money Converter Dark Mode === */
+body[data-theme="dark"] .mc-definition {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    border-left-color: #3b82f6;
+}
+
+body[data-theme="dark"] .mc-definition-badge {
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.15);
+}
+
+body[data-theme="dark"] .mc-definition-title {
+    color: #f1f5f9;
+}
+
+body[data-theme="dark"] .mc-definition-content {
+    color: #94a3b8;
+}
+
+body[data-theme="dark"] .mc-section-title {
+    color: #f1f5f9;
+    border-bottom-color: #3b82f6;
+}
+
+body[data-theme="dark"] .mc-step-number {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+body[data-theme="dark"] .mc-step:not(:last-child)::after {
+    background: linear-gradient(to bottom, #3b82f6, #1e3a5f);
+}
+
+body[data-theme="dark"] .mc-step-content {
+    color: #94a3b8;
+}
+
+body[data-theme="dark"] .mc-usecase-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body[data-theme="dark"] .mc-usecase-card::before {
+    background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+}
+
+body[data-theme="dark"] .mc-usecase-card:hover {
+    box-shadow: 0 12px 28px rgba(59, 130, 246, 0.15);
+}
+
+body[data-theme="dark"] .mc-usecase-number {
+    color: rgba(59, 130, 246, 0.2);
+}
+
+body[data-theme="dark"] .mc-usecase-card-title {
+    color: #60a5fa;
+}
+
+body[data-theme="dark"] .mc-usecase-card-desc {
+    color: #94a3b8;
+}
+
+body[data-theme="dark"] .mc-faq-section {
+    background: linear-gradient(135deg, #0f172a 0%, #162032 100%);
+}
+
+body[data-theme="dark"] .mc-faq-title {
+    color: #f1f5f9;
+}
+
+body[data-theme="dark"] .mc-faq-item {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body[data-theme="dark"] .mc-faq-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme="dark"] .mc-faq-item summary {
+    color: #e2e8f0;
+}
+
+body[data-theme="dark"] .mc-faq-chevron {
+    color: #64748b;
+}
+
+body[data-theme="dark"] .mc-faq-item[open] .mc-faq-chevron {
+    color: #60a5fa;
+}
+
+body[data-theme="dark"] .mc-faq-item p {
+    color: #94a3b8;
+}
+
+/* ============================================
    Feedback Button Scroll Visibility
    ============================================ */
 .feedback-floating-btn {

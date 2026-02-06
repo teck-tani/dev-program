@@ -10,6 +10,8 @@ export default function SeveranceCalculatorClient() {
     const tResult = useTranslations('SeveranceCalculator.result');
     const tInfo = useTranslations('SeveranceCalculator.info');
     const tGuide = useTranslations('SeveranceCalculator.guide');
+    const tDef = useTranslations('SeveranceCalculator.definition');
+    const tUse = useTranslations('SeveranceCalculator.useCases');
     const tNotice = useTranslations('SeveranceCalculator.notice');
 
     const { theme } = useTheme();
@@ -69,8 +71,15 @@ export default function SeveranceCalculatorClient() {
         return num ? parseInt(num).toLocaleString("ko-KR") : "";
     };
 
+    const formatDateInput = (value: string): string => {
+        const nums = value.replace(/[^\d]/g, "");
+        if (nums.length <= 4) return nums;
+        if (nums.length <= 6) return `${nums.slice(0, 4)}-${nums.slice(4)}`;
+        return `${nums.slice(0, 4)}-${nums.slice(4, 6)}-${nums.slice(6, 8)}`;
+    };
+
     return (
-        <div>
+        <div style={{ overflowX: 'hidden' }}>
             <style>{`
                 @keyframes popIn {
                     0% { opacity: 0; transform: scale(0.95); }
@@ -106,6 +115,10 @@ export default function SeveranceCalculatorClient() {
                     .sev-input-grid {
                         grid-template-columns: 1fr 1fr !important;
                         gap: 8px !important;
+                    }
+                    .sev-date-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 10px !important;
                     }
                     .sev-label {
                         font-size: 0.75rem !important;
@@ -180,16 +193,19 @@ export default function SeveranceCalculatorClient() {
                         </svg>
                         {tInput('workPeriod') || '근무 기간'}
                     </div>
-                    <div className="sev-input-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", alignItems: "end" }}>
+                    <div className="sev-input-grid sev-date-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", alignItems: "end" }}>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px", minHeight: "2.4em" }}>
+                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px" }}>
                                 {tInput('joinDate')}
                             </label>
                             <input
-                                type="date"
+                                type="text"
+                                inputMode="numeric"
                                 className="sev-input"
                                 value={joinDate}
-                                onChange={(e) => setJoinDate(e.target.value)}
+                                onChange={(e) => setJoinDate(formatDateInput(e.target.value))}
+                                placeholder="YYYY-MM-DD"
+                                maxLength={10}
                                 style={{
                                     width: "100%",
                                     padding: "12px 14px",
@@ -204,14 +220,17 @@ export default function SeveranceCalculatorClient() {
                             />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px", minHeight: "2.4em" }}>
+                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px" }}>
                                 {tInput('leaveDate')}
                             </label>
                             <input
-                                type="date"
+                                type="text"
+                                inputMode="numeric"
                                 className="sev-input"
                                 value={leaveDate}
-                                onChange={(e) => setLeaveDate(e.target.value)}
+                                onChange={(e) => setLeaveDate(formatDateInput(e.target.value))}
+                                placeholder="YYYY-MM-DD"
+                                maxLength={10}
                                 style={{
                                     width: "100%",
                                     padding: "12px 14px",
@@ -493,68 +512,135 @@ export default function SeveranceCalculatorClient() {
 
             {/* SEO Content Section */}
             <article style={{ maxWidth: '100%', margin: '40px auto 0', lineHeight: '1.7' }}>
-                {/* 사용 가이드 */}
-                <section style={{ marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '16px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
-                        {tGuide('title')}
-                    </h2>
-                    <ol style={{ paddingLeft: '20px', color: isDark ? '#94a3b8' : '#444' }}>
-                        <li style={{ marginBottom: '12px' }}><strong>{tGuide('steps.1.label')}:</strong> {tGuide('steps.1.desc')}</li>
-                        <li style={{ marginBottom: '12px' }}><strong>{tGuide('steps.2.label')}:</strong> {tGuide('steps.2.desc')}</li>
-                        <li style={{ marginBottom: '12px' }}><strong>{tGuide('steps.3.label')}:</strong> {tGuide('steps.3.desc')}</li>
-                        <li style={{ marginBottom: '12px' }}><strong>{tGuide('steps.4.label')}:</strong> {tGuide('steps.4.desc')}</li>
-                    </ol>
-                </section>
 
-                {/* 퇴직금 정보 */}
+                {/* 1. 정의 */}
                 <section style={{ marginBottom: '40px' }}>
                     <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '16px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
-                        {tInfo('title')}
+                        {tDef('title')}
                     </h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-                        <div style={{ background: isDark ? '#1e293b' : '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
-                            <h3 style={{ fontSize: '1.1rem', color: isDark ? '#38bdf8' : '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.1.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555' }}>{tInfo('requirements.1.desc')}</p>
-                        </div>
-                        <div style={{ background: isDark ? '#1e293b' : '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
-                            <h3 style={{ fontSize: '1.1rem', color: isDark ? '#38bdf8' : '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.2.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555' }}>{tInfo('requirements.2.desc')}</p>
-                        </div>
-                        <div style={{ background: isDark ? '#1e293b' : '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
-                            <h3 style={{ fontSize: '1.1rem', color: isDark ? '#38bdf8' : '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.3.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555' }}>{tInfo('requirements.3.desc')}</p>
+                    <p style={{ fontSize: '0.95rem', color: isDark ? '#cbd5e1' : '#444', marginBottom: '20px', lineHeight: '1.8' }}>
+                        {tDef('desc')}
+                    </p>
+                    <div style={{ background: isDark ? '#1e293b' : '#f0f4f8', padding: '20px', borderRadius: '12px', border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>
+                        <h3 style={{ fontSize: '1.05rem', color: isDark ? '#38bdf8' : '#3d5cb9', marginBottom: '12px' }}>
+                            {tDef('formula.title')}
+                        </h3>
+                        <div style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555', lineHeight: '2' }}>
+                            <p style={{ marginBottom: '4px', fontWeight: '600', color: isDark ? '#e2e8f0' : '#333' }}>{tDef('formula.line1')}</p>
+                            <p style={{ marginBottom: '12px', fontWeight: '600', color: isDark ? '#e2e8f0' : '#333' }}>{tDef('formula.line2')}</p>
+                            <p style={{ fontSize: '0.85rem', color: isDark ? '#64748b' : '#888' }}>{tDef('formula.note')}</p>
                         </div>
                     </div>
                 </section>
 
-                {/* FAQ */}
+                {/* 2. 사용법 (상세) */}
+                <section style={{ marginBottom: '40px' }}>
+                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '20px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
+                        {tGuide('title')}
+                    </h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {(['1', '2', '3', '4', '5', '6'] as const).map((step) => (
+                            <div key={step} style={{
+                                display: 'flex',
+                                gap: '16px',
+                                alignItems: 'flex-start',
+                                background: isDark ? '#1e293b' : '#f8f9fa',
+                                padding: '18px',
+                                borderRadius: '12px',
+                                border: `1px solid ${isDark ? '#334155' : '#e9ecef'}`
+                            }}>
+                                <div style={{
+                                    minWidth: '36px',
+                                    height: '36px',
+                                    borderRadius: '50%',
+                                    background: isDark ? '#0f172a' : '#e2e8f0',
+                                    color: isDark ? '#38bdf8' : '#3d5cb9',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: '700',
+                                    fontSize: '0.9rem',
+                                    flexShrink: 0
+                                }}>
+                                    {step}
+                                </div>
+                                <div>
+                                    <h3 style={{ fontSize: '1rem', color: isDark ? '#e2e8f0' : '#333', marginBottom: '6px', fontWeight: '600' }}>
+                                        {tGuide(`steps.${step}.label`)}
+                                    </h3>
+                                    <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555', lineHeight: '1.7', margin: 0 }}>
+                                        {tGuide(`steps.${step}.desc`)}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* 3. 활용 사례 3개 */}
+                <section style={{ marginBottom: '40px' }}>
+                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '20px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
+                        {tUse('title')}
+                    </h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '16px' }}>
+                        {(['case1', 'case2', 'case3'] as const).map((caseKey, idx) => (
+                            <div key={caseKey} style={{
+                                background: isDark ? '#1e293b' : '#f8f9fa',
+                                padding: '22px',
+                                borderRadius: '12px',
+                                border: `1px solid ${isDark ? '#334155' : '#e9ecef'}`,
+                                borderTop: `3px solid ${isDark ? '#38bdf8' : '#3d5cb9'}`
+                            }}>
+                                <div style={{
+                                    fontSize: '0.75rem',
+                                    fontWeight: '700',
+                                    color: isDark ? '#38bdf8' : '#3d5cb9',
+                                    textTransform: 'uppercase' as const,
+                                    letterSpacing: '0.05em',
+                                    marginBottom: '8px'
+                                }}>
+                                    CASE {idx + 1}
+                                </div>
+                                <h3 style={{ fontSize: '1.05rem', color: isDark ? '#e2e8f0' : '#333', marginBottom: '10px', fontWeight: '600' }}>
+                                    {tUse(`${caseKey}.title`)}
+                                </h3>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555', lineHeight: '1.7', margin: 0 }}>
+                                    {tUse(`${caseKey}.desc`)}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* 4. 퇴직금 지급 기준 */}
+                <section style={{ marginBottom: '40px' }}>
+                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '16px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
+                        {tInfo('title')}
+                    </h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '16px' }}>
+                        {(['1', '2', '3'] as const).map((num) => (
+                            <div key={num} style={{ background: isDark ? '#1e293b' : '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
+                                <h3 style={{ fontSize: '1.1rem', color: isDark ? '#38bdf8' : '#3d5cb9', marginBottom: '8px' }}>{tInfo(`requirements.${num}.title`)}</h3>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555', margin: 0 }}>{tInfo(`requirements.${num}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* 5. FAQ (6개) */}
                 <section className="faq-section" style={{ background: isDark ? '#162032' : '#f0f4f8', padding: '24px', borderRadius: '15px', marginBottom: '40px' }}>
                     <h2 style={{ fontSize: '1.4rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '16px', textAlign: 'center' }}>
                         {tInfo('faq.title')}
                     </h2>
-
-                    <details style={{ marginBottom: '12px', background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo('faq.q1')}</summary>
-                        <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a1')}</p>
-                    </details>
-
-                    <details style={{ marginBottom: '12px', background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo('faq.q2')}</summary>
-                        <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a2')}</p>
-                    </details>
-
-                    <details style={{ marginBottom: '12px', background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo('faq.q3')}</summary>
-                        <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a3')}</p>
-                    </details>
-
-                    <details style={{ background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo('faq.q4')}</summary>
-                        <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a4')}</p>
-                    </details>
+                    {(['1', '2', '3', '4', '5', '6'] as const).map((num) => (
+                        <details key={num} style={{ marginBottom: num === '6' ? 0 : '12px', background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo(`faq.q${num}`)}</summary>
+                            <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo(`faq.a${num}`)}</p>
+                        </details>
+                    ))}
                 </section>
 
-                {/* 주의사항 */}
+                {/* 6. 주의사항 */}
                 <section style={{ background: isDark ? '#332b00' : '#fff3cd', padding: '18px', borderRadius: '10px', border: `1px solid ${isDark ? '#554400' : '#ffeeba'}`, color: isDark ? '#fbbf24' : '#856404' }}>
                     <h3 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>{tNotice('title')}</h3>
                     <p style={{ fontSize: '0.9rem' }}>
