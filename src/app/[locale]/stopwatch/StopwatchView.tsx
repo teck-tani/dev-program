@@ -172,6 +172,51 @@ export default function StopwatchView() {
         URL.revokeObjectURL(url);
     };
 
+    // 결과 공유 기능
+    const [shareStatus, setShareStatus] = useState<'idle' | 'copied'>('idle');
+
+    const handleShare = async () => {
+        if (laps.length === 0) return;
+
+        const hasHours = laps.some(lap => lap.totalTime >= 3600000);
+
+        // 공유 텍스트 생성
+        const lapLines = laps.map((lap, idx) => {
+            const isFastest = idx === fastestLapIndex && laps.length > 1;
+            const isSlowest = idx === slowestLapIndex && laps.length > 1;
+            const marker = isFastest ? ' ⚡' : isSlowest ? ' 🐢' : '';
+            return `#${lap.lapNumber}: ${formatTime(lap.lapTime, hasHours)}${marker}`;
+        }).join('\n');
+
+        const statsText = laps.length > 1
+            ? `\n${t('avgLapTime')}: ${formatTime(averageLapTime, hasHours)}\n${t('bestRecord')}: ${formatTime(bestLapTime, hasHours)}\n${t('worstRecord')}: ${formatTime(worstLapTime, hasHours)}`
+            : '';
+
+        const shareText = `🏃 ${t('lapList')} (${laps.length})\n━━━━━━━━━━━━━━\n${lapLines}${statsText}\n\n📍 teck-tani.com/stopwatch`;
+
+        // Web Share API 시도 (모바일)
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: t('lapList'),
+                    text: shareText,
+                });
+                return;
+            } catch {
+                // 사용자가 취소하거나 실패 시 클립보드로 fallback
+            }
+        }
+
+        // 클립보드 복사 (PC fallback)
+        try {
+            await navigator.clipboard.writeText(shareText);
+            setShareStatus('copied');
+            setTimeout(() => setShareStatus('idle'), 2000);
+        } catch {
+            // 클립보드 복사 실패
+        }
+    };
+
     // 키보드 단축키 핸들러
     const handleToggle = useCallback(() => {
         setIsRunning(prev => !prev);
@@ -435,6 +480,11 @@ export default function StopwatchView() {
                             {t('clearLaps')}
                         </button>
                     </div>
+
+                    {/* 공유 버튼 */}
+                    <button onClick={handleShare} className="sw-btn-share">
+                        {shareStatus === 'copied' ? t('copied') : t('share')}
+                    </button>
 
                     {/* 통계 섹션 - 랩 2개 이상일 때 표시 */}
                     {laps.length > 1 && (

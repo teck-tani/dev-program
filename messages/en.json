@@ -338,7 +338,9 @@
         "shortcutReset": "Reset",
         "avgLapTime": "Average Lap Time",
         "bestRecord": "Best Record",
-        "worstRecord": "Worst Record"
+        "worstRecord": "Worst Record",
+        "share": "📤 Share Results",
+        "copied": "✓ Copied!"
       },
       "seo": {
         "title": "Online Stopwatch - Study & Workout Time Measurement",
@@ -430,7 +432,13 @@
       "standardRate": "Standard Rate",
       "krwName": "Korean Won",
       "searchCurrency": "Search currency...",
-      "noResults": "No results"
+      "noResults": "No results",
+      "copied": "Copied!",
+      "copy": "Copy",
+      "rateDate": "As of {date} (Korea Exim Bank)",
+      "quickAmount": "Quick amount",
+      "buyRate": "Buy",
+      "sellRate": "Sell"
     },
     "definition": {
       "title": "What is an Exchange Rate Calculator?",

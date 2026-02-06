@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -85,6 +85,11 @@ export default function ExchangeRateClient() {
     const [searchQuery, setSearchQuery] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    // New states for Phase 1 improvements
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+    const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+    const [lastInputIndex, setLastInputIndex] = useState<number>(0);
+
     useEffect(() => {
         setMounted(true);
         fetchRates();
@@ -146,8 +151,9 @@ export default function ExchangeRateClient() {
         return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
     };
 
-    const handleInputChange = (valueStr: string, currencyCode: string) => {
+    const handleInputChange = (valueStr: string, currencyCode: string, rowIndex?: number) => {
         setHasUserInput(true);
+        if (rowIndex !== undefined) setLastInputIndex(rowIndex);
         const cleanedStr = valueStr.replace(/,/g, "");
         if (cleanedStr === "" || cleanedStr === "-") {
             setBaseKrwValue(null);
@@ -210,6 +216,57 @@ export default function ExchangeRateClient() {
         if (rate === 0) return "";
         return (baseKrwValue / rate).toFixed(2);
     };
+
+    // Copy to clipboard handler
+    const handleCopy = useCallback(async (index: number) => {
+        const code = rowCurrencies[index];
+        const displayValue = getDisplayValue(code);
+        if (!displayValue) return;
+        const formatted = formatNumber(parseFloat(displayValue));
+        try {
+            await navigator.clipboard.writeText(formatted);
+            setCopiedIndex(index);
+            setTimeout(() => setCopiedIndex(null), 2000);
+        } catch {
+            // fallback silently
+        }
+    }, [rowCurrencies, baseKrwValue, rates]);
+
+    // Quick amount handler
+    const handleQuickAmount = useCallback((amount: number) => {
+        const targetIndex = lastInputIndex;
+        const code = rowCurrencies[targetIndex];
+        const rate = getRate(code);
+        setHasUserInput(true);
+        setBaseKrwValue(amount * rate);
+    }, [lastInputIndex, rowCurrencies, rates]);
+
+    // Keyboard handler for dropdown
+    const handleDropdownKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (openDropdownIndex === null) return;
+        const filtered = getFilteredCurrencies();
+        if (e.key === 'Escape') {
+            setOpenDropdownIndex(null);
+            setSearchQuery("");
+            setHighlightedIndex(-1);
+            e.preventDefault();
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setHighlightedIndex(prev => Math.min(prev + 1, filtered.length - 1));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setHighlightedIndex(prev => Math.max(prev - 1, 0));
+        } else if (e.key === 'Enter' && highlightedIndex >= 0 && highlightedIndex < filtered.length) {
+            e.preventDefault();
+            handleCurrencyChange(openDropdownIndex, filtered[highlightedIndex].cur_unit);
+            setHighlightedIndex(-1);
+        }
+    }, [openDropdownIndex, highlightedIndex, searchQuery, rates]);
+
+    // Reset highlight when dropdown opens/closes
+    useEffect(() => {
+        setHighlightedIndex(-1);
+    }, [openDropdownIndex]);
 
     // Show loading skeleton until mounted to prevent hydration mismatch
     if (!mounted) {
@@ -296,10 +353,60 @@ export default function ExchangeRateClient() {
                     .currency-search {
                         font-size: 0.9rem !important;
                     }
+                    .copy-btn {
+                        padding: 2px 4px !important;
+                    }
+                    .quick-amount-wrap {
+                        gap: 6px !important;
+                        margin-bottom: 10px !important;
+                    }
+                    .quick-amount-wrap button {
+                        padding: 3px 8px !important;
+                        font-size: 0.78rem !important;
+                    }
                 }
             `}</style>
             {/* 2. 5-Row Calculator Section (Top) */}
             <div className="calc-container" style={{ background: dark ? "#1e293b" : "#f8f9fa", padding: "30px", borderRadius: "16px", border: dark ? "1px solid #334155" : "1px solid #e9ecef", marginBottom: "40px" }}>
+
+                {/* Rate date display */}
+                {!loading && rates.length > 0 && (
+                    <div style={{ fontSize: "0.8rem", color: dark ? "#64748b" : "#9ca3af", marginBottom: "12px", textAlign: "right" }}>
+                        {t('rateDate', { date: dateString })}
+                    </div>
+                )}
+
+                {/* Quick amount buttons */}
+                <div className="quick-amount-wrap" style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+                    <span style={{ fontSize: "0.8rem", color: dark ? "#94a3b8" : "#6b7280", alignSelf: "center", marginRight: "4px" }}>
+                        {t('quickAmount')}
+                    </span>
+                    {[1, 10, 100, 1000, 10000].map(amount => (
+                        <button
+                            key={amount}
+                            onClick={() => handleQuickAmount(amount)}
+                            style={{
+                                padding: "4px 12px",
+                                borderRadius: "6px",
+                                border: dark ? "1px solid #475569" : "1px solid #d1d5db",
+                                background: dark ? "#334155" : "white",
+                                color: dark ? "#e2e8f0" : "#374151",
+                                fontSize: "0.85rem",
+                                fontWeight: "500",
+                                cursor: "pointer",
+                                transition: "all 0.15s"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = dark ? "#475569" : "#f3f4f6";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = dark ? "#334155" : "white";
+                            }}
+                        >
+                            {amount.toLocaleString()}
+                        </button>
+                    ))}
+                </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                     {rowCurrencies.map((currentCode, index) => {
@@ -316,7 +423,7 @@ export default function ExchangeRateClient() {
                                 border: dark ? "1px solid #334155" : "1px solid #e5e7eb"
                             }}>
                                 {/* Currency Searchable Dropdown */}
-                                <div className="calc-select-container" style={{ flex: "0 0 220px", borderRight: dark ? "1px solid #334155" : "1px solid #f0f0f0", paddingRight: "12px", marginRight: "12px", position: "relative" }} ref={openDropdownIndex === index ? dropdownRef : null}>
+                                <div className="calc-select-container" style={{ flex: "0 0 220px", borderRight: dark ? "1px solid #334155" : "1px solid #f0f0f0", paddingRight: "12px", marginRight: "12px", position: "relative" }} ref={openDropdownIndex === index ? dropdownRef : null} onKeyDown={openDropdownIndex === index ? handleDropdownKeyDown : undefined}>
                                     <div
                                         onClick={() => {
                                             setOpenDropdownIndex(openDropdownIndex === index ? null : index);
@@ -362,7 +469,8 @@ export default function ExchangeRateClient() {
                                                 className="currency-search"
                                                 placeholder={t('searchCurrency') || "검색..."}
                                                 value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                onChange={(e) => { setSearchQuery(e.target.value); setHighlightedIndex(-1); }}
+                                                onKeyDown={handleDropdownKeyDown}
                                                 onClick={(e) => e.stopPropagation()}
                                                 autoFocus
                                                 style={{
@@ -377,7 +485,7 @@ export default function ExchangeRateClient() {
                                                 }}
                                             />
                                             <div style={{ maxHeight: "240px", overflowY: "auto" }}>
-                                                {getFilteredCurrencies().map(currency => (
+                                                {getFilteredCurrencies().map((currency, cIdx) => (
                                                     <div
                                                         key={currency.cur_unit}
                                                         onClick={() => handleCurrencyChange(index, currency.cur_unit)}
@@ -387,10 +495,14 @@ export default function ExchangeRateClient() {
                                                             gap: "10px",
                                                             padding: "8px 12px",
                                                             cursor: "pointer",
-                                                            background: currentCode === currency.cur_unit ? (dark ? "#334155" : "#f3f4f6") : (dark ? "#1e293b" : "white"),
+                                                            background: cIdx === highlightedIndex
+                                                                ? (dark ? "#475569" : "#e5e7eb")
+                                                                : currentCode === currency.cur_unit
+                                                                    ? (dark ? "#334155" : "#f3f4f6")
+                                                                    : (dark ? "#1e293b" : "white"),
                                                             transition: "background 0.15s"
                                                         }}
-                                                        onMouseEnter={(e) => e.currentTarget.style.background = dark ? "#334155" : "#f9fafb"}
+                                                        onMouseEnter={(e) => { e.currentTarget.style.background = dark ? "#334155" : "#f9fafb"; setHighlightedIndex(cIdx); }}
                                                         onMouseLeave={(e) => e.currentTarget.style.background = currentCode === currency.cur_unit ? (dark ? "#334155" : "#f3f4f6") : (dark ? "#1e293b" : "white")}
                                                     >
                                                         <img
@@ -424,7 +536,7 @@ export default function ExchangeRateClient() {
                                         <input
                                             type="text"
                                             value={displayValue === "" ? "" : formatNumber(parseFloat(displayValue))}
-                                            onChange={(e) => handleInputChange(e.target.value, currentCode)}
+                                            onChange={(e) => handleInputChange(e.target.value, currentCode, index)}
                                             style={{
                                                 width: "100%",
                                                 border: "none",
@@ -441,6 +553,36 @@ export default function ExchangeRateClient() {
                                     <div className="currency-unit" style={{ minWidth: "45px", textAlign: "right", paddingLeft: "10px", color: dark ? "#94a3b8" : "#6b7280", fontWeight: "500", fontSize: "0.9rem" }}>
                                         {currentCode.replace("(100)", "")}
                                     </div>
+                                    {/* Copy button */}
+                                    <button
+                                        onClick={() => handleCopy(index)}
+                                        title={t('copy')}
+                                        style={{
+                                            marginLeft: "6px",
+                                            padding: "4px 6px",
+                                            border: "none",
+                                            background: "transparent",
+                                            cursor: displayValue ? "pointer" : "default",
+                                            opacity: displayValue ? 1 : 0.3,
+                                            fontSize: "0.9rem",
+                                            color: dark ? "#94a3b8" : "#9ca3af",
+                                            borderRadius: "4px",
+                                            transition: "all 0.15s",
+                                            position: "relative",
+                                            flexShrink: 0
+                                        }}
+                                        onMouseEnter={(e) => { if (displayValue) e.currentTarget.style.background = dark ? "#334155" : "#f3f4f6"; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                                    >
+                                        {copiedIndex === index ? (
+                                            <span style={{ fontSize: "0.75rem", color: dark ? "#4ade80" : "#16a34a", whiteSpace: "nowrap" }}>{t('copied')}</span>
+                                        ) : (
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                            </svg>
+                                        )}
+                                    </button>
                                 </div>
                             </div>
                         );
@@ -489,6 +631,13 @@ export default function ExchangeRateClient() {
                                     <div style={{ fontSize: "0.8rem", color: dark ? "#64748b" : "#999", marginTop: "10px" }}>
                                         {t('standardRate')}
                                     </div>
+                                    {rate && rate.tts && rate.ttb && (
+                                        <div style={{ fontSize: "0.72rem", color: dark ? "#64748b" : "#9ca3af", marginTop: "6px", display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                                            <span>{t('buyRate')} {rate.tts}</span>
+                                            <span>|</span>
+                                            <span>{t('sellRate')} {rate.ttb}</span>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}

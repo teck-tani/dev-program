@@ -27,7 +27,13 @@
       "Bash(xargs ls:*)",
       "Bash(dir:*)",
       "WebSearch",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "WebFetch(domain:www.xe.com)",
+      "WebFetch(domain:wise.com)",
+      "WebFetch(domain:www.oanda.com)",
+      "WebFetch(domain:www.x-rates.com)",
+      "WebFetch(domain:www.google.com)",
+      "mcp__plugin_Notion_notion__notion-search"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"
