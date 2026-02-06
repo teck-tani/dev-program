@@ -1,4 +1,5 @@
 import StopwatchWrapper from "./StopwatchWrapper";
+import "./stopwatch.css";
 import { Metadata } from "next";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';

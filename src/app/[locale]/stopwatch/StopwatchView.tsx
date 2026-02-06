@@ -99,6 +99,11 @@ export default function StopwatchView() {
     const handleLap = () => {
         if (!isRunning && time === 0) return;
 
+        // 햅틱 피드백 (모바일)
+        if (navigator.vibrate) {
+            navigator.vibrate(15);
+        }
+
         const currentTime = time;
         const lapTime = currentTime - lastLapTimeRef.current;
 
@@ -208,6 +213,17 @@ export default function StopwatchView() {
 
     // 1시간 이상인 기록이 있으면 모든 시간에 시간 형식 적용
     const hasHoursInLaps = laps.some(lap => lap.totalTime >= 3600000) || time >= 3600000;
+
+    // 통계 계산
+    const averageLapTime = laps.length > 0
+        ? laps.reduce((sum, lap) => sum + lap.lapTime, 0) / laps.length
+        : 0;
+    const bestLapTime = laps.length > 0 && fastestLapIndex >= 0
+        ? laps[fastestLapIndex].lapTime
+        : 0;
+    const worstLapTime = laps.length > 0 && slowestLapIndex >= 0
+        ? laps[slowestLapIndex].lapTime
+        : 0;
 
     return (
         <div style={{
@@ -407,7 +423,7 @@ export default function StopwatchView() {
                         })}
                     </div>
 
-                    {/* 버튼들 - 맨 아래 */}
+                    {/* 버튼들 */}
                     <div className="sw-lap-actions">
                         <button onClick={handleExportExcel} className="sw-btn-export">
                             {t('exportExcel')}
@@ -416,6 +432,24 @@ export default function StopwatchView() {
                             {t('clearLaps')}
                         </button>
                     </div>
+
+                    {/* 통계 섹션 - 랩 2개 이상일 때 표시 */}
+                    {laps.length > 1 && (
+                        <div className="sw-stats-container">
+                            <div className="sw-stats-row">
+                                <span className="sw-stats-label">{t('avgLapTime')}</span>
+                                <span className="sw-stats-value">{formatTime(averageLapTime, hasHoursInLaps)}</span>
+                            </div>
+                            <div className="sw-stats-row sw-stats-best">
+                                <span className="sw-stats-label">{t('bestRecord')}</span>
+                                <span className="sw-stats-value">{formatTime(bestLapTime, hasHoursInLaps)}</span>
+                            </div>
+                            <div className="sw-stats-row sw-stats-worst">
+                                <span className="sw-stats-label">{t('worstRecord')}</span>
+                                <span className="sw-stats-value">{formatTime(worstLapTime, hasHoursInLaps)}</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

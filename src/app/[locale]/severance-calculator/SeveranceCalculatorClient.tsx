@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function SeveranceCalculatorClient() {
     const t = useTranslations('SeveranceCalculator');
@@ -10,6 +11,9 @@ export default function SeveranceCalculatorClient() {
     const tInfo = useTranslations('SeveranceCalculator.info');
     const tGuide = useTranslations('SeveranceCalculator.guide');
     const tNotice = useTranslations('SeveranceCalculator.notice');
+
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [joinDate, setJoinDate] = useState("");
     const [leaveDate, setLeaveDate] = useState("");
@@ -81,7 +85,7 @@ export default function SeveranceCalculatorClient() {
                 }
                 .sev-input:focus {
                     border-color: #3b82f6;
-                    background: #fff;
+                    background: ${isDark ? '#1e293b' : '#fff'};
                     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
                 }
                 @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -152,10 +156,10 @@ export default function SeveranceCalculatorClient() {
 
             {/* Calculator Card - 컴팩트 */}
             <div className="sev-calc-card" style={{
-                background: "#f8f9fa",
+                background: isDark ? "#1e293b" : "#f8f9fa",
                 padding: "24px",
                 borderRadius: "16px",
-                border: "1px solid #e9ecef",
+                border: `1px solid ${isDark ? "#334155" : "#e9ecef"}`,
                 marginBottom: "24px"
             }}>
                 {/* Work Period Section */}
@@ -167,7 +171,7 @@ export default function SeveranceCalculatorClient() {
                         marginBottom: "12px",
                         fontSize: "0.8rem",
                         fontWeight: "600",
-                        color: "#64748b",
+                        color: isDark ? "#94a3b8" : "#64748b",
                         textTransform: "uppercase" as const,
                         letterSpacing: "0.05em"
                     }}>
@@ -178,7 +182,7 @@ export default function SeveranceCalculatorClient() {
                     </div>
                     <div className="sev-input-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", alignItems: "end" }}>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: "#374151", marginBottom: "6px", minHeight: "2.4em" }}>
+                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px", minHeight: "2.4em" }}>
                                 {tInput('joinDate')}
                             </label>
                             <input
@@ -190,17 +194,17 @@ export default function SeveranceCalculatorClient() {
                                     width: "100%",
                                     padding: "12px 14px",
                                     fontSize: "0.95rem",
-                                    border: "1.5px solid #e5e7eb",
+                                    border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                     borderRadius: "10px",
-                                    background: "white",
-                                    color: "#1f2937",
+                                    background: isDark ? "#0f172a" : "white",
+                                    color: isDark ? "#e2e8f0" : "#1f2937",
                                     outline: "none",
                                     transition: "all 0.15s ease"
                                 }}
                             />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: "#374151", marginBottom: "6px", minHeight: "2.4em" }}>
+                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px", minHeight: "2.4em" }}>
                                 {tInput('leaveDate')}
                             </label>
                             <input
@@ -212,10 +216,10 @@ export default function SeveranceCalculatorClient() {
                                     width: "100%",
                                     padding: "12px 14px",
                                     fontSize: "0.95rem",
-                                    border: "1.5px solid #e5e7eb",
+                                    border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                     borderRadius: "10px",
-                                    background: "white",
-                                    color: "#1f2937",
+                                    background: isDark ? "#0f172a" : "white",
+                                    color: isDark ? "#e2e8f0" : "#1f2937",
                                     outline: "none",
                                     transition: "all 0.15s ease"
                                 }}
@@ -233,7 +237,7 @@ export default function SeveranceCalculatorClient() {
                         marginBottom: "12px",
                         fontSize: "0.8rem",
                         fontWeight: "600",
-                        color: "#64748b",
+                        color: isDark ? "#94a3b8" : "#64748b",
                         textTransform: "uppercase" as const,
                         letterSpacing: "0.05em"
                     }}>
@@ -245,7 +249,7 @@ export default function SeveranceCalculatorClient() {
 
                     {/* Base Salary */}
                     <div style={{ marginBottom: "12px" }}>
-                        <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: "#374151", marginBottom: "6px" }}>
+                        <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px" }}>
                             {tInput('baseSalary')}
                         </label>
                         <div style={{ position: "relative" }}>
@@ -261,10 +265,10 @@ export default function SeveranceCalculatorClient() {
                                     padding: "12px 45px 12px 14px",
                                     fontSize: "1rem",
                                     fontWeight: "600",
-                                    border: "1.5px solid #e5e7eb",
+                                    border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                     borderRadius: "10px",
-                                    background: "white",
-                                    color: "#1f2937",
+                                    background: isDark ? "#0f172a" : "white",
+                                    color: isDark ? "#e2e8f0" : "#1f2937",
                                     outline: "none",
                                     transition: "all 0.15s ease",
                                     textAlign: "right"
@@ -276,11 +280,11 @@ export default function SeveranceCalculatorClient() {
                                 top: "50%",
                                 transform: "translateY(-50%)",
                                 fontSize: "0.85rem",
-                                color: "#6b7280",
+                                color: isDark ? "#94a3b8" : "#6b7280",
                                 fontWeight: "500"
                             }}>{tResult('currency')}</span>
                         </div>
-                        <p className="sev-hint" style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "4px" }}>
+                        <p className="sev-hint" style={{ fontSize: "0.75rem", color: isDark ? "#64748b" : "#9ca3af", marginTop: "4px" }}>
                             {tInput('baseSalaryDesc')}
                         </p>
                     </div>
@@ -288,7 +292,7 @@ export default function SeveranceCalculatorClient() {
                     {/* Bonus and Leave Allowance */}
                     <div className="sev-input-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                         <div>
-                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: "#374151", marginBottom: "6px" }}>
+                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px" }}>
                                 {tInput('bonus')}
                             </label>
                             <div style={{ position: "relative" }}>
@@ -303,10 +307,10 @@ export default function SeveranceCalculatorClient() {
                                         width: "100%",
                                         padding: "12px 45px 12px 14px",
                                         fontSize: "0.95rem",
-                                        border: "1.5px solid #e5e7eb",
+                                        border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                         borderRadius: "10px",
-                                        background: "white",
-                                        color: "#1f2937",
+                                        background: isDark ? "#0f172a" : "white",
+                                        color: isDark ? "#e2e8f0" : "#1f2937",
                                         outline: "none",
                                         transition: "all 0.15s ease",
                                         textAlign: "right"
@@ -318,12 +322,12 @@ export default function SeveranceCalculatorClient() {
                                     top: "50%",
                                     transform: "translateY(-50%)",
                                     fontSize: "0.85rem",
-                                    color: "#6b7280"
+                                    color: isDark ? "#94a3b8" : "#6b7280"
                                 }}>{tResult('currency')}</span>
                             </div>
                         </div>
                         <div>
-                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: "#374151", marginBottom: "6px" }}>
+                            <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px" }}>
                                 {tInput('leaveAllowance')}
                             </label>
                             <div style={{ position: "relative" }}>
@@ -338,10 +342,10 @@ export default function SeveranceCalculatorClient() {
                                         width: "100%",
                                         padding: "12px 45px 12px 14px",
                                         fontSize: "0.95rem",
-                                        border: "1.5px solid #e5e7eb",
+                                        border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                         borderRadius: "10px",
-                                        background: "white",
-                                        color: "#1f2937",
+                                        background: isDark ? "#0f172a" : "white",
+                                        color: isDark ? "#e2e8f0" : "#1f2937",
                                         outline: "none",
                                         transition: "all 0.15s ease",
                                         textAlign: "right"
@@ -353,7 +357,7 @@ export default function SeveranceCalculatorClient() {
                                     top: "50%",
                                     transform: "translateY(-50%)",
                                     fontSize: "0.85rem",
-                                    color: "#6b7280"
+                                    color: isDark ? "#94a3b8" : "#6b7280"
                                 }}>{tResult('currency')}</span>
                             </div>
                         </div>
@@ -491,10 +495,10 @@ export default function SeveranceCalculatorClient() {
             <article style={{ maxWidth: '100%', margin: '40px auto 0', lineHeight: '1.7' }}>
                 {/* 사용 가이드 */}
                 <section style={{ marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '16px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '16px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
                         {tGuide('title')}
                     </h2>
-                    <ol style={{ paddingLeft: '20px', color: '#444' }}>
+                    <ol style={{ paddingLeft: '20px', color: isDark ? '#94a3b8' : '#444' }}>
                         <li style={{ marginBottom: '12px' }}><strong>{tGuide('steps.1.label')}:</strong> {tGuide('steps.1.desc')}</li>
                         <li style={{ marginBottom: '12px' }}><strong>{tGuide('steps.2.label')}:</strong> {tGuide('steps.2.desc')}</li>
                         <li style={{ marginBottom: '12px' }}><strong>{tGuide('steps.3.label')}:</strong> {tGuide('steps.3.desc')}</li>
@@ -504,54 +508,54 @@ export default function SeveranceCalculatorClient() {
 
                 {/* 퇴직금 정보 */}
                 <section style={{ marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '16px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '16px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
                         {tInfo('title')}
                     </h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-                        <div style={{ background: '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
-                            <h3 style={{ fontSize: '1.1rem', color: '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.1.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: '#555' }}>{tInfo('requirements.1.desc')}</p>
+                        <div style={{ background: isDark ? '#1e293b' : '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
+                            <h3 style={{ fontSize: '1.1rem', color: isDark ? '#38bdf8' : '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.1.title')}</h3>
+                            <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555' }}>{tInfo('requirements.1.desc')}</p>
                         </div>
-                        <div style={{ background: '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
-                            <h3 style={{ fontSize: '1.1rem', color: '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.2.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: '#555' }}>{tInfo('requirements.2.desc')}</p>
+                        <div style={{ background: isDark ? '#1e293b' : '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
+                            <h3 style={{ fontSize: '1.1rem', color: isDark ? '#38bdf8' : '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.2.title')}</h3>
+                            <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555' }}>{tInfo('requirements.2.desc')}</p>
                         </div>
-                        <div style={{ background: '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
-                            <h3 style={{ fontSize: '1.1rem', color: '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.3.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: '#555' }}>{tInfo('requirements.3.desc')}</p>
+                        <div style={{ background: isDark ? '#1e293b' : '#f8f9fa', padding: '18px', borderRadius: '10px' }}>
+                            <h3 style={{ fontSize: '1.1rem', color: isDark ? '#38bdf8' : '#3d5cb9', marginBottom: '8px' }}>{tInfo('requirements.3.title')}</h3>
+                            <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#555' }}>{tInfo('requirements.3.desc')}</p>
                         </div>
                     </div>
                 </section>
 
                 {/* FAQ */}
-                <section className="faq-section" style={{ background: '#f0f4f8', padding: '24px', borderRadius: '15px', marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '1.4rem', color: '#333', marginBottom: '16px', textAlign: 'center' }}>
+                <section className="faq-section" style={{ background: isDark ? '#162032' : '#f0f4f8', padding: '24px', borderRadius: '15px', marginBottom: '40px' }}>
+                    <h2 style={{ fontSize: '1.4rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '16px', textAlign: 'center' }}>
                         {tInfo('faq.title')}
                     </h2>
 
-                    <details style={{ marginBottom: '12px', background: 'white', padding: '14px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tInfo('faq.q1')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a1')}</p>
+                    <details style={{ marginBottom: '12px', background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
+                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo('faq.q1')}</summary>
+                        <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a1')}</p>
                     </details>
 
-                    <details style={{ marginBottom: '12px', background: 'white', padding: '14px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tInfo('faq.q2')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a2')}</p>
+                    <details style={{ marginBottom: '12px', background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
+                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo('faq.q2')}</summary>
+                        <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a2')}</p>
                     </details>
 
-                    <details style={{ marginBottom: '12px', background: 'white', padding: '14px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tInfo('faq.q3')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a3')}</p>
+                    <details style={{ marginBottom: '12px', background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
+                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo('faq.q3')}</summary>
+                        <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a3')}</p>
                     </details>
 
-                    <details style={{ background: 'white', padding: '14px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tInfo('faq.q4')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a4')}</p>
+                    <details style={{ background: isDark ? '#1e293b' : 'white', padding: '14px', borderRadius: '8px' }}>
+                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#e2e8f0' : '#2c3e50' }}>{tInfo('faq.q4')}</summary>
+                        <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '16px', fontSize: '0.9rem' }}>{tInfo('faq.a4')}</p>
                     </details>
                 </section>
 
                 {/* 주의사항 */}
-                <section style={{ background: '#fff3cd', padding: '18px', borderRadius: '10px', border: '1px solid #ffeeba', color: '#856404' }}>
+                <section style={{ background: isDark ? '#332b00' : '#fff3cd', padding: '18px', borderRadius: '10px', border: `1px solid ${isDark ? '#554400' : '#ffeeba'}`, color: isDark ? '#fbbf24' : '#856404' }}>
                     <h3 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>{tNotice('title')}</h3>
                     <p style={{ fontSize: '0.9rem' }}>
                         {tNotice('content')}

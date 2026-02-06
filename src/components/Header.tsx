@@ -145,7 +145,7 @@ export default function Header() {
     <>
       <header className="new-header">
         <div className="header-container">
-          {/* 왼쪽: 햄버거 + 로고 */}
+          {/* 왼쪽: 햄버거 */}
           <div className="header-left">
             <button
               className="header-menu-btn"
@@ -154,11 +154,6 @@ export default function Header() {
             >
               <FaBars />
             </button>
-            <Link href="/" className="header-logo" onClick={handleLinkClick}>
-              <div className="header-logo-icon">
-                <FaHome />
-              </div>
-            </Link>
           </div>
 
           {/* 중앙: 페이지 제목 */}

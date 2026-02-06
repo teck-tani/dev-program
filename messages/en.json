@@ -333,7 +333,10 @@
         "clearLaps": "Clear Laps",
         "shortcutStartStop": "Start/Stop",
         "shortcutLap": "Lap",
-        "shortcutReset": "Reset"
+        "shortcutReset": "Reset",
+        "avgLapTime": "Average Lap Time",
+        "bestRecord": "Best Record",
+        "worstRecord": "Worst Record"
       },
       "seo": {
         "title": "Online Stopwatch - Study & Workout Time Measurement",

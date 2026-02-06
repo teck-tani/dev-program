@@ -71,36 +71,9 @@ export default function FeedbackButton() {
     const [message, setMessage] = useState("");
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
-    const [isVisible, setIsVisible] = useState(false);
-
     const pathname = usePathname();
     const locale = (useLocale() as Locale) || 'ko';
     const t = i18n[locale];
-
-    // 스크롤에 따라 버튼 표시/숨김 (모바일만)
-    useEffect(() => {
-        const handleVisibility = () => {
-            // 데스크톱 (768px 이상)에서는 항상 표시
-            const isDesktop = window.innerWidth >= 768;
-            if (isDesktop) {
-                setIsVisible(true);
-                return;
-            }
-            // 모바일에서는 스크롤 400px 이상 내려가면 버튼 표시
-            const scrollThreshold = 350;
-            setIsVisible(window.scrollY > scrollThreshold);
-        };
-
-        // 초기 상태 확인
-        handleVisibility();
-
-        window.addEventListener('scroll', handleVisibility, { passive: true });
-        window.addEventListener('resize', handleVisibility, { passive: true });
-        return () => {
-            window.removeEventListener('scroll', handleVisibility);
-            window.removeEventListener('resize', handleVisibility);
-        };
-    }, []);
 
     // 현재 페이지명 가져오기
     const getPageName = useCallback(() => {
@@ -171,7 +144,7 @@ export default function FeedbackButton() {
         <>
             {/* 플로팅 버튼 */}
             <button
-                className={`feedback-floating-btn ${!isVisible ? 'hidden' : ''}`}
+                className="feedback-floating-btn"
                 onClick={() => setIsOpen(true)}
                 aria-label="Feedback"
             >

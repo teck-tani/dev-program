@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { create, all } from 'mathjs';
 import { LuHistory, LuDelete, LuTrash2, LuX } from 'react-icons/lu';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Initialize mathjs
 const config = { };
@@ -14,6 +15,8 @@ interface HistoryItem {
 }
 
 const ScientificCalculator = () => {
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
   const [input, setInput] = useState('');     // User's formula input (Top line)
   const [result, setResult] = useState('0');  // Calculated result OR Error message (Bottom line)
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -198,15 +201,21 @@ const ScientificCalculator = () => {
     };
 
     const baseStyle = "h-12 sm:h-14 rounded-lg font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none shadow-sm cursor-pointer";
-    
-    // Increased contrast and better visual separation
-    const styles = {
-      default: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50", // Numbers: White with darker text
+
+    const styles = dark ? {
+      default: "bg-slate-700 text-slate-100 font-bold border border-slate-600 hover:bg-slate-600",
+      number: "bg-slate-700 text-slate-100 font-bold border border-slate-600 hover:bg-slate-600",
+      operator: "bg-blue-900/50 text-blue-300 border border-blue-800 hover:bg-blue-900/70 font-semibold",
+      function: "bg-slate-600 text-slate-200 border border-slate-500 hover:bg-slate-500 text-base font-medium",
+      action: "bg-blue-600 text-white hover:bg-blue-500 shadow-md border-transparent",
+      warning: "bg-red-900/40 text-red-400 hover:bg-red-900/60 border border-red-800",
+    } : {
+      default: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
       number: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
       operator: "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 font-semibold",
-      function: "bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 text-base font-medium", // Darkened text for A11y
+      function: "bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 text-base font-medium",
       action: "bg-blue-600 text-white hover:bg-blue-700 shadow-md border-transparent",
-      warning: "bg-red-50 text-red-700 hover:bg-red-100 border border-red-300", // Darkened red for A11y
+      warning: "bg-red-50 text-red-700 hover:bg-red-100 border border-red-300",
     };
 
     // @ts-ignore
@@ -227,13 +236,13 @@ const ScientificCalculator = () => {
   return (
     // Max width limited to lg (approx 512px) for better desktop layout
     <div className="w-full max-w-lg mx-auto p-4">
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+      <div className={`rounded-2xl shadow-xl overflow-hidden ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}>
         
         {/* Display Area: 2-Line Structure */}
-        <div className="relative bg-gray-50 p-6 text-right border-b border-gray-200 min-h-[140px] flex flex-col justify-end">
+        <div className={`relative p-6 text-right min-h-[140px] flex flex-col justify-end ${dark ? 'bg-slate-900 border-b border-slate-700' : 'bg-gray-50 border-b border-gray-200'}`}>
           <button 
             onClick={() => setShowHistory(!showHistory)}
-            className="absolute top-4 left-4 p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-full transition-colors" // Darkened for A11y
+            className={`absolute top-4 left-4 p-2 rounded-full transition-colors ${dark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'}`}
             title="History"
             aria-label="View history"
             type="button"
@@ -243,22 +252,22 @@ const ScientificCalculator = () => {
           
            {/* Deg/Rad Toggle Indicator */}
            <div 
-             className="absolute top-4 right-4 flex bg-gray-200 rounded-md p-0.5 text-xs font-medium"
+             className={`absolute top-4 right-4 flex rounded-md p-0.5 text-xs font-medium ${dark ? 'bg-slate-700' : 'bg-gray-200'}`}
              role="radiogroup" 
              aria-label="Angle mode"
            >
             <button 
               onClick={() => setIsDegree(true)}
-              className={`px-2 py-1 rounded ${isDegree ? 'bg-white text-blue-800 shadow-sm font-bold' : 'text-gray-700'}`} // Darkened for A11y
+              className={`px-2 py-1 rounded ${isDegree ? (dark ? 'bg-slate-500 text-blue-300 shadow-sm font-bold' : 'bg-white text-blue-800 shadow-sm font-bold') : (dark ? 'text-slate-400' : 'text-gray-700')}`}
               role="radio"
               aria-checked={isDegree}
               type="button"
             >
               DEG
             </button>
-            <button 
+            <button
               onClick={() => setIsDegree(false)}
-              className={`px-2 py-1 rounded ${!isDegree ? 'bg-white text-blue-800 shadow-sm font-bold' : 'text-gray-700'}`} // Darkened for A11y
+              className={`px-2 py-1 rounded ${!isDegree ? (dark ? 'bg-slate-500 text-blue-300 shadow-sm font-bold' : 'bg-white text-blue-800 shadow-sm font-bold') : (dark ? 'text-slate-400' : 'text-gray-700')}`}
               role="radio"
               aria-checked={!isDegree}
               type="button"
@@ -276,7 +285,7 @@ const ScientificCalculator = () => {
           */}
           <div 
              ref={inputRef}
-             className="w-full text-lg text-gray-700 font-medium whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll mb-2 min-h-[28px] pb-1 leading-tight" // Darkened text
+             className={`w-full text-lg font-medium whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll mb-2 min-h-[28px] pb-1 leading-tight ${dark ? 'text-slate-300' : 'text-gray-700'}`}
              role="region"
              aria-live="polite"
              aria-label="Expression"
@@ -292,7 +301,7 @@ const ScientificCalculator = () => {
           */}
           <div 
             ref={resultRef}
-            className={`w-full text-3xl font-bold tracking-tight whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll pb-1 leading-tight ${error ? 'text-red-600' : 'text-gray-900'}`} // Darkened red
+            className={`w-full text-3xl font-bold tracking-tight whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll pb-1 leading-tight ${error ? 'text-red-500' : (dark ? 'text-slate-100' : 'text-gray-900')}`}
             aria-label="Result"
             aria-live="polite"
           >
@@ -306,19 +315,20 @@ const ScientificCalculator = () => {
           
           {/* History Panel Overlay/Sidebar */}
           <div className={`
-            absolute md:static z-20 top-0 left-0 h-full w-full md:w-64 bg-white border-r border-gray-200 
+            absolute md:static z-20 top-0 left-0 h-full w-full md:w-64
             transition-all duration-300 ease-in-out transform
             ${showHistory ? 'translate-x-0' : '-translate-x-full md:hidden'}
             flex flex-col
+            ${dark ? 'bg-slate-800 border-r border-slate-700' : 'bg-white border-r border-gray-200'}
           `}>
-            <div className="flex justify-between items-center p-4 border-b border-gray-100 bg-gray-50">
-              <span className="font-semibold text-gray-800 flex items-center gap-2">
+            <div className={`flex justify-between items-center p-4 ${dark ? 'border-b border-slate-700 bg-slate-900' : 'border-b border-gray-100 bg-gray-50'}`}>
+              <span className={`font-semibold flex items-center gap-2 ${dark ? 'text-slate-200' : 'text-gray-800'}`}>
                 <LuHistory aria-hidden="true" /> History
               </span>
               <div className="flex gap-2">
                 <button 
                    onClick={handleClearHistory}
-                   className="p-1.5 text-red-600 hover:bg-red-50 rounded" // Darkened red
+                   className={`p-1.5 rounded ${dark ? 'text-red-400 hover:bg-red-900/40' : 'text-red-600 hover:bg-red-50'}`}
                    title="Clear History"
                    aria-label="Clear history"
                    type="button"
@@ -327,7 +337,7 @@ const ScientificCalculator = () => {
                 </button>
                 <button 
                   onClick={() => setShowHistory(false)}
-                  className="md:hidden p-1.5 text-gray-600 hover:bg-gray-200 rounded" // Darkened gray
+                  className={`md:hidden p-1.5 rounded ${dark ? 'text-slate-400 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-200'}`}
                   aria-label="Close history"
                   type="button"
                 >
@@ -337,12 +347,12 @@ const ScientificCalculator = () => {
             </div>
             <div className="flex-1 overflow-y-auto p-2" role={history.length > 0 ? "list" : undefined}>
               {history.length === 0 ? (
-                <div className="text-center text-gray-600 mt-10 text-sm">No history yet</div>
+                <div className={`text-center mt-10 text-sm ${dark ? 'text-slate-400' : 'text-gray-600'}`}>No history yet</div>
               ) : (
                 history.map((item, idx) => (
                   <div 
                     key={idx} 
-                    className="p-3 mb-2 hover:bg-gray-50 rounded-lg cursor-pointer border border-transparent hover:border-gray-100 transition-all"
+                    className={`p-3 mb-2 rounded-lg cursor-pointer border border-transparent transition-all ${dark ? 'hover:bg-slate-700 hover:border-slate-600' : 'hover:bg-gray-50 hover:border-gray-100'}`}
                     onClick={() => {
                         setInput(item.expression);
                         setResult(item.result);
@@ -356,8 +366,8 @@ const ScientificCalculator = () => {
                       }
                     }}
                   >
-                    <div className="text-sm text-gray-600 text-right font-mono truncate">{item.expression}</div>
-                    <div className="text-lg text-gray-900 text-right font-bold">= {item.result}</div>
+                    <div className={`text-sm text-right font-mono truncate ${dark ? 'text-slate-400' : 'text-gray-600'}`}>{item.expression}</div>
+                    <div className={`text-lg text-right font-bold ${dark ? 'text-slate-100' : 'text-gray-900'}`}>= {item.result}</div>
                   </div>
                 ))
               )}
@@ -365,7 +375,7 @@ const ScientificCalculator = () => {
           </div>
 
           {/* Keypad */}
-          <div className="flex-1 p-4 bg-white">
+          <div className={`flex-1 p-4 ${dark ? 'bg-slate-800' : 'bg-white'}`}>
             <div className="grid grid-cols-5 gap-3"> {/* Increased gap for better mobile UX */}
               
               {/* Row 1: Advanced Functions */}
@@ -416,7 +426,7 @@ const ScientificCalculator = () => {
       
       {/* Mobile History Toggle Overlay Help */}
       {!showHistory && (
-         <div className="md:hidden mt-4 text-center text-gray-600 text-sm">
+         <div className={`md:hidden mt-4 text-center text-sm ${dark ? 'text-slate-400' : 'text-gray-600'}`}>
            Press the history icon <LuHistory className="inline" aria-hidden="true" /> to view past calculations
          </div>
       )}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface ExchangeRate {
     result: number;
@@ -59,6 +60,8 @@ const currencyNamesEn: Record<string, string> = {
 export default function ExchangeRateClient() {
     const t = useTranslations('MoneyConverter.client');
     const locale = useLocale();
+    const { theme } = useTheme();
+    const dark = theme === 'dark';
     const [rates, setRates] = useState<ExchangeRate[]>([]);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
@@ -296,7 +299,7 @@ export default function ExchangeRateClient() {
                 }
             `}</style>
             {/* 2. 5-Row Calculator Section (Top) */}
-            <div className="calc-container" style={{ background: "#f8f9fa", padding: "30px", borderRadius: "16px", border: "1px solid #e9ecef", marginBottom: "40px" }}>
+            <div className="calc-container" style={{ background: dark ? "#1e293b" : "#f8f9fa", padding: "30px", borderRadius: "16px", border: dark ? "1px solid #334155" : "1px solid #e9ecef", marginBottom: "40px" }}>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                     {rowCurrencies.map((currentCode, index) => {
@@ -305,31 +308,38 @@ export default function ExchangeRateClient() {
                         return (
                             <div key={index} className="calc-row" style={{
                                 display: "flex",
-                                background: "white",
+                                background: dark ? "#0f172a" : "white",
                                 padding: "12px",
                                 borderRadius: "10px",
-                                boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                                boxShadow: dark ? "none" : "0 2px 4px rgba(0,0,0,0.05)",
                                 alignItems: "center",
-                                border: "1px solid #e5e7eb"
+                                border: dark ? "1px solid #334155" : "1px solid #e5e7eb"
                             }}>
                                 {/* Currency Searchable Dropdown */}
-                                <div className="calc-select-container" style={{ flex: "0 0 180px", borderRight: "1px solid #f0f0f0", paddingRight: "12px", marginRight: "12px", position: "relative" }} ref={openDropdownIndex === index ? dropdownRef : null}>
+                                <div className="calc-select-container" style={{ flex: "0 0 220px", borderRight: dark ? "1px solid #334155" : "1px solid #f0f0f0", paddingRight: "12px", marginRight: "12px", position: "relative" }} ref={openDropdownIndex === index ? dropdownRef : null}>
                                     <div
                                         onClick={() => {
                                             setOpenDropdownIndex(openDropdownIndex === index ? null : index);
                                             setSearchQuery("");
                                         }}
-                                        style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}
+                                        style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
                                     >
-                                        <img
-                                            src={getFlagUrl(currentCode)}
-                                            alt="flag"
-                                            style={{ width: "24px", height: "16px", objectFit: "cover", borderRadius: "2px" }}
-                                        />
-                                        <span style={{ fontWeight: "600", fontSize: "1rem", color: "#374151" }}>
-                                            {currentCode.replace("(100)", "")} {getCurrencyName(currentCode, rates.find(r => r.cur_unit === currentCode)?.cur_nm)}
-                                        </span>
-                                        <span style={{ marginLeft: "auto", color: "#9ca3af" }}>▼</span>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                                                <img
+                                                    src={getFlagUrl(currentCode)}
+                                                    alt="flag"
+                                                    style={{ width: "24px", height: "16px", objectFit: "cover", borderRadius: "2px", flexShrink: 0 }}
+                                                />
+                                                <span style={{ fontWeight: "600", fontSize: "1rem", color: dark ? "#f1f5f9" : "#374151" }}>
+                                                    {currentCode.replace("(100)", "")}
+                                                </span>
+                                            </div>
+                                            <div style={{ color: dark ? "#94a3b8" : "#6b7280", fontSize: "0.8rem", lineHeight: "1.2" }}>
+                                                {getCurrencyName(currentCode, rates.find(r => r.cur_unit === currentCode)?.cur_nm)}
+                                            </div>
+                                        </div>
+                                        <span style={{ color: dark ? "#64748b" : "#9ca3af", flexShrink: 0 }}>▼</span>
                                     </div>
 
                                     {openDropdownIndex === index && (
@@ -337,12 +347,12 @@ export default function ExchangeRateClient() {
                                             position: "absolute",
                                             top: "100%",
                                             left: 0,
-                                            right: 0,
+                                            minWidth: "240px",
                                             marginTop: "4px",
-                                            background: "white",
-                                            border: "1px solid #e5e7eb",
+                                            background: dark ? "#1e293b" : "white",
+                                            border: dark ? "1px solid #334155" : "1px solid #e5e7eb",
                                             borderRadius: "8px",
-                                            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                                            boxShadow: dark ? "0 4px 12px rgba(0,0,0,0.4)" : "0 4px 12px rgba(0,0,0,0.15)",
                                             zIndex: 1000,
                                             maxHeight: "300px",
                                             overflow: "hidden"
@@ -359,9 +369,11 @@ export default function ExchangeRateClient() {
                                                     width: "100%",
                                                     padding: "10px 12px",
                                                     border: "none",
-                                                    borderBottom: "1px solid #e5e7eb",
+                                                    borderBottom: dark ? "1px solid #334155" : "1px solid #e5e7eb",
                                                     outline: "none",
-                                                    fontSize: "0.95rem"
+                                                    fontSize: "0.95rem",
+                                                    background: dark ? "#1e293b" : "white",
+                                                    color: dark ? "#e2e8f0" : "#1f2937"
                                                 }}
                                             />
                                             <div style={{ maxHeight: "240px", overflowY: "auto" }}>
@@ -373,25 +385,27 @@ export default function ExchangeRateClient() {
                                                             display: "flex",
                                                             alignItems: "center",
                                                             gap: "10px",
-                                                            padding: "10px 12px",
+                                                            padding: "8px 12px",
                                                             cursor: "pointer",
-                                                            background: currentCode === currency.cur_unit ? "#f3f4f6" : "white",
+                                                            background: currentCode === currency.cur_unit ? (dark ? "#334155" : "#f3f4f6") : (dark ? "#1e293b" : "white"),
                                                             transition: "background 0.15s"
                                                         }}
-                                                        onMouseEnter={(e) => e.currentTarget.style.background = "#f9fafb"}
-                                                        onMouseLeave={(e) => e.currentTarget.style.background = currentCode === currency.cur_unit ? "#f3f4f6" : "white"}
+                                                        onMouseEnter={(e) => e.currentTarget.style.background = dark ? "#334155" : "#f9fafb"}
+                                                        onMouseLeave={(e) => e.currentTarget.style.background = currentCode === currency.cur_unit ? (dark ? "#334155" : "#f3f4f6") : (dark ? "#1e293b" : "white")}
                                                     >
                                                         <img
                                                             src={getFlagUrl(currency.cur_unit)}
                                                             alt={currency.cur_unit}
-                                                            style={{ width: "24px", height: "16px", objectFit: "cover", borderRadius: "2px" }}
+                                                            style={{ width: "24px", height: "16px", objectFit: "cover", borderRadius: "2px", flexShrink: 0 }}
                                                         />
-                                                        <span style={{ fontWeight: "500", color: "#374151" }}>
-                                                            {currency.cur_unit.replace("(100)", "")}
-                                                        </span>
-                                                        <span style={{ color: "#6b7280", fontSize: "0.9rem" }}>
-                                                            {currency.cur_nm}
-                                                        </span>
+                                                        <div style={{ minWidth: 0 }}>
+                                                            <div style={{ fontWeight: "500", color: dark ? "#f1f5f9" : "#374151", fontSize: "0.95rem" }}>
+                                                                {currency.cur_unit.replace("(100)", "")}
+                                                            </div>
+                                                            <div style={{ color: dark ? "#94a3b8" : "#6b7280", fontSize: "0.8rem", lineHeight: "1.2" }}>
+                                                                {currency.cur_nm}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 ))}
                                                 {getFilteredCurrencies().length === 0 && (
@@ -417,14 +431,14 @@ export default function ExchangeRateClient() {
                                                 fontSize: "1.4rem",
                                                 textAlign: "right",
                                                 fontWeight: "bold",
-                                                color: "#1f2937",
+                                                color: dark ? "#f1f5f9" : "#1f2937",
                                                 outline: "none",
                                                 background: "transparent"
                                             }}
                                             placeholder="0"
                                         />
                                     </div>
-                                    <div className="currency-unit" style={{ minWidth: "45px", textAlign: "right", paddingLeft: "10px", color: "#6b7280", fontWeight: "500", fontSize: "0.9rem" }}>
+                                    <div className="currency-unit" style={{ minWidth: "45px", textAlign: "right", paddingLeft: "10px", color: dark ? "#94a3b8" : "#6b7280", fontWeight: "500", fontSize: "0.9rem" }}>
                                         {currentCode.replace("(100)", "")}
                                     </div>
                                 </div>
@@ -436,24 +450,23 @@ export default function ExchangeRateClient() {
 
             {/* 1. Synced Exchange Rate Dashboard (Bottom) */}
             <div className="mobile-hidden">
-                <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "15px", color: "#333" }}>{t('dashboardTitle', { date: dateString })}</h2>
+                <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "15px", color: dark ? "#f1f5f9" : "#333" }}>{t('dashboardTitle', { date: dateString })}</h2>
                 {loading ? (
                     <div style={{ textAlign: "center", padding: "40px" }}>{t('loading')}</div>
                 ) : (
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "15px" }}>
                         {rowCurrencies.map((code, idx) => {
-                            // If KRW, it's just 1. If Foreign, show rate.
                             const rate = rates.find((r) => r.cur_unit === code);
                             const displayRate = code === "KRW" ? "1.00" : rate?.deal_bas_r || "-";
                             const curName = getCurrencyName(code, rate?.cur_nm);
 
                             return (
                                 <div key={`${code}-${idx}`} style={{
-                                    background: "white",
+                                    background: dark ? "#1e293b" : "white",
                                     borderRadius: "12px",
                                     padding: "20px",
-                                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                                    border: "1px solid #f3f4f6",
+                                    boxShadow: dark ? "none" : "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                                    border: dark ? "1px solid #334155" : "1px solid #f3f4f6",
                                     display: "flex",
                                     flexDirection: "column",
                                     justifyContent: "space-between"
@@ -466,14 +479,14 @@ export default function ExchangeRateClient() {
                                                 style={{ width: "28px", height: "20px", objectFit: "cover", borderRadius: "2px", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}
                                             />
                                         </div>
-                                        <div style={{ fontSize: "0.9rem", color: "#6B7280", marginBottom: "8px", fontWeight: "500" }}>
+                                        <div style={{ fontSize: "0.9rem", color: dark ? "#94a3b8" : "#6B7280", marginBottom: "8px", fontWeight: "500" }}>
                                             {curName} ({code.replace("(100)", "")})
                                         </div>
-                                        <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#111827" }}>
+                                        <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: dark ? "#f1f5f9" : "#111827" }}>
                                             {displayRate}
                                         </div>
                                     </div>
-                                    <div style={{ fontSize: "0.8rem", color: "#999", marginTop: "10px" }}>
+                                    <div style={{ fontSize: "0.8rem", color: dark ? "#64748b" : "#999", marginTop: "10px" }}>
                                         {t('standardRate')}
                                     </div>
                                 </div>
@@ -485,7 +498,7 @@ export default function ExchangeRateClient() {
 
 {/* Mobile Dashboard */}
             <div className="mobile-dashboard">
-                <h2 style={{ fontSize: "1rem", fontWeight: "bold", marginBottom: "10px", color: "#333" }}>{t('dashboardTitle', { date: dateString })}</h2>
+                <h2 style={{ fontSize: "1rem", fontWeight: "bold", marginBottom: "10px", color: dark ? "#f1f5f9" : "#333" }}>{t('dashboardTitle', { date: dateString })}</h2>
                 {loading ? (
                     <div style={{ textAlign: "center", padding: "20px" }}>{t('loading')}</div>
                 ) : (
@@ -496,11 +509,11 @@ export default function ExchangeRateClient() {
 
                             return (
                                 <div key={`mobile-${code}-${idx}`} style={{
-                                    background: "white",
+                                    background: dark ? "#1e293b" : "white",
                                     borderRadius: "8px",
                                     padding: "10px",
-                                    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-                                    border: "1px solid #f3f4f6"
+                                    boxShadow: dark ? "none" : "0 1px 3px rgba(0,0,0,0.08)",
+                                    border: dark ? "1px solid #334155" : "1px solid #f3f4f6"
                                 }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
                                         <img
@@ -508,11 +521,11 @@ export default function ExchangeRateClient() {
                                             alt={code}
                                             style={{ width: "20px", height: "14px", objectFit: "cover", borderRadius: "2px" }}
                                         />
-                                        <span style={{ fontSize: "0.75rem", color: "#6B7280", fontWeight: "500" }}>
+                                        <span style={{ fontSize: "0.75rem", color: dark ? "#94a3b8" : "#6B7280", fontWeight: "500" }}>
                                             {code.replace("(100)", "")}
                                         </span>
                                     </div>
-                                    <div style={{ fontSize: "1rem", fontWeight: "bold", color: "#111827" }}>
+                                    <div style={{ fontSize: "1rem", fontWeight: "bold", color: dark ? "#f1f5f9" : "#111827" }}>
                                         {displayRate}
                                     </div>
                                 </div>
