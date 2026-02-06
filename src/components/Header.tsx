@@ -1,9 +1,11 @@
 "use client";
 
-import { Link } from "@/navigation";
-import { useState, useEffect } from "react";
-import { FaHome, FaBars, FaTimes, FaCalculator, FaClock, FaTools, FaChevronDown, FaCode } from "react-icons/fa";
+import { Link, usePathname } from "@/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { FaHome, FaBars, FaTimes, FaCalculator, FaClock, FaTools, FaChevronDown, FaCode, FaCog, FaExpand, FaCompress, FaSun, FaMoon } from "react-icons/fa";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
+import SettingsDropdown from "./SettingsDropdown";
 
 interface MenuCategory {
   key: string;
@@ -11,11 +13,21 @@ interface MenuCategory {
   items: { href: string; labelKey: string }[];
 }
 
+// 전체화면 버튼을 표시할 페이지 목록
+const FULLSCREEN_PAGES = ['/clock', '/stopwatch', '/timer'];
+
 export default function Header() {
   const t = useTranslations('Header');
   const tTools = useTranslations('Index.tools');
+  const pathname = usePathname();
+  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // 전체화면 버튼 표시 여부
+  const showFullscreenBtn = FULLSCREEN_PAGES.some(page => pathname.includes(page));
 
   const menuCategories: MenuCategory[] = [
     {
@@ -74,12 +86,35 @@ export default function Header() {
     }
   ];
 
+  // 전체화면 토글
+  const toggleFullScreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {
+        // 전체화면 요청 실패 시 무시
+      });
+    } else {
+      document.exitFullscreen().catch(() => {
+        // 전체화면 해제 실패 시 무시
+      });
+    }
+  }, []);
+
+  // 전체화면 상태 감지
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".nav-dropdown")) {
+      if (!target.closest(".nav-dropdown") && !target.closest(".settings-dropdown")) {
         setActiveDropdown(null);
+        setSettingsOpen(false);
       }
     };
     document.addEventListener("click", handleClickOutside);
@@ -96,6 +131,16 @@ export default function Header() {
     <>
       <header className="new-header">
         <div className="header-container">
+          {/* 왼쪽: 햄버거 메뉴 버튼 (모바일) */}
+          <button
+            className="mobile-menu-btn mobile-menu-btn-left"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="메뉴 열기"
+          >
+            <FaBars />
+          </button>
+
+          {/* 로고 */}
           <Link href="/" className="header-logo" onClick={handleLinkClick}>
             <div className="header-logo-icon">
               <FaHome />
@@ -132,14 +177,43 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="mobile-menu-btn"
-            onClick={() => setMobileMenuOpen(true)}
-            aria-label="메뉴 열기"
-          >
-            <FaBars />
-          </button>
+          {/* 오른쪽: 액션 버튼 그룹 */}
+          <div className="header-actions">
+            {/* 전체화면 버튼 (시계 관련 페이지에서만) */}
+            {showFullscreenBtn && (
+              <button
+                className="header-action-btn"
+                onClick={toggleFullScreen}
+                aria-label={isFullscreen ? "전체화면 해제" : "전체화면"}
+                title={isFullscreen ? "전체화면 해제" : "전체화면"}
+              >
+                {isFullscreen ? <FaCompress /> : <FaExpand />}
+              </button>
+            )}
+
+            {/* 다크모드 토글 */}
+            <button
+              className="header-action-btn"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? "라이트 모드" : "다크 모드"}
+              title={theme === 'dark' ? "라이트 모드" : "다크 모드"}
+            >
+              {theme === 'dark' ? <FaSun /> : <FaMoon />}
+            </button>
+
+            {/* 설정 버튼 */}
+            <button
+              className="header-action-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSettingsOpen(!settingsOpen);
+              }}
+              aria-label="설정"
+              title="설정"
+            >
+              <FaCog />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -149,8 +223,8 @@ export default function Header() {
         onClick={() => setMobileMenuOpen(false)}
       />
 
-      {/* Mobile Slide Menu */}
-      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
+      {/* Mobile Slide Menu (왼쪽에서 슬라이드) */}
+      <div className={`mobile-menu mobile-menu-left ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-menu-header">
           <Link href="/" className="header-logo" onClick={handleLinkClick}>
             <div className="header-logo-icon">
@@ -181,6 +255,11 @@ export default function Header() {
           </div>
         ))}
       </div>
+
+      {/* 설정 드롭다운 */}
+      {settingsOpen && (
+        <SettingsDropdown onClose={() => setSettingsOpen(false)} />
+      )}
     </>
   );
 }

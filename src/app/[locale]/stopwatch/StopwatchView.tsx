@@ -252,38 +252,10 @@ export default function StopwatchView() {
 
             {/* 컨트롤 버튼 */}
             {/* 단축키 안내 */}
-            <div style={{
-                display: 'flex',
-                gap: '16px',
-                justifyContent: 'center',
-                marginBottom: '16px',
-                fontSize: '0.75rem',
-                color: '#9ca3af',
-            }}>
-                <span><kbd style={{
-                    background: '#f3f4f6',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    padding: '2px 6px',
-                    fontFamily: 'inherit',
-                    fontSize: '0.7rem',
-                }}>Space</kbd> {t('shortcutStartStop')}</span>
-                <span><kbd style={{
-                    background: '#f3f4f6',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    padding: '2px 6px',
-                    fontFamily: 'inherit',
-                    fontSize: '0.7rem',
-                }}>L</kbd> {t('shortcutLap')}</span>
-                <span><kbd style={{
-                    background: '#f3f4f6',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '4px',
-                    padding: '2px 6px',
-                    fontFamily: 'inherit',
-                    fontSize: '0.7rem',
-                }}>R</kbd> {t('shortcutReset')}</span>
+            <div className="sw-shortcuts">
+                <span><kbd className="sw-kbd">Space</kbd> {t('shortcutStartStop')}</span>
+                <span><kbd className="sw-kbd">L</kbd> {t('shortcutLap')}</span>
+                <span><kbd className="sw-kbd">R</kbd> {t('shortcutReset')}</span>
             </div>
 
             {/* 컨트롤 버튼 */}
@@ -392,29 +364,16 @@ export default function StopwatchView() {
 
             {/* 랩 리스트 */}
             {laps.length > 0 && (
-                <div style={{
-                    width: '100%',
-                    maxWidth: '100%',
-                    marginTop: '12px',
-                }}>
+                <div className="sw-lap-container">
                     {/* 랩 리스트 헤더 */}
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginBottom: '8px',
-                    }}>
-                        <span style={{ fontWeight: 600, color: '#374151', fontSize: '0.9rem' }}>
+                    <div className="sw-lap-header">
+                        <span className="sw-lap-header-text">
                             {t('lapList')} ({laps.length})
                         </span>
                     </div>
 
                     {/* 랩 리스트 테이블 */}
-                    <div style={{
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '10px',
-                        background: '#fafafa',
-                    }}>
+                    <div className="sw-lap-table">
                         {[...laps].reverse().map((lap, idx) => {
                             const originalIndex = laps.length - 1 - idx;
                             const isFastest = originalIndex === fastestLapIndex && laps.length > 1;
@@ -423,58 +382,23 @@ export default function StopwatchView() {
                             return (
                                 <div
                                     key={lap.lapNumber}
+                                    className={`sw-lap-row ${isFastest ? 'sw-lap-fastest' : ''} ${isSlowest ? 'sw-lap-slowest' : ''}`}
                                     style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '10px 12px',
-                                        borderBottom: idx < laps.length - 1 ? '1px solid #e5e7eb' : 'none',
-                                        background: isFastest ? 'rgba(16, 185, 129, 0.1)' : isSlowest ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
-                                        gap: '8px',
+                                        borderBottom: idx < laps.length - 1 ? undefined : 'none',
                                     }}
                                 >
-                                    <span style={{
-                                        fontWeight: 600,
-                                        color: isFastest ? '#059669' : isSlowest ? '#dc2626' : '#6b7280',
-                                        fontSize: '0.85rem',
-                                        minWidth: '36px',
-                                    }}>
+                                    <span className={`sw-lap-number ${isFastest ? 'sw-lap-fastest-text' : ''} ${isSlowest ? 'sw-lap-slowest-text' : ''}`}>
                                         #{lap.lapNumber}
                                     </span>
-                                    <span style={{
-                                        fontFamily: "'SF Mono', 'Roboto Mono', monospace",
-                                        fontSize: '0.95rem',
-                                        color: isFastest ? '#059669' : isSlowest ? '#dc2626' : '#374151',
-                                        fontWeight: 600,
-                                        flex: 1,
-                                        textAlign: 'center',
-                                    }}>
+                                    <span className={`sw-lap-time ${isFastest ? 'sw-lap-fastest-text' : ''} ${isSlowest ? 'sw-lap-slowest-text' : ''}`}>
                                         {formatTime(lap.lapTime, hasHoursInLaps)}
                                     </span>
-                                    <span style={{
-                                        fontFamily: "'SF Mono', 'Roboto Mono', monospace",
-                                        fontSize: '0.8rem',
-                                        color: '#9ca3af',
-                                        minWidth: hasHoursInLaps ? '90px' : '65px',
-                                        textAlign: 'right',
-                                    }}>
+                                    <span className="sw-lap-total" style={{ minWidth: hasHoursInLaps ? '90px' : '65px' }}>
                                         {formatTime(lap.totalTime, hasHoursInLaps)}
                                     </span>
                                     <button
                                         onClick={() => handleDeleteLap(lap.lapNumber)}
-                                        style={{
-                                            background: 'transparent',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            color: '#d1d5db',
-                                            fontSize: '0.9rem',
-                                            padding: '2px 6px',
-                                            borderRadius: '4px',
-                                            transition: 'all 0.2s ease',
-                                            flexShrink: 0,
-                                        }}
-                                        onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
-                                        onMouseLeave={(e) => e.currentTarget.style.color = '#d1d5db'}
+                                        className="sw-lap-delete"
                                     >
                                         ✕
                                     </button>
@@ -484,37 +408,11 @@ export default function StopwatchView() {
                     </div>
 
                     {/* 버튼들 - 맨 아래 */}
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '12px' }}>
-                        <button
-                            onClick={handleExportExcel}
-                            style={{
-                                padding: '8px 16px',
-                                borderRadius: '8px',
-                                fontSize: '0.85rem',
-                                fontWeight: 500,
-                                border: '1px solid #10b981',
-                                cursor: 'pointer',
-                                background: 'white',
-                                color: '#10b981',
-                                transition: 'all 0.2s ease',
-                            }}
-                        >
+                    <div className="sw-lap-actions">
+                        <button onClick={handleExportExcel} className="sw-btn-export">
                             {t('exportExcel')}
                         </button>
-                        <button
-                            onClick={handleClearLaps}
-                            style={{
-                                padding: '8px 16px',
-                                borderRadius: '8px',
-                                fontSize: '0.85rem',
-                                fontWeight: 500,
-                                border: '1px solid #ef4444',
-                                cursor: 'pointer',
-                                background: 'white',
-                                color: '#ef4444',
-                                transition: 'all 0.2s ease',
-                            }}
-                        >
+                        <button onClick={handleClearLaps} className="sw-btn-clear">
                             {t('clearLaps')}
                         </button>
                     </div>

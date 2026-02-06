@@ -51,6 +51,13 @@
       "time": "시계",
       "utilities": "유틸리티",
       "devtools": "개발 도구"
+    },
+    "settings": {
+      "title": "설정",
+      "theme": "테마",
+      "lightMode": "라이트 모드",
+      "darkMode": "다크 모드",
+      "language": "언어"
     }
   },
   "Footer": {

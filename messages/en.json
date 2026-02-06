@@ -51,6 +51,13 @@
       "time": "Clock",
       "utilities": "Utilities",
       "devtools": "Dev Tools"
+    },
+    "settings": {
+      "title": "Settings",
+      "theme": "Theme",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode",
+      "language": "Language"
     }
   },
   "Footer": {

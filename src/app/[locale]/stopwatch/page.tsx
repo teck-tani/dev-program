@@ -303,121 +303,86 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
-            <div className="container" style={{ maxWidth: '900px', padding: '0 10px' }}>
+            <div className="container sw-page">
                 {/* 제목만 상단에 - 짧은 버전 */}
-                <h1 style={{ textAlign: 'center', marginBottom: '10px', fontSize: '1.4rem' }}>
+                <h1 className="sw-title">
                     {isKo ? '온라인 스톱워치' : 'Online Stopwatch'}
                 </h1>
 
                 {/* 스톱워치 컴포넌트 */}
-                <div style={{
-                    background: 'white',
-                    borderRadius: '16px',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                    padding: '16px 12px',
-                    marginBottom: '30px'
-                }}>
+                <div className="sw-widget">
                     <StopwatchWrapper />
                 </div>
 
                 {/* 설명 텍스트 - UI 아래로 이동 */}
-                <p style={{ color: '#666', fontSize: '0.95rem', maxWidth: '700px', margin: '0 auto 30px', textAlign: 'center', lineHeight: '1.6' }}>
+                <p className="sw-desc">
                     {c.description}
                 </p>
 
                 {/* SEO 콘텐츠 섹션 */}
-                <article style={{ lineHeight: '1.7' }}>
+                <article className="sw-article">
                     {/* 스톱워치란? */}
-                    <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '16px', borderBottom: '2px solid #0891b2', paddingBottom: '8px' }}>
+                    <section className="sw-section">
+                        <h2 className="sw-section-heading sw-heading-cyan">
                             {c.whatIsTitle}
                         </h2>
-                        <p style={{ color: '#555', marginBottom: '16px', fontSize: '0.95rem' }}>
+                        <p className="sw-text">
                             {c.whatIsContent}
                         </p>
-                        <div style={{ background: '#f8fafc', padding: '16px 20px', borderRadius: '10px', borderLeft: '4px solid #0891b2' }}>
-                            <ul style={{ margin: 0, paddingLeft: '20px', color: '#555', fontSize: '0.9rem' }}>
+                        <div className="sw-feature-box">
+                            <ul className="sw-feature-list">
                                 {c.whatIsFeatures.map((feature, index) => (
-                                    <li key={index} style={{ marginBottom: '6px' }}>{feature}</li>
+                                    <li key={index}>{feature}</li>
                                 ))}
                             </ul>
                         </div>
                     </section>
 
                     {/* 사용법 */}
-                    <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '16px', borderBottom: '2px solid #10b981', paddingBottom: '8px' }}>
+                    <section className="sw-section">
+                        <h2 className="sw-section-heading sw-heading-green">
                             {c.howToTitle}
                         </h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                        <div className="sw-howto-grid">
                             {c.howToSteps.map((item, index) => (
-                                <div key={index} style={{
-                                    background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)',
-                                    padding: '16px',
-                                    borderRadius: '10px',
-                                    border: '1px solid #d1fae5'
-                                }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                                        <span style={{
-                                            background: '#10b981',
-                                            color: 'white',
-                                            width: '24px',
-                                            height: '24px',
-                                            borderRadius: '50%',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 'bold',
-                                            marginRight: '10px'
-                                        }}>{item.step}</span>
-                                        <h3 style={{ margin: 0, fontSize: '1rem', color: '#065f46' }}>{item.title}</h3>
+                                <div key={index} className="sw-howto-card">
+                                    <div className="sw-howto-header">
+                                        <span className="sw-step-badge">{item.step}</span>
+                                        <h3 className="sw-howto-title">{item.title}</h3>
                                     </div>
-                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#555', lineHeight: '1.5' }}>{item.desc}</p>
+                                    <p className="sw-howto-desc">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
 
                     {/* 활용 사례 */}
-                    <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '16px', borderBottom: '2px solid #6366f1', paddingBottom: '8px' }}>
+                    <section className="sw-section">
+                        <h2 className="sw-section-heading sw-heading-indigo">
                             {c.useCasesTitle}
                         </h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+                        <div className="sw-usecase-grid">
                             {c.useCases.map((item, index) => (
-                                <div key={index} style={{
-                                    background: '#fff',
-                                    padding: '16px',
-                                    borderRadius: '10px',
-                                    border: '1px solid #e5e7eb',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-                                }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                                        <span style={{ fontSize: '1.5rem', marginRight: '10px' }}>{item.icon}</span>
-                                        <h3 style={{ margin: 0, fontSize: '1rem', color: '#333' }}>{item.title}</h3>
+                                <div key={index} className="sw-usecase-card">
+                                    <div className="sw-usecase-header">
+                                        <span className="sw-usecase-icon">{item.icon}</span>
+                                        <h3 className="sw-usecase-title">{item.title}</h3>
                                     </div>
-                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#666', lineHeight: '1.5' }}>{item.desc}</p>
+                                    <p className="sw-usecase-desc">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
 
                     {/* FAQ */}
-                    <section style={{ background: '#fafafa', padding: '24px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                        <h2 style={{ fontSize: '1.4rem', color: '#333', marginBottom: '16px', textAlign: 'center' }}>
+                    <section className="sw-faq-section">
+                        <h2 className="sw-faq-title">
                             {c.faqTitle}
                         </h2>
                         {c.faqs.map((faq, index) => (
-                            <details key={index} style={{
-                                marginBottom: '10px',
-                                padding: '12px 16px',
-                                background: 'white',
-                                borderRadius: '8px',
-                                border: '1px solid #e5e7eb'
-                            }}>
-                                <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#333', fontSize: '0.95rem' }}>{faq.q}</summary>
-                                <p style={{ marginTop: '10px', marginBottom: 0, color: '#555', fontSize: '0.9rem', lineHeight: '1.6' }}>{faq.a}</p>
+                            <details key={index} className="sw-faq-item">
+                                <summary className="sw-faq-question">{faq.q}</summary>
+                                <p className="sw-faq-answer">{faq.a}</p>
                             </details>
                         ))}
                     </section>
