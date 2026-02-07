@@ -66,29 +66,69 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 function generateFaqSchema(locale: string) {
     const faqData = locale === 'ko' ? [
         {
-            question: "각도 계산 시 라디안(Radian)과 디그리(Degree) 중 무엇을 쓰나요?",
-            answer: "현재 이 계산기는 기본적으로 디그리(Degree, 도) 단위를 사용합니다. 추후 라디안 변환 기능을 추가할 예정입니다."
+            question: "DEG(디그리)와 RAD(라디안)의 차이는 무엇인가요?",
+            answer: "DEG(Degree, 도)는 원을 360등분한 각도 단위이고, RAD(Radian, 라디안)은 원의 반지름과 호의 길이의 비율로 나타낸 각도 단위입니다. 일상적인 각도 계산에는 DEG를, 미적분이나 물리학에서는 RAD를 사용합니다. 변환 공식: 180° = π rad"
         },
         {
-            question: "계산 기록이 저장되나요?",
-            answer: "보안을 위해 계산 기록은 브라우저를 닫거나 새로고침하면 초기화됩니다. 중요한 계산 결과는 별도로 메모해 두시는 것을 권장합니다."
+            question: "계산 기록은 어디에 저장되나요?",
+            answer: "계산 기록은 브라우저의 로컬 저장소(localStorage)에 최대 50건까지 저장됩니다. 같은 브라우저에서 페이지를 새로고침해도 기록이 유지됩니다. 브라우저 데이터를 삭제하거나 시크릿 모드에서는 기록이 초기화됩니다."
         },
         {
-            question: "키보드로 입력할 수 있나요?",
-            answer: "네, 숫자 키패드와 사칙연산 기호(+, -, *, /)를 키보드로 직접 입력하여 빠르게 계산할 수 있습니다. 엔터(Enter) 키를 누르면 결과가 나옵니다."
+            question: "키보드로 입력하려면 어떻게 하나요?",
+            answer: "숫자(0-9), 사칙연산(+, -, *, /), 괄호, 소수점(.)을 키보드로 직접 입력할 수 있습니다. Enter로 계산, Backspace로 삭제, Esc로 전체 초기화합니다. 거듭제곱은 ^, 팩토리얼은 !, 퍼센트는 % 키를 사용하세요."
+        },
+        {
+            question: "메모리(M+, M-, MR, MC) 기능은 어떻게 사용하나요?",
+            answer: "메모리는 계산 중간 결과를 임시 저장하는 기능입니다. M+로 메모리에 더하기, M-로 빼기, MR로 저장된 값 불러오기, MC로 초기화합니다. 메모리에 값이 있으면 디스플레이에 M 표시가 나타납니다."
+        },
+        {
+            question: "계산 결과는 얼마나 정확한가요?",
+            answer: "이 계산기는 14자리 유효숫자 정밀도로 계산합니다. JavaScript IEEE 754 64비트 부동소수점 연산과 math.js 라이브러리를 사용하여 일반적인 공학 계산에 충분한 정밀도를 제공합니다."
+        },
+        {
+            question: "어떤 수학 함수를 지원하나요?",
+            answer: "삼각함수(sin, cos, tan 및 역함수, 쌍곡선 함수), 로그(log, ln, 10ˣ, eˣ), 거듭제곱(x², x³, xʸ, √, ³√), 팩토리얼(n!), 순열(nPr), 조합(nCr), 절댓값, 역수, mod, 퍼센트, π, e, Ans, Rand, EXP, 메모리(M+, M-, MR, MC)를 지원합니다."
+        },
+        {
+            question: "스마트폰에서도 사용할 수 있나요?",
+            answer: "네, 반응형 디자인으로 제작되어 스마트폰, 태블릿, PC 어디서든 동일한 기능을 사용할 수 있습니다. 별도의 앱 설치가 필요 없으며 브라우저에서 바로 사용 가능합니다."
+        },
+        {
+            question: "이 계산기는 무료인가요? 회원가입이 필요한가요?",
+            answer: "네, 완전 무료이며 회원가입이나 로그인 없이 바로 사용할 수 있습니다. 모든 계산은 브라우저에서 처리되므로 개인 데이터가 서버로 전송되지 않습니다."
         }
     ] : [
         {
-            question: "Does the calculator use Radians or Degrees for angle calculations?",
-            answer: "This calculator uses Degrees by default. Radian conversion feature will be added in future updates."
+            question: "What is the difference between DEG (Degrees) and RAD (Radians)?",
+            answer: "DEG (Degrees) divides a full circle into 360 parts, while RAD (Radians) measures angles by the ratio of arc length to radius. Use DEG for everyday angle calculations and RAD for calculus or physics. Conversion: 180° = π rad"
         },
         {
-            question: "Is calculation history saved?",
-            answer: "For security reasons, calculation history is cleared when you close the browser or refresh the page. We recommend noting down important results separately."
+            question: "Where is the calculation history stored?",
+            answer: "Calculation history is stored in your browser's localStorage, keeping up to 50 entries. History persists across page refreshes in the same browser. Clearing browser data or using incognito mode will reset the history."
         },
         {
-            question: "Can I use keyboard input?",
-            answer: "Yes, you can use the number keypad and arithmetic operators (+, -, *, /) directly from your keyboard. Press Enter to get the result."
+            question: "How do I use keyboard input?",
+            answer: "Type numbers (0-9), operators (+, -, *, /), parentheses, and decimal point directly. Press Enter to calculate, Backspace to delete, Esc to clear all. Use ^ for powers, ! for factorial, and % for percent."
+        },
+        {
+            question: "How do I use the Memory (M+, M-, MR, MC) functions?",
+            answer: "Memory stores intermediate results during calculations. M+ adds to memory, M- subtracts from memory, MR recalls the stored value, and MC clears memory. An M indicator appears on the display when memory holds a value."
+        },
+        {
+            question: "How accurate are the calculation results?",
+            answer: "This calculator computes with 14 significant digits of precision using JavaScript IEEE 754 64-bit floating-point arithmetic and the math.js library, providing sufficient precision for virtually all engineering calculations."
+        },
+        {
+            question: "What math functions are supported?",
+            answer: "Trigonometry (sin, cos, tan and inverses, hyperbolic functions), logarithms (log, ln, 10ˣ, eˣ), powers (x², x³, xʸ, √, ³√), factorial (n!), permutation (nPr), combination (nCr), absolute value, reciprocal, mod, percent, π, e, Ans, Rand, EXP, and memory (M+, M-, MR, MC)."
+        },
+        {
+            question: "Can I use this on a smartphone?",
+            answer: "Yes, this calculator features responsive design that works identically on smartphones, tablets, and PCs. No app installation needed — use it directly in your browser."
+        },
+        {
+            question: "Is this calculator free? Do I need to sign up?",
+            answer: "Yes, it is completely free with no sign-up or login required. All calculations are processed in your browser, so no personal data is sent to any server."
         }
     ];
 
@@ -121,43 +161,63 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "수식 입력",
-                "text": "화면의 버튼을 클릭하거나 키보드를 사용하여 숫자를 입력합니다."
+                "text": "화면의 버튼을 클릭하거나 키보드를 사용하여 숫자와 연산자를 입력합니다."
             },
             {
                 "@type": "HowToStep",
                 "name": "함수 사용",
-                "text": "sin, cos, log 등의 함수 버튼을 먼저 누르고 숫자를 입력하거나, 괄호를 사용하여 복잡한 수식을 만듭니다."
+                "text": "sin, cos, log 등의 함수 버튼을 누르면 자동으로 괄호가 열립니다. 값을 입력하고 )으로 닫으세요."
             },
             {
                 "@type": "HowToStep",
-                "name": "결과 확인",
-                "text": "= 버튼을 누르면 계산 결과가 화면에 표시됩니다."
+                "name": "실시간 미리보기",
+                "text": "입력 중에도 아래쪽에 예상 결과가 실시간으로 표시됩니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "초기화",
-                "text": "AC(All Clear) 버튼을 누르면 모든 입력이 지워지고 초기화됩니다."
+                "name": "결과 확인 및 복사",
+                "text": "= 버튼 또는 Enter 키를 누르면 최종 결과가 표시됩니다. 복사 아이콘으로 클립보드에 복사할 수 있습니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "연속 계산",
+                "text": "결과가 표시된 상태에서 연산자를 누르면 이전 결과에 이어서 계산할 수 있습니다. Ans 버튼으로도 이전 결과를 불러옵니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "모드 전환",
+                "text": "2nd 버튼으로 INV, HYP 모드를 전환하고, DEG/RAD 토글로 각도 단위를 변경합니다."
             }
         ] : [
             {
                 "@type": "HowToStep",
-                "name": "Enter Expression",
-                "text": "Click the buttons on screen or use your keyboard to enter numbers."
+                "name": "Enter an Expression",
+                "text": "Click the on-screen buttons or use your keyboard to input numbers and operators."
             },
             {
                 "@type": "HowToStep",
                 "name": "Use Functions",
-                "text": "Press function buttons like sin, cos, log first, then enter numbers, or use parentheses for complex expressions."
+                "text": "Press a function button like sin, cos, or log and parentheses open automatically. Enter the value and close with )."
             },
             {
                 "@type": "HowToStep",
-                "name": "Get Result",
-                "text": "Press the = button to display the calculation result."
+                "name": "Live Preview",
+                "text": "As you type, the expected result is shown below the expression in real-time."
             },
             {
                 "@type": "HowToStep",
-                "name": "Clear",
-                "text": "Press AC (All Clear) to reset all inputs."
+                "name": "Get Result & Copy",
+                "text": "Press = or Enter to display the final result. Click the copy icon to copy it to your clipboard."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Chained Calculations",
+                "text": "After getting a result, press an operator to continue calculating from the previous result. Or use Ans to recall it."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Switch Modes",
+                "text": "Press the 2nd button to cycle through INV and HYP modes. Use the DEG/RAD toggle to change angle units."
             }
         ]
     };
@@ -182,9 +242,9 @@ function generateWebAppSchema(locale: string) {
             "price": "0",
             "priceCurrency": "KRW"
         },
-        "featureList": isKo 
-            ? ["삼각함수 (sin, cos, tan)", "로그 함수 (log, ln)", "지수 계산 (x², x³, eˣ)", "제곱근 (√)", "키보드 입력 지원"]
-            : ["Trigonometry (sin, cos, tan)", "Logarithms (log, ln)", "Exponents (x², x³, eˣ)", "Square root (√)", "Keyboard input support"],
+        "featureList": isKo
+            ? ["삼각함수 18종 (sin, cos, tan, 역함수, 쌍곡선)", "로그 & 지수 (log, ln, 10ˣ, eˣ)", "거듭제곱 & 루트 (x², x³, xʸ, √, ³√)", "팩토리얼, 순열, 조합 (n!, nPr, nCr)", "메모리 기능 (M+, M-, MR, MC)", "계산 기록 50건 자동 저장", "키보드 단축키 완전 지원", "PC·모바일 반응형 디자인", "다크 모드 지원"]
+            : ["18 Trigonometric Functions (sin, cos, tan, inverse, hyperbolic)", "Log & Exponential (log, ln, 10ˣ, eˣ)", "Powers & Roots (x², x³, xʸ, √, ³√)", "Factorial, Permutation, Combination (n!, nPr, nCr)", "Memory Functions (M+, M-, MR, MC)", "Auto-saved calculation history (50 entries)", "Full keyboard shortcut support", "Responsive design for PC & Mobile", "Dark mode support"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"
     };
@@ -221,67 +281,70 @@ export default async function CalculatorPage({ params }: { params: Promise<{ loc
                 </div>
 
                 <article className="calc-article">
+                    {/* Features Section - 6 cards */}
                     <section className="calc-section">
                         <h2 className="calc-section-title">{t('features.title')}</h2>
                         <p className="calc-section-desc" dangerouslySetInnerHTML={{ __html: t.raw('features.desc') }} />
                         <div className="calc-feature-grid">
-                            <div className="calc-feature-card">
-                                <h3 className="calc-feature-card-title">{t('features.list.trig.title')}</h3>
-                                <p className="calc-feature-card-desc">{t('features.list.trig.desc')}</p>
-                            </div>
-                            <div className="calc-feature-card">
-                                <h3 className="calc-feature-card-title">{t('features.list.log.title')}</h3>
-                                <p className="calc-feature-card-desc">{t('features.list.log.desc')}</p>
-                            </div>
-                            <div className="calc-feature-card">
-                                <h3 className="calc-feature-card-title">{t('features.list.mobile.title')}</h3>
-                                <p className="calc-feature-card-desc">{t('features.list.mobile.desc')}</p>
-                            </div>
+                            {(['trig', 'log', 'power', 'memory', 'keyboard', 'mobile'] as const).map((key) => (
+                                <div key={key} className="calc-feature-card">
+                                    <h3 className="calc-feature-card-title">{t(`features.list.${key}.title`)}</h3>
+                                    <p className="calc-feature-card-desc">{t(`features.list.${key}.desc`)}</p>
+                                </div>
+                            ))}
                         </div>
                     </section>
 
+                    {/* Guide Section - 6 items */}
                     <section className="calc-section">
                         <h2 className="calc-section-title">{t('guide.title')}</h2>
                         <ul className="calc-guide-list">
-                            <li>
-                                <h3 className="calc-guide-item-title">{t('guide.list.trig.title')}</h3>
-                                <p className="calc-guide-item-desc" dangerouslySetInnerHTML={{ __html: t.raw('guide.list.trig.desc') }} />
-                            </li>
-                            <li>
-                                <h3 className="calc-guide-item-title">{t('guide.list.log.title')}</h3>
-                                <p className="calc-guide-item-desc" dangerouslySetInnerHTML={{ __html: t.raw('guide.list.log.desc') }} />
-                            </li>
-                            <li>
-                                <h3 className="calc-guide-item-title">{t('guide.list.power.title')}</h3>
-                                <p className="calc-guide-item-desc" dangerouslySetInnerHTML={{ __html: t.raw('guide.list.power.desc') }} />
-                            </li>
+                            {(['trig', 'log', 'power', 'memory', 'special', 'keyboard'] as const).map((key) => (
+                                <li key={key}>
+                                    <h3 className="calc-guide-item-title">{t(`guide.list.${key}.title`)}</h3>
+                                    <p className="calc-guide-item-desc" dangerouslySetInnerHTML={{ __html: t.raw(`guide.list.${key}.desc`) }} />
+                                </li>
+                            ))}
                         </ul>
                     </section>
 
+                    {/* Examples Section - 4 real-world examples */}
+                    <section className="calc-section">
+                        <h2 className="calc-section-title">{t('examples.title')}</h2>
+                        <div className="calc-examples-grid">
+                            {(['ex1', 'ex2', 'ex3', 'ex4'] as const).map((key) => (
+                                <div key={key} className="calc-example-card">
+                                    <h3 className="calc-example-card-title">{t(`examples.list.${key}.title`)}</h3>
+                                    <div className="calc-example-formula">
+                                        <span>{t(`examples.list.${key}.formula`)}</span>
+                                        <span className="label">{t(`examples.list.${key}.input`)}</span>
+                                    </div>
+                                    <p className="calc-example-result">= {t(`examples.list.${key}.result`)}</p>
+                                    <p className="calc-example-desc">{t(`examples.list.${key}.desc`)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Instruction Section - 6 steps */}
                     <section className="calc-section">
                         <h2 className="calc-section-title">{t('instruction.title')}</h2>
                         <ol className="calc-instruction-list">
-                            <li dangerouslySetInnerHTML={{ __html: t.raw('instruction.steps.step1') }} />
-                            <li dangerouslySetInnerHTML={{ __html: t.raw('instruction.steps.step2') }} />
-                            <li dangerouslySetInnerHTML={{ __html: t.raw('instruction.steps.step3') }} />
-                            <li dangerouslySetInnerHTML={{ __html: t.raw('instruction.steps.step4') }} />
+                            {(['step1', 'step2', 'step3', 'step4', 'step5', 'step6'] as const).map((key) => (
+                                <li key={key} dangerouslySetInnerHTML={{ __html: t.raw(`instruction.steps.${key}`) }} />
+                            ))}
                         </ol>
                     </section>
 
+                    {/* FAQ Section - 8 items */}
                     <section className="calc-faq-section">
                         <h2 className="calc-faq-title">{t('faq.title')}</h2>
-                        <details className="calc-faq-item">
-                            <summary>{t('faq.list.degRad.q')}</summary>
-                            <p dangerouslySetInnerHTML={{ __html: t.raw('faq.list.degRad.a') }} />
-                        </details>
-                        <details className="calc-faq-item">
-                            <summary>{t('faq.list.history.q')}</summary>
-                            <p dangerouslySetInnerHTML={{ __html: t.raw('faq.list.history.a') }} />
-                        </details>
-                        <details className="calc-faq-item">
-                            <summary>{t('faq.list.keyboard.q')}</summary>
-                            <p dangerouslySetInnerHTML={{ __html: t.raw('faq.list.keyboard.a') }} />
-                        </details>
+                        {(['degRad', 'history', 'keyboard', 'memory', 'precision', 'functions', 'mobile', 'free'] as const).map((key) => (
+                            <details key={key} className="calc-faq-item">
+                                <summary>{t(`faq.list.${key}.q`)}</summary>
+                                <p dangerouslySetInnerHTML={{ __html: t.raw(`faq.list.${key}.a`) }} />
+                            </details>
+                        ))}
                     </section>
                 </article>
             </div>

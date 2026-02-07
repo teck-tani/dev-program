@@ -222,71 +222,150 @@
   "Calculator": {
     "meta": {
       "title": "공학용 계산기 | 삼각함수, 로그, 지수 계산 - 무료 온라인",
-      "description": "웹에서 바로 사용하는 무료 공학용 계산기입니다. sin, cos, tan 삼각함수부터 로그(log, ln), 제곱근(√), 지수(x², x³, e^x) 계산까지 복잡한 수학 공식을 간편하게 계산하세요. PC 및 모바일 완벽 지원.",
-      "keywords": "공학용 계산기, 온라인 계산기, 삼각함수 계산기, 로그 계산기, 공학 계산, sin cos tan 계산, 루트 계산, 무료 계산기, 함수 계산기, 각도 계산, 제곱근 계산, 지수 계산, 수학 계산기, 과학 계산기",
+      "description": "무료 온라인 공학용 계산기. sin, cos, tan 삼각함수, 로그(log, ln), 제곱근(√), 지수(x², x³), 팩토리얼, 순열/조합까지 지원. 메모리 기능(M+/M-), 계산 기록, 키보드 입력 완벽 지원. 설치 없이 PC·모바일에서 바로 사용하세요.",
+      "keywords": "공학용 계산기, 온라인 계산기, 삼각함수 계산기, 로그 계산기, sin cos tan, 루트 계산, 무료 계산기, 함수 계산기, 제곱근 계산, 지수 계산, 수학 계산기, 과학 계산기, 팩토리얼 계산, 순열 조합 계산기, 공학용 계산기 사용법",
       "ogTitle": "무료 공학용 계산기 | 삼각함수 & 로그 & 지수 계산",
       "ogDescription": "설치 없이 웹에서 바로 쓰는 강력한 공학용 계산기. sin, cos, tan, log, ln, 제곱근 등 모든 공학 연산을 지원합니다. 학생, 엔지니어 필수 도구!"
     },
     "title": "공학용 계산기",
     "description": "복잡한 공학 연산을 쉽고 빠르게.<br />삼각함수, 로그, 지수 등 다양한 기능을 이용하세요.",
     "features": {
-      "title": "강력한 공학용 계산기 기능",
-      "desc": "이 <strong>온라인 공학용 계산기</strong>는 학생, 엔지니어, 연구원 등 정밀한 계산이 필요한 모든 분들을 위해 제작되었습니다. 별도의 프로그램 설치 없이 웹브라우저만으로 고성능 계산기의 모든 기능을 활용할 수 있습니다.",
+      "title": "이 공학용 계산기로 할 수 있는 것",
+      "desc": "이 <strong>온라인 공학용 계산기</strong>는 카시오(CASIO) fx-570 수준의 기능을 웹브라우저에서 무료로 제공합니다. 수학 시험 준비, 공학 과제, 물리·화학 계산 등 정밀한 연산이 필요한 모든 상황에서 앱 설치 없이 바로 사용하세요.",
       "list": {
         "trig": {
-          "title": "📐 삼각함수 완벽 지원",
-          "desc": "Sin, Cos, Tan은 물론 역삼각함수까지 지원하여 기하학 및 물리학 계산에 최적화되어 있습니다."
+          "title": "삼각함수 18종",
+          "desc": "sin, cos, tan과 역함수(sin⁻¹, cos⁻¹, tan⁻¹), 쌍곡선 함수(sinh, cosh, tanh)와 그 역함수까지 총 18종의 삼각함수를 지원합니다. DEG(도)/RAD(라디안) 전환이 가능합니다."
         },
         "log": {
-          "title": "📈 로그 및 지수 함수",
-          "desc": "자연로그(ln), 상용로그(log), 지수(e^x) 계산을 지원하여 복잡한 수식도 간편하게 해결합니다."
+          "title": "로그 & 지수 함수",
+          "desc": "상용로그(log₁₀), 자연로그(ln), 지수 함수(eˣ, 10ˣ)를 지원합니다. 데시벨 계산, 복리 이자 계산, pH 농도 계산 등 다양한 분야에 활용할 수 있습니다."
+        },
+        "power": {
+          "title": "거듭제곱 & 루트",
+          "desc": "제곱(x²), 세제곱(x³), 임의 거듭제곱(xʸ), 제곱근(√), 세제곱근(³√)을 지원합니다. 역수(1/x), 절댓값(|x|), 팩토리얼(n!), 순열(nPr), 조합(nCr) 계산도 가능합니다."
+        },
+        "memory": {
+          "title": "메모리 & 히스토리",
+          "desc": "M+, M-, MR, MC 메모리 기능으로 중간 결과를 저장하고 재활용할 수 있습니다. 최근 50건의 계산 기록이 자동 저장되며 클릭 한 번으로 이전 수식을 불러올 수 있습니다."
+        },
+        "keyboard": {
+          "title": "키보드 완전 지원",
+          "desc": "숫자(0-9), 연산자(+, -, *, /), 괄호, 소수점, 팩토리얼(!) 등을 키보드로 직접 입력할 수 있습니다. Enter로 계산, Esc로 초기화, Backspace로 삭제가 가능합니다."
         },
         "mobile": {
-          "title": "📱 모바일 최적화",
-          "desc": "PC는 물론 스마트폰과 태블릿에서도 완벽하게 작동하는 반응형 디자인을 제공합니다."
+          "title": "PC·모바일 완벽 지원",
+          "desc": "PC, 스마트폰, 태블릿 어디서든 동일한 기능을 사용할 수 있는 반응형 디자인입니다. 다크 모드도 지원하여 어두운 환경에서도 편리하게 사용하세요."
         }
       }
     },
     "guide": {
-      "title": "주요 수학 함수 가이드",
+      "title": "함수별 사용법 가이드",
       "list": {
         "trig": {
-          "title": "삼각함수 (Trigonometric Functions)",
-          "desc": "<strong>sin, cos, tan</strong> 버튼을 사용하여 각도의 사인, 코사인, 탄젠트 값을 구할 수 있습니다. 건축, 설계, 파동 분석 등 다양한 분야에서 활용됩니다."
+          "title": "삼각함수 사용법 (sin, cos, tan)",
+          "desc": "<strong>sin</strong> 버튼을 누르면 <code>sin(</code>이 입력됩니다. 각도를 입력하고 <strong>)</strong>을 닫은 뒤 <strong>=</strong>을 누르세요.<br /><br /><strong>예시:</strong><br />• <code>sin(30) = 0.5</code> — 30도의 사인값<br />• <code>cos(60) = 0.5</code> — 60도의 코사인값<br />• <code>tan(45) = 1</code> — 45도의 탄젠트값<br /><br /><strong>역삼각함수:</strong> <strong>2nd → INV</strong> 버튼을 눌러 sin⁻¹, cos⁻¹, tan⁻¹로 전환합니다. <code>sin⁻¹(0.5) = 30</code>처럼 값에서 각도를 역으로 구할 수 있습니다.<br /><br /><strong>쌍곡선 함수:</strong> <strong>2nd</strong>를 두 번 눌러 <strong>HYP</strong> 모드로 전환하면 sinh, cosh, tanh를 사용할 수 있습니다."
         },
         "log": {
-          "title": "로그 함수 (Logarithmic Functions)",
-          "desc": "<strong>log</strong>는 밑이 10인 상용로그를, <strong>ln</strong>은 밑이 e(자연상수)인 자연로그를 계산합니다. 데이터 분석이나 음향학(데시벨 계산) 등에 쓰입니다."
+          "title": "로그 함수 사용법 (log, ln)",
+          "desc": "<strong>log</strong> 버튼은 밑이 10인 상용로그(log₁₀)를, <strong>ln</strong> 버튼은 밑이 e(≈2.718)인 자연로그를 계산합니다.<br /><br /><strong>예시:</strong><br />• <code>log(100) = 2</code> — 10² = 100이므로 로그값은 2<br />• <code>log(1000) = 3</code> — 10³ = 1000<br />• <code>ln(e) = 1</code> — 자연로그의 밑 e의 로그값<br /><br /><strong>역함수:</strong> <strong>INV</strong> 모드에서 <strong>10ˣ</strong>와 <strong>eˣ</strong>로 전환됩니다. <code>10^(3) = 1000</code>, <code>e^(2) ≈ 7.389</code>를 계산할 수 있습니다.<br /><br /><strong>활용:</strong> pH 농도 계산(log), 반감기 계산(ln), 데시벨 환산(10×log) 등에 사용됩니다."
         },
         "power": {
-          "title": "거듭제곱과 제곱근 (Powers & Roots)",
-          "desc": "<strong>x²</strong>(제곱), <strong>x³</strong>(세제곱) 및 <strong>√</strong>(루트) 기능을 제공합니다. 면적 계산이나 통계학의 표준편차 계산 등에 필수적입니다."
+          "title": "거듭제곱·루트·팩토리얼 사용법",
+          "desc": "<strong>거듭제곱:</strong><br />• <strong>x²</strong> — 숫자 입력 후 x² 버튼: <code>5 x² = 25</code><br />• <strong>x³</strong> — INV 모드에서 사용: <code>3 x³ = 27</code><br />• <strong>xʸ</strong> — 임의 거듭제곱: <code>2 xʸ 10 = 1024</code><br /><br /><strong>루트(제곱근):</strong><br />• <strong>√</strong> — 제곱근: <code>√(9) = 3</code><br />• <strong>³√</strong> — INV 모드에서 세제곱근: <code>³√(27) = 3</code><br /><br /><strong>기타 함수:</strong><br />• <strong>n!</strong> — 팩토리얼: <code>5! = 120</code> (5×4×3×2×1)<br />• <strong>nPr</strong> — 순열: <code>nPr(5,2) = 20</code><br />• <strong>nCr</strong> — 조합(INV 모드): <code>nCr(5,2) = 10</code><br />• <strong>|x|</strong> — 절댓값: <code>|−7| = 7</code><br />• <strong>1/x</strong> — 역수: <code>1/4 = 0.25</code>"
+        },
+        "memory": {
+          "title": "메모리 기능 사용법 (M+, M-, MR, MC)",
+          "desc": "복잡한 계산에서 중간 결과를 저장하고 재활용할 수 있습니다.<br /><br /><strong>사용 순서:</strong><br />1. 먼저 저장할 값을 계산합니다 (예: <code>25 + 30 = 55</code>)<br />2. <strong>M+</strong>를 눌러 결과를 메모리에 더합니다<br />3. 새 계산을 진행합니다 (예: <code>100 × 2 = 200</code>)<br />4. <strong>M+</strong>를 눌러 200을 메모리에 추가합니다<br />5. <strong>MR</strong>을 눌러 누적된 값(255)을 불러옵니다<br /><br /><strong>버튼 설명:</strong><br />• <strong>M+</strong> — 현재 결과를 메모리에 더하기<br />• <strong>M−</strong> — 현재 결과를 메모리에서 빼기<br />• <strong>MR</strong> — 메모리에 저장된 값을 수식에 삽입<br />• <strong>MC</strong> — 메모리 초기화<br /><br />메모리에 값이 저장되면 화면 왼쪽 상단에 <strong>M</strong> 표시가 나타납니다."
+        },
+        "special": {
+          "title": "특수 기능 사용법 (Ans, EXP, Rand 등)",
+          "desc": "<strong>Ans (이전 결과):</strong><br />직전 계산 결과를 수식에 삽입합니다. 연속 계산에 유용합니다.<br />예: <code>10 + 5 = 15</code> → <code>Ans × 2 = 30</code><br /><br /><strong>EXP (과학적 표기법):</strong><br />큰 수를 간편하게 입력합니다.<br />예: 빛의 속도 3×10⁸을 입력하려면 <code>3 EXP 8</code><br /><br /><strong>+/− (부호 전환):</strong><br />양수를 음수로, 음수를 양수로 전환합니다.<br /><br /><strong>Rand (랜덤 숫자):</strong><br />0~1 사이의 무작위 소수를 생성합니다. 확률 계산이나 시뮬레이션에 활용하세요.<br /><br /><strong>% (퍼센트):</strong><br /><code>200 × 15% = 30</code>처럼 백분율 계산이 가능합니다."
+        },
+        "keyboard": {
+          "title": "키보드 단축키 안내",
+          "desc": "마우스 없이 키보드만으로 빠르게 계산할 수 있습니다.<br /><br /><strong>입력 키:</strong><br />• <kbd>0</kbd>~<kbd>9</kbd> — 숫자 입력<br />• <kbd>+</kbd> <kbd>-</kbd> <kbd>*</kbd> <kbd>/</kbd> — 사칙연산<br />• <kbd>(</kbd> <kbd>)</kbd> — 괄호<br />• <kbd>.</kbd> — 소수점<br />• <kbd>^</kbd> — 거듭제곱 (xʸ)<br />• <kbd>!</kbd> — 팩토리얼<br />• <kbd>%</kbd> — 퍼센트<br /><br /><strong>실행 키:</strong><br />• <kbd>Enter</kbd> 또는 <kbd>=</kbd> — 계산 실행<br />• <kbd>Backspace</kbd> — 마지막 입력 삭제<br />• <kbd>Esc</kbd> — 전체 초기화 (AC)<br /><br /><strong>Tip:</strong> 디스플레이 왼쪽 상단의 <strong>ⓘ</strong> 버튼을 클릭하면 단축키 목록을 확인할 수 있습니다."
+        }
+      }
+    },
+    "examples": {
+      "title": "실전 계산 예시",
+      "list": {
+        "ex1": {
+          "title": "빗변 길이 구하기 (피타고라스)",
+          "formula": "√(3² + 4²)",
+          "input": "√(3^2+4^2)",
+          "result": "5",
+          "desc": "직각삼각형에서 두 변의 길이가 3과 4일 때, 빗변 = √(9+16) = √25 = 5입니다."
+        },
+        "ex2": {
+          "title": "복리 이자 계산",
+          "formula": "1000 × (1 + 0.05)³",
+          "input": "1000×(1+0.05)^3",
+          "result": "1,157.625",
+          "desc": "원금 1,000원을 연이율 5%로 3년간 복리 투자하면 약 1,157.6원이 됩니다."
+        },
+        "ex3": {
+          "title": "건물 높이 구하기 (삼각함수)",
+          "formula": "50 × tan(30°)",
+          "input": "50×tan(30)",
+          "result": "28.87",
+          "desc": "건물에서 50m 떨어진 지점에서 올려다본 각도가 30°일 때, 건물 높이 ≈ 28.87m입니다."
+        },
+        "ex4": {
+          "title": "로또 확률 계산 (조합)",
+          "formula": "nCr(45, 6)",
+          "input": "nCr(45,6)",
+          "result": "8,145,060",
+          "desc": "45개 숫자 중 6개를 맞출 조합의 수 = 8,145,060. 1등 당첨 확률은 약 1/814만입니다."
         }
       }
     },
     "instruction": {
-      "title": "계산기 사용 방법",
+      "title": "공학용 계산기 사용 방법 (상세 가이드)",
       "steps": {
-        "step1": "<strong>수식 입력</strong>: 화면의 버튼을 클릭하거나 키보드를 사용하여 숫자를 입력합니다.",
-        "step2": "<strong>함수 사용</strong>: sin, cos, log 등의 함수 버튼을 먼저 누르고 숫자를 입력하거나, 괄호를 사용하여 복잡한 수식을 만듭니다.<br /><em style='font-size: 0.9rem; color: #666'>예: sin(30) + log(100)</em>",
-        "step3": "<strong>결과 확인</strong>: <strong>=</strong> 버튼을 누르면 계산 결과가 화면에 표시됩니다.",
-        "step4": "<strong>초기화</strong>: <strong>AC</strong>(All Clear) 버튼을 누르면 모든 입력이 지워지고 초기화됩니다. <strong>CE</strong>는 최근 입력만 지웁니다."
+        "step1": "<strong>1단계: 수식 입력</strong> — 화면의 버튼을 클릭하거나 키보드를 사용하여 숫자와 연산자를 입력합니다. 수식은 상단 디스플레이에 실시간으로 표시됩니다.",
+        "step2": "<strong>2단계: 함수 사용</strong> — sin, cos, log 등의 함수 버튼을 먼저 누르면 자동으로 괄호가 열립니다. 값을 입력하고 <strong>)</strong>으로 닫으세요.<br /><em style='font-size: 0.9rem; color: #666'>예: sin(30) + log(100) = 2.5</em>",
+        "step3": "<strong>3단계: 실시간 미리보기</strong> — 입력 중에도 아래쪽에 예상 결과가 실시간으로 표시됩니다. = 버튼을 누르기 전에 결과를 미리 확인할 수 있습니다.",
+        "step4": "<strong>4단계: 결과 확인 & 복사</strong> — <strong>=</strong> 버튼(또는 Enter 키)을 누르면 최종 결과가 표시됩니다. 결과 옆의 복사 아이콘을 클릭하면 클립보드에 복사됩니다.",
+        "step5": "<strong>5단계: 연속 계산</strong> — 결과가 표시된 상태에서 연산자(+, -, ×, ÷)를 누르면 이전 결과에 이어서 계산할 수 있습니다. 또는 <strong>Ans</strong> 버튼으로 이전 결과를 불러올 수 있습니다.",
+        "step6": "<strong>6단계: 모드 전환</strong> — <strong>2nd</strong> 버튼을 눌러 INV(역함수), HYP(쌍곡선), H⁻¹(쌍곡선 역함수) 모드로 전환할 수 있습니다. <strong>DEG/RAD</strong> 토글로 각도 단위를 변경하세요."
       }
     },
     "faq": {
       "title": "자주 묻는 질문 (FAQ)",
       "list": {
         "degRad": {
-          "q": "Q. 각도 계산 시 라디안(Radian)과 디그리(Degree) 중 무엇을 쓰나요?",
-          "a": "현재 이 계산기는 기본적으로 <strong>디그리(Degree, 도)</strong> 단위를 사용합니다. 추후 라디안 변환 기능을 추가할 예정입니다."
+          "q": "Q. DEG(디그리)와 RAD(라디안)의 차이는 무엇인가요?",
+          "a": "<strong>DEG(Degree, 도)</strong>는 원을 360등분한 각도 단위이고, <strong>RAD(Radian, 라디안)</strong>은 원의 반지름과 호의 길이의 비율로 나타낸 각도 단위입니다. 일상적인 각도 계산에는 DEG를, 미적분이나 물리학에서는 RAD를 사용합니다. 오른쪽 상단의 <strong>DEG/RAD</strong> 토글 버튼으로 전환할 수 있습니다.<br /><br /><strong>변환 공식:</strong> 180° = π rad (약 3.14159 rad)"
         },
         "history": {
-          "q": "Q. 계산 기록이 저장되나요?",
-          "a": "보안을 위해 계산 기록은 브라우저를 닫거나 새로고침하면 초기화됩니다. 중요한 계산 결과는 별도로 메모해 두시는 것을 권장합니다."
+          "q": "Q. 계산 기록은 어디에 저장되나요?",
+          "a": "계산 기록은 브라우저의 <strong>로컬 저장소(localStorage)</strong>에 최대 50건까지 저장됩니다. 같은 브라우저에서 페이지를 새로고침해도 기록이 유지됩니다. 단, 브라우저 데이터를 삭제하거나 시크릿 모드를 사용하면 기록이 초기화됩니다. 왼쪽 상단의 시계 아이콘을 클릭하면 기록을 확인할 수 있고, 이전 수식을 클릭하면 바로 불러옵니다."
         },
         "keyboard": {
-          "q": "Q. 키보드로 입력할 수 있나요?",
-          "a": "네, 숫자 키패드와 사칙연산 기호(+, -, *, /)를 키보드로 직접 입력하여 빠르게 계산할 수 있습니다. 엔터(Enter) 키를 누르면 결과가 나옵니다."
+          "q": "Q. 키보드로 입력하려면 어떻게 하나요?",
+          "a": "숫자(0-9), 사칙연산(+, -, *, /), 괄호, 소수점(.) 등을 키보드로 직접 입력할 수 있습니다. <strong>Enter</strong> 또는 <strong>=</strong> 키로 계산하고, <strong>Backspace</strong>로 삭제, <strong>Esc</strong>로 전체 초기화(AC)합니다. 거듭제곱은 <strong>^</strong>, 팩토리얼은 <strong>!</strong>, 퍼센트는 <strong>%</strong> 키를 사용하세요."
+        },
+        "memory": {
+          "q": "Q. 메모리(M+, M-, MR, MC) 기능은 어떻게 사용하나요?",
+          "a": "메모리는 계산 중간 결과를 임시 저장하는 기능입니다. 예를 들어 <code>25 + 30 = 55</code>를 계산한 뒤 <strong>M+</strong>를 누르면 55가 메모리에 저장됩니다. 다른 계산을 한 뒤 <strong>MR</strong>을 누르면 저장된 55를 다시 불러와 사용할 수 있습니다. <strong>M−</strong>은 메모리에서 값을 빼고, <strong>MC</strong>는 메모리를 초기화합니다. 메모리에 값이 있으면 디스플레이에 <strong>M</strong> 표시가 나타납니다."
+        },
+        "precision": {
+          "q": "Q. 계산 결과는 얼마나 정확한가요?",
+          "a": "이 계산기는 <strong>14자리 유효숫자</strong> 정밀도로 계산합니다. 내부적으로 JavaScript의 IEEE 754 64비트 부동소수점 연산을 사용하며, 수학 라이브러리(math.js)를 통해 정밀한 결과를 제공합니다. 일반적인 공학 계산에 충분한 정밀도입니다."
+        },
+        "functions": {
+          "q": "Q. 어떤 수학 함수를 지원하나요?",
+          "a": "<strong>삼각함수:</strong> sin, cos, tan, sin⁻¹, cos⁻¹, tan⁻¹, sinh, cosh, tanh, sinh⁻¹, cosh⁻¹, tanh⁻¹<br /><strong>로그:</strong> log(상용로그), ln(자연로그), 10ˣ, eˣ<br /><strong>거듭제곱:</strong> x², x³, xʸ, √, ³√<br /><strong>기타:</strong> n!(팩토리얼), nPr(순열), nCr(조합), |x|(절댓값), 1/x(역수), mod(나머지), %(퍼센트), π, e, Ans(이전 결과), Rand(난수), EXP(과학적 표기법)<br /><strong>메모리:</strong> M+, M−, MR, MC"
+        },
+        "mobile": {
+          "q": "Q. 스마트폰에서도 사용할 수 있나요?",
+          "a": "네, 이 공학용 계산기는 <strong>반응형 디자인</strong>으로 제작되어 스마트폰, 태블릿, PC 어디서든 동일한 기능을 사용할 수 있습니다. 모바일에서도 모든 과학 함수와 메모리 기능이 정상 작동합니다. 별도의 앱 설치가 필요 없으며, 브라우저에서 바로 사용하실 수 있습니다."
+        },
+        "free": {
+          "q": "Q. 이 계산기는 무료인가요? 회원가입이 필요한가요?",
+          "a": "네, <strong>완전 무료</strong>이며 회원가입이나 로그인 없이 바로 사용할 수 있습니다. 모든 계산은 사용자의 브라우저에서 처리되므로 개인 데이터가 서버로 전송되지 않습니다."
         }
       }
     },
@@ -681,6 +760,15 @@
       "periodSuffix": "개월",
       "rate": "연 이자율 (%)",
       "ratePlaceholder": "예: 3.5",
+      "taxTypeLabel": "세금 옵션",
+      "taxStandard": "일반 과세",
+      "taxStandardRate": "15.4%",
+      "taxPreferred": "세금우대",
+      "taxPreferredRate": "1.4%",
+      "taxPreferredDesc": "만 65세 이상, 장애인",
+      "taxFree": "비과세",
+      "taxFreeRate": "0%",
+      "taxFreeDesc": "ISA, 청년우대 등",
       "calculate": "이자 계산하기",
       "calculating": "계산 중...",
       "alertInput": "모든 값을 입력해주세요."
@@ -689,11 +777,58 @@
       "title": "계산 결과 (세후 기준)",
       "totalPrincipal": "원금 합계",
       "beforeTax": "세전 이자",
-      "tax": "이자 소득세 (15.4%)",
+      "tax": "이자 소득세",
       "finalAmount": "최종 수령액",
       "currency": "원",
       "chartPrincipal": "원금",
-      "chartInterest": "이자 수익"
+      "chartInterest": "이자 수익",
+      "copyResult": "결과 복사",
+      "shareResult": "공유하기",
+      "copied": "복사 완료!"
+    },
+    "monthlyTable": {
+      "title": "월별 상세 내역",
+      "toggleShow": "월별 내역 보기",
+      "toggleHide": "월별 내역 숨기기",
+      "month": "월차",
+      "monthlyPrincipal": "월 원금",
+      "monthlyInterest": "월 이자",
+      "accumulated": "누적액",
+      "copyTable": "표 복사하기",
+      "downloaded": "다운로드 완료!"
+    },
+    "compare": {
+      "title": "비교 모드",
+      "enable": "비교 모드 활성화",
+      "disable": "비교 모드 끄기",
+      "depositVsSavings": "예금 vs 적금",
+      "simpleVsCompound": "단리 vs 복리",
+      "comparison": "비교 결과",
+      "option1": "옵션 1",
+      "option2": "옵션 2",
+      "difference": "차이",
+      "moreThan": "더 많음"
+    },
+    "presets": {
+      "title": "주요 은행 금리 (2026년 2월 기준)",
+      "subtitle": "클릭하면 금리가 자동 입력됩니다",
+      "kakao": "카카오뱅크",
+      "toss": "토스뱅크",
+      "kb": "국민은행",
+      "shinhan": "신한은행",
+      "woori": "우리은행",
+      "hana": "하나은행"
+    },
+    "earlyWithdraw": {
+      "title": "중도해지 시뮬레이션",
+      "subtitle": "만기 전 해지 시 예상 손실액을 계산해보세요",
+      "enable": "중도해지 계산",
+      "withdrawMonth": "해지 시점 (개월)",
+      "penalty": "중도해지 이율",
+      "penaltyDesc": "약정금리의 50% 적용",
+      "estimatedAmount": "예상 수령액",
+      "loss": "예상 손실액",
+      "lossVsMaturity": "만기 대비 손실"
     },
     "info": {
       "title": "단리 vs 복리, 무엇이 다를까?",

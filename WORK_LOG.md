@@ -10,7 +10,7 @@
 | # | 도구 | 경로 | 현재 수준 | 핵심 개선사항 |
 |---|------|------|-----------|-------------|
 | 1 | 공학용 계산기 | calculator | A | Tier 1~3 + 천단위콤마, 에러메시지, 메모리(M+/M-/MR/MC), RNG, 툴팁, 키보드범례 |
-| 2 | 이자 계산기 | interest-calculator | B | GrowthChart i18n 버그, 세금옵션 3가지 필요, 월별 내역표 |
+| 2 | 이자 계산기 | interest-calculator | A | 세금옵션 3가지, 월별 내역표(복사), 결과 복사/공유, 은행 금리 프리셋, 중도해지 입력 |
 | 3 | 연봉 계산기 | salary-calculator | B | 소득세율 5단계→8단계, 기준연도 미표시, 연간 실수령 미표시 |
 | 4 | 퇴직금 계산기 | severance-calculator | B- | 계산과정 미표시, 퇴직소득세 미계산, 날짜입력 UX |
 | 5 | 나이 계산기 | korean-age-calculator | B | 상세나이(년/월/일) 미표시, 별자리, 만나이통일법 설명 |
@@ -106,10 +106,10 @@
 - [x] Calculator: Tier 1~3 전면 업그레이드 (키보드, 복사, +/-, |x|, 1/x, ANS, EXP, 괄호카운터, sinh/cosh/tanh, mod, cbrt, x³)
 - [x] Calculator: A등급 업그레이드 (천단위콤마, 구체적에러메시지, 메모리M+/M-/MR/MC, RNG, 버튼툴팁, 키보드단축키범례)
 - [x] Exchange Rate: 환율 추이 차트 (recharts, history API 활용)
+- [x] Interest Calculator: Tier 1~3 전면 업그레이드 (세금옵션 3가지, 월별 내역표+복사, 결과 복사/공유, 은행 금리 프리셋 6개, 중도해지 입력)
 - [ ] JSON Formatter: Syntax Highlighting + Tree View
 - [ ] Text Diff: Side-by-Side View + Character-level diff
 - [ ] Image Compressor: 출력포맷 선택(WebP), PNG 투명도 경고, 비교뷰
-- [ ] Interest Calculator: 세금옵션 3가지, 월별 상세내역
 - [ ] Salary Calculator: 연간 실수령, 기준연도 표시, 월급 입력 모드
 - [ ] QR Generator: Wi-Fi/vCard 유형, SVG 다운로드, 로고 삽입
 
@@ -135,6 +135,7 @@
 - Phase 3 진행중 (Calculator 완료, Exchange Rate 차트 완료)
 
 ## 완료된 작업
+- [x] Interest Calculator A등급 업그레이드: Tier 1~3 전면 업그레이드 (2026-02-07)
 - [x] Calculator A등급 업그레이드: 천단위콤마, 에러메시지, 메모리, RNG, 툴팁, 키보드범례 (2026-02-07)
 - [x] Calculator Tier 1~3 전면 업그레이드 (2026-02-07)
 - [x] Exchange Rate 환율 차트 프론트엔드 (2026-02-07)
@@ -148,4 +149,4 @@
 - 모바일에서 SEO 콘텐츠 display:none 처리 → 구글 모바일 우선 인덱싱에 부정적 가능성
 
 ---
-*마지막 업데이트: 2026-02-07 (공학용계산기 A등급 업그레이드)*
+*마지막 업데이트: 2026-02-07 (이자계산기 A등급 달성 - Tier 1~3 완료)*

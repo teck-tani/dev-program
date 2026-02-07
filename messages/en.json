@@ -221,72 +221,151 @@
   },
   "Calculator": {
     "meta": {
-      "title": "Free Online Scientific Calculator | Trigonometry, Log & Exponent - Tani DevTool",
-      "description": "Free online scientific calculator with full trigonometry support. Calculate sin, cos, tan, log, ln, square root (√), exponents (x², x³, e^x) and complex math formulas instantly. Works on PC and mobile browsers.",
-      "keywords": "scientific calculator, online calculator, free calculator, trigonometry calculator, log calculator, engineering calculator, sin cos tan calculator, root calculator, math calculator, exponent calculator, ln calculator, square root, online math tool, web calculator",
-      "ogTitle": "Free Scientific Calculator | Sin Cos Tan Log & More",
-      "ogDescription": "Powerful free online scientific calculator - no installation required. Calculate trigonometry, logarithms, roots, and exponents instantly. Perfect for students, engineers, and professionals."
+      "title": "Free Online Scientific Calculator | Trig, Log, Exponent & More",
+      "description": "Free online scientific calculator. sin, cos, tan trigonometry, log, ln, square root (√), exponents (x², x³), factorial, permutation & combination supported. Memory (M+/M-), calculation history, full keyboard input. Use instantly on PC & mobile — no installation needed.",
+      "keywords": "scientific calculator, online calculator, free calculator, trigonometry calculator, log calculator, engineering calculator, sin cos tan calculator, root calculator, math calculator, exponent calculator, ln calculator, square root, factorial calculator, permutation combination calculator, how to use scientific calculator",
+      "ogTitle": "Free Scientific Calculator | Trig & Log & Exponent Calculator",
+      "ogDescription": "Powerful free online scientific calculator — no installation required. sin, cos, tan, log, ln, square root and all engineering functions. A must-have tool for students and engineers!"
     },
     "title": "Scientific Calculator",
     "description": "Perform complex engineering calculations easily and quickly.<br />Use various functions such as trigonometry, log, and exponents.",
     "features": {
-      "title": "Powerful Features",
-      "desc": "This <strong>Online Scientific Calculator</strong> is designed for students, engineers, researchers, and anyone who needs precise calculations. Use full functions of a high-performance calculator directly in your browser without installing any software.",
+      "title": "What You Can Do with This Scientific Calculator",
+      "desc": "This <strong>online scientific calculator</strong> offers CASIO fx-570 level functionality for free in your web browser. Whether you're preparing for math exams, engineering assignments, or physics & chemistry calculations, use it instantly without installing any app.",
       "list": {
         "trig": {
-          "title": "📐 Full Trigonometry Support",
-          "desc": "Supports Sin, Cos, Tan, and inverse trigonometric functions, optimized for geometry and physics calculations."
+          "title": "18 Trigonometric Functions",
+          "desc": "Supports sin, cos, tan and their inverses (sin⁻¹, cos⁻¹, tan⁻¹), plus hyperbolic functions (sinh, cosh, tanh) and their inverses — 18 trig functions total. DEG/RAD toggle available."
         },
         "log": {
-          "title": "📈 Log & Exponential Functions",
-          "desc": "Supports natural log (ln), common log (log), and exponential (e^x) calculations to solve complex formulas easily."
+          "title": "Log & Exponential Functions",
+          "desc": "Supports common logarithm (log₁₀), natural logarithm (ln), and exponential functions (eˣ, 10ˣ). Useful for decibel calculations, compound interest, pH concentration, and more."
+        },
+        "power": {
+          "title": "Powers & Roots",
+          "desc": "Supports square (x²), cube (x³), arbitrary power (xʸ), square root (√), and cube root (³√). Also includes reciprocal (1/x), absolute value (|x|), factorial (n!), permutation (nPr), and combination (nCr)."
+        },
+        "memory": {
+          "title": "Memory & History",
+          "desc": "Save and reuse intermediate results with M+, M-, MR, MC memory functions. Up to 50 recent calculations are auto-saved — click any previous expression to recall it instantly."
+        },
+        "keyboard": {
+          "title": "Full Keyboard Support",
+          "desc": "Type numbers (0-9), operators (+, -, *, /), parentheses, decimal point, and factorial (!) directly from your keyboard. Press Enter to calculate, Esc to clear, Backspace to delete."
         },
         "mobile": {
-          "title": "📱 Mobile Optimized",
-          "desc": "Provides a responsive design that works perfectly on PCs, smartphones, and tablets."
+          "title": "Works on PC & Mobile",
+          "desc": "Responsive design provides the same functionality on PC, smartphone, and tablet. Dark mode is also supported for comfortable use in low-light environments."
         }
       }
     },
     "guide": {
-      "title": "Key Math Functions Guide",
+      "title": "Function-by-Function Usage Guide",
       "list": {
         "trig": {
-          "title": "Trigonometric Functions",
-          "desc": "Use <strong>sin, cos, tan</strong> buttons to calculate sine, cosine, and tangent of angles. Used in architecture, design, wave analysis, etc."
+          "title": "How to Use Trigonometric Functions (sin, cos, tan)",
+          "desc": "Press the <strong>sin</strong> button and <code>sin(</code> will appear. Enter the angle, close with <strong>)</strong>, and press <strong>=</strong>.<br /><br /><strong>Examples:</strong><br />• <code>sin(30) = 0.5</code> — sine of 30 degrees<br />• <code>cos(60) = 0.5</code> — cosine of 60 degrees<br />• <code>tan(45) = 1</code> — tangent of 45 degrees<br /><br /><strong>Inverse trig:</strong> Press <strong>2nd → INV</strong> to switch to sin⁻¹, cos⁻¹, tan⁻¹. For example, <code>sin⁻¹(0.5) = 30</code> gives you the angle from a value.<br /><br /><strong>Hyperbolic functions:</strong> Press <strong>2nd</strong> twice to enter <strong>HYP</strong> mode for sinh, cosh, tanh."
         },
         "log": {
-          "title": "Logarithmic Functions",
-          "desc": "<strong>log</strong> calculates common logarithm (base 10), and <strong>ln</strong> calculates natural logarithm (base e). Used in data analysis and acoustics (decibels)."
+          "title": "How to Use Log Functions (log, ln)",
+          "desc": "The <strong>log</strong> button computes the common logarithm (base 10), and <strong>ln</strong> computes the natural logarithm (base e ≈ 2.718).<br /><br /><strong>Examples:</strong><br />• <code>log(100) = 2</code> — because 10² = 100<br />• <code>log(1000) = 3</code> — because 10³ = 1000<br />• <code>ln(e) = 1</code> — natural log of e<br /><br /><strong>Inverse functions:</strong> In <strong>INV</strong> mode, these become <strong>10ˣ</strong> and <strong>eˣ</strong>. <code>10^(3) = 1000</code>, <code>e^(2) ≈ 7.389</code>.<br /><br /><strong>Applications:</strong> pH concentration (log), half-life calculations (ln), decibel conversion (10×log), and more."
         },
         "power": {
-          "title": "Powers & Roots",
-          "desc": "Provides <strong>x²</strong>, <strong>x³</strong>, and <strong>√</strong> (root) functions. Essential for area calculation and standard deviation in statistics."
+          "title": "How to Use Powers, Roots & Factorials",
+          "desc": "<strong>Powers:</strong><br />• <strong>x²</strong> — Enter a number then press x²: <code>5 x² = 25</code><br />• <strong>x³</strong> — Available in INV mode: <code>3 x³ = 27</code><br />• <strong>xʸ</strong> — Arbitrary power: <code>2 xʸ 10 = 1024</code><br /><br /><strong>Roots:</strong><br />• <strong>√</strong> — Square root: <code>√(9) = 3</code><br />• <strong>³√</strong> — Cube root in INV mode: <code>³√(27) = 3</code><br /><br /><strong>Other functions:</strong><br />• <strong>n!</strong> — Factorial: <code>5! = 120</code> (5×4×3×2×1)<br />• <strong>nPr</strong> — Permutation: <code>nPr(5,2) = 20</code><br />• <strong>nCr</strong> — Combination (INV mode): <code>nCr(5,2) = 10</code><br />• <strong>|x|</strong> — Absolute value: <code>|−7| = 7</code><br />• <strong>1/x</strong> — Reciprocal: <code>1/4 = 0.25</code>"
+        },
+        "memory": {
+          "title": "How to Use Memory Functions (M+, M-, MR, MC)",
+          "desc": "Save and reuse intermediate results in complex calculations.<br /><br /><strong>Step-by-step:</strong><br />1. Calculate a value (e.g., <code>25 + 30 = 55</code>)<br />2. Press <strong>M+</strong> to add the result to memory<br />3. Do another calculation (e.g., <code>100 × 2 = 200</code>)<br />4. Press <strong>M+</strong> to add 200 to memory<br />5. Press <strong>MR</strong> to recall the accumulated value (255)<br /><br /><strong>Button reference:</strong><br />• <strong>M+</strong> — Add current result to memory<br />• <strong>M−</strong> — Subtract current result from memory<br />• <strong>MR</strong> — Recall stored memory value into expression<br />• <strong>MC</strong> — Clear memory<br /><br />When memory holds a value, an <strong>M</strong> indicator appears at the top-left of the display."
+        },
+        "special": {
+          "title": "How to Use Special Functions (Ans, EXP, Rand, etc.)",
+          "desc": "<strong>Ans (Previous Result):</strong><br />Inserts the previous calculation result into your expression. Great for chained calculations.<br />Example: <code>10 + 5 = 15</code> → <code>Ans × 2 = 30</code><br /><br /><strong>EXP (Scientific Notation):</strong><br />Enter large numbers easily.<br />Example: To enter the speed of light 3×10⁸, type <code>3 EXP 8</code><br /><br /><strong>+/− (Sign Toggle):</strong><br />Switches positive to negative and vice versa.<br /><br /><strong>Rand (Random Number):</strong><br />Generates a random decimal between 0 and 1. Useful for probability calculations and simulations.<br /><br /><strong>% (Percent):</strong><br /><code>200 × 15% = 30</code> — easily calculate percentages."
+        },
+        "keyboard": {
+          "title": "Keyboard Shortcuts Guide",
+          "desc": "Calculate quickly using just your keyboard — no mouse needed.<br /><br /><strong>Input keys:</strong><br />• <kbd>0</kbd>–<kbd>9</kbd> — Number input<br />• <kbd>+</kbd> <kbd>-</kbd> <kbd>*</kbd> <kbd>/</kbd> — Arithmetic operations<br />• <kbd>(</kbd> <kbd>)</kbd> — Parentheses<br />• <kbd>.</kbd> — Decimal point<br />• <kbd>^</kbd> — Power (xʸ)<br />• <kbd>!</kbd> — Factorial<br />• <kbd>%</kbd> — Percent<br /><br /><strong>Action keys:</strong><br />• <kbd>Enter</kbd> or <kbd>=</kbd> — Execute calculation<br />• <kbd>Backspace</kbd> — Delete last input<br />• <kbd>Esc</kbd> — Clear all (AC)<br /><br /><strong>Tip:</strong> Click the <strong>ⓘ</strong> button at the top-left of the display to see the full shortcut list."
+        }
+      }
+    },
+    "examples": {
+      "title": "Real-World Calculation Examples",
+      "list": {
+        "ex1": {
+          "title": "Finding the Hypotenuse (Pythagorean Theorem)",
+          "formula": "√(3² + 4²)",
+          "input": "√(3^2+4^2)",
+          "result": "5",
+          "desc": "In a right triangle with sides 3 and 4, the hypotenuse = √(9+16) = √25 = 5."
+        },
+        "ex2": {
+          "title": "Compound Interest Calculation",
+          "formula": "1000 × (1 + 0.05)³",
+          "input": "1000×(1+0.05)^3",
+          "result": "1,157.625",
+          "desc": "Investing $1,000 at 5% annual interest compounded for 3 years yields approximately $1,157.63."
+        },
+        "ex3": {
+          "title": "Finding Building Height (Trigonometry)",
+          "formula": "50 × tan(30°)",
+          "input": "50×tan(30)",
+          "result": "28.87",
+          "desc": "Standing 50m from a building, looking up at a 30° angle, the building height ≈ 28.87m."
+        },
+        "ex4": {
+          "title": "Lottery Probability (Combinations)",
+          "formula": "nCr(45, 6)",
+          "input": "nCr(45,6)",
+          "result": "8,145,060",
+          "desc": "The number of ways to choose 6 from 45 numbers = 8,145,060. The probability of winning is about 1 in 8.14 million."
         }
       }
     },
     "instruction": {
-      "title": "How to Use",
+      "title": "How to Use This Scientific Calculator (Step-by-Step)",
       "steps": {
-        "step1": "<strong>Enter Formula</strong>: Input numbers using buttons on the screen or your keyboard.",
-        "step2": "<strong>Use Functions</strong>: Press function buttons like sin, cos, log first, then enter numbers, or use parentheses for complex formulas.<br /><em style='font-size: 0.9rem; color: #666'>Ex: sin(30) + log(100)</em>",
-        "step3": "<strong>Get Result</strong>: Press <strong>=</strong> button to display the calculation result.",
-        "step4": "<strong>Reset</strong>: Press <strong>AC</strong> (All Clear) to clear all inputs. <strong>CE</strong> clears only the recent input."
+        "step1": "<strong>Step 1: Enter an Expression</strong> — Click the on-screen buttons or use your keyboard to input numbers and operators. Your expression appears in real-time on the display.",
+        "step2": "<strong>Step 2: Use Functions</strong> — Press a function button like sin, cos, or log and parentheses open automatically. Enter the value and close with <strong>)</strong>.<br /><em style='font-size: 0.9rem; color: #666'>Example: sin(30) + log(100) = 2.5</em>",
+        "step3": "<strong>Step 3: Live Preview</strong> — As you type, the expected result is shown below the expression in real-time. Check the result before pressing =.",
+        "step4": "<strong>Step 4: Get Result & Copy</strong> — Press <strong>=</strong> (or Enter key) to display the final result. Click the copy icon next to the result to copy it to your clipboard.",
+        "step5": "<strong>Step 5: Chained Calculations</strong> — After getting a result, press an operator (+, -, ×, ÷) to continue calculating from the previous result. Or use the <strong>Ans</strong> button to recall it.",
+        "step6": "<strong>Step 6: Switch Modes</strong> — Press the <strong>2nd</strong> button to cycle through INV (inverse), HYP (hyperbolic), and H⁻¹ (inverse hyperbolic) modes. Use the <strong>DEG/RAD</strong> toggle to change angle units."
       }
     },
     "faq": {
-      "title": "FAQ",
+      "title": "Frequently Asked Questions (FAQ)",
       "list": {
         "degRad": {
-          "q": "Q. Does it use Degrees or Radians?",
-          "a": "Currently, this calculator basically uses <strong>Degrees</strong>. Radian conversion feature will be added soon."
+          "q": "Q. What is the difference between DEG (Degrees) and RAD (Radians)?",
+          "a": "<strong>DEG (Degrees)</strong> divides a full circle into 360 parts, while <strong>RAD (Radians)</strong> measures angles by the ratio of arc length to radius. Use DEG for everyday angle calculations and RAD for calculus or physics. Toggle between them using the <strong>DEG/RAD</strong> button at the top-right.<br /><br /><strong>Conversion formula:</strong> 180° = π rad (approximately 3.14159 rad)"
         },
         "history": {
-          "q": "Q. Is calculation history saved?",
-          "a": "For security, history is cleared when you close the browser or refresh. We recommend noting down important results."
+          "q": "Q. Where is the calculation history stored?",
+          "a": "Calculation history is stored in your browser's <strong>localStorage</strong>, keeping up to 50 entries. History persists when you refresh the page in the same browser. However, clearing browser data or using incognito mode will reset the history. Click the clock icon at the top-left to view history, and click any previous expression to recall it."
         },
         "keyboard": {
-          "q": "Q. Can I type with keyboard?",
-          "a": "Yes, you can directly input numbers and operators (+, -, *, /) using your keyboard. Press Enter to calculate."
+          "q": "Q. How do I use keyboard input?",
+          "a": "You can type numbers (0-9), arithmetic operators (+, -, *, /), parentheses, and decimal point (.) directly from your keyboard. Press <strong>Enter</strong> or <strong>=</strong> to calculate, <strong>Backspace</strong> to delete, and <strong>Esc</strong> to clear all (AC). Use <strong>^</strong> for powers, <strong>!</strong> for factorial, and <strong>%</strong> for percent."
+        },
+        "memory": {
+          "q": "Q. How do I use the Memory (M+, M-, MR, MC) functions?",
+          "a": "Memory lets you store intermediate results during calculations. For example, calculate <code>25 + 30 = 55</code>, then press <strong>M+</strong> to store 55 in memory. After doing other calculations, press <strong>MR</strong> to recall the stored value of 55. <strong>M−</strong> subtracts from memory, and <strong>MC</strong> clears memory. When memory holds a value, an <strong>M</strong> indicator appears on the display."
+        },
+        "precision": {
+          "q": "Q. How accurate are the calculation results?",
+          "a": "This calculator computes with <strong>14 significant digits</strong> of precision. It uses JavaScript's IEEE 754 64-bit floating-point arithmetic internally, with the math.js library for precise results. This is sufficient for virtually all engineering calculations."
+        },
+        "functions": {
+          "q": "Q. What math functions are supported?",
+          "a": "<strong>Trigonometry:</strong> sin, cos, tan, sin⁻¹, cos⁻¹, tan⁻¹, sinh, cosh, tanh, sinh⁻¹, cosh⁻¹, tanh⁻¹<br /><strong>Logarithms:</strong> log (common), ln (natural), 10ˣ, eˣ<br /><strong>Powers:</strong> x², x³, xʸ, √, ³√<br /><strong>Other:</strong> n! (factorial), nPr (permutation), nCr (combination), |x| (absolute value), 1/x (reciprocal), mod (modulo), % (percent), π, e, Ans (previous result), Rand (random), EXP (scientific notation)<br /><strong>Memory:</strong> M+, M−, MR, MC"
+        },
+        "mobile": {
+          "q": "Q. Can I use this on a smartphone?",
+          "a": "Yes, this scientific calculator features a <strong>responsive design</strong> that works identically on smartphones, tablets, and PCs. All scientific functions and memory features work perfectly on mobile. No app installation required — just use it directly in your browser."
+        },
+        "free": {
+          "q": "Q. Is this calculator free? Do I need to sign up?",
+          "a": "Yes, it is <strong>completely free</strong> with no sign-up or login required. All calculations are processed in your browser, so no personal data is sent to any server."
         }
       }
     },
@@ -681,6 +760,15 @@
       "periodSuffix": "mo",
       "rate": "Rate (%)",
       "ratePlaceholder": "Ex: 3.5",
+      "taxTypeLabel": "Tax Option",
+      "taxStandard": "Standard Tax",
+      "taxStandardRate": "15.4%",
+      "taxPreferred": "Tax-Advantaged",
+      "taxPreferredRate": "1.4%",
+      "taxPreferredDesc": "Age 65+, Disabled",
+      "taxFree": "Tax-Free",
+      "taxFreeRate": "0%",
+      "taxFreeDesc": "ISA, Youth Preferred",
       "calculate": "Calculate Interest",
       "calculating": "Calculating...",
       "alertInput": "Please enter all values."
@@ -689,11 +777,58 @@
       "title": "Calculation Result (Net)",
       "totalPrincipal": "Total Principal",
       "beforeTax": "Pre-tax Interest",
-      "tax": "Interest Income Tax (15.4%)",
+      "tax": "Interest Income Tax",
       "finalAmount": "Final Payout",
       "currency": "KRW",
       "chartPrincipal": "Principal",
-      "chartInterest": "Interest Earned"
+      "chartInterest": "Interest Earned",
+      "copyResult": "Copy Result",
+      "shareResult": "Share",
+      "copied": "Copied!"
+    },
+    "monthlyTable": {
+      "title": "Monthly Breakdown",
+      "toggleShow": "Show Monthly Details",
+      "toggleHide": "Hide Monthly Details",
+      "month": "Month",
+      "monthlyPrincipal": "Monthly Principal",
+      "monthlyInterest": "Monthly Interest",
+      "accumulated": "Accumulated",
+      "copyTable": "Copy Table",
+      "downloaded": "Downloaded!"
+    },
+    "compare": {
+      "title": "Compare Mode",
+      "enable": "Enable Comparison",
+      "disable": "Disable Comparison",
+      "depositVsSavings": "Deposit vs Savings",
+      "simpleVsCompound": "Simple vs Compound",
+      "comparison": "Comparison Result",
+      "option1": "Option 1",
+      "option2": "Option 2",
+      "difference": "Difference",
+      "moreThan": "more"
+    },
+    "presets": {
+      "title": "Bank Interest Rates (Feb 2026)",
+      "subtitle": "Click to auto-fill the rate",
+      "kakao": "Kakao Bank",
+      "toss": "Toss Bank",
+      "kb": "KB Kookmin",
+      "shinhan": "Shinhan",
+      "woori": "Woori",
+      "hana": "Hana"
+    },
+    "earlyWithdraw": {
+      "title": "Early Withdrawal Simulation",
+      "subtitle": "Calculate estimated loss if withdrawn before maturity",
+      "enable": "Calculate Early Withdrawal",
+      "withdrawMonth": "Withdrawal Month",
+      "penalty": "Early Withdrawal Rate",
+      "penaltyDesc": "50% of agreed rate",
+      "estimatedAmount": "Estimated Amount",
+      "loss": "Estimated Loss",
+      "lossVsMaturity": "Loss vs Maturity"
     },
     "info": {
       "title": "Simple vs Compound Interest?",
