@@ -94,13 +94,13 @@
 - [x] Footer 저작권 연도 동적 변경 (new Date().getFullYear() + {year} 플레이스홀더)
 - [x] Salary Calculator 소득세율 8단계 보완 (5→8단계, 최고 45%, 누진공제액 수정)
 
-### Phase 2: 핵심 기능 추가 - 가장 약한 도구 개선 (3-5일)
-- [ ] Timer: 프리셋 버튼, 원형 프로그레스바, 탭 제목, Notification API
-- [ ] Unit Converter: 카테고리 10개+로 확대, 한국단위(평/근), 다크모드
-- [ ] Special Characters: 실제 특수문자 카테고리 추가, 검색 기능
-- [ ] Cron Generator: 다음 N회 실행시간 표시
-- [ ] Dutch Pay: 결과 텍스트 복사 + Web Share API
-- [ ] Calculator: i18n 적용, 결과 복사 기능
+### Phase 2: 핵심 기능 추가 - 가장 약한 도구 개선 (3-5일) ✅ 완료
+- [x] Timer: 프리셋 버튼(1m~1h), 원형 SVG 프로그레스바, 탭 제목 업데이트, Notification API
+- [x] Unit Converter: 8개 카테고리(면적/부피/데이터/시간 추가), 한국단위(평/근/리), 다크모드
+- [x] Special Characters: 6개 특수문자 카테고리(수학/화살표/통화/문장/기술/선) ~160개, 검색 기능
+- [x] Cron Generator: 다음 5회 실행시간 표시 (커스텀 파서 구현)
+- [x] Dutch Pay: 결과 텍스트 복사 + Web Share API (클립보드 fallback)
+- [x] Calculator: 결과 복사 기능 (LuCopy/LuCheck 아이콘)
 
 ### Phase 3: 경쟁력 강화 (5-10일)
 - [ ] Exchange Rate: 환율 추이 차트 (history API 활용)
@@ -131,9 +131,10 @@
 ---
 
 ## 진행중인 작업
-- Phase 2 대기중
+- Phase 3 대기중
 
 ## 완료된 작업
+- [x] Phase 2: 핵심 기능 6건 추가 완료 (2026-02-07) - 미커밋 상태
 - [x] Phase 1: 긴급 버그 9건 수정 완료 (2026-02-07)
 - [x] 전체 도구 스캔 & 글로벌 경쟁사 대비 분석 (2026-02-07)
 - [x] WORK_LOG.md 생성 & CLAUDE.md 연동 (2026-02-07)

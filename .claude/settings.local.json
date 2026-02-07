@@ -33,7 +33,11 @@
       "WebFetch(domain:www.oanda.com)",
       "WebFetch(domain:www.x-rates.com)",
       "WebFetch(domain:www.google.com)",
-      "mcp__plugin_Notion_notion__notion-search"
+      "mcp__plugin_Notion_notion__notion-search",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_run_code"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

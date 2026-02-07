@@ -96,6 +96,61 @@ function parseCronToFields(cron: string): Record<string, FieldConfig> {
     return result;
 }
 
+// Calculate next N execution times from a cron expression
+function getNextExecutions(cronStr: string, count: number = 5): Date[] {
+    const parts = cronStr.split(' ');
+    if (parts.length !== 5) return [];
+    const [minPart, hourPart, domPart, monPart, dowPart] = parts;
+
+    function expandField(part: string, min: number, max: number): number[] | null {
+        if (part === '*') return null; // means "all"
+        const values = new Set<number>();
+        for (const segment of part.split(',')) {
+            if (segment.includes('/')) {
+                const [base, stepStr] = segment.split('/');
+                const step = parseInt(stepStr);
+                const start = base === '*' ? min : parseInt(base);
+                for (let i = start; i <= max; i += step) values.add(i);
+            } else if (segment.includes('-')) {
+                const [s, e] = segment.split('-').map(Number);
+                for (let i = s; i <= e; i++) values.add(i);
+            } else {
+                values.add(parseInt(segment));
+            }
+        }
+        return [...values].sort((a, b) => a - b);
+    }
+
+    const minutes = expandField(minPart, 0, 59);
+    const hours = expandField(hourPart, 0, 23);
+    const doms = expandField(domPart, 1, 31);
+    const months = expandField(monPart, 1, 12);
+    const dows = expandField(dowPart, 0, 6);
+
+    const matches = (d: Date): boolean => {
+        if (minutes && !minutes.includes(d.getMinutes())) return false;
+        if (hours && !hours.includes(d.getHours())) return false;
+        if (doms && !doms.includes(d.getDate())) return false;
+        if (months && !months.includes(d.getMonth() + 1)) return false;
+        if (dows && !dows.includes(d.getDay())) return false;
+        return true;
+    };
+
+    const results: Date[] = [];
+    const now = new Date();
+    const cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1, 0, 0);
+    const maxIterations = 525600; // 1 year in minutes
+
+    for (let i = 0; i < maxIterations && results.length < count; i++) {
+        if (matches(cursor)) {
+            results.push(new Date(cursor));
+        }
+        cursor.setMinutes(cursor.getMinutes() + 1);
+    }
+
+    return results;
+}
+
 export default function CronGeneratorClient() {
     const t = useTranslations('CronGenerator');
     const { theme } = useTheme();
@@ -111,6 +166,7 @@ export default function CronGeneratorClient() {
 
     const [copied, setCopied] = useState(false);
     const [manualInput, setManualInput] = useState('');
+    const [showNextRuns, setShowNextRuns] = useState(true);
 
     const cronExpression = useMemo(() => {
         const fieldNames = ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'];
@@ -365,6 +421,42 @@ export default function CronGeneratorClient() {
                         {description}
                     </div>
                 )}
+                {/* Next execution times */}
+                {showNextRuns && (() => {
+                    const nextRuns = getNextExecutions(cronExpression, 5);
+                    if (nextRuns.length === 0) return null;
+                    return (
+                        <div style={{
+                            background: '#0f172a', borderRadius: '8px', padding: '12px 16px',
+                            marginBottom: '12px', textAlign: 'left'
+                        }}>
+                            <div style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                marginBottom: '8px'
+                            }}>
+                                <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>
+                                    {t('nextRuns')}
+                                </span>
+                                <button
+                                    onClick={() => setShowNextRuns(false)}
+                                    style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: '0.8rem' }}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            {nextRuns.map((d, i) => (
+                                <div key={i} style={{
+                                    color: '#e2e8f0', fontSize: '0.85rem',
+                                    fontFamily: "'Consolas', monospace",
+                                    padding: '3px 0',
+                                    borderBottom: i < nextRuns.length - 1 ? '1px solid #1e293b' : 'none'
+                                }}>
+                                    {d.toLocaleString()}
+                                </div>
+                            ))}
+                        </div>
+                    );
+                })()}
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                     <button
                         onClick={handleCopy}

@@ -5,6 +5,16 @@ import { FaHourglassStart } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 
+const PRESETS = [
+    { label: '1m', seconds: 60 },
+    { label: '3m', seconds: 180 },
+    { label: '5m', seconds: 300 },
+    { label: '10m', seconds: 600 },
+    { label: '15m', seconds: 900 },
+    { label: '30m', seconds: 1800 },
+    { label: '1h', seconds: 3600 },
+];
+
 export default function TimerView() {
     const t = useTranslations('Clock.Timer');
     const { theme } = useTheme();
@@ -30,9 +40,30 @@ export default function TimerView() {
                 audioRef.current.loop = true;
                 audioRef.current.play().catch(e => console.error("Audio play failed", e));
             }
+            // Browser notification
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                new Notification(t('modal.title'), { body: t('controls.confirm'), icon: '/icon.svg' });
+            }
         }
         return () => clearInterval(interval);
-    }, [isRunning, timeLeft]);
+    }, [isRunning, timeLeft, t]);
+
+    // Tab title update
+    useEffect(() => {
+        if (isRunning || (!isSetting && timeLeft > 0)) {
+            document.title = `${formatTime(timeLeft)} - Timer`;
+        } else {
+            document.title = t('meta.title') || 'Timer';
+        }
+        return () => { document.title = t('meta.title') || 'Timer'; };
+    }, [timeLeft, isRunning, isSetting, t]);
+
+    // Request notification permission on mount
+    useEffect(() => {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }, []);
 
     const handleStopAlarm = () => {
         setShowAlarmModal(false);
@@ -41,6 +72,19 @@ export default function TimerView() {
             audioRef.current.currentTime = 0;
         }
     };
+
+    const handlePreset = (seconds: number) => {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        setInputValues({ h, m, s });
+        setDuration(seconds);
+        setTimeLeft(seconds);
+        setIsSetting(false);
+        setIsRunning(true);
+    };
+
+    const progress = duration > 0 ? ((duration - timeLeft) / duration) : 0;
 
     const handleStart = () => {
         if (isSetting) {
@@ -180,23 +224,54 @@ export default function TimerView() {
                     textAlign: 'center',
                 }}>
                     {isSetting ? (
-                        <div style={{ marginBottom: '30px', display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
-                            <TimeInput value={inputValues.h} onChange={(v) => setInputValues({ ...inputValues, h: v })} label={t('labels.hour')} isDark={isDark} />
-                            <span style={{ fontSize: '2rem', color: isDark ? '#475569' : '#ccc', fontWeight: 300 }}>:</span>
-                            <TimeInput value={inputValues.m} onChange={(v) => setInputValues({ ...inputValues, m: v })} label={t('labels.minute')} max={59} isDark={isDark} />
-                            <span style={{ fontSize: '2rem', color: isDark ? '#475569' : '#ccc', fontWeight: 300 }}>:</span>
-                            <TimeInput value={inputValues.s} onChange={(v) => setInputValues({ ...inputValues, s: v })} label={t('labels.second')} max={59} isDark={isDark} />
-                        </div>
+                        <>
+                            {/* Preset buttons */}
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', marginBottom: '20px' }}>
+                                {PRESETS.map(p => (
+                                    <button
+                                        key={p.label}
+                                        onClick={() => handlePreset(p.seconds)}
+                                        style={{
+                                            padding: '8px 16px', border: `1.5px solid ${isDark ? '#334155' : '#e0e0e0'}`,
+                                            borderRadius: '20px', background: isDark ? '#1e293b' : '#f8f9fa',
+                                            color: isDark ? '#94a3b8' : '#555', cursor: 'pointer',
+                                            fontSize: '0.9rem', fontWeight: 500, transition: 'all 0.2s',
+                                        }}
+                                    >
+                                        {p.label}
+                                    </button>
+                                ))}
+                            </div>
+                            <div style={{ marginBottom: '30px', display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
+                                <TimeInput value={inputValues.h} onChange={(v) => setInputValues({ ...inputValues, h: v })} label={t('labels.hour')} isDark={isDark} />
+                                <span style={{ fontSize: '2rem', color: isDark ? '#475569' : '#ccc', fontWeight: 300 }}>:</span>
+                                <TimeInput value={inputValues.m} onChange={(v) => setInputValues({ ...inputValues, m: v })} label={t('labels.minute')} max={59} isDark={isDark} />
+                                <span style={{ fontSize: '2rem', color: isDark ? '#475569' : '#ccc', fontWeight: 300 }}>:</span>
+                                <TimeInput value={inputValues.s} onChange={(v) => setInputValues({ ...inputValues, s: v })} label={t('labels.second')} max={59} isDark={isDark} />
+                            </div>
+                        </>
                     ) : (
-                        <div style={{
-                            fontSize: 'clamp(3rem, 12vw, 5rem)',
-                            marginBottom: '30px',
-                            color: '#667eea',
-                            fontWeight: 700,
-                            fontFamily: "'SF Mono', 'Fira Code', monospace",
-                            letterSpacing: '2px',
-                        }}>
-                            {formatTime(timeLeft)}
+                        <div style={{ position: 'relative', width: '220px', height: '220px', margin: '0 auto 30px' }}>
+                            {/* Circular progress ring */}
+                            <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
+                                <circle cx="50" cy="50" r="45" fill="none" stroke={isDark ? '#334155' : '#e5e7eb'} strokeWidth="4" />
+                                <circle
+                                    cx="50" cy="50" r="45" fill="none"
+                                    stroke="#667eea" strokeWidth="4" strokeLinecap="round"
+                                    strokeDasharray={`${progress * 283} 283`}
+                                    style={{ transition: 'stroke-dasharray 1s linear' }}
+                                />
+                            </svg>
+                            <div style={{
+                                position: 'absolute', top: '50%', left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                fontSize: 'clamp(1.8rem, 8vw, 2.5rem)',
+                                color: '#667eea', fontWeight: 700,
+                                fontFamily: "'SF Mono', 'Fira Code', monospace",
+                                letterSpacing: '2px',
+                            }}>
+                                {formatTime(timeLeft)}
+                            </div>
                         </div>
                     )}
 

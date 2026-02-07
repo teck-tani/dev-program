@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import { IoCopyOutline, IoShareSocialOutline } from "react-icons/io5";
 
 interface Person {
     id: number;
@@ -31,6 +32,7 @@ export default function DutchPayClient() {
     const [splitMode, setSplitMode] = useState<"equal" | "custom">("equal");
     const [settlements, setSettlements] = useState<Settlement[]>([]);
     const [calculated, setCalculated] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     const addPerson = () => {
         setPeople([...people, { id: nextId, name: "", paid: "", shouldPay: 0 }]);
@@ -163,6 +165,43 @@ export default function DutchPayClient() {
     const perPerson = splitMode === "equal"
         ? (parseAmount(totalAmount) > 0 ? Math.round(parseAmount(totalAmount) / people.length) : 0)
         : (totalPaid > 0 ? Math.round(totalPaid / people.length) : 0);
+
+    const buildResultText = useCallback(() => {
+        const total = splitMode === "equal" ? parseAmount(totalAmount) : totalPaid;
+        let text = `${t('resultTitle')}\n`;
+        text += `${t('resultTotal')}: ${formatNumber(total)}${t('currency')}\n`;
+        text += `${t('resultPeople')}: ${people.length}${t('peopleUnit')}\n`;
+        text += `${t('resultPerPerson')}: ${formatNumber(perPerson)}${t('currency')}\n`;
+        if (settlements.length > 0) {
+            text += `\n${t('settlementTitle')}\n`;
+            settlements.forEach(s => {
+                text += `${s.from} → ${s.to}: ${formatNumber(s.amount)}${t('currency')}\n`;
+            });
+        } else {
+            text += `\n${t('noSettlement')}`;
+        }
+        return text;
+    }, [settlements, people, totalAmount, splitMode, perPerson, t, formatNumber, parseAmount, totalPaid]);
+
+    const handleCopyResult = async () => {
+        try {
+            await navigator.clipboard.writeText(buildResultText());
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            // fallback
+        }
+    };
+
+    const handleShareResult = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: t('resultTitle'), text: buildResultText() });
+            } catch { /* cancelled */ }
+        } else {
+            handleCopyResult();
+        }
+    };
 
     return (
         <div className="dutch-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
@@ -363,9 +402,36 @@ export default function DutchPayClient() {
                     background: 'linear-gradient(145deg, #1f2937 0%, #111827 100%)',
                     borderRadius: '16px', padding: '20px', marginBottom: '20px'
                 }}>
-                    <h2 style={{ marginBottom: '16px', fontSize: '1.1rem', color: '#fff', fontWeight: 700 }}>
-                        {t('resultTitle')}
-                    </h2>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#fff', fontWeight: 700 }}>
+                            {t('resultTitle')}
+                        </h2>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                                onClick={handleCopyResult}
+                                style={{
+                                    padding: '6px 14px', background: copied ? '#22c55e' : 'rgba(255,255,255,0.15)',
+                                    color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer',
+                                    fontSize: '0.8rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px',
+                                    transition: 'background 0.2s'
+                                }}
+                            >
+                                <IoCopyOutline size={14} />
+                                {copied ? t('copied') : t('copyResult')}
+                            </button>
+                            <button
+                                onClick={handleShareResult}
+                                style={{
+                                    padding: '6px 14px', background: 'rgba(255,255,255,0.15)',
+                                    color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer',
+                                    fontSize: '0.8rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px'
+                                }}
+                            >
+                                <IoShareSocialOutline size={14} />
+                                {t('shareResult')}
+                            </button>
+                        </div>
+                    </div>
 
                     {/* 요약 */}
                     <div style={{

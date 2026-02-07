@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { create, all } from 'mathjs';
-import { LuHistory, LuDelete, LuTrash2, LuX } from 'react-icons/lu';
+import { LuHistory, LuDelete, LuTrash2, LuX, LuCopy, LuCheck } from 'react-icons/lu';
 import { useTheme } from '@/contexts/ThemeContext';
 
 // Initialize mathjs
@@ -38,6 +38,7 @@ const ScientificCalculator = () => {
   
   // Track if the last action was "=" so we know if next input starts fresh
   const [isFinalResult, setIsFinalResult] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Keyboard input support
   useEffect(() => {
@@ -352,19 +353,30 @@ const ScientificCalculator = () => {
             {input || ''}
           </div>
           
-          {/* Bottom Line: Result
-              - Large text (text-3xl)
-              - Bold
-              - Custom thin scrollbar
-              - explicit overflow-y-hidden prevents vertical scrollbars
-          */}
-          <div 
-            ref={resultRef}
-            className={`w-full text-3xl font-bold tracking-tight whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll pb-1 leading-tight ${error ? 'text-red-500' : (dark ? 'text-slate-100' : 'text-gray-900')}`}
-            aria-label="Result"
-            aria-live="polite"
-          >
-            {result}
+          {/* Bottom Line: Result + Copy */}
+          <div className="flex items-center gap-2">
+            <div
+              ref={resultRef}
+              className={`flex-1 min-w-0 text-3xl font-bold tracking-tight whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll pb-1 leading-tight ${error ? 'text-red-500' : (dark ? 'text-slate-100' : 'text-gray-900')}`}
+              aria-label="Result"
+              aria-live="polite"
+            >
+              {result}
+            </div>
+            {result && result !== '0' && !error && (
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(result);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1500);
+                }}
+                className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${dark ? 'hover:bg-slate-600 text-slate-400' : 'hover:bg-gray-200 text-gray-400'}`}
+                aria-label="Copy result"
+                title="Copy"
+              >
+                {copied ? <LuCheck className="w-4 h-4 text-green-500" /> : <LuCopy className="w-4 h-4" />}
+              </button>
+            )}
           </div>
           
         </div>

@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 
-const EMOJI_DATA = {
+const SPECIAL_CHARS_DATA: Record<string, string[]> = {
+    math: ["±", "×", "÷", "=", "≠", "≈", "≤", "≥", "<", ">", "∞", "π", "√", "∑", "∫", "∂", "Δ", "∇", "∈", "∉", "⊂", "⊃", "∪", "∩", "∧", "∨", "¬", "∀", "∃", "∅"],
+    arrows: ["←", "→", "↑", "↓", "↔", "↕", "⇐", "⇒", "⇑", "⇓", "⇔", "↩", "↪", "↰", "↱", "↲", "↳", "▲", "▼", "◀", "▶", "◁", "▷", "△", "▽"],
+    currency: ["₩", "$", "€", "£", "¥", "₹", "₽", "₿", "¢", "₫", "₱", "₦", "₴", "₸", "₺"],
+    punctuation: ["·", "•", "―", "—", "–", "…", "«", "»", "‹", "›", "「", "」", "『", "』", "【", "】", "〔", "〕", "〈", "〉", "《", "》", "¡", "¿", "‽", "※", "†", "‡", "§", "¶"],
+    technical: ["©", "®", "™", "°", "‰", "‱", "µ", "№", "℃", "℉", "Å", "℗", "℠", "♀", "♂", "⚥", "☮", "☯", "⚛", "☢", "☣", "⚠", "⚡", "♻", "⚙", "⌘", "⌥", "⇧", "⏎", "⌫"],
+    lines: ["─", "│", "┌", "┐", "└", "┘", "├", "┤", "┬", "┴", "┼", "═", "║", "╔", "╗", "╚", "╝", "╠", "╣", "╦", "╩", "╬", "░", "▒", "▓", "█", "■", "□", "▪", "▫"],
+};
+
+const EMOJI_DATA: Record<string, string[]> = {
     faces: ["😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "🙃", "😉", "😊", "😇", "🥰", "😍", "🤩", "😘", "😗", "😚", "😙", "😋", "😛", "😜", "🤪", "😝", "🤑", "🤗", "🤭", "🤫", "🤔", "🤐", "🤨", "😐", "😑", "😶", "😏", "😒", "🙄", "😬", "🤥", "😌", "😔", "😪", "🤤", "😴", "😷", "🤒", "🤕", "🤢", "🤮", "🤧", "🥵", "🥶", "🥴", "😵", "🤯", "🤠", "🥳", "😎", "🤓", "🧐"],
     hearts: ["❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝"],
     hands: ["👋", "🤚", "🖐️", "✋", "🖖", "👌", "🤏", "✌️", "🤞", "🤟", "🤘", "🤙", "👈", "👉", "👆", "🖕", "👇", "☝️", "👍", "👎", "✊", "👊", "🤛", "🤜", "👏", "🙌", "👐", "🤲", "🤝", "🙏"],
@@ -25,6 +34,7 @@ export default function SpecialCharactersClient() {
     const isDark = theme === 'dark';
 
     const [copiedEmoji, setCopiedEmoji] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
 
     const copyToClipboard = (emoji: string) => {
         navigator.clipboard.writeText(emoji).then(() => {
@@ -33,43 +43,91 @@ export default function SpecialCharactersClient() {
         });
     };
 
+    const filteredSpecialChars = useMemo(() => {
+        if (!searchQuery) return SPECIAL_CHARS_DATA;
+        const filtered: Record<string, string[]> = {};
+        for (const [key, chars] of Object.entries(SPECIAL_CHARS_DATA)) {
+            const matched = chars.filter((c) => c.includes(searchQuery));
+            if (matched.length > 0) filtered[key] = matched;
+        }
+        return filtered;
+    }, [searchQuery]);
+
+    const filteredEmojis = useMemo(() => {
+        if (!searchQuery) return EMOJI_DATA;
+        const filtered: Record<string, string[]> = {};
+        for (const [key, emojis] of Object.entries(EMOJI_DATA)) {
+            const matched = emojis.filter((e) => e.includes(searchQuery));
+            if (matched.length > 0) filtered[key] = matched;
+        }
+        return filtered;
+    }, [searchQuery]);
+
+    const renderCharGrid = (categoryKey: string, chars: string[]) => (
+        <div key={categoryKey} style={{ marginBottom: "40px" }}>
+            <h2 style={{ fontSize: "1.3rem", marginBottom: "15px", color: isDark ? "#f1f5f9" : "#333", borderBottom: "2px solid #74ebd5", paddingBottom: "8px" }}>
+                {tCat(categoryKey as any)}
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(60px, 1fr))", gap: "10px" }}>
+                {chars.map((char, idx) => (
+                    <div
+                        key={idx}
+                        onClick={() => copyToClipboard(char)}
+                        style={{
+                            fontSize: "2rem",
+                            textAlign: "center",
+                            padding: "15px",
+                            background: isDark ? "#1e293b" : "white",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            transition: "all 0.2s",
+                            boxShadow: isDark ? "none" : "0 2px 5px rgba(0,0,0,0.1)",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "scale(1.1)";
+                            e.currentTarget.style.boxShadow = isDark ? "none" : "0 4px 10px rgba(0,0,0,0.15)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.boxShadow = isDark ? "none" : "0 2px 5px rgba(0,0,0,0.1)";
+                        }}
+                    >
+                        {char}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
     return (
         <div className="container" style={{ padding: "20px" }}>
-            {Object.entries(EMOJI_DATA).map(([categoryKey, emojis]) => (
-                <div key={categoryKey} style={{ marginBottom: "40px" }}>
-                    <h2 style={{ fontSize: "1.3rem", marginBottom: "15px", color: isDark ? "#f1f5f9" : "#333", borderBottom: "2px solid #74ebd5", paddingBottom: "8px" }}>
-                        {tCat(categoryKey as any)}
-                    </h2>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(60px, 1fr))", gap: "10px" }}>
-                        {emojis.map((emoji, idx) => (
-                            <div
-                                key={idx}
-                                onClick={() => copyToClipboard(emoji)}
-                                style={{
-                                    fontSize: "2rem",
-                                    textAlign: "center",
-                                    padding: "15px",
-                                    background: isDark ? "#1e293b" : "white",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                    transition: "all 0.2s",
-                                    boxShadow: isDark ? "none" : "0 2px 5px rgba(0,0,0,0.1)",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = "scale(1.1)";
-                                    e.currentTarget.style.boxShadow = isDark ? "none" : "0 4px 10px rgba(0,0,0,0.15)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = "scale(1)";
-                                    e.currentTarget.style.boxShadow = isDark ? "none" : "0 2px 5px rgba(0,0,0,0.1)";
-                                }}
-                            >
-                                {emoji}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
+            <div style={{ marginBottom: "30px" }}>
+                <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={t('searchPlaceholder')}
+                    style={{
+                        width: "100%",
+                        maxWidth: "500px",
+                        padding: "12px 16px",
+                        fontSize: "1rem",
+                        borderRadius: "8px",
+                        border: isDark ? "1px solid #334155" : "1px solid #ddd",
+                        background: isDark ? "#1e293b" : "white",
+                        color: isDark ? "#f1f5f9" : "#333",
+                        outline: "none",
+                    }}
+                />
+            </div>
+
+            {Object.entries(filteredSpecialChars).map(([categoryKey, chars]) =>
+                renderCharGrid(categoryKey, chars)
+            )}
+
+            {Object.entries(filteredEmojis).map(([categoryKey, emojis]) =>
+                renderCharGrid(categoryKey, emojis)
+            )}
 
             {copiedEmoji && (
                 <div
