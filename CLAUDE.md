@@ -6,8 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **반드시 `WORK_LOG.md`를 매 세션 시작 시 읽고, 작업 완료 시 업데이트할 것.**
 - `WORK_LOG.md` - 전체 도구 현황, 진행중/완료 작업, 버그, 아이디어 기록
-- 작업 하나 끝날 때마다 커밋할 것 (작업 손실 방지)
-- 이 파일은 git에 커밋되어 집/회사 어디서든 동일한 컨텍스트 유지
+
 
 ## Project Overview
 
