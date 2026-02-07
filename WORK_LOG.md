@@ -9,7 +9,7 @@
 
 | # | 도구 | 경로 | 현재 수준 | 핵심 개선사항 |
 |---|------|------|-----------|-------------|
-| 1 | 공학용 계산기 | calculator | C | 키보드 입력 미지원(FAQ와 불일치), i18n 미적용, 결과 복사 불가 |
+| 1 | 공학용 계산기 | calculator | A- | Tier 1~3 업그레이드 완료. 경쟁사 대비 상위 2~3위권 |
 | 2 | 이자 계산기 | interest-calculator | B | GrowthChart i18n 버그, 세금옵션 3가지 필요, 월별 내역표 |
 | 3 | 연봉 계산기 | salary-calculator | B | 소득세율 5단계→8단계, 기준연도 미표시, 연간 실수령 미표시 |
 | 4 | 퇴직금 계산기 | severance-calculator | B- | 계산과정 미표시, 퇴직소득세 미계산, 날짜입력 UX |
@@ -19,7 +19,7 @@
 | 8 | 세계시계 | clock | A- | 시간대비교 슬라이더, 24h 타임라인바, 도시DB 확대 |
 | 9 | 스톱워치 | stopwatch | A- | 탭 제목 시간표시, 전체화면, 랩 그래프 |
 | 10 | 타이머 | timer | D+ | **프리셋 없음, 프로그레스바 없음, 탭제목 없음, 포모도로 없음** |
-| 11 | 환율 계산기 | money-converter | B | **환율 차트 미구현(API 있음)**, 전일대비 변동, API키 하드코딩 |
+| 11 | 환율 계산기 | money-converter | B+ | 환율 차트 구현완료(recharts), 전일대비 변동, API키 환경변수 이동완료 |
 | 12 | 단위 변환기 | unit-converter | D+ | **카테고리 4개뿐(경쟁사 20+)**, 한국단위(평/근) 없음, 다크모드 미지원 |
 | 13 | 파일사이즈 변환기 | file-size-converter | B+ | 이진/십진 구분, 전송시간 계산 |
 | 14 | 색상 변환기 | color-converter | B- | CMYK 없음, RGBA 없음, 대비비율 체크 없음 |
@@ -46,7 +46,7 @@
 
 ## 긴급 버그 (즉시 수정 필요)
 
-1. **[Calculator]** FAQ에 "키보드 지원" 명시되어 있으나 실제 미구현 → SEO 신뢰도 위험
+1. ~~**[Calculator]** FAQ에 "키보드 지원" 명시되어 있으나 실제 미구현~~ ✅ 해결 (키보드 완전 지원)
 2. **[Interest Calculator]** GrowthChart 범례 "원금", "이자 수익" 한국어 하드코딩 → 영어 페이지에서도 한국어 표시
 3. **[Ovulation Calculator]** locale을 `document.documentElement.lang`으로 감지 → `useLocale()` 사용해야 함
 4. **[Salary Calculator]** 소득세율 5단계만 구현(8단계 필요, 최고 45% 누락)
@@ -103,7 +103,8 @@
 - [x] Calculator: 결과 복사 기능 (LuCopy/LuCheck 아이콘)
 
 ### Phase 3: 경쟁력 강화 (5-10일)
-- [ ] Exchange Rate: 환율 추이 차트 (history API 활용)
+- [x] Calculator: Tier 1~3 전면 업그레이드 (키보드, 복사, +/-, |x|, 1/x, ANS, EXP, 괄호카운터, sinh/cosh/tanh, mod, cbrt, x³)
+- [x] Exchange Rate: 환율 추이 차트 (recharts, history API 활용)
 - [ ] JSON Formatter: Syntax Highlighting + Tree View
 - [ ] Text Diff: Side-by-Side View + Character-level diff
 - [ ] Image Compressor: 출력포맷 선택(WebP), PNG 투명도 경고, 비교뷰
@@ -131,10 +132,12 @@
 ---
 
 ## 진행중인 작업
-- Phase 3 대기중
+- Phase 3 진행중 (Calculator 완료, Exchange Rate 차트 완료)
 
 ## 완료된 작업
-- [x] Phase 2: 핵심 기능 6건 추가 완료 (2026-02-07) - 미커밋 상태
+- [x] Calculator Tier 1~3 전면 업그레이드 (2026-02-07)
+- [x] Exchange Rate 환율 차트 프론트엔드 (2026-02-07)
+- [x] Phase 2: 핵심 기능 6건 추가 완료 (2026-02-07)
 - [x] Phase 1: 긴급 버그 9건 수정 완료 (2026-02-07)
 - [x] 전체 도구 스캔 & 글로벌 경쟁사 대비 분석 (2026-02-07)
 - [x] WORK_LOG.md 생성 & CLAUDE.md 연동 (2026-02-07)
@@ -144,4 +147,4 @@
 - 모바일에서 SEO 콘텐츠 display:none 처리 → 구글 모바일 우선 인덱싱에 부정적 가능성
 
 ---
-*마지막 업데이트: 2026-02-07*
+*마지막 업데이트: 2026-02-07 (공학용계산기 Tier1~3, 환율차트)*
