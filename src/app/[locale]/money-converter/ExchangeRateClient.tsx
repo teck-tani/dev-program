@@ -121,6 +121,16 @@ export default function ExchangeRateClient() {
     const [chartExpanded, setChartExpanded] = useState(true);
     const [chartCurrency, setChartCurrency] = useState("USD");
 
+    // Chart currency dropdown states
+    const [chartDropdownOpen, setChartDropdownOpen] = useState(false);
+    const [chartSearchQuery, setChartSearchQuery] = useState("");
+    const [chartHighlightedIndex, setChartHighlightedIndex] = useState(-1);
+    const chartDropdownRef = useRef<HTMLDivElement>(null);
+
+    // Favorite currencies for chart (stored in localStorage)
+    const [favoriteCurrencies, setFavoriteCurrencies] = useState<string[]>([]);
+    const FAVORITES_KEY = 'chartFavoriteCurrencies';
+
     // Yesterday's rate for change calculation
     const [yesterdayRates, setYesterdayRates] = useState<Record<string, number>>({});
 
@@ -236,6 +246,95 @@ export default function ExchangeRateClient() {
             fetchYesterdayRates();
         }
     }, [mounted, loading, rates.length, fetchYesterdayRates]);
+
+    // Load favorite currencies from localStorage
+    useEffect(() => {
+        if (!mounted) return;
+        const saved = localStorage.getItem(FAVORITES_KEY);
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                    setFavoriteCurrencies(parsed);
+                }
+            } catch (e) {
+                console.error('Failed to parse saved favorites:', e);
+            }
+        }
+    }, [mounted]);
+
+    // Close chart dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (chartDropdownRef.current && !chartDropdownRef.current.contains(event.target as Node)) {
+                setChartDropdownOpen(false);
+                setChartSearchQuery("");
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // Toggle favorite currency
+    const toggleFavorite = useCallback((currencyCode: string) => {
+        setFavoriteCurrencies(prev => {
+            const newFavorites = prev.includes(currencyCode)
+                ? prev.filter(c => c !== currencyCode)
+                : [...prev, currencyCode];
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
+            return newFavorites;
+        });
+    }, []);
+
+    // Get filtered currencies for chart dropdown (favorites first, then search)
+    const getChartFilteredCurrencies = useCallback(() => {
+        const query = chartSearchQuery.toLowerCase();
+        // All currencies from API (exclude KRW as chart is KRW-based)
+        const allCurrencies = rates
+            .filter(r => r.cur_unit !== "KRW")
+            .map(r => ({ cur_unit: r.cur_unit, cur_nm: getCurrencyName(r.cur_unit, r.cur_nm) }));
+
+        // Filter by search query
+        const filtered = query
+            ? allCurrencies.filter(c =>
+                c.cur_unit.toLowerCase().includes(query) ||
+                c.cur_nm.toLowerCase().includes(query)
+            )
+            : allCurrencies;
+
+        // Sort: favorites first, then alphabetically
+        return filtered.sort((a, b) => {
+            const aFav = favoriteCurrencies.includes(a.cur_unit);
+            const bFav = favoriteCurrencies.includes(b.cur_unit);
+            if (aFav && !bFav) return -1;
+            if (!aFav && bFav) return 1;
+            return a.cur_unit.localeCompare(b.cur_unit);
+        });
+    }, [rates, chartSearchQuery, favoriteCurrencies, getCurrencyName]);
+
+    // Handle chart dropdown keyboard navigation
+    const handleChartDropdownKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (!chartDropdownOpen) return;
+        const filtered = getChartFilteredCurrencies();
+        if (e.key === 'Escape') {
+            setChartDropdownOpen(false);
+            setChartSearchQuery("");
+            setChartHighlightedIndex(-1);
+            e.preventDefault();
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setChartHighlightedIndex(prev => Math.min(prev + 1, filtered.length - 1));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setChartHighlightedIndex(prev => Math.max(prev - 1, 0));
+        } else if (e.key === 'Enter' && chartHighlightedIndex >= 0 && chartHighlightedIndex < filtered.length) {
+            e.preventDefault();
+            setChartCurrency(filtered[chartHighlightedIndex].cur_unit);
+            setChartDropdownOpen(false);
+            setChartSearchQuery("");
+            setChartHighlightedIndex(-1);
+        }
+    }, [chartDropdownOpen, chartHighlightedIndex, getChartFilteredCurrencies]);
 
     const getRate = (code: string) => {
         if (code === "KRW") return 1;
@@ -717,24 +816,141 @@ export default function ExchangeRateClient() {
                         <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: "600", color: dark ? "#f1f5f9" : "#374151" }}>
                             {t('chartTitle', { currency: chartCurrency.replace("(100)", "") })}
                         </h3>
-                        {/* Currency selector for chart */}
-                        <select
-                            value={chartCurrency}
-                            onChange={(e) => setChartCurrency(e.target.value)}
-                            style={{
-                                padding: "4px 8px",
-                                borderRadius: "6px",
-                                border: dark ? "1px solid #475569" : "1px solid #d1d5db",
-                                background: dark ? "#334155" : "white",
-                                color: dark ? "#e2e8f0" : "#374151",
-                                fontSize: "0.85rem",
-                                cursor: "pointer"
-                            }}
-                        >
-                            {rowCurrencies.filter(c => c !== "KRW").map(code => (
-                                <option key={code} value={code}>{code.replace("(100)", "")}</option>
-                            ))}
-                        </select>
+                        {/* Currency selector for chart - searchable dropdown */}
+                        <div ref={chartDropdownRef} style={{ position: "relative" }} onKeyDown={handleChartDropdownKeyDown}>
+                            <div
+                                onClick={() => {
+                                    setChartDropdownOpen(!chartDropdownOpen);
+                                    setChartSearchQuery("");
+                                    setChartHighlightedIndex(-1);
+                                }}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    padding: "4px 10px",
+                                    borderRadius: "6px",
+                                    border: dark ? "1px solid #475569" : "1px solid #d1d5db",
+                                    background: dark ? "#334155" : "white",
+                                    cursor: "pointer",
+                                    minWidth: "100px"
+                                }}
+                            >
+                                <img
+                                    src={getFlagUrl(chartCurrency)}
+                                    alt={chartCurrency}
+                                    style={{ width: "20px", height: "14px", objectFit: "cover", borderRadius: "2px" }}
+                                />
+                                <span style={{ color: dark ? "#e2e8f0" : "#374151", fontSize: "0.85rem", fontWeight: "500" }}>
+                                    {chartCurrency.replace("(100)", "")}
+                                </span>
+                                <span style={{ color: dark ? "#64748b" : "#9ca3af", marginLeft: "auto" }}>▼</span>
+                            </div>
+
+                            {chartDropdownOpen && (
+                                <div style={{
+                                    position: "absolute",
+                                    top: "100%",
+                                    left: 0,
+                                    minWidth: "260px",
+                                    marginTop: "4px",
+                                    background: dark ? "#1e293b" : "white",
+                                    border: dark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                    borderRadius: "8px",
+                                    boxShadow: dark ? "0 4px 12px rgba(0,0,0,0.4)" : "0 4px 12px rgba(0,0,0,0.15)",
+                                    zIndex: 1000,
+                                    maxHeight: "350px",
+                                    overflow: "hidden"
+                                }}>
+                                    <input
+                                        type="text"
+                                        placeholder={t('searchCurrency') || "검색..."}
+                                        value={chartSearchQuery}
+                                        onChange={(e) => { setChartSearchQuery(e.target.value); setChartHighlightedIndex(-1); }}
+                                        onKeyDown={handleChartDropdownKeyDown}
+                                        onClick={(e) => e.stopPropagation()}
+                                        autoFocus
+                                        style={{
+                                            width: "100%",
+                                            padding: "10px 12px",
+                                            border: "none",
+                                            borderBottom: dark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                            outline: "none",
+                                            fontSize: "0.9rem",
+                                            background: dark ? "#1e293b" : "white",
+                                            color: dark ? "#e2e8f0" : "#1f2937"
+                                        }}
+                                    />
+                                    <div style={{ maxHeight: "290px", overflowY: "auto" }}>
+                                        {getChartFilteredCurrencies().map((currency, cIdx) => {
+                                            const isFavorite = favoriteCurrencies.includes(currency.cur_unit);
+                                            return (
+                                                <div
+                                                    key={currency.cur_unit}
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: "8px",
+                                                        padding: "8px 12px",
+                                                        cursor: "pointer",
+                                                        background: cIdx === chartHighlightedIndex
+                                                            ? (dark ? "#475569" : "#e5e7eb")
+                                                            : chartCurrency === currency.cur_unit
+                                                                ? (dark ? "#334155" : "#f3f4f6")
+                                                                : (dark ? "#1e293b" : "white"),
+                                                        transition: "background 0.15s"
+                                                    }}
+                                                    onMouseEnter={() => setChartHighlightedIndex(cIdx)}
+                                                    onClick={() => {
+                                                        setChartCurrency(currency.cur_unit);
+                                                        setChartDropdownOpen(false);
+                                                        setChartSearchQuery("");
+                                                    }}
+                                                >
+                                                    {/* Star button */}
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleFavorite(currency.cur_unit);
+                                                        }}
+                                                        style={{
+                                                            background: "none",
+                                                            border: "none",
+                                                            cursor: "pointer",
+                                                            padding: "2px",
+                                                            fontSize: "1rem",
+                                                            color: isFavorite ? "#fbbf24" : (dark ? "#475569" : "#d1d5db"),
+                                                            lineHeight: 1
+                                                        }}
+                                                        title={isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                                                    >
+                                                        {isFavorite ? "★" : "☆"}
+                                                    </button>
+                                                    <img
+                                                        src={getFlagUrl(currency.cur_unit)}
+                                                        alt={currency.cur_unit}
+                                                        style={{ width: "24px", height: "16px", objectFit: "cover", borderRadius: "2px", flexShrink: 0 }}
+                                                    />
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <div style={{ fontWeight: "500", color: dark ? "#f1f5f9" : "#374151", fontSize: "0.9rem" }}>
+                                                            {currency.cur_unit.replace("(100)", "")}
+                                                        </div>
+                                                        <div style={{ color: dark ? "#94a3b8" : "#6b7280", fontSize: "0.75rem", lineHeight: "1.2" }}>
+                                                            {currency.cur_nm}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {getChartFilteredCurrencies().length === 0 && (
+                                            <div style={{ padding: "12px", color: dark ? "#94a3b8" : "#9ca3af", textAlign: "center" }}>
+                                                {t('noResults') || "결과 없음"}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <button
                         onClick={() => setChartExpanded(!chartExpanded)}
