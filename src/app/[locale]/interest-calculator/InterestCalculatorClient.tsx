@@ -149,7 +149,11 @@ function MonthlyTable({
     const [isExpanded, setIsExpanded] = useState(false);
     const [copied, setCopied] = useState(false);
 
+<<<<<<< HEAD
     const monthlyData: { month: number; monthlyPrincipal: number; monthlyInterest: number; accumulated: number }[] = [];
+=======
+    const monthlyData = [];
+>>>>>>> c95dd4b5585c48b01244dc9d74956067a40097d3
     let accumulated = 0;
 
     for (let month = 1; month <= period; month++) {
