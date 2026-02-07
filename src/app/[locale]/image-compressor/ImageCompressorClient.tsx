@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaImage, FaDownload, FaTrash, FaCog, FaCompress } from "react-icons/fa";
 
+type OutputFormat = 'image/jpeg' | 'image/webp' | 'image/png';
+
 interface CompressedImage {
     id: string;
     originalFile: File;
@@ -14,6 +16,7 @@ interface CompressedImage {
     preview: string;
     compressedPreview: string;
     status: 'pending' | 'compressing' | 'done' | 'error';
+    hasAlpha: boolean;
 }
 
 export default function ImageCompressorClient() {
@@ -24,8 +27,12 @@ export default function ImageCompressorClient() {
     const [images, setImages] = useState<CompressedImage[]>([]);
     const [quality, setQuality] = useState(80);
     const [maxWidth, setMaxWidth] = useState(1920);
+    const [outputFormat, setOutputFormat] = useState<OutputFormat>('image/jpeg');
     const [isCompressing, setIsCompressing] = useState(false);
+    const [compareId, setCompareId] = useState<string | null>(null);
+    const [sliderPos, setSliderPos] = useState(50);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const compareRef = useRef<HTMLDivElement>(null);
 
     const formatBytes = (bytes: number) => {
         if (bytes === 0) return '0 Bytes';
@@ -40,7 +47,31 @@ export default function ImageCompressorClient() {
         return Math.round(((original - compressed) / original) * 100);
     };
 
-    const compressImage = useCallback(async (file: File, quality: number, maxWidth: number): Promise<Blob> => {
+    const checkTransparency = useCallback(async (file: File): Promise<boolean> => {
+        if (!file.type.includes('png')) return false;
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const size = Math.min(img.width, 200);
+                const ratio = size / img.width;
+                canvas.width = size;
+                canvas.height = img.height * ratio;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) { resolve(false); return; }
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                for (let i = 3; i < data.length; i += 40) { // sample every 10th pixel
+                    if (data[i] < 250) { resolve(true); return; }
+                }
+                resolve(false);
+            };
+            img.onerror = () => resolve(false);
+            img.src = URL.createObjectURL(file);
+        });
+    }, []);
+
+    const compressImage = useCallback(async (file: File, quality: number, maxWidth: number, format: OutputFormat): Promise<Blob> => {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
@@ -62,6 +93,12 @@ export default function ImageCompressorClient() {
                     return;
                 }
 
+                // Fill white background for JPEG (no transparency)
+                if (format === 'image/jpeg') {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, width, height);
+                }
+
                 ctx.drawImage(img, 0, 0, width, height);
 
                 canvas.toBlob(
@@ -72,8 +109,8 @@ export default function ImageCompressorClient() {
                             reject(new Error('Compression failed'));
                         }
                     },
-                    'image/jpeg',
-                    quality / 100
+                    format,
+                    format === 'image/png' ? undefined : quality / 100
                 );
             };
             img.onerror = () => reject(new Error('Image load failed'));
@@ -81,13 +118,16 @@ export default function ImageCompressorClient() {
         });
     }, []);
 
-    const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (!files) return;
 
-        const newImages: CompressedImage[] = Array.from(files)
-            .filter(file => file.type.startsWith('image/'))
-            .map(file => ({
+        const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+        const newImages: CompressedImage[] = [];
+
+        for (const file of imageFiles) {
+            const hasAlpha = await checkTransparency(file);
+            newImages.push({
                 id: Math.random().toString(36).substr(2, 9),
                 originalFile: file,
                 originalSize: file.size,
@@ -96,13 +136,15 @@ export default function ImageCompressorClient() {
                 preview: URL.createObjectURL(file),
                 compressedPreview: '',
                 status: 'pending' as const,
-            }));
+                hasAlpha,
+            });
+        }
 
         setImages(prev => [...prev, ...newImages]);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
-    }, []);
+    }, [checkTransparency]);
 
     const handleCompress = useCallback(async () => {
         if (images.length === 0) return;
@@ -118,7 +160,7 @@ export default function ImageCompressorClient() {
             ));
 
             try {
-                const compressedBlob = await compressImage(img.originalFile, quality, maxWidth);
+                const compressedBlob = await compressImage(img.originalFile, quality, maxWidth, outputFormat);
                 const compressedPreview = URL.createObjectURL(compressedBlob);
 
                 setImages(prev => prev.map(item =>
@@ -138,7 +180,13 @@ export default function ImageCompressorClient() {
         }
 
         setIsCompressing(false);
-    }, [images, quality, maxWidth, compressImage]);
+    }, [images, quality, maxWidth, outputFormat, compressImage]);
+
+    const getFormatExt = useCallback((format: OutputFormat) => {
+        if (format === 'image/webp') return '.webp';
+        if (format === 'image/png') return '.png';
+        return '.jpg';
+    }, []);
 
     const handleDownload = useCallback((img: CompressedImage) => {
         if (!img.compressedBlob) return;
@@ -146,9 +194,9 @@ export default function ImageCompressorClient() {
         const link = document.createElement('a');
         link.href = URL.createObjectURL(img.compressedBlob);
         const originalName = img.originalFile.name.replace(/\.[^/.]+$/, '');
-        link.download = `${originalName}_compressed.jpg`;
+        link.download = `${originalName}_compressed${getFormatExt(outputFormat)}`;
         link.click();
-    }, []);
+    }, [outputFormat, getFormatExt]);
 
     const handleDownloadAll = useCallback(() => {
         images
@@ -243,7 +291,7 @@ export default function ImageCompressorClient() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
                         <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
-                                {t('settings.quality')}: {quality}%
+                                {t('settings.quality')}: {outputFormat === 'image/png' ? 'N/A' : `${quality}%`}
                             </label>
                             <input
                                 type="range"
@@ -251,7 +299,8 @@ export default function ImageCompressorClient() {
                                 max="100"
                                 value={quality}
                                 onChange={(e) => setQuality(Number(e.target.value))}
-                                style={{ width: '100%', accentColor: '#667eea' }}
+                                disabled={outputFormat === 'image/png'}
+                                style={{ width: '100%', accentColor: '#667eea', opacity: outputFormat === 'image/png' ? 0.4 : 1 }}
                             />
                         </div>
                         <div>
@@ -268,7 +317,39 @@ export default function ImageCompressorClient() {
                                 style={{ width: '100%', accentColor: '#667eea' }}
                             />
                         </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
+                                {t('settings.format')}
+                            </label>
+                            <select
+                                value={outputFormat}
+                                onChange={(e) => setOutputFormat(e.target.value as OutputFormat)}
+                                style={{
+                                    width: '100%', padding: '10px 12px', borderRadius: '10px',
+                                    border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
+                                    background: isDark ? '#0f172a' : '#fff',
+                                    color: isDark ? '#e2e8f0' : '#333', fontSize: '0.9rem',
+                                }}
+                            >
+                                <option value="image/jpeg">{t('settings.formatJpeg')}</option>
+                                <option value="image/webp">{t('settings.formatWebp')}</option>
+                                <option value="image/png">{t('settings.formatPng')}</option>
+                            </select>
+                        </div>
                     </div>
+
+                    {/* Transparency Warning */}
+                    {outputFormat === 'image/jpeg' && images.some(img => img.hasAlpha) && (
+                        <div style={{
+                            marginTop: '15px', padding: '12px 16px',
+                            background: isDark ? '#422006' : '#fef3c7',
+                            border: `1px solid ${isDark ? '#92400e' : '#f59e0b'}`,
+                            borderRadius: '10px', color: isDark ? '#fbbf24' : '#92400e',
+                            fontSize: '0.85rem', lineHeight: 1.5,
+                        }}>
+                            {t('warnings.transparency')}
+                        </div>
+                    )}
                 </div>
 
                 {/* Action Buttons */}
@@ -426,24 +507,43 @@ export default function ImageCompressorClient() {
                                         <span style={{ color: '#e74c3c', fontSize: '0.85rem' }}>{t('list.error')}</span>
                                     )}
                                     {img.status === 'done' && (
-                                        <button
-                                            onClick={() => handleDownload(img)}
-                                            style={{
-                                                padding: '8px 16px',
-                                                background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '20px',
-                                                fontSize: '0.85rem',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '5px',
-                                            }}
-                                        >
-                                            <FaDownload />
-                                            {t('list.download')}
-                                        </button>
+                                        <>
+                                            <button
+                                                onClick={() => setCompareId(compareId === img.id ? null : img.id)}
+                                                style={{
+                                                    padding: '8px 16px',
+                                                    background: compareId === img.id ? '#667eea' : (isDark ? '#1e293b' : '#f3f4f6'),
+                                                    color: compareId === img.id ? '#fff' : (isDark ? '#94a3b8' : '#666'),
+                                                    border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.85rem',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '5px',
+                                                }}
+                                            >
+                                                {t('buttons.compare')}
+                                            </button>
+                                            <button
+                                                onClick={() => handleDownload(img)}
+                                                style={{
+                                                    padding: '8px 16px',
+                                                    background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.85rem',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '5px',
+                                                }}
+                                            >
+                                                <FaDownload />
+                                                {t('list.download')}
+                                            </button>
+                                        </>
                                     )}
                                     <button
                                         onClick={() => handleRemove(img.id)}
@@ -466,6 +566,83 @@ export default function ImageCompressorClient() {
                         ))}
                     </div>
                 )}
+
+                {/* Comparison View */}
+                {compareId && (() => {
+                    const img = images.find(i => i.id === compareId);
+                    if (!img || !img.compressedPreview) return null;
+
+                    const handleSlider = (e: React.MouseEvent | React.TouchEvent) => {
+                        const rect = compareRef.current?.getBoundingClientRect();
+                        if (!rect) return;
+                        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+                        const pos = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+                        setSliderPos(pos);
+                    };
+
+                    return (
+                        <div style={{
+                            background: isDark ? "#1e293b" : "white", borderRadius: '16px', padding: '20px',
+                            marginBottom: '20px', marginTop: '20px',
+                            boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)',
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                                <span style={{ fontSize: '0.85rem', color: isDark ? '#94a3b8' : '#666' }}>
+                                    {t('comparison.before')} ({formatBytes(img.originalSize)})
+                                </span>
+                                <span style={{ fontSize: '0.85rem', color: '#11998e' }}>
+                                    {t('comparison.after')} ({formatBytes(img.compressedSize)})
+                                </span>
+                            </div>
+                            <div
+                                ref={compareRef}
+                                onMouseMove={(e) => { if (e.buttons === 1) handleSlider(e); }}
+                                onMouseDown={handleSlider}
+                                onTouchMove={handleSlider}
+                                onTouchStart={handleSlider}
+                                style={{
+                                    position: 'relative', width: '100%', aspectRatio: '16/10',
+                                    borderRadius: '12px', overflow: 'hidden', cursor: 'col-resize',
+                                    userSelect: 'none',
+                                }}
+                            >
+                                {/* Original (full) */}
+                                <img src={img.preview} alt="Original" style={{
+                                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                    objectFit: 'contain', background: isDark ? '#0f172a' : '#f3f4f6',
+                                }} />
+                                {/* Compressed (clipped) */}
+                                <div style={{
+                                    position: 'absolute', top: 0, left: 0, width: `${sliderPos}%`, height: '100%',
+                                    overflow: 'hidden',
+                                }}>
+                                    <img src={img.compressedPreview} alt="Compressed" style={{
+                                        position: 'absolute', top: 0, left: 0,
+                                        width: compareRef.current ? `${compareRef.current.offsetWidth}px` : '100%',
+                                        height: '100%', objectFit: 'contain',
+                                        background: isDark ? '#0f172a' : '#f3f4f6',
+                                    }} />
+                                </div>
+                                {/* Slider line */}
+                                <div style={{
+                                    position: 'absolute', top: 0, left: `${sliderPos}%`, width: '3px',
+                                    height: '100%', background: '#667eea', transform: 'translateX(-50%)',
+                                    boxShadow: '0 0 6px rgba(102,126,234,0.5)',
+                                }}>
+                                    <div style={{
+                                        position: 'absolute', top: '50%', left: '50%',
+                                        transform: 'translate(-50%, -50%)', width: '28px', height: '28px',
+                                        borderRadius: '50%', background: '#667eea', border: '2px solid white',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        color: 'white', fontSize: '0.7rem', fontWeight: 700,
+                                    }}>
+                                        ◀▶
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })()}
 
                 {/* Info Section */}
                 <article style={{ marginTop: '50px', lineHeight: '1.7' }}>

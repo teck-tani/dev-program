@@ -10,7 +10,9 @@
     "title": "편리한 웹 도구 모음",
     "description": "일상생활과 업무에 필요한 다양한 웹 도구를 제공합니다. 계산기, 시계, 이모지 모음 등 필요한 도구를 한 곳에서 간편하게 사용해보세요.",
     "description2": "모든 도구는 PC와 모바일에서 모두 편리하게 사용할 수 있으며, 인터넷만 연결되어 있다면 언제 어디서나 접근 가능합니다.",
-    "popularTools": "인기 웹 도구",
+    "searchPlaceholder": "도구 검색...",
+    "searchResults": "{count}개의 도구를 찾았습니다",
+    "noResults": "검색 결과가 없습니다",
     "tools": {
       "barcode": "바코드생성기",
       "calculator": "공학용 계산기",
@@ -183,6 +185,42 @@
     "bulkTitle": "대량 생성 (엑셀 데이터 붙여넣기)",
     "placeholderBulk": "엑셀에서 복사한 데이터를 붙여넣으세요 (한 줄에 하나씩)",
     "btnBulkGenerate": "일괄 생성",
+    "tabs": {
+      "textUrl": "텍스트/URL",
+      "wifi": "Wi-Fi",
+      "vcard": "연락처(vCard)"
+    },
+    "wifi": {
+      "ssid": "네트워크 이름 (SSID)",
+      "ssidPlaceholder": "Wi-Fi 네트워크 이름",
+      "password": "비밀번호",
+      "passwordPlaceholder": "Wi-Fi 비밀번호",
+      "encryption": "암호화 방식",
+      "none": "없음",
+      "wpa": "WPA/WPA2",
+      "wep": "WEP",
+      "hidden": "숨겨진 네트워크"
+    },
+    "vcard": {
+      "name": "이름",
+      "namePlaceholder": "홍길동",
+      "phone": "전화번호",
+      "phonePlaceholder": "010-1234-5678",
+      "email": "이메일",
+      "emailPlaceholder": "example@email.com",
+      "company": "회사",
+      "companyPlaceholder": "회사명",
+      "jobTitle": "직함",
+      "jobTitlePlaceholder": "직함 입력"
+    },
+    "downloadPng": "PNG 다운로드",
+    "downloadSvg": "SVG 다운로드",
+    "logo": {
+      "label": "로고 삽입",
+      "upload": "로고 이미지 선택",
+      "remove": "로고 제거",
+      "hint": "로고 삽입 시 에러 보정이 높아져 QR코드가 더 복잡해질 수 있습니다"
+    },
     "whyUse": {
       "title": "왜 이 QR코드 생성기를 사용해야 할까요?",
       "desc": "복잡한 앱 설치 없이 웹 브라우저에서 바로 <strong>무료로 QR코드를 생성</strong>할 수 있습니다. 색상 변경, 고해상도 다운로드, 대량 생성까지 모든 기능이 무료입니다."
@@ -673,8 +711,13 @@
     "subtitle": "내 연봉의 실제 월급은 얼마일까요?<br />국민연금, 건강보험 등 4대보험과 소득세를 제외한 정확한 실수령액을 계산해보세요.",
     "input": {
       "title": "연봉 정보 입력",
+      "salaryMode": "입력 방식",
+      "modeAnnual": "연봉",
+      "modeMonthly": "월급",
       "salary": "연봉",
+      "monthlySalary": "월급",
       "salaryPlaceholder": "예: 36,000,000",
+      "monthlySalaryPlaceholder": "예: 3,000,000",
       "retirement": "퇴직금",
       "separate": "별도 (연봉에 미포함)",
       "included": "포함 (연봉에 포함)",
@@ -682,12 +725,13 @@
       "nonTaxableDesc": "* 식대 월 20만원까지 비과세 적용 가능",
       "dependents": "부양가족수 (본인포함)",
       "children": "8세 이상 20세 이하 자녀수",
-      "calculate": "월 실수령액 계산하기",
+      "calculate": "실수령액 계산하기",
       "calculating": "계산 중...",
-      "alertSalary": "연봉을 입력해주세요."
+      "alertSalary": "급여를 입력해주세요."
     },
     "result": {
-      "title": "월 급여 상세 내역",
+      "title": "급여 상세 내역",
+      "referenceYear": "2026년 기준",
       "gross": "세전 월급 (총지급액)",
       "pension": "국민연금 (4.5%)",
       "health": "건강보험 (3.545%)",
@@ -696,7 +740,8 @@
       "incomeTax": "소득세",
       "localTax": "지방소득세 (10%)",
       "totalDeduction": "총 공제액",
-      "net": "실수령액 (월)",
+      "net": "월 실수령액",
+      "annualNet": "연간 실수령액",
       "currency": "원",
       "netRate": "실수령률",
       "chartNet": "실수령액",
@@ -771,7 +816,10 @@
       "taxFreeDesc": "ISA, 청년우대 등",
       "calculate": "이자 계산하기",
       "calculating": "계산 중...",
-      "alertInput": "모든 값을 입력해주세요."
+      "alertInput": "모든 값을 입력해주세요.",
+      "errorPrincipal": "금액을 입력해주세요",
+      "errorRate": "이자율을 입력해주세요",
+      "errorPeriod": "기간을 입력해주세요"
     },
     "result": {
       "title": "계산 결과 (세후 기준)",
@@ -808,16 +856,6 @@
       "option2": "옵션 2",
       "difference": "차이",
       "moreThan": "더 많음"
-    },
-    "presets": {
-      "title": "주요 은행 금리 (2026년 2월 기준)",
-      "subtitle": "클릭하면 금리가 자동 입력됩니다",
-      "kakao": "카카오뱅크",
-      "toss": "토스뱅크",
-      "kb": "국민은행",
-      "shinhan": "신한은행",
-      "woori": "우리은행",
-      "hana": "하나은행"
     },
     "earlyWithdraw": {
       "title": "중도해지 시뮬레이션",
@@ -1444,6 +1482,16 @@
       "clear": "지우기",
       "sample": "샘플"
     },
+    "viewMode": {
+      "text": "텍스트",
+      "tree": "트리"
+    },
+    "tree": {
+      "expandAll": "모두 펼치기",
+      "collapseAll": "모두 접기",
+      "items": "개 항목",
+      "empty": "비어있음"
+    },
     "indent": "들여쓰기",
     "input": {
       "label": "입력 (JSON)",
@@ -1504,13 +1552,25 @@
     "settings": {
       "title": "압축 설정",
       "quality": "품질",
-      "maxWidth": "최대 너비"
+      "maxWidth": "최대 너비",
+      "format": "출력 형식",
+      "formatJpeg": "JPEG (사진 추천)",
+      "formatWebp": "WebP (최적 압축)",
+      "formatPng": "PNG (투명도 유지)"
+    },
+    "warnings": {
+      "transparency": "PNG 이미지에 투명 배경이 포함되어 있습니다. JPEG로 변환 시 투명 영역이 흰색으로 대체됩니다. 투명도를 유지하려면 PNG 또는 WebP를 선택하세요."
     },
     "buttons": {
       "compress": "압축하기",
       "compressing": "압축 중...",
       "downloadAll": "전체 다운로드",
-      "clearAll": "전체 삭제"
+      "clearAll": "전체 삭제",
+      "compare": "비교"
+    },
+    "comparison": {
+      "before": "원본",
+      "after": "압축 후"
     },
     "summary": {
       "images": "이미지 수",
@@ -1804,6 +1864,10 @@
     "options": {
       "ignoreWhitespace": "공백 무시",
       "ignoreCase": "대소문자 무시"
+    },
+    "viewMode": {
+      "unified": "통합",
+      "sideBySide": "나란히"
     },
     "input": {
       "original": "원본 텍스트",

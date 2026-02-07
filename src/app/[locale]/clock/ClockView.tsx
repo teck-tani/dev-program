@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useLocale } from 'next-intl';
 import styles from './ClockView.module.css';
-import { Link } from '@/navigation';
 import { CITY_DATABASE, type City } from './CitySearchModal';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // ============================================
 // Lazy load heavy components
@@ -16,12 +16,6 @@ const DndWrapper = lazy(() => import('./DndWrapper'));
 // ============================================
 // Inline SVG Icons (avoid react-icons bundle for performance)
 // ============================================
-const HomeIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-  </svg>
-);
-
 const PlusIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M12 5v14M5 12h14"/>
@@ -31,26 +25,6 @@ const PlusIcon = () => (
 const MinusIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M5 12h14"/>
-  </svg>
-);
-
-const ExpandIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
-  </svg>
-);
-
-const CompressIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"/>
-  </svg>
-);
-
-const ThemeToggleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="10" fill="white" />
-    <path d="M12 2 A10 10 0 0 1 12 22 Z" fill="#1a1a2e" />
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" />
   </svg>
 );
 
@@ -97,7 +71,6 @@ FlagImage.displayName = 'FlagImage';
 interface ClockState {
   mainClock: City;
   subClocks: City[];
-  theme: 'dark' | 'light';
   fontSize: number;
 }
 
@@ -114,9 +87,6 @@ const i18n = {
     hour: '시간',
     decreaseSize: '크기 줄이기',
     increaseSize: '크기 늘리기',
-    toggleTheme: '테마 전환',
-    fullscreen: '전체화면',
-    exitFullscreen: '전체화면 해제',
     days: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
     dateFormat: (y: number, m: number, d: number, day: string) => `${y}년 ${m}월 ${d}일 ${day}`,
     removeCity: '도시 삭제',
@@ -132,9 +102,6 @@ const i18n = {
     hour: 'hr',
     decreaseSize: 'Decrease size',
     increaseSize: 'Increase size',
-    toggleTheme: 'Toggle theme',
-    fullscreen: 'Fullscreen',
-    exitFullscreen: 'Exit fullscreen',
     days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     dateFormat: (y: number, m: number, d: number, day: string) => `${day}, ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1]} ${d}, ${y}`,
     removeCity: 'Remove city',
@@ -493,11 +460,11 @@ const ControlButton: React.FC<ControlButtonProps> = ({ icon, onClick, title, the
 export default function ClockView() {
   const locale = (useLocale() as Locale) || 'ko';
   const t = i18n[locale];
+  const { theme } = useTheme();
 
   const [state, setState] = useState<ClockState>(() => ({
     mainClock: DEFAULT_MAIN,
     subClocks: DEFAULT_SUBS,
-    theme: 'dark',
     fontSize: 50,
   }));
   const [currentTime, setCurrentTime] = useState<Date>(() => new Date());
@@ -510,7 +477,6 @@ export default function ClockView() {
   // Load state from localStorage (only once)
   useEffect(() => {
     const saved = localStorage.getItem('worldClockState');
-    let loadedTheme: 'dark' | 'light' = 'dark';
 
     if (saved) {
       try {
@@ -520,12 +486,9 @@ export default function ClockView() {
           .map((id: string) => CITY_DATABASE.find(c => c.id === id))
           .filter(Boolean) as City[];
 
-        loadedTheme = parsed.theme || 'dark';
-
         setState({
           mainClock,
           subClocks: subClocks.length > 0 ? subClocks : DEFAULT_SUBS,
-          theme: loadedTheme,
           fontSize: parsed.fontSize || 50,
         });
       } catch (e) {
@@ -533,32 +496,19 @@ export default function ClockView() {
       }
     }
 
-    document.body.style.background = loadedTheme === 'dark'
-      ? 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
-      : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 50%, #f0f4f8 100%)';
-    document.body.setAttribute('data-theme', loadedTheme);
-
     isInitializedRef.current = true;
   }, []);
 
-  // Save state to localStorage and update body theme
+  // Save state to localStorage
   useEffect(() => {
     if (!isInitializedRef.current) return;
 
     const toSave = {
       mainClockId: state.mainClock.id,
       subClockIds: state.subClocks.map(c => c.id),
-      theme: state.theme,
       fontSize: state.fontSize,
     };
     localStorage.setItem('worldClockState', JSON.stringify(toSave));
-
-    document.body.style.background = state.theme === 'dark'
-      ? 'linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a1a 100%)'
-      : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 50%, #f0f4f8 100%)';
-    document.body.setAttribute('data-theme', state.theme);
-
-    window.dispatchEvent(new CustomEvent('clockThemeChange'));
   }, [state]);
 
   // Update time every 1000ms (was 500ms - reduced for performance)
@@ -574,14 +524,6 @@ export default function ClockView() {
   useEffect(() => {
     const timer = setTimeout(() => setDndReady(true), 1000);
     return () => clearTimeout(timer);
-  }, []);
-
-  // Hide header hamburger menu on clock page (mobile)
-  useEffect(() => {
-    document.body.classList.add('clock-page');
-    return () => {
-      document.body.classList.remove('clock-page');
-    };
   }, []);
 
   // Fullscreen change listener
@@ -619,26 +561,11 @@ export default function ClockView() {
     }));
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      theme: prev.theme === 'dark' ? 'light' : 'dark',
-    }));
-  }, []);
-
   const adjustFontSize = useCallback((delta: number) => {
     setState(prev => ({
       ...prev,
       fontSize: Math.min(140, Math.max(30, prev.fontSize + delta)),
     }));
-  }, []);
-
-  const toggleFullScreen = useCallback(() => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
   }, []);
 
   const existingCityIds = useMemo(() =>
@@ -655,48 +582,30 @@ export default function ClockView() {
   // Prevent hydration mismatch - only render clock after mount
   if (!isMounted) {
     return (
-      <div className={`${styles.worldClockContainer} ${styles.dark}`}>
-        <div className={styles.mainContent} style={{ minHeight: '100vh' }} />
+      <div className={styles.worldClockContainer}>
+        <div className={styles.mainContent} style={{ minHeight: '60vh' }} />
       </div>
     );
   }
 
   return (
-    <div className={`${styles.worldClockContainer} ${styles[state.theme]} ${isFullscreen ? styles.fullscreen : ''}`}>
-      {/* Mobile Home Button - Left side */}
-      <Link href="/" className={`${styles.mobileHomeBtn} ${styles[state.theme]}`}>
-        <HomeIcon />
-      </Link>
-
-      {/* Control Panel - Right side */}
+    <div className={`${styles.worldClockContainer} ${styles[theme]} ${isFullscreen ? styles.fullscreen : ''}`}>
+      {/* Zoom Controls - desktop only (fullscreen/theme handled by Header) */}
       <div className={styles.controlPanel}>
-        {/* Zoom controls - hidden on mobile */}
         <div className={styles.zoomControl}>
           <ControlButton
             icon={<MinusIcon />}
             onClick={() => adjustFontSize(-5)}
             title={t.decreaseSize}
-            theme={state.theme}
+            theme={theme}
           />
           <ControlButton
             icon={<PlusIcon />}
             onClick={() => adjustFontSize(5)}
             title={t.increaseSize}
-            theme={state.theme}
+            theme={theme}
           />
         </div>
-        <ControlButton
-          icon={<ThemeToggleIcon />}
-          onClick={toggleTheme}
-          title={t.toggleTheme}
-          theme={state.theme}
-        />
-        <ControlButton
-          icon={isFullscreen ? <CompressIcon /> : <ExpandIcon />}
-          onClick={toggleFullScreen}
-          title={isFullscreen ? t.exitFullscreen : t.fullscreen}
-          theme={state.theme}
-        />
       </div>
 
       {/* Main Content */}
@@ -706,7 +615,7 @@ export default function ClockView() {
           city={state.mainClock}
           time={mainClockTime}
           fontSize={state.fontSize}
-          theme={state.theme}
+          theme={theme}
           locale={locale}
         />
 
@@ -728,14 +637,14 @@ export default function ClockView() {
                     city={city}
                     time={getTimeForTimezone(city.timezone)}
                     mainCity={state.mainClock}
-                    theme={state.theme}
+                    theme={theme}
                     locale={locale}
                     onClick={() => handleSwapToMain(city)}
                     onRemove={() => handleRemoveCity(city.id)}
                   />
                 ))}
                 {/* Add City Button inside fallback grid */}
-                <div className={`${styles.addCityBtn} ${styles[state.theme]}`} onClick={() => setIsModalOpen(true)}>
+                <div className={`${styles.addCityBtn} ${styles[theme]}`} onClick={() => setIsModalOpen(true)}>
                   <div className={styles.addCityIcon}>
                     <PlusIcon />
                   </div>
@@ -746,7 +655,7 @@ export default function ClockView() {
               <DndWrapper
                 subClocks={state.subClocks}
                 mainCity={state.mainClock}
-                theme={state.theme}
+                theme={theme}
                 locale={locale}
                 onReorder={handleReorder}
                 onSwapToMain={handleSwapToMain}
@@ -764,14 +673,14 @@ export default function ClockView() {
                   city={city}
                   time={getTimeForTimezone(city.timezone)}
                   mainCity={state.mainClock}
-                  theme={state.theme}
+                  theme={theme}
                   locale={locale}
                   onClick={() => handleSwapToMain(city)}
                   onRemove={() => handleRemoveCity(city.id)}
                 />
               ))}
               {/* Add City Button */}
-              <div className={`${styles.addCityBtn} ${styles[state.theme]}`} onClick={() => setIsModalOpen(true)}>
+              <div className={`${styles.addCityBtn} ${styles[theme]}`} onClick={() => setIsModalOpen(true)}>
                 <div className={styles.addCityIcon}>
                   <PlusIcon />
                 </div>
@@ -790,7 +699,7 @@ export default function ClockView() {
             onClose={() => setIsModalOpen(false)}
             onSelect={handleAddCity}
             existingCities={existingCityIds}
-            theme={state.theme}
+            theme={theme}
             locale={locale}
           />
         )}

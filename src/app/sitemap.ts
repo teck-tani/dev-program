@@ -1,44 +1,13 @@
 import { MetadataRoute } from 'next';
 import { allPairs } from './[locale]/money-converter/currencies';
+import { getAllToolHrefs } from '@/config/tools';
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://teck-tani.com';
     const locales = ['ko', 'en'];
 
-    // 관리 중인 도구 리스트 (새 도구가 추가되면 여기만 업데이트하세요)
-    const tools = [
-        '', // 메인 홈
-        '/barcode',
-        '/qr-generator',
-        '/calculator',
-        '/clock',
-        '/stopwatch',
-        '/timer',
-        '/interest-calculator',
-        '/korean-age-calculator',
-        '/lotto-generator',
-        '/money-converter',
-        '/salary-calculator',
-        '/severance-calculator',
-        '/special-characters',
-        '/unit-converter',
-        '/file-size-converter',
-        '/base64-encoder',
-        '/color-converter',
-        '/json-formatter',
-        '/character-counter',
-        '/image-compressor',
-        '/pdf-manager',
-        '/url-encoder',
-        '/ovulation-calculator',
-        '/dutch-pay',
-        '/sql-formatter',
-        '/youtube-thumbnail',
-        '/ip-address',
-        '/text-diff',
-        '/ladder-game',
-        '/cron-generator',
-    ];
+    // config/tools.ts에서 자동 생성 ('' = 홈 포함)
+    const tools = getAllToolHrefs();
 
     const toolUrls = tools.flatMap((tool) =>
         locales.map((locale) => ({

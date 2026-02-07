@@ -2,16 +2,11 @@
 
 import { Link, usePathname } from "@/navigation";
 import { useState, useEffect, useCallback } from "react";
-import { FaHome, FaBars, FaTimes, FaCalculator, FaClock, FaTools, FaCode, FaCog, FaExpand, FaCompress, FaSun, FaMoon } from "react-icons/fa";
+import { FaHome, FaBars, FaTimes, FaCog, FaExpand, FaCompress, FaSun, FaMoon } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import { getCategoriesWithTools, findToolByPathname } from "@/config/tools";
 import SettingsDropdown from "./SettingsDropdown";
-
-interface MenuCategory {
-  key: string;
-  icon: React.ReactNode;
-  items: { href: string; labelKey: string }[];
-}
 
 // 전체화면 버튼을 표시할 페이지 목록
 const FULLSCREEN_PAGES = ['/clock', '/stopwatch', '/timer'];
@@ -25,97 +20,26 @@ export default function Header() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // 전체화면 버튼 표시 여부
   const showFullscreenBtn = FULLSCREEN_PAGES.some(page => pathname.includes(page));
 
-  const menuCategories: MenuCategory[] = [
-    {
-      key: 'calculators',
-      icon: <FaCalculator />,
-      items: [
-        { href: '/calculator', labelKey: 'calculator' },
-        { href: '/money-converter', labelKey: 'exchange' },
-        { href: '/severance-calculator', labelKey: 'severance' },
-        { href: '/interest-calculator', labelKey: 'interest' },
-        { href: '/salary-calculator', labelKey: 'salary' },
-        { href: '/korean-age-calculator', labelKey: 'age' },
-        { href: '/ovulation-calculator', labelKey: 'ovulationCalculator' },
-        { href: '/dutch-pay', labelKey: 'dutchPay' },
-      ]
-    },
-    {
-      key: 'time',
-      icon: <FaClock />,
-      items: [
-        { href: '/clock', labelKey: 'clock' },
-        { href: '/stopwatch', labelKey: 'stopwatch' },
-        { href: '/timer', labelKey: 'timer' },
-      ]
-    },
-    {
-      key: 'utilities',
-      icon: <FaTools />,
-      items: [
-        { href: '/barcode', labelKey: 'barcode' },
-        { href: '/qr-generator', labelKey: 'qrGenerator' },
-        { href: '/special-characters', labelKey: 'emoji' },
-        { href: '/lotto-generator', labelKey: 'lotto' },
-        { href: '/character-counter', labelKey: 'characterCounter' },
-        { href: '/unit-converter', labelKey: 'unitConverter' },
-        { href: '/file-size-converter', labelKey: 'fileSizeConverter' },
-        { href: '/image-compressor', labelKey: 'imageCompressor' },
-        { href: '/base64-encoder', labelKey: 'base64' },
-        { href: '/color-converter', labelKey: 'colorConverter' },
-        { href: '/json-formatter', labelKey: 'jsonFormatter' },
-        { href: '/pdf-manager', labelKey: 'pdfManager' },
-        { href: '/url-encoder', labelKey: 'urlEncoder' },
-        { href: '/text-diff', labelKey: 'textDiff' },
-        { href: '/ladder-game', labelKey: 'ladderGame' },
-        { href: '/youtube-thumbnail', labelKey: 'youtubeThumbnail' },
-        { href: '/ip-address', labelKey: 'ipAddress' },
-      ]
-    },
-    {
-      key: 'devtools',
-      icon: <FaCode />,
-      items: [
-        { href: '/sql-formatter', labelKey: 'sqlFormatter' },
-        { href: '/cron-generator', labelKey: 'cronGenerator' },
-      ]
-    }
-  ];
+  const categoriesWithTools = getCategoriesWithTools();
 
-  // slug→labelKey 매핑 생성
-  const slugToLabelKey: Record<string, string> = {};
-  menuCategories.forEach(cat => {
-    cat.items.forEach(item => {
-      slugToLabelKey[item.href.replace(/^\//, '')] = item.labelKey;
-    });
-  });
+  // 페이지 제목 결정
+  const currentTool = findToolByPathname(pathname);
+  const pageTitle = currentTool ? tTools(currentTool.labelKey) : 'Tani DevTool';
 
-  // pathname으로 페이지 제목 결정
-  const slug = pathname.replace(/^\//, '').split('/')[0];
-  const pageTitle = (!slug) ? 'Tani DevTool' : (slugToLabelKey[slug] ? tTools(slugToLabelKey[slug]) : 'Tani DevTool');
-
-  // pathname 변경 시 사이드바 자동 닫기
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // 전체화면 토글
   const toggleFullScreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {
-        // 전체화면 요청 실패 시 무시
-      });
+      document.documentElement.requestFullscreen().catch(() => {});
     } else {
-      document.exitFullscreen().catch(() => {
-        // 전체화면 해제 실패 시 무시
-      });
+      document.exitFullscreen().catch(() => {});
     }
   }, []);
 
-  // 전체화면 상태 감지
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -124,11 +48,9 @@ export default function Header() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Close settings when clicking outside (but not on settings button or dropdown)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      // 설정 드롭다운 또는 설정 버튼 클릭 시 무시
       if (target.closest(".settings-dropdown") || target.closest("[aria-label='설정']")) {
         return;
       }
@@ -138,7 +60,6 @@ export default function Header() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // Close mobile menu on route change (handled by clicking link)
   const handleLinkClick = () => {
     setMobileMenuOpen(false);
   };
@@ -147,7 +68,6 @@ export default function Header() {
     <>
       <header className="new-header">
         <div className="header-container">
-          {/* 왼쪽: 햄버거 */}
           <div className="header-left">
             <button
               className="header-menu-btn"
@@ -158,12 +78,9 @@ export default function Header() {
             </button>
           </div>
 
-          {/* 중앙: 페이지 제목 */}
           <div className="header-center-title">{pageTitle}</div>
 
-          {/* 오른쪽: 액션 버튼 그룹 */}
           <div className="header-actions">
-            {/* 전체화면 버튼 (시계 관련 페이지에서만) */}
             {showFullscreenBtn && (
               <button
                 className="header-action-btn"
@@ -174,8 +91,6 @@ export default function Header() {
                 {isFullscreen ? <FaCompress /> : <FaExpand />}
               </button>
             )}
-
-            {/* 다크모드 토글 */}
             <button
               className="header-action-btn"
               onClick={toggleTheme}
@@ -184,8 +99,6 @@ export default function Header() {
             >
               {theme === 'dark' ? <FaSun /> : <FaMoon />}
             </button>
-
-            {/* 설정 버튼 */}
             <button
               className="header-action-btn"
               onClick={(e) => {
@@ -207,7 +120,7 @@ export default function Header() {
         onClick={() => setMobileMenuOpen(false)}
       />
 
-      {/* Mobile Slide Menu (왼쪽에서 슬라이드) */}
+      {/* Mobile Slide Menu */}
       <div className={`mobile-menu mobile-menu-left ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-menu-header">
           <Link href="/" className="header-logo" onClick={handleLinkClick}>
@@ -225,22 +138,24 @@ export default function Header() {
           </button>
         </div>
 
-        {menuCategories.map((category) => (
-          <div key={category.key} className="mobile-menu-category">
-            <div className="mobile-menu-category-title">
-              {category.icon}
-              <span>{t(`categories.${category.key}`)}</span>
+        {categoriesWithTools.map((category) => {
+          const CategoryIcon = category.icon;
+          return (
+            <div key={category.key} className="mobile-menu-category">
+              <div className="mobile-menu-category-title">
+                <CategoryIcon />
+                <span>{t(`categories.${category.key}`)}</span>
+              </div>
+              {category.tools.map((tool) => (
+                <Link key={tool.href} href={tool.href} onClick={handleLinkClick}>
+                  {tTools(tool.labelKey)}
+                </Link>
+              ))}
             </div>
-            {category.items.map((item) => (
-              <Link key={item.href} href={item.href} onClick={handleLinkClick}>
-                {tTools(item.labelKey)}
-              </Link>
-            ))}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* 설정 드롭다운 */}
       {settingsOpen && (
         <SettingsDropdown onClose={() => setSettingsOpen(false)} />
       )}

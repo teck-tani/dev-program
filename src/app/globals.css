@@ -903,52 +903,7 @@ body[data-theme="light"] .digital-text {
     }
 }
 
-/* Hide header and all mobile menu elements on clock page (mobile) */
-@media (max-width: 768px) {
-    body.clock-page .new-header {
-        display: none !important;
-    }
 
-    body.clock-page .header-menu-btn {
-        display: none !important;
-    }
-
-    body.clock-page #top-container {
-        display: none !important;
-    }
-
-    body.clock-page .mobile-menu {
-        display: none !important;
-        transform: translateX(-100%) !important;
-    }
-
-    body.clock-page .mobile-menu-overlay {
-        display: none !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }
-}
-
-/* ============================================
-   Clock Page SEO Section Theme Styles
-   ============================================ */
-body[data-theme="dark"] section[aria-label] {
-    color: rgba(255, 255, 255, 0.85) !important;
-}
-
-body[data-theme="dark"] section[aria-label] h1,
-body[data-theme="dark"] section[aria-label] h2 {
-    color: #00ff88 !important;
-}
-
-body[data-theme="light"] section[aria-label] {
-    color: rgba(0, 0, 0, 0.7) !important;
-}
-
-body[data-theme="light"] section[aria-label] h1,
-body[data-theme="light"] section[aria-label] h2 {
-    color: #0891b2 !important;
-}
 
 /* ============================================
    Feedback Button Styles
@@ -1207,10 +1162,6 @@ body[data-theme="light"] section[aria-label] h2 {
     }
 }
 
-/* Hide on clock page fullscreen */
-body.clock-page .feedback-floating-btn {
-    display: none;
-}
 
 /* ============================================
    Calculator Page Article Styles
@@ -2423,4 +2374,116 @@ body[data-theme="dark"] .tool-category {
 body[data-theme="dark"] .category-title {
     color: #94a3b8;
 }
+
+/* ============================================
+   Search Container
+   ============================================ */
+.search-container {
+    margin-bottom: 24px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 44px 14px 44px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: white;
+    color: #1e293b;
+    transition: all 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+.search-clear {
+    position: absolute;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: #f1f5f9;
+    color: #64748b;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.search-clear:hover {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.search-results-count {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #64748b;
+    padding-left: 4px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+body[data-theme="dark"] .search-input {
+    background: #1e293b;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+body[data-theme="dark"] .search-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+body[data-theme="dark"] .search-input::placeholder {
+    color: #64748b;
+}
+
+body[data-theme="dark"] .search-clear {
+    background: #334155;
+    color: #94a3b8;
+}
+
+body[data-theme="dark"] .search-clear:hover {
+    background: #475569;
+    color: #e2e8f0;
+}
+
+body[data-theme="dark"] .search-results-count {
+    color: #64748b;
+}
+
+body[data-theme="dark"] .no-results {
+    color: #64748b;
+}
+
 

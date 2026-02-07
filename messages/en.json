@@ -10,7 +10,9 @@
     "title": "Useful Web Tools Collection",
     "description": "Tani DevTool provides various web tools necessary for daily life and work. Easily use tools like calculators, clocks, and emoji collections in one place.",
     "description2": "All tools are convenient to use on both PC and mobile, and are accessible anytime, anywhere with an internet connection.",
-    "popularTools": "Popular Web Tools",
+    "searchPlaceholder": "Search tools...",
+    "searchResults": "{count} tools found",
+    "noResults": "No results found",
     "tools": {
       "barcode": "Barcode Generator",
       "calculator": "Scientific Calculator",
@@ -183,6 +185,42 @@
     "bulkTitle": "Bulk Generation (Paste Excel Data)",
     "placeholderBulk": "Paste data copied from Excel (one per line)",
     "btnBulkGenerate": "Bulk Generate",
+    "tabs": {
+      "textUrl": "Text/URL",
+      "wifi": "Wi-Fi",
+      "vcard": "Contact (vCard)"
+    },
+    "wifi": {
+      "ssid": "Network Name (SSID)",
+      "ssidPlaceholder": "Wi-Fi network name",
+      "password": "Password",
+      "passwordPlaceholder": "Wi-Fi password",
+      "encryption": "Encryption",
+      "none": "None",
+      "wpa": "WPA/WPA2",
+      "wep": "WEP",
+      "hidden": "Hidden Network"
+    },
+    "vcard": {
+      "name": "Name",
+      "namePlaceholder": "John Doe",
+      "phone": "Phone",
+      "phonePlaceholder": "+1-234-567-8900",
+      "email": "Email",
+      "emailPlaceholder": "example@email.com",
+      "company": "Company",
+      "companyPlaceholder": "Company name",
+      "jobTitle": "Job Title",
+      "jobTitlePlaceholder": "Enter job title"
+    },
+    "downloadPng": "PNG Download",
+    "downloadSvg": "SVG Download",
+    "logo": {
+      "label": "Insert Logo",
+      "upload": "Select Logo Image",
+      "remove": "Remove Logo",
+      "hint": "Adding a logo increases error correction, making the QR code more complex"
+    },
     "whyUse": {
       "title": "Why use this QR code generator?",
       "desc": "Generate <strong>QR codes for free</strong> directly in your web browser without installing any apps. Color customization, high-resolution download, and bulk generation - all features are free."
@@ -673,8 +711,13 @@
     "subtitle": "What is my real monthly income?<br />Calculate exact net pay excluding National Pension, Health Insurance, and Income Taxes.",
     "input": {
       "title": "Enter Salary Info",
+      "salaryMode": "Input Mode",
+      "modeAnnual": "Annual",
+      "modeMonthly": "Monthly",
       "salary": "Annual Salary",
+      "monthlySalary": "Monthly Salary",
       "salaryPlaceholder": "Ex: 36,000,000",
+      "monthlySalaryPlaceholder": "Ex: 3,000,000",
       "retirement": "Severance Pay",
       "separate": "Excluded (Separate from Salary)",
       "included": "Included (Part of Salary)",
@@ -684,10 +727,11 @@
       "children": "Children (8-20 yrs)",
       "calculate": "Calculate Net Income",
       "calculating": "Calculating...",
-      "alertSalary": "Please enter your annual salary."
+      "alertSalary": "Please enter your salary."
     },
     "result": {
-      "title": "Monthly Pay Details",
+      "title": "Pay Details",
+      "referenceYear": "Based on 2026",
       "gross": "Pre-tax Monthly Pay",
       "pension": "National Pension (4.5%)",
       "health": "Health Insurance (3.545%)",
@@ -696,7 +740,8 @@
       "incomeTax": "Income Tax",
       "localTax": "Local Income Tax (10%)",
       "totalDeduction": "Total Deductions",
-      "net": "Net Monthly Pay",
+      "net": "Monthly Net Pay",
+      "annualNet": "Annual Net Pay",
       "currency": "KRW",
       "netRate": "Net Rate",
       "chartNet": "Net",
@@ -771,7 +816,10 @@
       "taxFreeDesc": "ISA, Youth Preferred",
       "calculate": "Calculate Interest",
       "calculating": "Calculating...",
-      "alertInput": "Please enter all values."
+      "alertInput": "Please enter all values.",
+      "errorPrincipal": "Please enter an amount",
+      "errorRate": "Please enter an interest rate",
+      "errorPeriod": "Please enter a period"
     },
     "result": {
       "title": "Calculation Result (Net)",
@@ -808,16 +856,6 @@
       "option2": "Option 2",
       "difference": "Difference",
       "moreThan": "more"
-    },
-    "presets": {
-      "title": "Bank Interest Rates (Feb 2026)",
-      "subtitle": "Click to auto-fill the rate",
-      "kakao": "Kakao Bank",
-      "toss": "Toss Bank",
-      "kb": "KB Kookmin",
-      "shinhan": "Shinhan",
-      "woori": "Woori",
-      "hana": "Hana"
     },
     "earlyWithdraw": {
       "title": "Early Withdrawal Simulation",
@@ -1387,13 +1425,25 @@
     "settings": {
       "title": "Compression Settings",
       "quality": "Quality",
-      "maxWidth": "Max Width"
+      "maxWidth": "Max Width",
+      "format": "Output Format",
+      "formatJpeg": "JPEG (Photos)",
+      "formatWebp": "WebP (Best compression)",
+      "formatPng": "PNG (Transparency)"
+    },
+    "warnings": {
+      "transparency": "This PNG image has transparency. Converting to JPEG will replace transparent areas with white. Choose PNG or WebP to preserve transparency."
     },
     "buttons": {
       "compress": "Compress",
       "compressing": "Compressing...",
       "downloadAll": "Download All",
-      "clearAll": "Clear All"
+      "clearAll": "Clear All",
+      "compare": "Compare"
+    },
+    "comparison": {
+      "before": "Before",
+      "after": "After"
     },
     "summary": {
       "images": "Images",
@@ -1663,6 +1713,16 @@
       "clear": "Clear",
       "sample": "Sample"
     },
+    "viewMode": {
+      "text": "Text",
+      "tree": "Tree"
+    },
+    "tree": {
+      "expandAll": "Expand All",
+      "collapseAll": "Collapse All",
+      "items": "items",
+      "empty": "empty"
+    },
     "indent": "Indent",
     "input": {
       "label": "Input JSON",
@@ -1810,6 +1870,10 @@
     "options": {
       "ignoreWhitespace": "Ignore Whitespace",
       "ignoreCase": "Ignore Case"
+    },
+    "viewMode": {
+      "unified": "Unified",
+      "sideBySide": "Side-by-Side"
     },
     "input": {
       "original": "Original Text",

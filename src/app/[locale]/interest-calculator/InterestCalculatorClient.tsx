@@ -300,7 +300,6 @@ export default function InterestCalculatorClient() {
     const tInput = useTranslations('InterestCalculator.input');
     const tResult = useTranslations('InterestCalculator.result');
     const tMonthly = useTranslations('InterestCalculator.monthlyTable');
-    const tPresets = useTranslations('InterestCalculator.presets');
     const tEarlyWithdraw = useTranslations('InterestCalculator.earlyWithdraw');
     const tCompare = useTranslations('InterestCalculator.compare');
     const tInfo = useTranslations('InterestCalculator.info');
@@ -330,9 +329,12 @@ export default function InterestCalculatorClient() {
     const [isCalculating, setIsCalculating] = useState(false);
     const [copied, setCopied] = useState(false);
     const [compareMode, setCompareMode] = useState(false);
-    const [showPresets, setShowPresets] = useState(false);
     const [earlyWithdrawEnabled, setEarlyWithdrawEnabled] = useState(false);
     const [earlyWithdrawMonth, setEarlyWithdrawMonth] = useState("");
+    const [errors, setErrors] = useState<{ principal?: boolean; rate?: boolean; period?: boolean }>({});
+    const principalRef = useRef<HTMLDivElement>(null);
+    const periodRef = useRef<HTMLDivElement>(null);
+    const rateRef = useRef<HTMLDivElement>(null);
 
     const getTaxRate = () => {
         switch (taxType) {
@@ -345,11 +347,20 @@ export default function InterestCalculatorClient() {
 
     const calculateInterest = () => {
         const p = parseInt(principal.replace(/,/g, "")) || 0;
-        const r = parseFloat(rate) / 100;
+        const rRaw = parseFloat(rate);
+        const r = isNaN(rRaw) ? 0 : rRaw / 100;
         const n = parseInt(period) || 0;
 
-        if (p === 0 || r === 0 || n === 0) {
-            alert(tInput('alertInput'));
+        const newErrors = {
+            principal: p === 0,
+            rate: isNaN(rRaw) || rRaw === 0,
+            period: n === 0,
+        };
+        setErrors(newErrors);
+
+        if (newErrors.principal || newErrors.rate || newErrors.period) {
+            const firstErrorRef = newErrors.principal ? principalRef : newErrors.period ? periodRef : rateRef;
+            firstErrorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
@@ -423,15 +434,6 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
             copyResult();
         }
     };
-
-    const bankPresets = [
-        { name: tPresets('kakao'), rate: "5.0" },
-        { name: tPresets('toss'), rate: "4.5" },
-        { name: tPresets('kb'), rate: "3.8" },
-        { name: tPresets('shinhan'), rate: "3.5" },
-        { name: tPresets('woori'), rate: "3.6" },
-        { name: tPresets('hana'), rate: "3.7" }
-    ];
 
     return (
         <div className="interest-container" style={{ maxWidth: "900px", margin: "0 auto", padding: "0 16px", overflowX: 'hidden' }}>
@@ -545,64 +547,6 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                 }
             `}</style>
 
-            {/* Bank Rate Presets */}
-            {showPresets && (
-                <div style={{
-                    background: isDark ? '#1e293b' : '#f0f4f8',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    marginBottom: '16px',
-                    border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
-                }}>
-                    <h3 style={{
-                        fontSize: '1rem',
-                        fontWeight: '700',
-                        color: isDark ? '#e2e8f0' : '#1e3a5f',
-                        marginBottom: '8px'
-                    }}>{tPresets('title')}</h3>
-                    <p style={{
-                        fontSize: '0.8rem',
-                        color: isDark ? '#94a3b8' : '#64748b',
-                        marginBottom: '12px'
-                    }}>{tPresets('subtitle')}</p>
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-                        gap: '8px'
-                    }}>
-                        {bankPresets.map((preset) => (
-                            <button
-                                key={preset.name}
-                                onClick={() => {
-                                    setRate(preset.rate);
-                                    setShowPresets(false);
-                                }}
-                                style={{
-                                    padding: '10px',
-                                    background: isDark ? '#334155' : '#fff',
-                                    border: `1px solid ${isDark ? '#475569' : '#e2e8f0'}`,
-                                    borderRadius: '8px',
-                                    fontSize: '0.875rem',
-                                    fontWeight: '600',
-                                    color: isDark ? '#e2e8f0' : '#1e3a5f',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    textAlign: 'center'
-                                }}
-                            >
-                                <div>{preset.name}</div>
-                                <div style={{
-                                    fontSize: '1rem',
-                                    fontWeight: '700',
-                                    color: isDark ? '#38bdf8' : '#3b82f6',
-                                    marginTop: '4px'
-                                }}>{preset.rate}%</div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
             {/* Calculator Card */}
             <div className="interest-card" style={{
                 background: isDark ? "#1e293b" : "#f8f9fa",
@@ -612,29 +556,13 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                 marginBottom: "24px",
                 border: `1px solid ${isDark ? "#334155" : "#e9ecef"}`,
             }}>
-                {/* Compare Mode & Presets Toggle */}
+                {/* Early Withdraw Toggle */}
                 <div style={{
                     display: 'flex',
                     gap: '8px',
                     marginBottom: '20px',
                     flexWrap: 'wrap'
                 }}>
-                    <button
-                        onClick={() => setShowPresets(!showPresets)}
-                        style={{
-                            padding: '8px 16px',
-                            background: showPresets ? (isDark ? '#334155' : '#e2e8f0') : 'transparent',
-                            border: `1px solid ${isDark ? '#475569' : '#cbd5e1'}`,
-                            borderRadius: '8px',
-                            fontSize: '0.85rem',
-                            fontWeight: '600',
-                            color: isDark ? '#e2e8f0' : '#475569',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        {tPresets('title')}
-                    </button>
                     <button
                         onClick={() => setEarlyWithdrawEnabled(!earlyWithdrawEnabled)}
                         style={{
@@ -886,7 +814,7 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                 </div>
 
                 {/* Principal Input */}
-                <div className="interest-section" style={{ marginBottom: "20px" }}>
+                <div ref={principalRef} className="interest-section" style={{ marginBottom: "20px" }}>
                     <label className="interest-label" style={{
                         display: "block",
                         fontSize: "0.875rem",
@@ -906,13 +834,14 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                             onChange={(e) => {
                                 const val = e.target.value.replace(/[^\d]/g, "");
                                 setPrincipal(val ? parseInt(val).toLocaleString("ko-KR") : "");
+                                if (errors.principal) setErrors(prev => ({ ...prev, principal: false }));
                             }}
                             placeholder={type === "deposit" ? tInput('principalPlaceholderDeposit') : tInput('principalPlaceholderSavings')}
                             style={{
                                 width: "100%",
                                 padding: "14px 16px",
-                                paddingRight: "50px",
-                                border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                paddingRight: "60px",
+                                border: `2px solid ${errors.principal ? "#ef4444" : (isDark ? "#334155" : "#e5e7eb")}`,
                                 borderRadius: "14px",
                                 fontSize: "1rem",
                                 transition: "all 0.2s ease",
@@ -931,13 +860,15 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                             color: isDark ? "#94a3b8" : "#9ca3af",
                             fontSize: "0.875rem",
                             fontWeight: "500",
+                            pointerEvents: "none" as const,
                         }}>{tResult('currency')}</span>
                     </div>
+                    {errors.principal && <p style={{ color: "#ef4444", fontSize: "0.8rem", marginTop: "6px", fontWeight: "500" }}>{tInput('errorPrincipal')}</p>}
                 </div>
 
                 {/* Period & Rate */}
-                <div className="interest-section" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
-                    <div>
+                <div className="interest-section grid-2-cols" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
+                    <div ref={periodRef}>
                         <label className="interest-label" style={{
                             display: "block",
                             fontSize: "0.875rem",
@@ -952,13 +883,16 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 type="number"
                                 inputMode="numeric"
                                 value={period}
-                                onChange={(e) => setPeriod(e.target.value)}
+                                onChange={(e) => {
+                                    setPeriod(e.target.value);
+                                    if (errors.period) setErrors(prev => ({ ...prev, period: false }));
+                                }}
                                 placeholder={tInput('periodPlaceholder')}
                                 style={{
                                     width: "100%",
                                     padding: "14px 16px",
-                                    paddingRight: "50px",
-                                    border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                    paddingRight: "60px",
+                                    border: `2px solid ${errors.period ? "#ef4444" : (isDark ? "#334155" : "#e5e7eb")}`,
                                     borderRadius: "14px",
                                     fontSize: "1rem",
                                     transition: "all 0.2s ease",
@@ -977,10 +911,12 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 color: isDark ? "#94a3b8" : "#9ca3af",
                                 fontSize: "0.875rem",
                                 fontWeight: "500",
+                                pointerEvents: "none" as const,
                             }}>{tInput('periodSuffix')}</span>
                         </div>
+                        {errors.period && <p style={{ color: "#ef4444", fontSize: "0.8rem", marginTop: "6px", fontWeight: "500" }}>{tInput('errorPeriod')}</p>}
                     </div>
-                    <div>
+                    <div ref={rateRef}>
                         <label className="interest-label" style={{
                             display: "block",
                             fontSize: "0.875rem",
@@ -996,13 +932,16 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 inputMode="decimal"
                                 step="0.1"
                                 value={rate}
-                                onChange={(e) => setRate(e.target.value)}
+                                onChange={(e) => {
+                                    setRate(e.target.value);
+                                    if (errors.rate) setErrors(prev => ({ ...prev, rate: false }));
+                                }}
                                 placeholder={tInput('ratePlaceholder')}
                                 style={{
                                     width: "100%",
                                     padding: "14px 16px",
-                                    paddingRight: "50px",
-                                    border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                    paddingRight: "55px",
+                                    border: `2px solid ${errors.rate ? "#ef4444" : (isDark ? "#334155" : "#e5e7eb")}`,
                                     borderRadius: "14px",
                                     fontSize: "1rem",
                                     transition: "all 0.2s ease",
@@ -1021,8 +960,10 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 color: isDark ? "#94a3b8" : "#9ca3af",
                                 fontSize: "0.875rem",
                                 fontWeight: "500",
+                                pointerEvents: "none" as const,
                             }}>%</span>
                         </div>
+                        {errors.rate && <p style={{ color: "#ef4444", fontSize: "0.8rem", marginTop: "6px", fontWeight: "500" }}>{tInput('errorRate')}</p>}
                     </div>
                 </div>
 
@@ -1048,7 +989,7 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 style={{
                                     width: "100%",
                                     padding: "14px 16px",
-                                    paddingRight: "50px",
+                                    paddingRight: "60px",
                                     border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                     borderRadius: "14px",
                                     fontSize: "1rem",
@@ -1068,6 +1009,7 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 color: isDark ? "#94a3b8" : "#9ca3af",
                                 fontSize: "0.875rem",
                                 fontWeight: "500",
+                                pointerEvents: "none" as const,
                             }}>{tInput('periodSuffix')}</span>
                         </div>
                         <p style={{

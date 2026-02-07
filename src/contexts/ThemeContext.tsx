@@ -19,20 +19,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // localStorage에서 테마 로드
     const savedTheme = localStorage.getItem('globalTheme') as Theme;
-
-    // 기존 시계 페이지 테마와 호환성 유지
-    const clockState = localStorage.getItem('worldClockState');
-    if (clockState) {
-      try {
-        const parsed = JSON.parse(clockState);
-        if (parsed.theme) {
-          setThemeState(parsed.theme);
-          localStorage.setItem('globalTheme', parsed.theme);
-        }
-      } catch {
-        // 파싱 실패 시 무시
-      }
-    } else if (savedTheme) {
+    if (savedTheme) {
       setThemeState(savedTheme);
     }
 
@@ -45,19 +32,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // body에 data-theme 속성 적용
     document.body.setAttribute('data-theme', theme);
     localStorage.setItem('globalTheme', theme);
-
-    // 기존 시계 상태와 동기화
-    const clockState = localStorage.getItem('worldClockState');
-    if (clockState) {
-      try {
-        const parsed = JSON.parse(clockState);
-        parsed.theme = theme;
-        localStorage.setItem('worldClockState', JSON.stringify(parsed));
-        window.dispatchEvent(new CustomEvent('clockThemeChange'));
-      } catch {
-        // 파싱 실패 시 무시
-      }
-    }
   }, [theme, mounted]);
 
   const toggleTheme = () => {

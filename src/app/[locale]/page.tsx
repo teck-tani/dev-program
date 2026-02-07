@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import ToolCard from "@/components/ToolCard";
-import { FaBarcode, FaCalculator, FaClock, FaSmile, FaDice, FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent, FaUserClock, FaStopwatch, FaHourglassHalf, FaCode, FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette, FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase, FaTerminal, FaYoutube, FaGlobe, FaQrcode } from "react-icons/fa";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { ALL_TOOLS } from '@/config/tools';
+import HomeToolsClient from '@/components/HomeToolsClient';
 
 const baseUrl = 'https://teck-tani.com';
 
@@ -45,106 +45,52 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     };
 }
 
-interface ToolItem {
-    href: string;
-    icon: React.ReactNode;
-    labelKey: string;
-}
-
-interface ToolCategory {
-    titleKey: string;
-    items: ToolItem[];
-}
-
-const toolCategories: ToolCategory[] = [
-    {
-        titleKey: 'calculators',
-        items: [
-            { href: '/calculator', icon: <FaCalculator />, labelKey: 'calculator' },
-            { href: '/money-converter', icon: <FaExchangeAlt />, labelKey: 'exchange' },
-            { href: '/severance-calculator', icon: <FaPiggyBank />, labelKey: 'severance' },
-            { href: '/interest-calculator', icon: <FaPercent />, labelKey: 'interest' },
-            { href: '/salary-calculator', icon: <FaMoneyBillWave />, labelKey: 'salary' },
-            { href: '/korean-age-calculator', icon: <FaUserClock />, labelKey: 'age' },
-            { href: '/ovulation-calculator', icon: <FaFemale />, labelKey: 'ovulationCalculator' },
-            { href: '/dutch-pay', icon: <FaUsers />, labelKey: 'dutchPay' },
-        ]
-    },
-    {
-        titleKey: 'time',
-        items: [
-            { href: '/clock', icon: <FaClock />, labelKey: 'clock' },
-            { href: '/stopwatch', icon: <FaStopwatch />, labelKey: 'stopwatch' },
-            { href: '/timer', icon: <FaHourglassHalf />, labelKey: 'timer' },
-        ]
-    },
-    {
-        titleKey: 'utilities',
-        items: [
-            { href: '/barcode', icon: <FaBarcode />, labelKey: 'barcode' },
-            { href: '/qr-generator', icon: <FaQrcode />, labelKey: 'qrGenerator' },
-            { href: '/special-characters', icon: <FaSmile />, labelKey: 'emoji' },
-            { href: '/lotto-generator', icon: <FaDice />, labelKey: 'lotto' },
-            { href: '/character-counter', icon: <FaFont />, labelKey: 'characterCounter' },
-            { href: '/unit-converter', icon: <FaRuler />, labelKey: 'unitConverter' },
-            { href: '/file-size-converter', icon: <FaHdd />, labelKey: 'fileSizeConverter' },
-            { href: '/image-compressor', icon: <FaCompress />, labelKey: 'imageCompressor' },
-            { href: '/base64-encoder', icon: <FaCode />, labelKey: 'base64' },
-            { href: '/color-converter', icon: <FaPalette />, labelKey: 'colorConverter' },
-            { href: '/json-formatter', icon: <FaCode />, labelKey: 'jsonFormatter' },
-            { href: '/pdf-manager', icon: <FaFilePdf />, labelKey: 'pdfManager' },
-            { href: '/url-encoder', icon: <FaLink />, labelKey: 'urlEncoder' },
-            { href: '/text-diff', icon: <FaColumns />, labelKey: 'textDiff' },
-            { href: '/ladder-game', icon: <FaRandom />, labelKey: 'ladderGame' },
-            { href: '/youtube-thumbnail', icon: <FaYoutube />, labelKey: 'youtubeThumbnail' },
-            { href: '/ip-address', icon: <FaGlobe />, labelKey: 'ipAddress' },
-        ]
-    },
-    {
-        titleKey: 'devtools',
-        items: [
-            { href: '/sql-formatter', icon: <FaDatabase />, labelKey: 'sqlFormatter' },
-            { href: '/cron-generator', icon: <FaTerminal />, labelKey: 'cronGenerator' },
-        ]
-    }
-];
-
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
     const t = await getTranslations('Index');
-    const tHeader = await getTranslations('Header');
+
+    // WebSite JSON-LD
+    const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Tani DevTool",
+        "url": `${baseUrl}/${locale}`,
+        "description": t('description'),
+        "inLanguage": locale === 'ko' ? 'ko-KR' : 'en-US',
+    };
+
+    // ItemList JSON-LD
+    const itemListSchema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": locale === 'ko' ? "웹 도구 목록" : "Web Tools Collection",
+        "numberOfItems": ALL_TOOLS.length,
+        "itemListElement": ALL_TOOLS.map((tool, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "item": {
+                "@type": "WebApplication",
+                "name": t(`tools.${tool.labelKey}`),
+                "url": `${baseUrl}/${locale}${tool.href}`,
+                "applicationCategory": "UtilityApplication",
+                "operatingSystem": "Any",
+                "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            },
+        })),
+    };
 
     return (
-        <div className="home-container">
-            {/* Hero Section */}
-            <section className="hero-section">
-                <h1 className="hero-title">{t('title')}</h1>
-                <p className="hero-subtitle">
-                    {t('description')}
-                </p>
-            </section>
-
-            {/* Tools Grid by Category */}
-            <div className="tools-grid">
-                {toolCategories.map((category) => (
-                    <section key={category.titleKey} className="tool-category">
-                        <h2 className="category-title">
-                            {tHeader(`categories.${category.titleKey}`)}
-                        </h2>
-                        <div className="category-tools">
-                            {category.items.map((item) => (
-                                <ToolCard
-                                    key={item.href}
-                                    href={item.href}
-                                    icon={item.icon}
-                                    title={t(`tools.${item.labelKey}`)}
-                                />
-                            ))}
-                        </div>
-                    </section>
-                ))}
+        <>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
+            <div className="home-container">
+                <section className="hero-section">
+                    <h1 className="hero-title">{t('title')}</h1>
+                    <p className="hero-subtitle">{t('description')}</p>
+                </section>
+                <HomeToolsClient />
             </div>
-        </div>
+        </>
     );
 }

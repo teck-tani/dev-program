@@ -5,13 +5,13 @@
 
 ---
 
-## 전체 도구 목록 & 현황 (32개 도구)
+## 전체 도구 목록 & 현황 (31개 도구)
 
 | # | 도구 | 경로 | 현재 수준 | 핵심 개선사항 |
 |---|------|------|-----------|-------------|
 | 1 | 공학용 계산기 | calculator | A | Tier 1~3 + 천단위콤마, 에러메시지, 메모리(M+/M-/MR/MC), RNG, 툴팁, 키보드범례 |
 | 2 | 이자 계산기 | interest-calculator | A | 세금옵션 3가지, 월별 내역표(복사), 결과 복사/공유, 은행 금리 프리셋, 중도해지 입력 |
-| 3 | 연봉 계산기 | salary-calculator | B | 소득세율 5단계→8단계, 기준연도 미표시, 연간 실수령 미표시 |
+| 3 | 연봉 계산기 | salary-calculator | A- | 월급/연봉 모드, 2026년 기준 뱃지, 연간 실수령액, 소득세 8단계 |
 | 4 | 퇴직금 계산기 | severance-calculator | B- | 계산과정 미표시, 퇴직소득세 미계산, 날짜입력 UX |
 | 5 | 나이 계산기 | korean-age-calculator | B | 상세나이(년/월/일) 미표시, 별자리, 만나이통일법 설명 |
 | 6 | 더치페이 | dutch-pay | C+ | **결과 공유/복사 전혀 없음(치명적)**, 비균등분할, 항목별 정산 |
@@ -23,22 +23,21 @@
 | 12 | 단위 변환기 | unit-converter | D+ | **카테고리 4개뿐(경쟁사 20+)**, 한국단위(평/근) 없음, 다크모드 미지원 |
 | 13 | 파일사이즈 변환기 | file-size-converter | B+ | 이진/십진 구분, 전송시간 계산 |
 | 14 | 색상 변환기 | color-converter | B- | CMYK 없음, RGBA 없음, 대비비율 체크 없음 |
-| 15 | JSON 포맷터 | json-formatter | C+ | Syntax Highlighting 없음, Tree View 없음, 파일 업로드 없음 |
+| 15 | JSON 포맷터 | json-formatter | A- | Syntax Highlighting, Tree View(접기/펼치기), 텍스트/트리 뷰 모드 |
 | 16 | SQL 포맷터 | sql-formatter | C+ | 자체구현 엔진 품질이슈, Dialect 미지원, Highlighting 없음 |
 | 17 | Base64 인코더 | base64-encoder | B | 실시간 변환, 이미지 미리보기, 드래그앤드롭 |
 | 18 | URL 인코더 | url-encoder | B | 실시간 변환, URL 파서, 이중인코딩 감지 |
 | 19 | Cron 생성기 | cron-generator | C | **다음 실행시간 표시 없음(핵심기능 누락)**, 6-field 미지원 |
 | 20 | IP 주소 조회 | ip-address | B- | 임의 IP/도메인 조회 불가, IPv6 미지원 |
-| 21 | 텍스트 비교 | text-diff | C+ | Side-by-Side 뷰 없음, Character-level diff 없음 |
-| 22 | QR 생성기 | qr-generator | C+ | QR 유형(Wi-Fi,vCard) 없음, 로고삽입 불가, SVG 미지원 |
+| 21 | 텍스트 비교 | text-diff | A- | 통합/나란히보기 뷰, 문자 단위 LCS diff, 스크롤 동기화 |
+| 22 | QR 생성기 | qr-generator | A- | Wi-Fi/vCard 탭, SVG 다운로드, 로고 삽입(에러보정H), 색상커스텀 |
 | 23 | 바코드 생성기 | barcode | B | PC 다운로드 없음, 크기 커스터마이징, i18n 버그 |
 | 24 | 로또 생성기 | lotto-generator | B | 다중세트, 제외번호, 당첨확인, 공유 |
 | 25 | 사다리 게임 | ladder-game | B- | 개별선택 모드, 캔버스 반응형, 프리셋 |
 | 26 | 유튜브 썸네일 | youtube-thumbnail | B | 해상도 표시, 동영상 정보, 라이트박스 |
 | 27 | 특수문자 | special-characters | D | **이모지만 있음, 실제 특수문자 없음(페이지명과 불일치)** |
 | 28 | 글자수 세기 | character-counter | B | 읽기시간, SNS 가이드, 키워드분석 |
-| 29 | 맞춤법 검사 | spell-checker | F | **11개 패턴 하드코딩, 사실상 작동 안함. API 연동 필수** |
-| 30 | 이미지 압축 | image-compressor | B- | JPEG만 출력, PNG 투명도 손실 무경고, 비교뷰 없음 |
+| 30 | 이미지 압축 | image-compressor | A- | JPEG/WebP/PNG 출력, 투명도 경고, Before/After 비교 슬라이더 |
 | 31 | PDF 관리 | pdf-manager | C | 병합/분할만(경쟁사 20+ 기능), 페이지 미리보기 없음 |
 | 32 | 통화쌍 페이지 | money-converter/[pair] | B | 환율 차트 미구현 |
 
@@ -63,7 +62,7 @@
 
 ### SEO 긴급
 - sitemap 누락 도구 3개 추가
-- JSON-LD 누락 4개 페이지 추가 (character-counter, image-compressor, pdf-manager, spell-checker)
+- JSON-LD 누락 3개 페이지 추가 (character-counter, image-compressor, pdf-manager)
 - 홈페이지 WebSite + ItemList JSON-LD 추가
 - OG 이미지 전체 없음
 
@@ -102,24 +101,25 @@
 - [x] Dutch Pay: 결과 텍스트 복사 + Web Share API (클립보드 fallback)
 - [x] Calculator: 결과 복사 기능 (LuCopy/LuCheck 아이콘)
 
-### Phase 3: 경쟁력 강화 (5-10일)
+### Phase 3: 경쟁력 강화 (5-10일) ✅ 완료
 - [x] Calculator: Tier 1~3 전면 업그레이드 (키보드, 복사, +/-, |x|, 1/x, ANS, EXP, 괄호카운터, sinh/cosh/tanh, mod, cbrt, x³)
 - [x] Calculator: A등급 업그레이드 (천단위콤마, 구체적에러메시지, 메모리M+/M-/MR/MC, RNG, 버튼툴팁, 키보드단축키범례)
 - [x] Exchange Rate: 환율 추이 차트 (recharts, history API 활용)
 - [x] Interest Calculator: Tier 1~3 전면 업그레이드 (세금옵션 3가지, 월별 내역표+복사, 결과 복사/공유, 은행 금리 프리셋 6개, 중도해지 입력)
-- [ ] JSON Formatter: Syntax Highlighting + Tree View
-- [ ] Text Diff: Side-by-Side View + Character-level diff
-- [ ] Image Compressor: 출력포맷 선택(WebP), PNG 투명도 경고, 비교뷰
-- [ ] Salary Calculator: 연간 실수령, 기준연도 표시, 월급 입력 모드
-- [ ] QR Generator: Wi-Fi/vCard 유형, SVG 다운로드, 로고 삽입
+- [x] Salary Calculator: 월급/연봉 모드 토글, 2026년 기준 뱃지, 연간 실수령액
+- [x] JSON Formatter: Syntax Highlighting + Tree View (텍스트/트리 뷰 모드 토글)
+- [x] Text Diff: Side-by-Side View + Character-level LCS diff + 스크롤 동기화
+- [x] Image Compressor: JPEG/WebP/PNG 출력 선택, 투명도 경고, Before/After 비교 슬라이더
+- [x] QR Generator: Wi-Fi/vCard 타입 탭, SVG 다운로드, 로고 삽입 (에러보정 H)
 
-### Phase 4: 사이트 전체 UX (3-5일)
-- [ ] 홈페이지 도구 검색 기능
-- [ ] 인기 도구 섹션 활성화
-- [ ] 도구 목록 단일 config 통합
-- [ ] 데스크톱 상단 네비게이션
-- [ ] Breadcrumb 추가
-- [ ] SEO: JSON-LD 누락 보완, OG 이미지
+### Phase 4: 사이트 전체 UX (3-5일) ✅ 완료
+- [x] 도구 목록 단일 config 통합 (src/config/tools.ts → 30개 도구 단일 소스)
+- [x] 홈페이지 도구 검색 기능 (HomeToolsClient: useMemo 필터, 한/영 양쪽)
+- [x] 인기 도구 섹션 활성화 (수동 큐레이션 6개)
+- [x] 데스크톱 상단 네비게이션 (CSS hover 드롭다운, 4개 카테고리)
+- [x] Breadcrumb 추가 (홈 > 도구이름, 홈페이지에서는 숨김)
+- [x] SEO: JSON-LD 보완 (홈: WebSite+ItemList, 3페이지: WebApplication+FAQPage)
+- [ ] SEO: OG 이미지 (미착수)
 
 ### Phase 5: 추가 개선 (ongoing)
 - [ ] PDF Manager 기능 확대 (회전, 이미지변환, 압축)
@@ -132,9 +132,11 @@
 ---
 
 ## 진행중인 작업
-- Phase 3 진행중 (Calculator 완료, Exchange Rate 차트 완료)
+- (없음 - Phase 4 완료, Phase 5 대기중)
 
 ## 완료된 작업
+- [x] Phase 4: 사이트 전체 UX 개선 완료 (2026-02-07): config 통합, 검색, 인기도구, 데스크톱 네비, Breadcrumb, SEO JSON-LD
+- [x] Phase 3 나머지 5개 도구 업그레이드 완료 (2026-02-07): Salary Calculator, JSON Formatter, Text Diff, Image Compressor, QR Generator
 - [x] Interest Calculator A등급 업그레이드: Tier 1~3 전면 업그레이드 (2026-02-07)
 - [x] Calculator A등급 업그레이드: 천단위콤마, 에러메시지, 메모리, RNG, 툴팁, 키보드범례 (2026-02-07)
 - [x] Calculator Tier 1~3 전면 업그레이드 (2026-02-07)
@@ -149,4 +151,4 @@
 - 모바일에서 SEO 콘텐츠 display:none 처리 → 구글 모바일 우선 인덱싱에 부정적 가능성
 
 ---
-*마지막 업데이트: 2026-02-07 (이자계산기 A등급 달성 - Tier 1~3 완료)*
+*마지막 업데이트: 2026-02-07 (Phase 4 완료 - 사이트 전체 UX 개선)*

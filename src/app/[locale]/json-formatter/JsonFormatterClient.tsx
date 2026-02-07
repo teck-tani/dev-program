@@ -1,8 +1,163 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+
+// Syntax highlight colors
+const lightColors = {
+    key: '#2563eb',
+    string: '#16a34a',
+    number: '#ea580c',
+    boolean: '#9333ea',
+    null: '#dc2626',
+    bracket: '#64748b',
+};
+const darkColors = {
+    key: '#93c5fd',
+    string: '#86efac',
+    number: '#fdba74',
+    boolean: '#c4b5fd',
+    null: '#fca5a5',
+    bracket: '#94a3b8',
+};
+
+function syntaxHighlight(json: string, isDark: boolean): string {
+    const c = isDark ? darkColors : lightColors;
+    return json.replace(
+        /("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
+        (match) => {
+            let color = c.number;
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    color = c.key;
+                    // Remove the trailing colon from the colored span, add it outside
+                    return `<span style="color:${color}">${match.slice(0, -1)}</span>:`;
+                } else {
+                    color = c.string;
+                }
+            } else if (/true|false/.test(match)) {
+                color = c.boolean;
+            } else if (/null/.test(match)) {
+                color = c.null;
+            }
+            return `<span style="color:${color}">${match}</span>`;
+        }
+    );
+}
+
+// Tree View Node
+function JsonTreeNode({
+    keyName,
+    value,
+    depth,
+    expandAll,
+    isDark,
+}: {
+    keyName: string | number | null;
+    value: unknown;
+    depth: number;
+    expandAll: boolean | null;
+    isDark: boolean;
+}) {
+    const [expanded, setExpanded] = useState(depth < 2);
+    const c = isDark ? darkColors : lightColors;
+
+    // React to expandAll changes
+    const actualExpanded = expandAll !== null ? expandAll : expanded;
+
+    const isObject = value !== null && typeof value === 'object' && !Array.isArray(value);
+    const isArray = Array.isArray(value);
+    const isExpandable = isObject || isArray;
+
+    const toggleExpand = () => {
+        setExpanded(!actualExpanded);
+    };
+
+    const renderKey = () => {
+        if (keyName === null) return null;
+        return (
+            <span style={{ color: c.key, marginRight: '4px' }}>
+                {typeof keyName === 'string' ? `"${keyName}"` : keyName}
+                <span style={{ color: c.bracket }}>: </span>
+            </span>
+        );
+    };
+
+    const renderPrimitive = () => {
+        if (typeof value === 'string') {
+            return <span style={{ color: c.string }}>{`"${value}"`}</span>;
+        }
+        if (typeof value === 'number') {
+            return <span style={{ color: c.number }}>{String(value)}</span>;
+        }
+        if (typeof value === 'boolean') {
+            return <span style={{ color: c.boolean }}>{String(value)}</span>;
+        }
+        if (value === null) {
+            return <span style={{ color: c.null }}>null</span>;
+        }
+        return <span>{String(value)}</span>;
+    };
+
+    if (!isExpandable) {
+        return (
+            <div style={{ paddingLeft: depth > 0 ? '20px' : 0, lineHeight: '1.6' }}>
+                {renderKey()}
+                {renderPrimitive()}
+            </div>
+        );
+    }
+
+    const entries = isArray ? value.map((v, i) => [i, v] as [number, unknown]) : Object.entries(value as Record<string, unknown>);
+    const bracket = isArray ? ['[', ']'] : ['{', '}'];
+    const count = entries.length;
+
+    return (
+        <div style={{ paddingLeft: depth > 0 ? '20px' : 0 }}>
+            <div
+                style={{ cursor: 'pointer', lineHeight: '1.6', userSelect: 'none' }}
+                onClick={toggleExpand}
+            >
+                <span style={{
+                    display: 'inline-block',
+                    width: '16px',
+                    fontSize: '0.7rem',
+                    color: isDark ? '#64748b' : '#9ca3af',
+                    transition: 'transform 0.15s',
+                    transform: actualExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                }}>
+                    ▶
+                </span>
+                {renderKey()}
+                <span style={{ color: c.bracket }}>{bracket[0]}</span>
+                {!actualExpanded && (
+                    <span style={{ color: isDark ? '#475569' : '#9ca3af', fontSize: '0.8rem' }}>
+                        {' '}{count} {count === 1 ? 'item' : 'items'}{' '}
+                    </span>
+                )}
+                {!actualExpanded && <span style={{ color: c.bracket }}>{bracket[1]}</span>}
+            </div>
+            {actualExpanded && (
+                <>
+                    {entries.map(([k, v], idx) => (
+                        <JsonTreeNode
+                            key={`${k}-${idx}`}
+                            keyName={k}
+                            value={v}
+                            depth={depth + 1}
+                            expandAll={expandAll}
+                            isDark={isDark}
+                        />
+                    ))}
+                    <div style={{ paddingLeft: '16px', lineHeight: '1.6' }}>
+                        <span style={{ color: c.bracket }}>{bracket[1]}</span>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
 
 export default function JsonFormatterClient() {
     const t = useTranslations('JsonFormatter');
@@ -10,15 +165,26 @@ export default function JsonFormatterClient() {
     const isDark = theme === 'dark';
     const [input, setInput] = useState<string>('');
     const [output, setOutput] = useState<string>('');
+    const [parsedData, setParsedData] = useState<unknown>(null);
     const [error, setError] = useState<string>('');
     const [indentSize, setIndentSize] = useState<number>(2);
     const [copied, setCopied] = useState<boolean>(false);
     const [stats, setStats] = useState<{ lines: number; chars: number; size: string } | null>(null);
+    const [viewMode, setViewMode] = useState<'text' | 'tree'>('text');
+    const [expandAll, setExpandAll] = useState<boolean | null>(null);
+
+    const highlightedOutput = useMemo(() => {
+        if (!output || error) return '';
+        // Don't highlight validation success message
+        if (output === t('validate.success')) return '';
+        return syntaxHighlight(output, isDark);
+    }, [output, isDark, error, t]);
 
     const formatJson = useCallback(() => {
         if (!input.trim()) {
             setError(t('error.empty'));
             setOutput('');
+            setParsedData(null);
             setStats(null);
             return;
         }
@@ -27,6 +193,7 @@ export default function JsonFormatterClient() {
             const parsed = JSON.parse(input);
             const formatted = JSON.stringify(parsed, null, indentSize);
             setOutput(formatted);
+            setParsedData(parsed);
             setError('');
             setStats({
                 lines: formatted.split('\n').length,
@@ -37,6 +204,7 @@ export default function JsonFormatterClient() {
             const errorMessage = e instanceof Error ? e.message : 'Unknown error';
             setError(`${t('error.invalid')}: ${errorMessage}`);
             setOutput('');
+            setParsedData(null);
             setStats(null);
         }
     }, [input, indentSize, t]);
@@ -45,6 +213,7 @@ export default function JsonFormatterClient() {
         if (!input.trim()) {
             setError(t('error.empty'));
             setOutput('');
+            setParsedData(null);
             setStats(null);
             return;
         }
@@ -53,6 +222,7 @@ export default function JsonFormatterClient() {
             const parsed = JSON.parse(input);
             const minified = JSON.stringify(parsed);
             setOutput(minified);
+            setParsedData(parsed);
             setError('');
             setStats({
                 lines: 1,
@@ -63,6 +233,7 @@ export default function JsonFormatterClient() {
             const errorMessage = e instanceof Error ? e.message : 'Unknown error';
             setError(`${t('error.invalid')}: ${errorMessage}`);
             setOutput('');
+            setParsedData(null);
             setStats(null);
         }
     }, [input, t]);
@@ -74,13 +245,15 @@ export default function JsonFormatterClient() {
         }
 
         try {
-            JSON.parse(input);
+            const parsed = JSON.parse(input);
+            setParsedData(parsed);
             setError('');
             setOutput(t('validate.success'));
         } catch (e: unknown) {
             const errorMessage = e instanceof Error ? e.message : 'Unknown error';
             setError(`${t('error.invalid')}: ${errorMessage}`);
             setOutput('');
+            setParsedData(null);
         }
     }, [input, t]);
 
@@ -98,8 +271,10 @@ export default function JsonFormatterClient() {
     const clearAll = () => {
         setInput('');
         setOutput('');
+        setParsedData(null);
         setError('');
         setStats(null);
+        setExpandAll(null);
     };
 
     const loadSample = () => {
@@ -124,9 +299,11 @@ export default function JsonFormatterClient() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
+    const hasValidOutput = output && !error && output !== t('validate.success');
+
     return (
         <div style={{ background: isDark ? '#1e293b' : 'white', borderRadius: '16px', boxShadow: isDark ? 'none' : '0 4px 20px rgba(0,0,0,0.08)', padding: '25px', marginBottom: '30px' }}>
-            {/* 컨트롤 바 */}
+            {/* Control Bar */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
                 <button onClick={formatJson} style={buttonStyle('#3b82f6')}>{t('btn.format')}</button>
                 <button onClick={minifyJson} style={buttonStyle('#8b5cf6')}>{t('btn.minify')}</button>
@@ -146,9 +323,9 @@ export default function JsonFormatterClient() {
                 </div>
             </div>
 
-            {/* 에디터 영역 */}
+            {/* Editor Area */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
-                {/* 입력 */}
+                {/* Input */}
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                         <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>{t('input.label')}</label>
@@ -182,46 +359,185 @@ export default function JsonFormatterClient() {
                     />
                 </div>
 
-                {/* 출력 */}
+                {/* Output */}
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>{t('output.label')}</label>
-                        <button
-                            onClick={copyToClipboard}
-                            disabled={!output}
-                            style={{
-                                ...smallButtonStyle(isDark),
-                                background: copied ? '#10b981' : (isDark ? '#0f172a' : '#f3f4f6'),
-                                color: copied ? 'white' : (isDark ? '#f1f5f9' : '#374151'),
-                            }}
-                        >
-                            {copied ? t('btn.copied') : t('btn.copy')}
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>{t('output.label')}</label>
+                            {/* View Mode Toggle */}
+                            {hasValidOutput && (
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '2px',
+                                    background: isDark ? '#0f172a' : '#f3f4f6',
+                                    borderRadius: '6px',
+                                    padding: '2px',
+                                }}>
+                                    <button
+                                        onClick={() => setViewMode('text')}
+                                        style={{
+                                            padding: '3px 10px',
+                                            borderRadius: '4px',
+                                            border: 'none',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            background: viewMode === 'text' ? '#3b82f6' : 'transparent',
+                                            color: viewMode === 'text' ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
+                                            transition: 'all 0.2s',
+                                        }}
+                                    >
+                                        {t('viewMode.text')}
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('tree')}
+                                        style={{
+                                            padding: '3px 10px',
+                                            borderRadius: '4px',
+                                            border: 'none',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            background: viewMode === 'tree' ? '#3b82f6' : 'transparent',
+                                            color: viewMode === 'tree' ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
+                                            transition: 'all 0.2s',
+                                        }}
+                                    >
+                                        {t('viewMode.tree')}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            {/* Tree expand/collapse controls */}
+                            {hasValidOutput && viewMode === 'tree' && (
+                                <>
+                                    <button
+                                        onClick={() => setExpandAll(true)}
+                                        style={{ ...smallButtonStyle(isDark), fontSize: '0.7rem', padding: '4px 8px' }}
+                                    >
+                                        {t('tree.expandAll')}
+                                    </button>
+                                    <button
+                                        onClick={() => setExpandAll(false)}
+                                        style={{ ...smallButtonStyle(isDark), fontSize: '0.7rem', padding: '4px 8px' }}
+                                    >
+                                        {t('tree.collapseAll')}
+                                    </button>
+                                </>
+                            )}
+                            <button
+                                onClick={copyToClipboard}
+                                disabled={!output}
+                                style={{
+                                    ...smallButtonStyle(isDark),
+                                    background: copied ? '#10b981' : (isDark ? '#0f172a' : '#f3f4f6'),
+                                    color: copied ? 'white' : (isDark ? '#f1f5f9' : '#374151'),
+                                }}
+                            >
+                                {copied ? t('btn.copied') : t('btn.copy')}
+                            </button>
+                        </div>
                     </div>
-                    <textarea
-                        value={output}
-                        readOnly
-                        placeholder={t('output.placeholder')}
-                        style={{
-                            width: '100%',
-                            height: '350px',
-                            padding: '15px',
-                            fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
-                            fontSize: '0.85rem',
-                            lineHeight: 1.5,
-                            border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
-                            borderRadius: '10px',
-                            background: isDark ? '#1e293b' : '#fafafa',
-                            resize: 'vertical',
-                            outline: 'none',
-                            color: isDark ? '#e2e8f0' : '#1f2937',
-                        }}
-                        spellCheck={false}
-                    />
+
+                    {/* Output Area - Text View */}
+                    {viewMode === 'text' && (
+                        hasValidOutput ? (
+                            <pre
+                                dangerouslySetInnerHTML={{ __html: highlightedOutput }}
+                                style={{
+                                    width: '100%',
+                                    height: '350px',
+                                    padding: '15px',
+                                    fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
+                                    fontSize: '0.85rem',
+                                    lineHeight: 1.5,
+                                    border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    background: isDark ? '#0f172a' : '#fafafa',
+                                    overflow: 'auto',
+                                    margin: 0,
+                                    color: isDark ? '#e2e8f0' : '#1f2937',
+                                    whiteSpace: 'pre-wrap',
+                                    wordBreak: 'break-all',
+                                    boxSizing: 'border-box',
+                                }}
+                            />
+                        ) : (
+                            <textarea
+                                value={output}
+                                readOnly
+                                placeholder={t('output.placeholder')}
+                                style={{
+                                    width: '100%',
+                                    height: '350px',
+                                    padding: '15px',
+                                    fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
+                                    fontSize: '0.85rem',
+                                    lineHeight: 1.5,
+                                    border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    background: isDark ? '#1e293b' : '#fafafa',
+                                    resize: 'vertical',
+                                    outline: 'none',
+                                    color: isDark ? '#e2e8f0' : '#1f2937',
+                                }}
+                                spellCheck={false}
+                            />
+                        )
+                    )}
+
+                    {/* Output Area - Tree View */}
+                    {viewMode === 'tree' && (
+                        hasValidOutput && parsedData !== null ? (
+                            <div
+                                style={{
+                                    width: '100%',
+                                    height: '350px',
+                                    padding: '15px',
+                                    fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
+                                    fontSize: '0.85rem',
+                                    border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    background: isDark ? '#0f172a' : '#fafafa',
+                                    overflow: 'auto',
+                                    boxSizing: 'border-box',
+                                }}
+                            >
+                                <JsonTreeNode
+                                    keyName={null}
+                                    value={parsedData}
+                                    depth={0}
+                                    expandAll={expandAll}
+                                    isDark={isDark}
+                                />
+                            </div>
+                        ) : (
+                            <div
+                                style={{
+                                    width: '100%',
+                                    height: '350px',
+                                    padding: '15px',
+                                    fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
+                                    fontSize: '0.85rem',
+                                    border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                                    borderRadius: '10px',
+                                    background: isDark ? '#1e293b' : '#fafafa',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: isDark ? '#475569' : '#9ca3af',
+                                    boxSizing: 'border-box',
+                                }}
+                            >
+                                {t('output.placeholder')}
+                            </div>
+                        )
+                    )}
                 </div>
             </div>
 
-            {/* 상태 표시 */}
+            {/* Status Display */}
             {error && (
                 <div style={{
                     padding: '12px 16px',
@@ -232,7 +548,7 @@ export default function JsonFormatterClient() {
                     fontSize: '0.9rem',
                     marginBottom: '10px',
                 }}>
-                    ❌ {error}
+                    {error}
                 </div>
             )}
 
@@ -248,14 +564,14 @@ export default function JsonFormatterClient() {
                     gap: '20px',
                     flexWrap: 'wrap',
                 }}>
-                    <span>✅ {t('stats.success')}</span>
-                    <span>📄 {stats.lines} {t('stats.lines')}</span>
-                    <span>📝 {stats.chars} {t('stats.chars')}</span>
-                    <span>💾 {stats.size}</span>
+                    <span>{t('stats.success')}</span>
+                    <span>{stats.lines} {t('stats.lines')}</span>
+                    <span>{stats.chars} {t('stats.chars')}</span>
+                    <span>{stats.size}</span>
                 </div>
             )}
 
-            {/* 모바일 스타일 */}
+            {/* Mobile Style */}
             <style jsx>{`
                 @media (max-width: 768px) {
                     div[style*="grid-template-columns: 1fr 1fr"] {

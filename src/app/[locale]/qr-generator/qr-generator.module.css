@@ -39,6 +39,106 @@
     line-height: 1.6;
 }
 
+/* 타입 탭 */
+.typeTabs {
+    display: flex;
+    gap: 4px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.typeTab {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.typeTab:hover {
+    color: #374151;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.typeTabActive {
+    background: white;
+    color: #3b82f6;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 로고 섹션 */
+.logoSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.logoSection label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.logoControls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.logoUploadBtn {
+    padding: 8px 16px;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 8px;
+    background: #fafafa;
+    color: #6b7280;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logoUploadBtn:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: #eff6ff;
+}
+
+.logoRemoveBtn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #ef4444;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logoRemoveBtn:hover {
+    background: #fecaca;
+}
+
+.logoPreview {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+.logoHint {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    line-height: 1.4;
+}
+
 /* 입력 섹션 */
 .inputSection {
     display: flex;
@@ -286,6 +386,26 @@
     border-color: #3b82f6;
     color: #3b82f6;
     background: #eff6ff;
+}
+
+.svgDownloadButton {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #eff6ff;
+    color: #3b82f6;
+    border: 1.5px solid #bfdbfe;
+}
+
+.svgDownloadButton:hover {
+    background: #dbeafe;
+    transform: translateY(-2px);
 }
 
 /* 대량 생성 섹션 (PC 전용) */
@@ -604,6 +724,26 @@
         order: -1; /* 다운로드 버튼을 위로 */
     }
 
+    .svgDownloadButton {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+        order: -1;
+    }
+
+    .typeTabs {
+        padding: 3px;
+    }
+
+    .typeTab {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .logoControls {
+        flex-wrap: wrap;
+    }
+
     .articleSection {
         margin-top: 24px;
         padding: 20px 16px;
@@ -758,6 +898,67 @@
 :global(body[data-theme="dark"]) .bulkItemDownload:hover {
     background: #10b981;
     color: white;
+}
+
+:global(body[data-theme="dark"]) .typeTabs {
+    background: #0f172a;
+}
+
+:global(body[data-theme="dark"]) .typeTab {
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .typeTab:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+:global(body[data-theme="dark"]) .typeTabActive {
+    background: #334155;
+    color: #60a5fa;
+}
+
+:global(body[data-theme="dark"]) .logoSection label {
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .logoUploadBtn {
+    background: #0f172a;
+    border-color: #334155;
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .logoUploadBtn:hover {
+    border-color: #3b82f6;
+    color: #60a5fa;
+    background: #172554;
+}
+
+:global(body[data-theme="dark"]) .logoRemoveBtn {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+:global(body[data-theme="dark"]) .logoRemoveBtn:hover {
+    background: #7f1d1d;
+}
+
+:global(body[data-theme="dark"]) .logoPreview {
+    border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .logoHint {
+    color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .svgDownloadButton {
+    background: #172554;
+    color: #60a5fa;
+    border-color: #1e40af;
+}
+
+:global(body[data-theme="dark"]) .svgDownloadButton:hover {
+    background: #1e3a8a;
 }
 
 :global(body[data-theme="dark"]) .emptyState {

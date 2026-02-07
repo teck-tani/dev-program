@@ -1,16 +1,69 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaCopy, FaTrash, FaExchangeAlt, FaCheckCircle, FaTimesCircle, FaPlus, FaMinus } from "react-icons/fa";
+import { FaCopy, FaTrash, FaExchangeAlt, FaCheckCircle, FaPlus, FaMinus } from "react-icons/fa";
 
 interface DiffLine {
+    type: 'equal' | 'add' | 'remove';
+    lineNum1?: number;
+    lineNum2?: number;
+    content1?: string;
+    content2?: string;
+}
+
+interface ProcessedDiffLine {
     type: 'equal' | 'add' | 'remove' | 'modify';
     lineNum1?: number;
     lineNum2?: number;
     content1?: string;
     content2?: string;
+    charDiff1?: { char: string; type: 'equal' | 'delete' }[];
+    charDiff2?: { char: string; type: 'equal' | 'insert' }[];
+}
+
+// Character-level diff using LCS
+function charLevelDiff(str1: string, str2: string) {
+    const m = str1.length;
+    const n = str2.length;
+    const dp: number[][] = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (str1[i - 1] === str2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            } else {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+
+    const diff1: { char: string; type: 'equal' | 'delete' }[] = [];
+    const diff2: { char: string; type: 'equal' | 'insert' }[] = [];
+    let i = m, j = n;
+
+    const tempDiff1: typeof diff1 = [];
+    const tempDiff2: typeof diff2 = [];
+
+    while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && str1[i - 1] === str2[j - 1]) {
+            tempDiff1.unshift({ char: str1[i - 1], type: 'equal' });
+            tempDiff2.unshift({ char: str2[j - 1], type: 'equal' });
+            i--; j--;
+        } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+            tempDiff2.unshift({ char: str2[j - 1], type: 'insert' });
+            j--;
+        } else if (i > 0) {
+            tempDiff1.unshift({ char: str1[i - 1], type: 'delete' });
+            i--;
+        }
+    }
+
+    diff1.push(...tempDiff1);
+    diff2.push(...tempDiff2);
+
+    return { diff1, diff2 };
 }
 
 export default function TextDiffClient() {
@@ -23,8 +76,12 @@ export default function TextDiffClient() {
     const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
     const [ignoreCase, setIgnoreCase] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [viewMode, setViewMode] = useState<'unified' | 'sideBySide'>('unified');
 
-    // Simple diff algorithm
+    const leftPanelRef = useRef<HTMLDivElement>(null);
+    const rightPanelRef = useRef<HTMLDivElement>(null);
+    const syncingRef = useRef(false);
+
     const computeDiff = useCallback((a: string, b: string): DiffLine[] => {
         let lines1 = a.split('\n');
         let lines2 = b.split('\n');
@@ -34,11 +91,9 @@ export default function TextDiffClient() {
             lines2 = lines2.map(l => l.trim());
         }
 
-        const result: DiffLine[] = [];
         const originalLines1 = a.split('\n');
         const originalLines2 = b.split('\n');
 
-        // LCS-based diff
         const lcs = (arr1: string[], arr2: string[]): number[][] => {
             const m = arr1.length;
             const n = arr2.length;
@@ -76,8 +131,7 @@ export default function TextDiffClient() {
                     content1: originalLines1[i - 1],
                     content2: originalLines2[j - 1]
                 });
-                i--;
-                j--;
+                i--; j--;
             } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
                 tempResult.unshift({
                     type: 'add',
@@ -98,17 +152,41 @@ export default function TextDiffClient() {
         return tempResult;
     }, [ignoreWhitespace, ignoreCase]);
 
-    const diffResult = useMemo(() => {
+    // Post-process: pair remove+add into modify with char-level diff
+    const processedDiff = useMemo(() => {
         if (!text1 && !text2) return [];
-        return computeDiff(text1, text2);
+        const raw = computeDiff(text1, text2);
+        const result: ProcessedDiffLine[] = [];
+
+        let i = 0;
+        while (i < raw.length) {
+            if (raw[i].type === 'remove' && i + 1 < raw.length && raw[i + 1].type === 'add') {
+                const { diff1, diff2 } = charLevelDiff(raw[i].content1 || '', raw[i + 1].content2 || '');
+                result.push({
+                    type: 'modify',
+                    lineNum1: raw[i].lineNum1,
+                    lineNum2: raw[i + 1].lineNum2,
+                    content1: raw[i].content1,
+                    content2: raw[i + 1].content2,
+                    charDiff1: diff1,
+                    charDiff2: diff2,
+                });
+                i += 2;
+            } else {
+                result.push(raw[i] as ProcessedDiffLine);
+                i++;
+            }
+        }
+        return result;
     }, [text1, text2, computeDiff]);
 
     const stats = useMemo(() => {
-        const added = diffResult.filter(d => d.type === 'add').length;
-        const removed = diffResult.filter(d => d.type === 'remove').length;
-        const unchanged = diffResult.filter(d => d.type === 'equal').length;
-        return { added, removed, unchanged };
-    }, [diffResult]);
+        const added = processedDiff.filter(d => d.type === 'add').length;
+        const removed = processedDiff.filter(d => d.type === 'remove').length;
+        const modified = processedDiff.filter(d => d.type === 'modify').length;
+        const unchanged = processedDiff.filter(d => d.type === 'equal').length;
+        return { added, removed, modified, unchanged };
+    }, [processedDiff]);
 
     const handleSwap = () => {
         const temp = text1;
@@ -122,9 +200,10 @@ export default function TextDiffClient() {
     };
 
     const handleCopyDiff = async () => {
-        const diffText = diffResult.map(line => {
+        const diffText = processedDiff.map(line => {
             if (line.type === 'add') return `+ ${line.content2}`;
             if (line.type === 'remove') return `- ${line.content1}`;
+            if (line.type === 'modify') return `- ${line.content1}\n+ ${line.content2}`;
             return `  ${line.content1}`;
         }).join('\n');
 
@@ -133,36 +212,102 @@ export default function TextDiffClient() {
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const handleSyncScroll = (source: 'left' | 'right') => {
+        if (syncingRef.current) return;
+        syncingRef.current = true;
+        const srcRef = source === 'left' ? leftPanelRef : rightPanelRef;
+        const tgtRef = source === 'left' ? rightPanelRef : leftPanelRef;
+        if (srcRef.current && tgtRef.current) {
+            tgtRef.current.scrollTop = srcRef.current.scrollTop;
+        }
+        requestAnimationFrame(() => { syncingRef.current = false; });
+    };
+
     const isIdentical = text1 === text2 && text1.length > 0;
+
+    // Render char-level highlighted content
+    const renderCharDiff = (chars: { char: string; type: string }[], highlightType: 'delete' | 'insert') => {
+        return chars.map((c, i) => {
+            if (c.type === highlightType) {
+                return (
+                    <span key={i} style={{
+                        background: highlightType === 'delete'
+                            ? (isDark ? 'rgba(239,68,68,0.35)' : 'rgba(239,68,68,0.25)')
+                            : (isDark ? 'rgba(34,197,94,0.35)' : 'rgba(34,197,94,0.25)'),
+                        borderRadius: '2px',
+                    }}>
+                        {c.char}
+                    </span>
+                );
+            }
+            return <span key={i}>{c.char}</span>;
+        });
+    };
+
+    // Build side-by-side data
+    const sideBySideRows = useMemo(() => {
+        const rows: { left: ProcessedDiffLine | null; right: ProcessedDiffLine | null }[] = [];
+
+        for (const line of processedDiff) {
+            if (line.type === 'equal') {
+                rows.push({ left: line, right: line });
+            } else if (line.type === 'modify') {
+                rows.push({ left: line, right: line });
+            } else if (line.type === 'remove') {
+                rows.push({ left: line, right: null });
+            } else if (line.type === 'add') {
+                rows.push({ left: null, right: line });
+            }
+        }
+        return rows;
+    }, [processedDiff]);
+
+    const toggleBtnStyle = (active: boolean): React.CSSProperties => ({
+        padding: '6px 14px',
+        borderRadius: '6px',
+        border: 'none',
+        fontSize: '0.8rem',
+        fontWeight: 600,
+        cursor: 'pointer',
+        background: active ? '#2563eb' : 'transparent',
+        color: active ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
+        transition: 'all 0.2s',
+    });
 
     return (
         <div className="container" style={{ maxWidth: "1200px", padding: "20px" }}>
-            {/* Options */}
+            {/* Options + View Mode */}
             <div style={{
                 display: "flex",
                 justifyContent: "center",
                 gap: "20px",
                 marginBottom: "20px",
-                flexWrap: "wrap"
+                flexWrap: "wrap",
+                alignItems: "center",
             }}>
                 <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
-                    <input
-                        type="checkbox"
-                        checked={ignoreWhitespace}
-                        onChange={(e) => setIgnoreWhitespace(e.target.checked)}
-                        style={{ width: "18px", height: "18px" }}
-                    />
+                    <input type="checkbox" checked={ignoreWhitespace} onChange={(e) => setIgnoreWhitespace(e.target.checked)} style={{ width: "18px", height: "18px" }} />
                     <span>{t('options.ignoreWhitespace')}</span>
                 </label>
                 <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
-                    <input
-                        type="checkbox"
-                        checked={ignoreCase}
-                        onChange={(e) => setIgnoreCase(e.target.checked)}
-                        style={{ width: "18px", height: "18px" }}
-                    />
+                    <input type="checkbox" checked={ignoreCase} onChange={(e) => setIgnoreCase(e.target.checked)} style={{ width: "18px", height: "18px" }} />
                     <span>{t('options.ignoreCase')}</span>
                 </label>
+                <div style={{
+                    display: 'flex',
+                    gap: '2px',
+                    background: isDark ? '#0f172a' : '#f3f4f6',
+                    borderRadius: '8px',
+                    padding: '3px',
+                    marginLeft: '8px',
+                }}>
+                    <button onClick={() => setViewMode('unified')} style={toggleBtnStyle(viewMode === 'unified')}>
+                        {t('viewMode.unified')}
+                    </button>
+                    <button onClick={() => setViewMode('sideBySide')} style={toggleBtnStyle(viewMode === 'sideBySide')}>
+                        {t('viewMode.sideBySide')}
+                    </button>
+                </div>
             </div>
 
             {/* Input Areas */}
@@ -182,54 +327,25 @@ export default function TextDiffClient() {
                         onChange={(e) => setText1(e.target.value)}
                         placeholder={t('input.placeholder1')}
                         style={{
-                            flex: 1,
-                            minHeight: "250px",
-                            padding: "16px",
-                            border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
-                            borderRadius: "12px",
-                            fontSize: "14px",
-                            fontFamily: "monospace",
-                            resize: "vertical",
-                            lineHeight: "1.6",
-                            color: isDark ? "#e2e8f0" : "#1f2937",
-                            background: isDark ? "#0f172a" : "#fff"
+                            flex: 1, minHeight: "250px", padding: "16px",
+                            border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`, borderRadius: "12px",
+                            fontSize: "14px", fontFamily: "monospace", resize: "vertical", lineHeight: "1.6",
+                            color: isDark ? "#e2e8f0" : "#1f2937", background: isDark ? "#0f172a" : "#fff"
                         }}
                     />
                 </div>
 
-                <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    gap: "10px"
-                }}>
-                    <button
-                        onClick={handleSwap}
-                        title={t('buttons.swap')}
-                        style={{
-                            padding: "12px",
-                            borderRadius: "8px",
-                            border: "none",
-                            background: isDark ? "#0f172a" : "#f3f4f6",
-                            cursor: "pointer",
-                            transition: "all 0.2s"
-                        }}
-                    >
+                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "10px" }}>
+                    <button onClick={handleSwap} title={t('buttons.swap')} style={{
+                        padding: "12px", borderRadius: "8px", border: "none",
+                        background: isDark ? "#0f172a" : "#f3f4f6", cursor: "pointer", transition: "all 0.2s"
+                    }}>
                         <FaExchangeAlt />
                     </button>
-                    <button
-                        onClick={handleClear}
-                        title={t('buttons.clear')}
-                        style={{
-                            padding: "12px",
-                            borderRadius: "8px",
-                            border: "none",
-                            background: "#fee2e2",
-                            color: "#dc2626",
-                            cursor: "pointer",
-                            transition: "all 0.2s"
-                        }}
-                    >
+                    <button onClick={handleClear} title={t('buttons.clear')} style={{
+                        padding: "12px", borderRadius: "8px", border: "none",
+                        background: "#fee2e2", color: "#dc2626", cursor: "pointer", transition: "all 0.2s"
+                    }}>
                         <FaTrash />
                     </button>
                 </div>
@@ -243,17 +359,10 @@ export default function TextDiffClient() {
                         onChange={(e) => setText2(e.target.value)}
                         placeholder={t('input.placeholder2')}
                         style={{
-                            flex: 1,
-                            minHeight: "250px",
-                            padding: "16px",
-                            border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
-                            borderRadius: "12px",
-                            fontSize: "14px",
-                            fontFamily: "monospace",
-                            resize: "vertical",
-                            lineHeight: "1.6",
-                            color: isDark ? "#e2e8f0" : "#1f2937",
-                            background: isDark ? "#0f172a" : "#fff"
+                            flex: 1, minHeight: "250px", padding: "16px",
+                            border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`, borderRadius: "12px",
+                            fontSize: "14px", fontFamily: "monospace", resize: "vertical", lineHeight: "1.6",
+                            color: isDark ? "#e2e8f0" : "#1f2937", background: isDark ? "#0f172a" : "#fff"
                         }}
                     />
                 </div>
@@ -262,53 +371,33 @@ export default function TextDiffClient() {
             {/* Stats & Status */}
             {(text1 || text2) && (
                 <div style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "30px",
-                    marginBottom: "20px",
-                    flexWrap: "wrap"
+                    display: "flex", justifyContent: "center", alignItems: "center",
+                    gap: "30px", marginBottom: "20px", flexWrap: "wrap"
                 }}>
                     {isIdentical ? (
                         <div style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            padding: "12px 24px",
-                            background: "#d1fae5",
-                            borderRadius: "8px",
-                            color: "#059669",
-                            fontWeight: "bold"
+                            display: "flex", alignItems: "center", gap: "8px", padding: "12px 24px",
+                            background: "#d1fae5", borderRadius: "8px", color: "#059669", fontWeight: "bold"
                         }}>
                             <FaCheckCircle />
                             {t('status.identical')}
                         </div>
                     ) : (
                         <>
-                            <div style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                color: "#059669"
-                            }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#059669" }}>
                                 <FaPlus />
                                 <span>{t('stats.added', { count: stats.added })}</span>
                             </div>
-                            <div style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                color: "#dc2626"
-                            }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#dc2626" }}>
                                 <FaMinus />
                                 <span>{t('stats.removed', { count: stats.removed })}</span>
                             </div>
-                            <div style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                color: isDark ? "#94a3b8" : "#6b7280"
-                            }}>
+                            {stats.modified > 0 && (
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#d97706" }}>
+                                    <span>~{stats.modified}</span>
+                                </div>
+                            )}
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", color: isDark ? "#94a3b8" : "#6b7280" }}>
                                 <span>{t('stats.unchanged', { count: stats.unchanged })}</span>
                             </div>
                         </>
@@ -317,87 +406,185 @@ export default function TextDiffClient() {
             )}
 
             {/* Diff Result */}
-            {diffResult.length > 0 && !isIdentical && (
+            {processedDiff.length > 0 && !isIdentical && (
                 <div style={{ marginBottom: "30px" }}>
-                    <div style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "12px"
-                    }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                         <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#374151" }}>{t('result.title')}</h2>
                         <button
                             onClick={handleCopyDiff}
                             style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                padding: "8px 16px",
-                                borderRadius: "8px",
-                                border: "none",
+                                display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px",
+                                borderRadius: "8px", border: "none",
                                 background: copied ? "#d1fae5" : (isDark ? "#0f172a" : "#f3f4f6"),
                                 color: copied ? "#059669" : (isDark ? "#f1f5f9" : "#374151"),
-                                cursor: "pointer",
-                                transition: "all 0.2s"
+                                cursor: "pointer", transition: "all 0.2s"
                             }}
                         >
                             <FaCopy />
                             {copied ? t('buttons.copied') : t('buttons.copyDiff')}
                         </button>
                     </div>
-                    <div style={{
-                        border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
-                        borderRadius: "12px",
-                        overflow: "hidden",
-                        fontFamily: "monospace",
-                        fontSize: "13px"
-                    }}>
-                        {diffResult.map((line, idx) => (
+
+                    {/* Unified View */}
+                    {viewMode === 'unified' && (
+                        <div style={{
+                            border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                            borderRadius: "12px", overflow: "hidden", fontFamily: "monospace", fontSize: "13px"
+                        }}>
+                            {processedDiff.map((line, idx) => (
+                                <div key={idx} style={{
+                                    borderBottom: idx < processedDiff.length - 1 ? `1px solid ${isDark ? "#334155" : "#e5e7eb"}` : "none",
+                                }}>
+                                    {line.type === 'modify' ? (
+                                        <>
+                                            {/* Remove line */}
+                                            <div style={{
+                                                display: "grid", gridTemplateColumns: "50px 50px 1fr",
+                                                background: isDark ? '#7f1d1d' : '#fee2e2',
+                                            }}>
+                                                <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
+                                                    {line.lineNum1 || ''}
+                                                </div>
+                                                <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }} />
+                                                <div style={{ padding: "8px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                                                    <span style={{ color: '#dc2626', fontWeight: 'bold' }}>
+                                                        {'- '}{line.charDiff1 ? renderCharDiff(line.charDiff1, 'delete') : line.content1}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {/* Add line */}
+                                            <div style={{
+                                                display: "grid", gridTemplateColumns: "50px 50px 1fr",
+                                                background: isDark ? '#064e3b' : '#dcfce7',
+                                                borderTop: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                            }}>
+                                                <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }} />
+                                                <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
+                                                    {line.lineNum2 || ''}
+                                                </div>
+                                                <div style={{ padding: "8px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                                                    <span style={{ color: '#059669', fontWeight: 'bold' }}>
+                                                        {'+ '}{line.charDiff2 ? renderCharDiff(line.charDiff2, 'insert') : line.content2}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div style={{
+                                            display: "grid", gridTemplateColumns: "50px 50px 1fr",
+                                            background: line.type === 'add' ? (isDark ? '#064e3b' : '#dcfce7') :
+                                                line.type === 'remove' ? (isDark ? '#7f1d1d' : '#fee2e2') : (isDark ? '#1e293b' : '#fff'),
+                                        }}>
+                                            <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
+                                                {line.lineNum1 || ''}
+                                            </div>
+                                            <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
+                                                {line.lineNum2 || ''}
+                                            </div>
+                                            <div style={{ padding: "8px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                                                <span style={{
+                                                    color: line.type === 'add' ? '#059669' : line.type === 'remove' ? '#dc2626' : (isDark ? '#f1f5f9' : '#374151'),
+                                                    fontWeight: line.type !== 'equal' ? 'bold' : 'normal'
+                                                }}>
+                                                    {line.type === 'add' ? '+ ' : line.type === 'remove' ? '- ' : '  '}
+                                                    {line.type === 'add' ? line.content2 : line.content1}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Side-by-Side View */}
+                    {viewMode === 'sideBySide' && (
+                        <div style={{
+                            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0',
+                            border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`, borderRadius: "12px", overflow: "hidden",
+                        }}>
+                            {/* Left Panel (Original) */}
                             <div
-                                key={idx}
+                                ref={leftPanelRef}
+                                onScroll={() => handleSyncScroll('left')}
                                 style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "50px 50px 1fr",
-                                    background: line.type === 'add' ? (isDark ? '#064e3b' : '#dcfce7') :
-                                        line.type === 'remove' ? (isDark ? '#7f1d1d' : '#fee2e2') : (isDark ? '#1e293b' : '#fff'),
-                                    borderBottom: idx < diffResult.length - 1 ? `1px solid ${isDark ? "#334155" : "#e5e7eb"}` : "none"
+                                    maxHeight: '500px', overflowY: 'auto', fontFamily: "monospace", fontSize: "13px",
+                                    borderRight: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                 }}
                             >
-                                <div style={{
-                                    padding: "8px",
-                                    textAlign: "center",
-                                    color: isDark ? "#64748b" : "#9ca3af",
-                                    background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
-                                    borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`
-                                }}>
-                                    {line.lineNum1 || ''}
-                                </div>
-                                <div style={{
-                                    padding: "8px",
-                                    textAlign: "center",
-                                    color: isDark ? "#64748b" : "#9ca3af",
-                                    background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
-                                    borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`
-                                }}>
-                                    {line.lineNum2 || ''}
-                                </div>
-                                <div style={{
-                                    padding: "8px 12px",
-                                    whiteSpace: "pre-wrap",
-                                    wordBreak: "break-all"
-                                }}>
-                                    <span style={{
-                                        color: line.type === 'add' ? '#059669' :
-                                            line.type === 'remove' ? '#dc2626' : (isDark ? '#f1f5f9' : '#374151'),
-                                        fontWeight: line.type !== 'equal' ? 'bold' : 'normal'
-                                    }}>
-                                        {line.type === 'add' ? '+ ' : line.type === 'remove' ? '- ' : '  '}
-                                        {line.type === 'add' ? line.content2 : line.content1}
-                                    </span>
-                                </div>
+                                {sideBySideRows.map((row, idx) => {
+                                    const line = row.left;
+                                    const bgColor = !line ? (isDark ? '#1e293b' : '#f9fafb')
+                                        : line.type === 'remove' ? (isDark ? '#7f1d1d' : '#fee2e2')
+                                        : line.type === 'modify' ? (isDark ? '#7f1d1d' : '#fee2e2')
+                                        : (isDark ? '#1e293b' : '#fff');
+
+                                    return (
+                                        <div key={idx} style={{
+                                            display: 'grid', gridTemplateColumns: '45px 1fr',
+                                            background: bgColor, minHeight: '32px',
+                                            borderBottom: idx < sideBySideRows.length - 1 ? `1px solid ${isDark ? "#334155" : "#e5e7eb"}` : "none",
+                                        }}>
+                                            <div style={{ padding: "6px 4px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", fontSize: '0.8em', borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
+                                                {line?.lineNum1 || ''}
+                                            </div>
+                                            <div style={{ padding: "6px 8px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                                                {line && line.type === 'modify' && line.charDiff1 ? (
+                                                    <span style={{ color: '#dc2626' }}>{renderCharDiff(line.charDiff1, 'delete')}</span>
+                                                ) : line && line.type !== 'add' ? (
+                                                    <span style={{
+                                                        color: line.type === 'remove' ? '#dc2626' : (isDark ? '#f1f5f9' : '#374151'),
+                                                    }}>
+                                                        {line.content1}
+                                                    </span>
+                                                ) : null}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        ))}
-                    </div>
+
+                            {/* Right Panel (Modified) */}
+                            <div
+                                ref={rightPanelRef}
+                                onScroll={() => handleSyncScroll('right')}
+                                style={{
+                                    maxHeight: '500px', overflowY: 'auto', fontFamily: "monospace", fontSize: "13px",
+                                }}
+                            >
+                                {sideBySideRows.map((row, idx) => {
+                                    const line = row.right;
+                                    const bgColor = !line ? (isDark ? '#1e293b' : '#f9fafb')
+                                        : line.type === 'add' ? (isDark ? '#064e3b' : '#dcfce7')
+                                        : line.type === 'modify' ? (isDark ? '#064e3b' : '#dcfce7')
+                                        : (isDark ? '#1e293b' : '#fff');
+
+                                    return (
+                                        <div key={idx} style={{
+                                            display: 'grid', gridTemplateColumns: '45px 1fr',
+                                            background: bgColor, minHeight: '32px',
+                                            borderBottom: idx < sideBySideRows.length - 1 ? `1px solid ${isDark ? "#334155" : "#e5e7eb"}` : "none",
+                                        }}>
+                                            <div style={{ padding: "6px 4px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", fontSize: '0.8em', borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
+                                                {line?.lineNum2 || ''}
+                                            </div>
+                                            <div style={{ padding: "6px 8px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                                                {line && line.type === 'modify' && line.charDiff2 ? (
+                                                    <span style={{ color: '#059669' }}>{renderCharDiff(line.charDiff2, 'insert')}</span>
+                                                ) : line && line.type !== 'remove' ? (
+                                                    <span style={{
+                                                        color: line.type === 'add' ? '#059669' : (isDark ? '#f1f5f9' : '#374151'),
+                                                    }}>
+                                                        {line.content2 ?? line.content1}
+                                                    </span>
+                                                ) : null}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -406,17 +593,11 @@ export default function TextDiffClient() {
                 <h2 style={{ textAlign: "center", marginBottom: "30px" }}>{t('features.title')}</h2>
                 <p style={{ textAlign: "center", color: isDark ? '#94a3b8' : '#666', marginBottom: "40px", maxWidth: "700px", margin: "0 auto 40px" }}
                     dangerouslySetInnerHTML={{ __html: t.raw('features.desc') }} />
-                <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                    gap: "20px"
-                }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
                     {['instant', 'lineByLine', 'options'].map((key) => (
                         <div key={key} style={{
-                            padding: "24px",
-                            background: isDark ? "#1e293b" : "#f9fafb",
-                            borderRadius: "12px",
-                            textAlign: "center"
+                            padding: "24px", background: isDark ? "#1e293b" : "#f9fafb",
+                            borderRadius: "12px", textAlign: "center"
                         }}>
                             <h3 style={{ marginBottom: "12px", color: isDark ? "#f1f5f9" : "#374151" }}>{t(`features.list.${key}.title`)}</h3>
                             <p style={{ color: isDark ? "#94a3b8" : "#6b7280", fontSize: "0.95rem" }}>{t(`features.list.${key}.desc`)}</p>
@@ -428,30 +609,12 @@ export default function TextDiffClient() {
             {/* How to Use */}
             <section style={{ marginTop: "60px" }}>
                 <h2 style={{ textAlign: "center", marginBottom: "30px" }}>{t('instruction.title')}</h2>
-                <div style={{
-                    maxWidth: "700px",
-                    margin: "0 auto",
-                    background: isDark ? "#1e293b" : "#f9fafb",
-                    borderRadius: "12px",
-                    padding: "30px"
-                }}>
+                <div style={{ maxWidth: "700px", margin: "0 auto", background: isDark ? "#1e293b" : "#f9fafb", borderRadius: "12px", padding: "30px" }}>
                     {['step1', 'step2', 'step3', 'step4'].map((step, idx) => (
-                        <div key={step} style={{
-                            display: "flex",
-                            gap: "16px",
-                            marginBottom: idx < 3 ? "20px" : 0
-                        }}>
+                        <div key={step} style={{ display: "flex", gap: "16px", marginBottom: idx < 3 ? "20px" : 0 }}>
                             <div style={{
-                                width: "32px",
-                                height: "32px",
-                                borderRadius: "50%",
-                                background: "#2563eb",
-                                color: "white",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontWeight: "bold",
-                                flexShrink: 0
+                                width: "32px", height: "32px", borderRadius: "50%", background: "#2563eb", color: "white",
+                                display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", flexShrink: 0
                             }}>
                                 {idx + 1}
                             </div>
@@ -468,10 +631,8 @@ export default function TextDiffClient() {
                 <div style={{ maxWidth: "800px", margin: "0 auto" }}>
                     {['what', 'privacy', 'limits'].map((key) => (
                         <div key={key} style={{
-                            marginBottom: "20px",
-                            padding: "24px",
-                            background: isDark ? "#1e293b" : "#f9fafb",
-                            borderRadius: "12px"
+                            marginBottom: "20px", padding: "24px",
+                            background: isDark ? "#1e293b" : "#f9fafb", borderRadius: "12px"
                         }}>
                             <h3 style={{ marginBottom: "12px", color: isDark ? "#f1f5f9" : "#374151" }}>{t(`faq.${key}.q`)}</h3>
                             <p style={{ color: isDark ? "#94a3b8" : "#6b7280", lineHeight: "1.6" }}>{t(`faq.${key}.a`)}</p>
@@ -480,7 +641,6 @@ export default function TextDiffClient() {
                 </div>
             </section>
 
-            {/* Responsive Styles */}
             <style jsx>{`
                 @media (max-width: 768px) {
                     div[style*="gridTemplateColumns: \"1fr auto 1fr\""] {

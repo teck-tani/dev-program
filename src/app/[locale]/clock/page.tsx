@@ -310,9 +310,7 @@ export default async function ClockPage(props: { params: Promise<{ locale: strin
 
     return (
         <main style={{
-            width: '100%',
-            height: '100%',
-            minHeight: '100vh'
+            width: '100%'
         }}>
             {/* 구조화된 데이터 (JSON-LD) */}
             <script

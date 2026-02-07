@@ -229,6 +229,7 @@ export default function PayCalClient() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
 
+    const [salaryMode, setSalaryMode] = useState<'annual' | 'monthly'>('annual');
     const [annualSalary, setAnnualSalary] = useState("");
     const [nonTaxable, setNonTaxable] = useState("");
     const [retirementIncluded, setRetirementIncluded] = useState(false);
@@ -245,6 +246,7 @@ export default function PayCalClient() {
         localIncomeTax: number;
         totalDeduction: number;
         netSalary: number;
+        annualNetSalary: number;
     } | null>(null);
 
     const calculateIncomeTax = (taxableIncome: number, deps: number, kids: number) => {
@@ -279,10 +281,10 @@ export default function PayCalClient() {
     };
 
     const calculate = () => {
-        const salary = parseInt(annualSalary.replace(/,/g, "")) || 0;
+        const rawSalary = parseInt(annualSalary.replace(/,/g, "")) || 0;
         const nonTax = parseInt(nonTaxable.replace(/,/g, "")) || 0;
 
-        if (salary === 0) {
+        if (rawSalary === 0) {
             alert(tInput('alertSalary'));
             return;
         }
@@ -290,6 +292,7 @@ export default function PayCalClient() {
         setIsCalculating(true);
 
         setTimeout(() => {
+            const salary = salaryMode === 'monthly' ? rawSalary * 12 : rawSalary;
             let actualSalary = salary;
             if (retirementIncluded) {
                 actualSalary = Math.round(salary * (12 / 13));
@@ -318,6 +321,7 @@ export default function PayCalClient() {
                 localIncomeTax,
                 totalDeduction,
                 netSalary,
+                annualNetSalary: netSalary * 12,
             });
 
             setIsCalculating(false);
@@ -341,7 +345,66 @@ export default function PayCalClient() {
                     ? '1px solid #334155'
                     : '1px solid rgba(61, 92, 185, 0.15)',
             }}>
-                {/* Annual Salary Input */}
+                {/* Salary Mode Toggle */}
+                <div className="paycal-section" style={{ marginBottom: '24px' }}>
+                    <label className="paycal-label" style={{
+                        display: 'block',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        color: isDark ? '#e2e8f0' : '#374151',
+                        marginBottom: '10px',
+                    }}>
+                        {tInput('salaryMode')}
+                    </label>
+                    <div className="paycal-toggle-group" style={{
+                        display: 'flex',
+                        gap: '8px',
+                        padding: '4px',
+                        background: isDark ? '#0f172a' : '#f3f4f6',
+                        borderRadius: '14px',
+                    }}>
+                        <button
+                            className="paycal-toggle-btn"
+                            onClick={() => { setSalaryMode('annual'); setAnnualSalary(''); }}
+                            style={{
+                                flex: 1,
+                                padding: '12px 16px',
+                                border: 'none',
+                                borderRadius: '10px',
+                                fontSize: '0.85rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                transition: 'all 0.25s',
+                                background: salaryMode === 'annual' ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : 'transparent',
+                                color: salaryMode === 'annual' ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
+                                boxShadow: salaryMode === 'annual' ? '0 4px 12px rgba(61, 92, 185, 0.35)' : 'none',
+                            }}
+                        >
+                            {tInput('modeAnnual')}
+                        </button>
+                        <button
+                            className="paycal-toggle-btn"
+                            onClick={() => { setSalaryMode('monthly'); setAnnualSalary(''); }}
+                            style={{
+                                flex: 1,
+                                padding: '12px 16px',
+                                border: 'none',
+                                borderRadius: '10px',
+                                fontSize: '0.85rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                transition: 'all 0.25s',
+                                background: salaryMode === 'monthly' ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : 'transparent',
+                                color: salaryMode === 'monthly' ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
+                                boxShadow: salaryMode === 'monthly' ? '0 4px 12px rgba(61, 92, 185, 0.35)' : 'none',
+                            }}
+                        >
+                            {tInput('modeMonthly')}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Salary Input */}
                 <div className="paycal-section" style={{ marginBottom: '24px' }}>
                     <label className="paycal-label" style={{
                         display: 'block',
@@ -350,7 +413,7 @@ export default function PayCalClient() {
                         color: isDark ? '#e2e8f0' : '#374151',
                         marginBottom: '8px',
                     }}>
-                        {tInput('salary')}
+                        {salaryMode === 'annual' ? tInput('salary') : tInput('monthlySalary')}
                     </label>
                     <div style={{ position: 'relative' }}>
                         <input
@@ -362,7 +425,7 @@ export default function PayCalClient() {
                                 const value = e.target.value.replace(/[^\d]/g, "");
                                 setAnnualSalary(value ? parseInt(value).toLocaleString("ko-KR") : "");
                             }}
-                            placeholder={tInput('salaryPlaceholder')}
+                            placeholder={salaryMode === 'annual' ? tInput('salaryPlaceholder') : tInput('monthlySalaryPlaceholder')}
                             style={{
                                 width: '100%',
                                 padding: '16px 20px',
@@ -576,6 +639,23 @@ export default function PayCalClient() {
                     position: 'relative',
                     overflow: 'hidden',
                 }}>
+                    {/* Reference Year Badge */}
+                    <div style={{
+                        position: 'absolute',
+                        top: '16px',
+                        right: '20px',
+                        background: 'rgba(79, 109, 197, 0.2)',
+                        color: '#93b4f8',
+                        fontSize: '0.7rem',
+                        fontWeight: '600',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        border: '1px solid rgba(79, 109, 197, 0.3)',
+                        zIndex: 1,
+                    }}>
+                        {tResult('referenceYear')}
+                    </div>
+
                     {/* Decorative elements */}
                     <div style={{
                         position: 'absolute',
@@ -668,7 +748,7 @@ export default function PayCalClient() {
                                     </span>
                                 </div>
 
-                                {/* Net Salary */}
+                                {/* Monthly Net Salary */}
                                 <div style={{
                                     display: 'flex',
                                     justifyContent: 'space-between',
@@ -685,6 +765,25 @@ export default function PayCalClient() {
                                         fontSize: '1.5rem',
                                     }}>
                                         <AnimatedNumber value={result.netSalary} duration={800} />{tResult('currency')}
+                                    </span>
+                                </div>
+
+                                {/* Annual Net Salary */}
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '12px 16px',
+                                    borderTop: '1px solid rgba(255,255,255,0.1)',
+                                    marginTop: '8px',
+                                }}>
+                                    <span style={{ color: 'rgba(255,255,255,0.6)', fontWeight: '600', fontSize: '0.9rem' }}>{tResult('annualNet')}</span>
+                                    <span style={{
+                                        color: '#93b4f8',
+                                        fontWeight: '700',
+                                        fontSize: '1.15rem',
+                                    }}>
+                                        <AnimatedNumber value={result.annualNetSalary} duration={800} />{tResult('currency')}
                                     </span>
                                 </div>
                             </div>
