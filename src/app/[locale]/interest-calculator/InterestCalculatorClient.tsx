@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import { LuCopy, LuCheck, LuShare2, LuChevronDown, LuChevronUp } from "react-icons/lu";
 
 // Animated counter component
 function AnimatedNumber({ value, duration = 800 }: { value: number; duration?: number }) {
@@ -47,7 +48,6 @@ function GrowthChart({
     principal: number;
     interest: number;
     isDark: boolean;
-    months?: number;
     tResult: (key: string) => string;
 }) {
     const total = principal + interest;
@@ -126,10 +126,183 @@ function GrowthChart({
     );
 }
 
+// Monthly breakdown table
+function MonthlyTable({
+    type,
+    principal,
+    rate,
+    period,
+    interestType,
+    isDark,
+    tMonthly,
+    tResult
+}: {
+    type: string;
+    principal: number;
+    rate: number;
+    period: number;
+    interestType: string;
+    isDark: boolean;
+    tMonthly: (key: string) => string;
+    tResult: (key: string) => string;
+}) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    const monthlyData = [];
+    let accumulated = 0;
+
+    for (let month = 1; month <= period; month++) {
+        let monthlyPrincipal = 0;
+        let monthlyInterest = 0;
+
+        if (type === "deposit") {
+            monthlyPrincipal = month === 1 ? principal : 0;
+            if (interestType === "simple") {
+                monthlyInterest = (principal * rate / 12);
+                accumulated = principal + (monthlyInterest * month);
+            } else {
+                accumulated = principal * Math.pow(1 + rate / 12, month);
+                monthlyInterest = accumulated - (principal * Math.pow(1 + rate / 12, month - 1));
+            }
+        } else {
+            monthlyPrincipal = principal;
+            if (interestType === "simple") {
+                monthlyInterest = (principal * month * (rate / 12));
+                accumulated = (principal * month) + monthlyInterest;
+            } else {
+                const prevAccumulated = month === 1 ? 0 : principal * ((Math.pow(1 + rate / 12, month - 1) - 1) / (rate / 12));
+                accumulated = principal * ((Math.pow(1 + rate / 12, month) - 1) / (rate / 12));
+                monthlyInterest = accumulated - prevAccumulated - principal;
+            }
+        }
+
+        monthlyData.push({
+            month,
+            monthlyPrincipal: Math.round(monthlyPrincipal),
+            monthlyInterest: Math.round(monthlyInterest),
+            accumulated: Math.round(accumulated)
+        });
+    }
+
+    const copyTable = () => {
+        const header = `${tMonthly('month')}\t${tMonthly('monthlyPrincipal')}\t${tMonthly('monthlyInterest')}\t${tMonthly('accumulated')}`;
+        const rows = monthlyData.map(d =>
+            `${d.month}\t${d.monthlyPrincipal.toLocaleString()}\t${d.monthlyInterest.toLocaleString()}\t${d.accumulated.toLocaleString()}`
+        ).join('\n');
+        const text = `${header}\n${rows}`;
+
+        navigator.clipboard.writeText(text).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
+
+    return (
+        <div style={{
+            background: isDark ? '#1e293b' : '#f8f9fa',
+            borderRadius: '16px',
+            padding: '20px',
+            marginTop: '16px',
+            border: `1px solid ${isDark ? '#334155' : '#e9ecef'}`
+        }}>
+            <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                    color: isDark ? '#e2e8f0' : '#1e3a5f',
+                    fontSize: '1.05rem',
+                    fontWeight: '700'
+                }}
+            >
+                <span>{tMonthly('title')}</span>
+                {isExpanded ? <LuChevronUp size={20} /> : <LuChevronDown size={20} />}
+            </button>
+
+            {isExpanded && (
+                <div style={{ marginTop: '16px' }}>
+                    <div style={{
+                        maxHeight: '400px',
+                        overflowY: 'auto',
+                        border: `1px solid ${isDark ? '#334155' : '#e9ecef'}`,
+                        borderRadius: '8px',
+                        background: isDark ? '#0f172a' : '#fff'
+                    }}>
+                        <table style={{
+                            width: '100%',
+                            fontSize: '0.875rem',
+                            borderCollapse: 'collapse'
+                        }}>
+                            <thead style={{
+                                position: 'sticky',
+                                top: 0,
+                                background: isDark ? '#1e293b' : '#f1f5f9',
+                                borderBottom: `2px solid ${isDark ? '#334155' : '#e2e8f0'}`
+                            }}>
+                                <tr>
+                                    <th style={{ padding: '12px 8px', textAlign: 'center', fontWeight: '600' }}>{tMonthly('month')}</th>
+                                    <th style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>{tMonthly('monthlyPrincipal')}</th>
+                                    <th style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>{tMonthly('monthlyInterest')}</th>
+                                    <th style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>{tMonthly('accumulated')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {monthlyData.map((data, idx) => (
+                                    <tr key={data.month} style={{
+                                        borderBottom: `1px solid ${isDark ? '#334155' : '#e9ecef'}`,
+                                        background: idx % 2 === 0 ? 'transparent' : (isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)')
+                                    }}>
+                                        <td style={{ padding: '10px 8px', textAlign: 'center', color: isDark ? '#94a3b8' : '#64748b' }}>{data.month}</td>
+                                        <td style={{ padding: '10px 8px', textAlign: 'right', color: isDark ? '#e2e8f0' : '#1f2937' }}>{data.monthlyPrincipal.toLocaleString()}</td>
+                                        <td style={{ padding: '10px 8px', textAlign: 'right', color: '#d4a574', fontWeight: '600' }}>{data.monthlyInterest.toLocaleString()}</td>
+                                        <td style={{ padding: '10px 8px', textAlign: 'right', color: isDark ? '#e2e8f0' : '#1f2937', fontWeight: '700' }}>{data.accumulated.toLocaleString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <button
+                        onClick={copyTable}
+                        style={{
+                            marginTop: '12px',
+                            padding: '8px 16px',
+                            background: isDark ? '#334155' : '#e2e8f0',
+                            color: isDark ? '#e2e8f0' : '#1e3a5f',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        {copied ? <LuCheck size={16} /> : <LuCopy size={16} />}
+                        {copied ? tMonthly('downloaded') : tMonthly('copyTable')}
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function InterestCalculatorClient() {
     const t = useTranslations('InterestCalculator');
     const tInput = useTranslations('InterestCalculator.input');
     const tResult = useTranslations('InterestCalculator.result');
+    const tMonthly = useTranslations('InterestCalculator.monthlyTable');
+    const tPresets = useTranslations('InterestCalculator.presets');
+    const tEarlyWithdraw = useTranslations('InterestCalculator.earlyWithdraw');
+    const tCompare = useTranslations('InterestCalculator.compare');
     const tInfo = useTranslations('InterestCalculator.info');
     const tTips = useTranslations('InterestCalculator.tips');
     const tFaq = useTranslations('InterestCalculator.faq');
@@ -146,6 +319,7 @@ export default function InterestCalculatorClient() {
     const [period, setPeriod] = useState("");
     const [type, setType] = useState("deposit");
     const [interestType, setInterestType] = useState("simple");
+    const [taxType, setTaxType] = useState<"standard" | "preferred" | "taxFree">("standard");
     const [result, setResult] = useState<{
         totalPrincipal: number;
         beforeTaxInterest: number;
@@ -154,6 +328,20 @@ export default function InterestCalculatorClient() {
         totalAmount: number;
     } | null>(null);
     const [isCalculating, setIsCalculating] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [compareMode, setCompareMode] = useState(false);
+    const [showPresets, setShowPresets] = useState(false);
+    const [earlyWithdrawEnabled, setEarlyWithdrawEnabled] = useState(false);
+    const [earlyWithdrawMonth, setEarlyWithdrawMonth] = useState("");
+
+    const getTaxRate = () => {
+        switch (taxType) {
+            case "standard": return 0.154;
+            case "preferred": return 0.014;
+            case "taxFree": return 0;
+            default: return 0.154;
+        }
+    };
 
     const calculateInterest = () => {
         const p = parseInt(principal.replace(/,/g, "")) || 0;
@@ -187,7 +375,8 @@ export default function InterestCalculatorClient() {
                 }
             }
 
-            const tax = totalInterest * 0.154;
+            const taxRate = getTaxRate();
+            const tax = totalInterest * taxRate;
             const afterTaxInterest = totalInterest - tax;
             const totalAmount = totalPrincipal + afterTaxInterest;
 
@@ -202,6 +391,47 @@ export default function InterestCalculatorClient() {
             setIsCalculating(false);
         }, 300);
     };
+
+    const copyResult = () => {
+        if (!result) return;
+
+        const text = `${tResult('title')}
+${tResult('totalPrincipal')}: ${result.totalPrincipal.toLocaleString()}${tResult('currency')}
+${tResult('beforeTax')}: ${result.beforeTaxInterest.toLocaleString()}${tResult('currency')}
+${tResult('tax')}: ${result.tax.toLocaleString()}${tResult('currency')}
+${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('currency')}`;
+
+        navigator.clipboard.writeText(text).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
+
+    const shareResult = async () => {
+        if (!result) return;
+
+        const text = `${tResult('title')}
+${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('currency')}`;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({ text });
+            } catch (err) {
+                copyResult();
+            }
+        } else {
+            copyResult();
+        }
+    };
+
+    const bankPresets = [
+        { name: tPresets('kakao'), rate: "5.0" },
+        { name: tPresets('toss'), rate: "4.5" },
+        { name: tPresets('kb'), rate: "3.8" },
+        { name: tPresets('shinhan'), rate: "3.5" },
+        { name: tPresets('woori'), rate: "3.6" },
+        { name: tPresets('hana'), rate: "3.7" }
+    ];
 
     return (
         <div className="interest-container" style={{ maxWidth: "900px", margin: "0 auto", padding: "0 16px", overflowX: 'hidden' }}>
@@ -246,15 +476,15 @@ export default function InterestCalculatorClient() {
                     }
                     .interest-card {
                         padding: 14px !important;
-                        border-radius: 14px !important;
-                        margin-bottom: 14px !important;
+                        borderRadius: 14px !important;
+                        marginBottom: 14px !important;
                     }
                     .interest-section {
-                        margin-bottom: 12px !important;
+                        marginBottom: 12px !important;
                     }
                     .interest-label {
-                        font-size: 0.75rem !important;
-                        margin-bottom: 5px !important;
+                        fontSize: 0.75rem !important;
+                        marginBottom: 5px !important;
                     }
                     .interest-toggle-group {
                         gap: 4px !important;
@@ -262,23 +492,23 @@ export default function InterestCalculatorClient() {
                     }
                     .interest-toggle-btn {
                         padding: 10px 6px !important;
-                        font-size: 0.8rem !important;
-                        border-radius: 8px !important;
+                        fontSize: 0.8rem !important;
+                        borderRadius: 8px !important;
                     }
                     .toggle-emoji {
                         display: none !important;
                     }
                     .interest-input {
                         padding: 10px 12px !important;
-                        padding-right: 40px !important;
-                        font-size: 0.9rem !important;
-                        border-radius: 10px !important;
-                        border-width: 1.5px !important;
+                        paddingRight: 40px !important;
+                        fontSize: 0.9rem !important;
+                        borderRadius: 10px !important;
+                        borderWidth: 1.5px !important;
                     }
                     .interest-calc-btn {
                         padding: 12px 16px !important;
-                        font-size: 0.95rem !important;
-                        border-radius: 10px !important;
+                        fontSize: 0.95rem !important;
+                        borderRadius: 10px !important;
                     }
                     .interest-container {
                         padding: 8px 10px !important;
@@ -288,32 +518,90 @@ export default function InterestCalculatorClient() {
                     }
                     .interest-result-card {
                         padding: 20px !important;
-                        border-radius: 16px !important;
+                        borderRadius: 16px !important;
                     }
                     .interest-result-title {
-                        font-size: 1rem !important;
-                        margin-bottom: 14px !important;
+                        fontSize: 1rem !important;
+                        marginBottom: 14px !important;
                     }
                     .interest-result-row {
                         padding: 10px 0 !important;
                     }
                     .interest-result-label {
-                        font-size: 0.85rem !important;
+                        fontSize: 0.85rem !important;
                     }
                     .interest-result-value {
-                        font-size: 0.9rem !important;
+                        fontSize: 0.9rem !important;
                     }
                     .interest-final-value {
-                        font-size: 1.4rem !important;
+                        fontSize: 1.4rem !important;
                     }
                     .interest-growth-chart {
-                        margin-top: 16px !important;
+                        marginTop: 16px !important;
                     }
                     .interest-seo-section {
                         display: none !important;
                     }
                 }
             `}</style>
+
+            {/* Bank Rate Presets */}
+            {showPresets && (
+                <div style={{
+                    background: isDark ? '#1e293b' : '#f0f4f8',
+                    borderRadius: '16px',
+                    padding: '20px',
+                    marginBottom: '16px',
+                    border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+                }}>
+                    <h3 style={{
+                        fontSize: '1rem',
+                        fontWeight: '700',
+                        color: isDark ? '#e2e8f0' : '#1e3a5f',
+                        marginBottom: '8px'
+                    }}>{tPresets('title')}</h3>
+                    <p style={{
+                        fontSize: '0.8rem',
+                        color: isDark ? '#94a3b8' : '#64748b',
+                        marginBottom: '12px'
+                    }}>{tPresets('subtitle')}</p>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                        gap: '8px'
+                    }}>
+                        {bankPresets.map((preset) => (
+                            <button
+                                key={preset.name}
+                                onClick={() => {
+                                    setRate(preset.rate);
+                                    setShowPresets(false);
+                                }}
+                                style={{
+                                    padding: '10px',
+                                    background: isDark ? '#334155' : '#fff',
+                                    border: `1px solid ${isDark ? '#475569' : '#e2e8f0'}`,
+                                    borderRadius: '8px',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '600',
+                                    color: isDark ? '#e2e8f0' : '#1e3a5f',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                <div>{preset.name}</div>
+                                <div style={{
+                                    fontSize: '1rem',
+                                    fontWeight: '700',
+                                    color: isDark ? '#38bdf8' : '#3b82f6',
+                                    marginTop: '4px'
+                                }}>{preset.rate}%</div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Calculator Card */}
             <div className="interest-card" style={{
@@ -324,6 +612,47 @@ export default function InterestCalculatorClient() {
                 marginBottom: "24px",
                 border: `1px solid ${isDark ? "#334155" : "#e9ecef"}`,
             }}>
+                {/* Compare Mode & Presets Toggle */}
+                <div style={{
+                    display: 'flex',
+                    gap: '8px',
+                    marginBottom: '20px',
+                    flexWrap: 'wrap'
+                }}>
+                    <button
+                        onClick={() => setShowPresets(!showPresets)}
+                        style={{
+                            padding: '8px 16px',
+                            background: showPresets ? (isDark ? '#334155' : '#e2e8f0') : 'transparent',
+                            border: `1px solid ${isDark ? '#475569' : '#cbd5e1'}`,
+                            borderRadius: '8px',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            color: isDark ? '#e2e8f0' : '#475569',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        {tPresets('title')}
+                    </button>
+                    <button
+                        onClick={() => setEarlyWithdrawEnabled(!earlyWithdrawEnabled)}
+                        style={{
+                            padding: '8px 16px',
+                            background: earlyWithdrawEnabled ? (isDark ? '#334155' : '#e2e8f0') : 'transparent',
+                            border: `1px solid ${isDark ? '#475569' : '#cbd5e1'}`,
+                            borderRadius: '8px',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            color: isDark ? '#e2e8f0' : '#475569',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        {tEarlyWithdraw('enable')}
+                    </button>
+                </div>
+
                 {/* Type Selection */}
                 <div className="interest-section" style={{ marginBottom: "24px" }}>
                     <label className="interest-label" style={{
@@ -446,6 +775,112 @@ export default function InterestCalculatorClient() {
                             }}
                         >
                             {tInput('compound')}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Tax Type Selection - Tier 1 */}
+                <div className="interest-section" style={{ marginBottom: "24px" }}>
+                    <label className="interest-label" style={{
+                        display: "block",
+                        fontSize: "0.875rem",
+                        fontWeight: "600",
+                        color: isDark ? "#e2e8f0" : "#374151",
+                        marginBottom: "8px",
+                        letterSpacing: "0.01em",
+                    }}>{tInput('taxTypeLabel')}</label>
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(3, 1fr)",
+                        gap: "8px",
+                    }}>
+                        <button
+                            onClick={() => setTaxType("standard")}
+                            style={{
+                                padding: "12px 8px",
+                                border: `2px solid ${taxType === "standard" ? (isDark ? "#3b82f6" : "#1e3a5f") : (isDark ? "#334155" : "#e5e7eb")}`,
+                                borderRadius: "10px",
+                                background: taxType === "standard"
+                                    ? (isDark ? "rgba(59, 130, 246, 0.1)" : "rgba(30, 58, 95, 0.05)")
+                                    : "transparent",
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                textAlign: "center"
+                            }}
+                        >
+                            <div style={{
+                                fontSize: "0.85rem",
+                                fontWeight: "700",
+                                color: taxType === "standard" ? (isDark ? "#3b82f6" : "#1e3a5f") : (isDark ? "#94a3b8" : "#6b7280"),
+                                marginBottom: "4px"
+                            }}>{tInput('taxStandard')}</div>
+                            <div style={{
+                                fontSize: "1.1rem",
+                                fontWeight: "800",
+                                color: taxType === "standard" ? (isDark ? "#3b82f6" : "#1e3a5f") : (isDark ? "#64748b" : "#9ca3af")
+                            }}>{tInput('taxStandardRate')}</div>
+                        </button>
+                        <button
+                            onClick={() => setTaxType("preferred")}
+                            style={{
+                                padding: "12px 8px",
+                                border: `2px solid ${taxType === "preferred" ? (isDark ? "#10b981" : "#059669") : (isDark ? "#334155" : "#e5e7eb")}`,
+                                borderRadius: "10px",
+                                background: taxType === "preferred"
+                                    ? (isDark ? "rgba(16, 185, 129, 0.1)" : "rgba(5, 150, 105, 0.05)")
+                                    : "transparent",
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                textAlign: "center"
+                            }}
+                        >
+                            <div style={{
+                                fontSize: "0.85rem",
+                                fontWeight: "700",
+                                color: taxType === "preferred" ? (isDark ? "#10b981" : "#059669") : (isDark ? "#94a3b8" : "#6b7280"),
+                                marginBottom: "4px"
+                            }}>{tInput('taxPreferred')}</div>
+                            <div style={{
+                                fontSize: "1.1rem",
+                                fontWeight: "800",
+                                color: taxType === "preferred" ? (isDark ? "#10b981" : "#059669") : (isDark ? "#64748b" : "#9ca3af"),
+                                marginBottom: "2px"
+                            }}>{tInput('taxPreferredRate')}</div>
+                            <div style={{
+                                fontSize: "0.65rem",
+                                color: isDark ? "#64748b" : "#9ca3af"
+                            }}>{tInput('taxPreferredDesc')}</div>
+                        </button>
+                        <button
+                            onClick={() => setTaxType("taxFree")}
+                            style={{
+                                padding: "12px 8px",
+                                border: `2px solid ${taxType === "taxFree" ? (isDark ? "#f59e0b" : "#d97706") : (isDark ? "#334155" : "#e5e7eb")}`,
+                                borderRadius: "10px",
+                                background: taxType === "taxFree"
+                                    ? (isDark ? "rgba(245, 158, 11, 0.1)" : "rgba(217, 119, 6, 0.05)")
+                                    : "transparent",
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                textAlign: "center"
+                            }}
+                        >
+                            <div style={{
+                                fontSize: "0.85rem",
+                                fontWeight: "700",
+                                color: taxType === "taxFree" ? (isDark ? "#f59e0b" : "#d97706") : (isDark ? "#94a3b8" : "#6b7280"),
+                                marginBottom: "4px"
+                            }}>{tInput('taxFree')}</div>
+                            <div style={{
+                                fontSize: "1.1rem",
+                                fontWeight: "800",
+                                color: taxType === "taxFree" ? (isDark ? "#f59e0b" : "#d97706") : (isDark ? "#64748b" : "#9ca3af"),
+                                marginBottom: "2px"
+                            }}>{tInput('taxFreeRate')}</div>
+                            <div style={{
+                                fontSize: "0.65rem",
+                                color: isDark ? "#64748b" : "#9ca3af"
+                            }}>{tInput('taxFreeDesc')}</div>
                         </button>
                     </div>
                 </div>
@@ -591,6 +1026,58 @@ export default function InterestCalculatorClient() {
                     </div>
                 </div>
 
+                {/* Early Withdrawal Month Input */}
+                {earlyWithdrawEnabled && (
+                    <div className="interest-section" style={{ marginBottom: "20px" }}>
+                        <label className="interest-label" style={{
+                            display: "block",
+                            fontSize: "0.875rem",
+                            fontWeight: "600",
+                            color: isDark ? "#e2e8f0" : "#374151",
+                            marginBottom: "8px",
+                            letterSpacing: "0.01em",
+                        }}>{tEarlyWithdraw('withdrawMonth')}</label>
+                        <div style={{ position: "relative" as const }}>
+                            <input
+                                className="interest-input"
+                                type="number"
+                                inputMode="numeric"
+                                value={earlyWithdrawMonth}
+                                onChange={(e) => setEarlyWithdrawMonth(e.target.value)}
+                                placeholder={tInput('periodPlaceholder')}
+                                style={{
+                                    width: "100%",
+                                    padding: "14px 16px",
+                                    paddingRight: "50px",
+                                    border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                    borderRadius: "14px",
+                                    fontSize: "1rem",
+                                    transition: "all 0.2s ease",
+                                    background: isDark ? "#0f172a" : "#fff",
+                                    color: isDark ? "#e2e8f0" : "#1f2937",
+                                    boxSizing: "border-box" as const,
+                                    outline: "none",
+                                    textAlign: 'right' as const,
+                                }}
+                            />
+                            <span style={{
+                                position: "absolute" as const,
+                                right: "16px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                color: isDark ? "#94a3b8" : "#9ca3af",
+                                fontSize: "0.875rem",
+                                fontWeight: "500",
+                            }}>{tInput('periodSuffix')}</span>
+                        </div>
+                        <p style={{
+                            fontSize: '0.75rem',
+                            color: isDark ? '#64748b' : '#9ca3af',
+                            marginTop: '4px'
+                        }}>{tEarlyWithdraw('penaltyDesc')}</p>
+                    </div>
+                )}
+
                 {/* Calculate Button */}
                 <button
                     className="interest-calc-btn"
@@ -663,15 +1150,64 @@ export default function InterestCalculatorClient() {
                         borderRadius: "50%",
                     }} />
 
-                    <h2 className="interest-result-title" style={{
-                        fontSize: "1.25rem",
-                        fontWeight: "700",
-                        color: "#fff",
-                        marginBottom: "20px",
-                        position: "relative",
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '20px'
                     }}>
-                        {tResult('title')}
-                    </h2>
+                        <h2 className="interest-result-title" style={{
+                            fontSize: "1.25rem",
+                            fontWeight: "700",
+                            color: "#fff",
+                            position: "relative",
+                            margin: 0
+                        }}>
+                            {tResult('title')}
+                        </h2>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                                onClick={copyResult}
+                                style={{
+                                    padding: '8px 12px',
+                                    background: 'rgba(255,255,255,0.1)',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    borderRadius: '8px',
+                                    color: '#fff',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: '600',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                {copied ? <LuCheck size={16} /> : <LuCopy size={16} />}
+                                {copied ? tResult('copied') : tResult('copyResult')}
+                            </button>
+                            <button
+                                onClick={shareResult}
+                                style={{
+                                    padding: '8px 12px',
+                                    background: 'rgba(255,255,255,0.1)',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    borderRadius: '8px',
+                                    color: '#fff',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: '600',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <LuShare2 size={16} />
+                                {tResult('shareResult')}
+                            </button>
+                        </div>
+                    </div>
 
                     <div style={{ position: "relative" }}>
                         <div className="interest-result-row" style={{
@@ -707,9 +1243,11 @@ export default function InterestCalculatorClient() {
                             padding: "14px 0",
                             borderBottom: "1px solid rgba(255,255,255,0.1)",
                         }}>
-                            <span className="interest-result-label" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.95rem" }}>{tResult('tax')}</span>
+                            <span className="interest-result-label" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.95rem" }}>
+                                {tResult('tax')} ({(getTaxRate() * 100).toFixed(1)}%)
+                            </span>
                             <span className="interest-result-value" style={{ color: "#f87171", fontSize: "1rem", fontWeight: "600" }}>
-                                -<AnimatedNumber value={result.tax} />{tResult('currency')}
+                                -{result.tax > 0 ? <AnimatedNumber value={result.tax} /> : '0'}{tResult('currency')}
                             </span>
                         </div>
 
@@ -741,10 +1279,23 @@ export default function InterestCalculatorClient() {
                                 interest={result.afterTaxInterest}
                                 isDark={isDark}
                                 tResult={tResult}
-                                months={parseInt(period) || 0}
                             />
                         </div>
                     </div>
+
+                    {/* Monthly Table - Tier 1 */}
+                    {principal && rate && period && (
+                        <MonthlyTable
+                            type={type}
+                            principal={parseInt(principal.replace(/,/g, "")) || 0}
+                            rate={parseFloat(rate) / 100}
+                            period={parseInt(period) || 0}
+                            interestType={interestType}
+                            isDark={isDark}
+                            tMonthly={tMonthly}
+                            tResult={tResult}
+                        />
+                    )}
                 </div>
             )}
 
