@@ -449,6 +449,7 @@
       "period1y": "1Y",
       "chartHigh": "High",
       "chartLow": "Low",
+      "chartAvg": "Average",
       "chartChange": "Change",
       "chartLoading": "Loading chart data...",
       "chartNoData": "No data available",

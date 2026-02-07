@@ -3,6 +3,9 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import {
+    LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine
+} from "recharts";
 
 interface ExchangeRate {
     result: number;
@@ -16,6 +19,26 @@ interface ExchangeRate {
     kftc_bkpr: string;
     kftc_deal_bas_r: string;
     cur_nm: string;
+}
+
+interface HistoryEntry {
+    date: string;
+    rate: number;
+}
+
+interface HistoryStats {
+    high: number;
+    low: number;
+    avg: number;
+    change: number;
+    changePercent: number;
+}
+
+interface HistoryData {
+    currency: string;
+    days: number;
+    data: HistoryEntry[];
+    stats: HistoryStats | null;
 }
 
 const getFlagUrl = (cur_unit: string) => {
@@ -90,6 +113,17 @@ export default function ExchangeRateClient() {
     const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
     const [lastInputIndex, setLastInputIndex] = useState<number>(0);
 
+    // Chart states
+    const [chartPeriod, setChartPeriod] = useState<7 | 30 | 90 | 365>(7);
+    const [chartData, setChartData] = useState<HistoryEntry[]>([]);
+    const [chartStats, setChartStats] = useState<HistoryStats | null>(null);
+    const [chartLoading, setChartLoading] = useState(false);
+    const [chartExpanded, setChartExpanded] = useState(true);
+    const [chartCurrency, setChartCurrency] = useState("USD");
+
+    // Yesterday's rate for change calculation
+    const [yesterdayRates, setYesterdayRates] = useState<Record<string, number>>({});
+
     useEffect(() => {
         setMounted(true);
         fetchRates();
@@ -141,6 +175,68 @@ export default function ExchangeRateClient() {
         }
     };
 
+    // Fetch chart history data
+    const fetchChartData = useCallback(async (currency: string, days: number) => {
+        setChartLoading(true);
+        try {
+            const res = await fetch(`/api/exchange-rate/history?currency=${currency}&days=${days}`);
+            if (!res.ok) throw new Error("Failed");
+            const data: HistoryData = await res.json();
+            setChartData(data.data || []);
+            setChartStats(data.stats);
+
+            // Store yesterday's rate for change display
+            if (data.data && data.data.length >= 2) {
+                const prevRate = data.data[data.data.length - 2]?.rate;
+                if (prevRate) {
+                    setYesterdayRates(prev => ({ ...prev, [currency]: prevRate }));
+                }
+            }
+        } catch (error) {
+            console.error("Chart data fetch error:", error);
+            setChartData([]);
+            setChartStats(null);
+        } finally {
+            setChartLoading(false);
+        }
+    }, []);
+
+    // Fetch yesterday's rates for all currencies (for change display)
+    const fetchYesterdayRates = useCallback(async () => {
+        const currencies = ["USD", "EUR", "JPY(100)", "CNH", "GBP"];
+        const results: Record<string, number> = {};
+
+        await Promise.all(currencies.map(async (currency) => {
+            try {
+                const res = await fetch(`/api/exchange-rate/history?currency=${currency}&days=2`);
+                if (res.ok) {
+                    const data: HistoryData = await res.json();
+                    if (data.data && data.data.length >= 2) {
+                        results[currency] = data.data[0]?.rate || 0;
+                    }
+                }
+            } catch {
+                // Ignore errors for individual currencies
+            }
+        }));
+
+        setYesterdayRates(results);
+    }, []);
+
+    // Fetch chart data when period or currency changes
+    useEffect(() => {
+        if (mounted && chartExpanded) {
+            fetchChartData(chartCurrency, chartPeriod);
+        }
+    }, [chartPeriod, chartCurrency, chartExpanded, mounted, fetchChartData]);
+
+    // Fetch yesterday's rates on mount
+    useEffect(() => {
+        if (mounted && !loading && rates.length > 0) {
+            fetchYesterdayRates();
+        }
+    }, [mounted, loading, rates.length, fetchYesterdayRates]);
+
     const getRate = (code: string) => {
         if (code === "KRW") return 1;
         const item = rates.find(r => r.cur_unit === code);
@@ -149,6 +245,17 @@ export default function ExchangeRateClient() {
 
     const formatNumber = (num: number) => {
         return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    };
+
+    // Calculate change percentage between today and yesterday
+    const getChangeInfo = (code: string) => {
+        const currentRate = getRate(code);
+        const yesterdayRate = yesterdayRates[code];
+        if (!yesterdayRate || currentRate === 0) return null;
+
+        const change = currentRate - yesterdayRate;
+        const changePercent = (change / yesterdayRate) * 100;
+        return { change, changePercent };
     };
 
     const handleInputChange = (valueStr: string, currencyCode: string, rowIndex?: number) => {
@@ -590,6 +697,242 @@ export default function ExchangeRateClient() {
                 </div>
             </div>
 
+            {/* Chart Section */}
+            <div style={{
+                background: dark ? "#1e293b" : "#f8f9fa",
+                borderRadius: "16px",
+                border: dark ? "1px solid #334155" : "1px solid #e9ecef",
+                marginBottom: "40px",
+                overflow: "hidden"
+            }}>
+                {/* Chart Header */}
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "16px 20px",
+                    borderBottom: chartExpanded ? (dark ? "1px solid #334155" : "1px solid #e9ecef") : "none"
+                }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: "600", color: dark ? "#f1f5f9" : "#374151" }}>
+                            {t('chartTitle', { currency: chartCurrency.replace("(100)", "") })}
+                        </h3>
+                        {/* Currency selector for chart */}
+                        <select
+                            value={chartCurrency}
+                            onChange={(e) => setChartCurrency(e.target.value)}
+                            style={{
+                                padding: "4px 8px",
+                                borderRadius: "6px",
+                                border: dark ? "1px solid #475569" : "1px solid #d1d5db",
+                                background: dark ? "#334155" : "white",
+                                color: dark ? "#e2e8f0" : "#374151",
+                                fontSize: "0.85rem",
+                                cursor: "pointer"
+                            }}
+                        >
+                            {rowCurrencies.filter(c => c !== "KRW").map(code => (
+                                <option key={code} value={code}>{code.replace("(100)", "")}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <button
+                        onClick={() => setChartExpanded(!chartExpanded)}
+                        style={{
+                            padding: "6px 12px",
+                            borderRadius: "6px",
+                            border: "none",
+                            background: dark ? "#475569" : "#e5e7eb",
+                            color: dark ? "#e2e8f0" : "#374151",
+                            fontSize: "0.85rem",
+                            cursor: "pointer"
+                        }}
+                    >
+                        {chartExpanded ? t('chartCollapse') : t('chartExpand')}
+                    </button>
+                </div>
+
+                {chartExpanded && (
+                    <>
+                        {/* Period buttons */}
+                        <div style={{
+                            display: "flex",
+                            gap: "8px",
+                            padding: "12px 20px",
+                            borderBottom: dark ? "1px solid #334155" : "1px solid #e9ecef"
+                        }}>
+                            {([7, 30, 90, 365] as const).map(period => (
+                                <button
+                                    key={period}
+                                    onClick={() => setChartPeriod(period)}
+                                    style={{
+                                        padding: "6px 14px",
+                                        borderRadius: "6px",
+                                        border: "none",
+                                        background: chartPeriod === period
+                                            ? (dark ? "#3b82f6" : "#2563eb")
+                                            : (dark ? "#334155" : "#e5e7eb"),
+                                        color: chartPeriod === period ? "white" : (dark ? "#94a3b8" : "#6b7280"),
+                                        fontSize: "0.85rem",
+                                        fontWeight: chartPeriod === period ? "600" : "400",
+                                        cursor: "pointer",
+                                        transition: "all 0.15s"
+                                    }}
+                                >
+                                    {period === 7 && t('period7d')}
+                                    {period === 30 && t('period30d')}
+                                    {period === 90 && t('period90d')}
+                                    {period === 365 && t('period1y')}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Chart */}
+                        <div style={{ padding: "20px", minHeight: "280px" }}>
+                            {chartLoading ? (
+                                <div style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    height: "240px",
+                                    color: dark ? "#94a3b8" : "#6b7280"
+                                }}>
+                                    {t('chartLoading')}
+                                </div>
+                            ) : chartData.length === 0 ? (
+                                <div style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    height: "240px",
+                                    color: dark ? "#94a3b8" : "#6b7280"
+                                }}>
+                                    {t('chartNoData')}
+                                </div>
+                            ) : (
+                                <ResponsiveContainer width="100%" height={240}>
+                                    <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                                        <XAxis
+                                            dataKey="date"
+                                            tick={{ fill: dark ? "#94a3b8" : "#6b7280", fontSize: 11 }}
+                                            tickFormatter={(value) => {
+                                                const d = new Date(value);
+                                                return `${d.getMonth() + 1}/${d.getDate()}`;
+                                            }}
+                                            axisLine={{ stroke: dark ? "#475569" : "#e5e7eb" }}
+                                            tickLine={false}
+                                        />
+                                        <YAxis
+                                            domain={['auto', 'auto']}
+                                            tick={{ fill: dark ? "#94a3b8" : "#6b7280", fontSize: 11 }}
+                                            axisLine={{ stroke: dark ? "#475569" : "#e5e7eb" }}
+                                            tickLine={false}
+                                            tickFormatter={(value) => value.toLocaleString()}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                background: dark ? "#1e293b" : "white",
+                                                border: dark ? "1px solid #475569" : "1px solid #e5e7eb",
+                                                borderRadius: "8px",
+                                                color: dark ? "#f1f5f9" : "#374151"
+                                            }}
+                                            labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                                            formatter={(value) => [(value as number).toLocaleString() + " KRW", chartCurrency.replace("(100)", "")]}
+                                        />
+                                        {chartStats && (
+                                            <ReferenceLine
+                                                y={chartStats.avg}
+                                                stroke={dark ? "#64748b" : "#9ca3af"}
+                                                strokeDasharray="5 5"
+                                            />
+                                        )}
+                                        <Line
+                                            type="monotone"
+                                            dataKey="rate"
+                                            stroke={chartStats && chartStats.change >= 0 ? "#22c55e" : "#ef4444"}
+                                            strokeWidth={2}
+                                            dot={false}
+                                            activeDot={{ r: 5, fill: dark ? "#f1f5f9" : "#374151" }}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
+
+                        {/* Stats: High / Low / Avg */}
+                        {chartStats && !chartLoading && chartData.length > 0 && (
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(4, 1fr)",
+                                gap: "12px",
+                                padding: "0 20px 20px 20px"
+                            }}>
+                                <div style={{
+                                    background: dark ? "#0f172a" : "white",
+                                    padding: "12px",
+                                    borderRadius: "8px",
+                                    textAlign: "center",
+                                    border: dark ? "1px solid #334155" : "1px solid #e5e7eb"
+                                }}>
+                                    <div style={{ fontSize: "0.75rem", color: dark ? "#94a3b8" : "#6b7280", marginBottom: "4px" }}>
+                                        {t('chartHigh')}
+                                    </div>
+                                    <div style={{ fontSize: "1rem", fontWeight: "600", color: "#ef4444" }}>
+                                        {chartStats.high.toLocaleString()}
+                                    </div>
+                                </div>
+                                <div style={{
+                                    background: dark ? "#0f172a" : "white",
+                                    padding: "12px",
+                                    borderRadius: "8px",
+                                    textAlign: "center",
+                                    border: dark ? "1px solid #334155" : "1px solid #e5e7eb"
+                                }}>
+                                    <div style={{ fontSize: "0.75rem", color: dark ? "#94a3b8" : "#6b7280", marginBottom: "4px" }}>
+                                        {t('chartLow')}
+                                    </div>
+                                    <div style={{ fontSize: "1rem", fontWeight: "600", color: "#22c55e" }}>
+                                        {chartStats.low.toLocaleString()}
+                                    </div>
+                                </div>
+                                <div style={{
+                                    background: dark ? "#0f172a" : "white",
+                                    padding: "12px",
+                                    borderRadius: "8px",
+                                    textAlign: "center",
+                                    border: dark ? "1px solid #334155" : "1px solid #e5e7eb"
+                                }}>
+                                    <div style={{ fontSize: "0.75rem", color: dark ? "#94a3b8" : "#6b7280", marginBottom: "4px" }}>
+                                        {t('chartAvg') || '평균'}
+                                    </div>
+                                    <div style={{ fontSize: "1rem", fontWeight: "600", color: dark ? "#f1f5f9" : "#374151" }}>
+                                        {chartStats.avg.toFixed(2)}
+                                    </div>
+                                </div>
+                                <div style={{
+                                    background: dark ? "#0f172a" : "white",
+                                    padding: "12px",
+                                    borderRadius: "8px",
+                                    textAlign: "center",
+                                    border: dark ? "1px solid #334155" : "1px solid #e5e7eb"
+                                }}>
+                                    <div style={{ fontSize: "0.75rem", color: dark ? "#94a3b8" : "#6b7280", marginBottom: "4px" }}>
+                                        {t('chartChange')}
+                                    </div>
+                                    <div style={{
+                                        fontSize: "1rem",
+                                        fontWeight: "600",
+                                        color: chartStats.changePercent >= 0 ? "#22c55e" : "#ef4444"
+                                    }}>
+                                        {chartStats.changePercent >= 0 ? "▲" : "▼"} {Math.abs(chartStats.changePercent).toFixed(2)}%
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+
             {/* 1. Synced Exchange Rate Dashboard (Bottom) */}
             <div className="mobile-hidden">
                 <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "15px", color: dark ? "#f1f5f9" : "#333" }}>{t('dashboardTitle', { date: dateString })}</h2>
@@ -601,6 +944,7 @@ export default function ExchangeRateClient() {
                             const rate = rates.find((r) => r.cur_unit === code);
                             const displayRate = code === "KRW" ? "1.00" : rate?.deal_bas_r || "-";
                             const curName = getCurrencyName(code, rate?.cur_nm);
+                            const changeInfo = code !== "KRW" ? getChangeInfo(code) : null;
 
                             return (
                                 <div key={`${code}-${idx}`} style={{
@@ -624,8 +968,21 @@ export default function ExchangeRateClient() {
                                         <div style={{ fontSize: "0.9rem", color: dark ? "#94a3b8" : "#6B7280", marginBottom: "8px", fontWeight: "500" }}>
                                             {curName} ({code.replace("(100)", "")})
                                         </div>
-                                        <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: dark ? "#f1f5f9" : "#111827" }}>
-                                            {displayRate}
+                                        <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+                                            <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: dark ? "#f1f5f9" : "#111827" }}>
+                                                {displayRate}
+                                            </div>
+                                            {/* Change indicator */}
+                                            {changeInfo && (
+                                                <div style={{
+                                                    fontSize: "0.8rem",
+                                                    fontWeight: "600",
+                                                    color: changeInfo.changePercent >= 0 ? "#22c55e" : "#ef4444"
+                                                }}>
+                                                    {changeInfo.changePercent >= 0 ? "▲" : "▼"}
+                                                    {Math.abs(changeInfo.changePercent).toFixed(2)}%
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div style={{ fontSize: "0.8rem", color: dark ? "#64748b" : "#999", marginTop: "10px" }}>
@@ -655,6 +1012,7 @@ export default function ExchangeRateClient() {
                         {rowCurrencies.map((code, idx) => {
                             const rate = rates.find((r) => r.cur_unit === code);
                             const displayRate = code === "KRW" ? "1.00" : rate?.deal_bas_r || "-";
+                            const changeInfo = code !== "KRW" ? getChangeInfo(code) : null;
 
                             return (
                                 <div key={`mobile-${code}-${idx}`} style={{
@@ -673,6 +1031,18 @@ export default function ExchangeRateClient() {
                                         <span style={{ fontSize: "0.75rem", color: dark ? "#94a3b8" : "#6B7280", fontWeight: "500" }}>
                                             {code.replace("(100)", "")}
                                         </span>
+                                        {/* Mobile change indicator */}
+                                        {changeInfo && (
+                                            <span style={{
+                                                fontSize: "0.65rem",
+                                                fontWeight: "600",
+                                                color: changeInfo.changePercent >= 0 ? "#22c55e" : "#ef4444",
+                                                marginLeft: "auto"
+                                            }}>
+                                                {changeInfo.changePercent >= 0 ? "▲" : "▼"}
+                                                {Math.abs(changeInfo.changePercent).toFixed(1)}%
+                                            </span>
+                                        )}
                                     </div>
                                     <div style={{ fontSize: "1rem", fontWeight: "bold", color: dark ? "#f1f5f9" : "#111827" }}>
                                         {displayRate}
