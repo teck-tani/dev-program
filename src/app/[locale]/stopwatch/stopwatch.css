@@ -283,6 +283,59 @@ body[data-theme="dark"] .sw-faq-answer {
     color: #94a3b8;
 }
 
+/* Stopwatch Settings Toggles */
+.sw-settings {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.sw-setting-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    background: #f3f4f6;
+    color: #6b7280;
+    transition: all 0.2s ease;
+}
+
+.sw-setting-btn:hover {
+    border-color: #9ca3af;
+}
+
+.sw-setting-btn.active {
+    background: rgba(8, 145, 178, 0.1);
+    border-color: #0891b2;
+    color: #0891b2;
+}
+
+.sw-setting-btn svg {
+    font-size: 0.85rem;
+}
+
+body[data-theme="dark"] .sw-setting-btn {
+    background: #1e293b;
+    border-color: #475569;
+    color: #94a3b8;
+}
+
+body[data-theme="dark"] .sw-setting-btn:hover {
+    border-color: #64748b;
+}
+
+body[data-theme="dark"] .sw-setting-btn.active {
+    background: rgba(103, 232, 249, 0.1);
+    border-color: #67e8f9;
+    color: #67e8f9;
+}
+
 /* Stopwatch View - Shortcuts & Lap Records */
 .sw-shortcuts {
     display: flex;

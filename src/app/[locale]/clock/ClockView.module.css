@@ -46,6 +46,7 @@
    Main Clock Container
    ============================================ */
 .mainClockContainer {
+  position: relative;
   border-radius: 24px;
   padding: clamp(20px, 4vw, 40px) clamp(30px, 5vw, 60px);
   display: flex;
@@ -54,7 +55,7 @@
   gap: 20px;
   transition: all 0.3s ease;
   min-height: 280px;
-  overflow: visible;
+  overflow: hidden;
   width: 100%;
   box-sizing: border-box;
 }
@@ -614,6 +615,7 @@
    World Clock Container
    ============================================ */
 .worldClockContainer {
+  position: relative;
   width: 100%;
   max-width: 100vw;
   min-height: calc(100vh - 60px);
@@ -668,11 +670,11 @@
    ============================================ */
 .controlPanel {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 12px;
+  right: 12px;
   display: flex;
-  gap: 8px;
-  z-index: 50;
+  gap: 6px;
+  z-index: 10;
 }
 
 .mainContent {
@@ -819,14 +821,6 @@
 }
 
 /* ============================================
-   Hide zoom controls on mobile
-   ============================================ */
-.zoomControl {
-  display: flex;
-  gap: 8px;
-}
-
-/* ============================================
    Responsive - Tablet
    ============================================ */
 @media (max-width: 768px) {
@@ -836,13 +830,7 @@
   }
 
   .mainContent {
-    padding-top: 70px;
     gap: 30px;
-  }
-
-  /* Hide zoom controls on tablet/mobile */
-  .zoomControl {
-    display: none;
   }
 }
 
@@ -866,19 +854,18 @@
   }
 
   .controlPanel {
-    top: 12px;
-    right: 12px;
-    gap: 6px;
+    top: 8px;
+    right: 8px;
+    gap: 4px;
   }
 
   .controlBtn {
-    width: 38px;
-    height: 38px;
-    font-size: 15px;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
   }
 
   .mainContent {
-    padding-top: 40px;
     gap: 20px;
   }
 
@@ -917,20 +904,19 @@
   }
 
   .controlPanel {
-    top: 10px;
-    right: 10px;
-    gap: 4px;
+    top: 6px;
+    right: 6px;
+    gap: 3px;
   }
 
   .controlBtn {
-    width: 34px;
-    height: 34px;
-    font-size: 13px;
-    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    border-radius: 6px;
   }
 
   .mainContent {
-    padding-top: 36px;
     gap: 15px;
   }
 

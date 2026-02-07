@@ -458,7 +458,9 @@
         "bestRecord": "Best Record",
         "worstRecord": "Worst Record",
         "share": "📤 Share Results",
-        "copied": "✓ Copied!"
+        "copied": "✓ Copied!",
+        "lapSound": "Lap Sound",
+        "vibration": "Vibration"
       },
       "seo": {
         "title": "Online Stopwatch - Study & Workout Time Measurement",

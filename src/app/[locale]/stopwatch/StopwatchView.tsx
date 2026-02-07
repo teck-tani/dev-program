@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useStopwatchSettings } from "@/contexts/StopwatchSettingsContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { FaVolumeUp, FaVolumeMute, FaMobileAlt } from "react-icons/fa";
 
 interface LapRecord {
     lapNumber: number;
@@ -16,7 +17,7 @@ const STORAGE_KEY = 'stopwatch_laps';
 
 export default function StopwatchView() {
     const t = useTranslations('Clock.Stopwatch.controls');
-    const { playLapSound, triggerVibration } = useStopwatchSettings();
+    const { settings, toggleSound, toggleVibration, playLapSound, triggerVibration } = useStopwatchSettings();
     const { theme } = useTheme();
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
@@ -313,6 +314,26 @@ export default function StopwatchView() {
                     </div>
                 );
             })()}
+
+            {/* 스톱워치 전용 설정 */}
+            <div className="sw-settings">
+                <button
+                    className={`sw-setting-btn ${settings.soundEnabled ? 'active' : ''}`}
+                    onClick={toggleSound}
+                    title={t('lapSound')}
+                >
+                    {settings.soundEnabled ? <FaVolumeUp /> : <FaVolumeMute />}
+                    <span>{t('lapSound')}</span>
+                </button>
+                <button
+                    className={`sw-setting-btn ${settings.vibrationEnabled ? 'active' : ''}`}
+                    onClick={toggleVibration}
+                    title={t('vibration')}
+                >
+                    <FaMobileAlt />
+                    <span>{t('vibration')}</span>
+                </button>
+            </div>
 
             {/* 컨트롤 버튼 */}
             {/* 단축키 안내 */}

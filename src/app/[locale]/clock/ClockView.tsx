@@ -290,14 +290,16 @@ interface MainClockProps {
   fontSize: number;
   theme: 'dark' | 'light';
   locale: Locale;
+  children?: React.ReactNode;
 }
 
-const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fontSize, theme, locale }) => {
+const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fontSize, theme, locale, children }) => {
   const { hours, minutes, seconds } = formatTime(time);
   const digitSize = fontSize * 1.8;
 
   return (
     <div className={`${styles.mainClockContainer} ${styles[theme]}`}>
+      {children}
       <div className={styles.mainClockHeader}>
         <div className={styles.mainClockInfo}>
           <div className={styles.mainClockCity} style={{ fontSize: `${fontSize * 0.5}px` }}>
@@ -590,34 +592,31 @@ export default function ClockView() {
 
   return (
     <div className={`${styles.worldClockContainer} ${styles[theme]} ${isFullscreen ? styles.fullscreen : ''}`}>
-      {/* Zoom Controls - desktop only (fullscreen/theme handled by Header) */}
-      <div className={styles.controlPanel}>
-        <div className={styles.zoomControl}>
-          <ControlButton
-            icon={<MinusIcon />}
-            onClick={() => adjustFontSize(-5)}
-            title={t.decreaseSize}
-            theme={theme}
-          />
-          <ControlButton
-            icon={<PlusIcon />}
-            onClick={() => adjustFontSize(5)}
-            title={t.increaseSize}
-            theme={theme}
-          />
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className={styles.mainContent}>
-        {/* Main Clock */}
+        {/* Main Clock with Zoom Controls */}
         <MainClockDisplay
           city={state.mainClock}
           time={mainClockTime}
           fontSize={state.fontSize}
           theme={theme}
           locale={locale}
-        />
+        >
+          <div className={styles.controlPanel}>
+            <ControlButton
+              icon={<MinusIcon />}
+              onClick={() => adjustFontSize(-5)}
+              title={t.decreaseSize}
+              theme={theme}
+            />
+            <ControlButton
+              icon={<PlusIcon />}
+              onClick={() => adjustFontSize(5)}
+              title={t.increaseSize}
+              theme={theme}
+            />
+          </div>
+        </MainClockDisplay>
 
         {/* AdSense Banner - Between Main and Sub Clocks */}
         <div className={styles.adBanner}>

@@ -458,7 +458,9 @@
         "bestRecord": "최고 기록",
         "worstRecord": "최저 기록",
         "share": "📤 결과 공유하기",
-        "copied": "✓ 복사됨!"
+        "copied": "✓ 복사됨!",
+        "lapSound": "랩 소리",
+        "vibration": "진동"
       },
       "seo": {
         "title": "온라인 스톱워치 - 공부 & 운동 시간 측정",

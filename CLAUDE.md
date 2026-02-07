@@ -82,7 +82,28 @@ t.raw('htmlContent')   // For HTML content (use with dangerouslySetInnerHTML)
 ```
 
 ### SEO Requirements
-Each tool page should include:
+
+#### Meta & JSON-LD (in `page.tsx`)
 - `generateMetadata()` with title, description, keywords, OpenGraph, Twitter cards
-- JSON-LD structured data (FAQPage, HowTo, WebApplication schemas)
+- JSON-LD structured data: **FAQPage**, **HowTo**, **WebApplication** schemas
 - Proper `alternates.languages` for ko/en
+
+#### SEO Bottom Content Template
+모든 도구 페이지 하단(위젯 아래)에 아래 섹션들을 포함할 것.
+참고 모델: `calculator/page.tsx`, `stopwatch/page.tsx`
+
+**[필수 — 모든 페이지]**
+1. **도구 설명** (What is this?) — 이 도구가 무엇이며 어떤 문제를 해결하는지 1~2문단
+2. **주요 기능** (Key Features) — 핵심 기능 3~6개를 카드형/리스트로 간결하게
+3. **사용법** (How to Use) — 3~6단계 가이드 → HowTo JSON-LD와 내용 일치시킬 것
+4. **활용 예시** (Use Cases) — 실제 활용 시나리오 3~6개 (아이콘+제목+설명)
+5. **FAQ** — 자주 묻는 질문 4~8개 → FAQPage JSON-LD와 내용 일치시킬 것
+6. **개인정보 안내** (Privacy Notice) — "데이터는 브라우저(localStorage)에만 저장되며 서버로 전송되지 않습니다" 1문단
+
+**[선택 — 도구 특성에 따라]**
+7. **유의사항/팁** — 정밀도 한계, 모바일 제한사항, 주의점 등
+
+**규칙:**
+- 모든 텍스트는 `messages/ko.json`, `messages/en.json`에 번역 키로 관리 (하드코딩 금지)
+- HTML이 필요한 경우 `t.raw()` + `dangerouslySetInnerHTML` 패턴 사용
+- `<article>` 태그로 감싸서 시맨틱 HTML 유지
