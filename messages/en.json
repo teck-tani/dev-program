@@ -41,8 +41,7 @@
       "cronGenerator": "Cron Expression Generator",
       "youtubeThumbnail": "YouTube Thumbnail Extractor",
       "ipAddress": "My IP Address",
-      "qrGenerator": "QR Code Generator",
-      "spellChecker": "Spell Checker"
+      "qrGenerator": "QR Code Generator"
     }
   },
   "Header": {
@@ -2243,49 +2242,6 @@
           "a": "IPv4 uses 32-bit addresses (e.g., 192.168.0.1) providing about 4.3 billion addresses. IPv6 uses 128-bit addresses (e.g., 2001:0db8::1) providing virtually unlimited addresses."
         }
       }
-    }
-  },
-  "SpellChecker": {
-    "meta": {
-      "title": "Korean Spell Checker | Free Online Spell Check",
-      "description": "Quickly check Korean spelling. Automatically detect common spelling errors and get correction suggestions.",
-      "keywords": "spell checker, Korean spelling, spacing check, spell correction, Korean grammar",
-      "ogTitle": "Korean Spell Checker | Tani DevTool",
-      "ogDescription": "Quickly check and correct Korean spelling errors."
-    },
-    "input": {
-      "title": "Spell Check",
-      "count": "<strong>{count}</strong> characters",
-      "placeholder": "Enter text to check spelling...",
-      "alertEmpty": "Please enter text.",
-      "checking": "Checking...",
-      "check": "Check Spelling",
-      "reset": "Reset"
-    },
-    "result": {
-      "title": "Results",
-      "found": "{count} error(s) found",
-      "empty": "Enter text and press the check button.",
-      "perfect": "No spelling errors found!",
-      "errorLabel": "Error:",
-      "suggestionLabel": "Suggestion:",
-      "apply": "Apply",
-      "ignore": "Ignore"
-    },
-    "common": {
-      "title": "Common Korean Spelling Mistakes",
-      "list": {
-        "1": "<strong>됬습니다 → 됐습니다</strong>: The correct contraction of '되었습니다' (it was done) is '됐습니다'.",
-        "2": "<strong>데이타 → 데이터</strong>: According to Korean foreign word notation rules, '데이터' (data) is the correct spelling.",
-        "3": "<strong>안됩니다 → 안 됩니다</strong>: '안' is a negative adverb and must be separated from the following word.",
-        "4": "<strong>몇일 → 며칠</strong>: '며칠' (how many days) is the correct form, not '몇일'.",
-        "5": "<strong>역활 → 역할</strong>: '역할' (role) is the correct spelling."
-      }
-    },
-    "why": {
-      "title": "Why is Spell Checking Important?",
-      "desc1": "Correct spelling enhances professionalism and credibility. Spelling errors in business documents, emails, and social media posts can leave a negative impression.",
-      "desc2": "Use this tool to quickly find and correct common Korean spelling errors."
     }
   }
 }

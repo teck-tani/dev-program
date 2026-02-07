@@ -38,7 +38,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/text-diff',
         '/ladder-game',
         '/cron-generator',
-        '/spell-checker',
     ];
 
     const toolUrls = tools.flatMap((tool) =>
