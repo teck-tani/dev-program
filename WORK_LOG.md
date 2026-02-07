@@ -9,7 +9,7 @@
 
 | # | 도구 | 경로 | 현재 수준 | 핵심 개선사항 |
 |---|------|------|-----------|-------------|
-| 1 | 공학용 계산기 | calculator | A- | Tier 1~3 업그레이드 완료. 경쟁사 대비 상위 2~3위권 |
+| 1 | 공학용 계산기 | calculator | A | Tier 1~3 + 천단위콤마, 에러메시지, 메모리(M+/M-/MR/MC), RNG, 툴팁, 키보드범례 |
 | 2 | 이자 계산기 | interest-calculator | B | GrowthChart i18n 버그, 세금옵션 3가지 필요, 월별 내역표 |
 | 3 | 연봉 계산기 | salary-calculator | B | 소득세율 5단계→8단계, 기준연도 미표시, 연간 실수령 미표시 |
 | 4 | 퇴직금 계산기 | severance-calculator | B- | 계산과정 미표시, 퇴직소득세 미계산, 날짜입력 UX |
@@ -104,6 +104,7 @@
 
 ### Phase 3: 경쟁력 강화 (5-10일)
 - [x] Calculator: Tier 1~3 전면 업그레이드 (키보드, 복사, +/-, |x|, 1/x, ANS, EXP, 괄호카운터, sinh/cosh/tanh, mod, cbrt, x³)
+- [x] Calculator: A등급 업그레이드 (천단위콤마, 구체적에러메시지, 메모리M+/M-/MR/MC, RNG, 버튼툴팁, 키보드단축키범례)
 - [x] Exchange Rate: 환율 추이 차트 (recharts, history API 활용)
 - [ ] JSON Formatter: Syntax Highlighting + Tree View
 - [ ] Text Diff: Side-by-Side View + Character-level diff
@@ -121,7 +122,6 @@
 - [ ] SEO: JSON-LD 누락 보완, OG 이미지
 
 ### Phase 5: 추가 개선 (ongoing)
-- [ ] Spell Checker API 연동 (부산대/네이버)
 - [ ] PDF Manager 기능 확대 (회전, 이미지변환, 압축)
 - [ ] Color Converter CMYK/RGBA 추가
 - [ ] Severance Calculator 계산과정 표시, 퇴직소득세
@@ -135,6 +135,7 @@
 - Phase 3 진행중 (Calculator 완료, Exchange Rate 차트 완료)
 
 ## 완료된 작업
+- [x] Calculator A등급 업그레이드: 천단위콤마, 에러메시지, 메모리, RNG, 툴팁, 키보드범례 (2026-02-07)
 - [x] Calculator Tier 1~3 전면 업그레이드 (2026-02-07)
 - [x] Exchange Rate 환율 차트 프론트엔드 (2026-02-07)
 - [x] Phase 2: 핵심 기능 6건 추가 완료 (2026-02-07)
@@ -147,4 +148,4 @@
 - 모바일에서 SEO 콘텐츠 display:none 처리 → 구글 모바일 우선 인덱싱에 부정적 가능성
 
 ---
-*마지막 업데이트: 2026-02-07 (공학용계산기 Tier1~3, 환율차트)*
+*마지막 업데이트: 2026-02-07 (공학용계산기 A등급 업그레이드)*
