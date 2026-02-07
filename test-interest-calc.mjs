@@ -85,7 +85,7 @@ import { chromium } from 'playwright';
   const presetBtns = await page.locator('button:has-text("카카오뱅크"), button:has-text("토스뱅크"), button:has-text("KB국민"), button:has-text("신한"), button:has-text("우리"), button:has-text("하나")').count();
   console.log(`   ✓ Bank preset buttons: ${presetBtns}/6`);
 
-  await page.click('button:has-text("카카오뱅크")');
+  await page.locator('button:has-text("카카오뱅크")').click({ force: true });
   await page.waitForTimeout(300);
   const rateValue = await page.locator('input[type="number"]').nth(1).inputValue();
   console.log(`   ✓ Kakao Bank rate auto-filled: ${rateValue}%`);
