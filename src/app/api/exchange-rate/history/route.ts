@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const API_KEY = "9sYd8MjKwbfdZlFzlmcMH8FCQlvYMxBF";
+const API_KEY = process.env.EXCHANGE_RATE_API_KEY || "";
 const API_BASE_URL = "https://oapi.koreaexim.go.kr/site/program/financial/exchangeJSON";
 
 interface ExchangeRate {

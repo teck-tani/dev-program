@@ -227,7 +227,7 @@ export default function BarcodeGenerator() {
                     onClick={downloadBarcode}
                 >
                     <HiOutlineSave />
-                    <span>다운로드</span>
+                    <span>{t("download")}</span>
                 </button>
             )}
         </div>

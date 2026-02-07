@@ -35,6 +35,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/sql-formatter',
         '/youtube-thumbnail',
         '/ip-address',
+        '/text-diff',
+        '/ladder-game',
+        '/cron-generator',
+        '/spell-checker',
     ];
 
     const toolUrls = tools.flatMap((tool) =>

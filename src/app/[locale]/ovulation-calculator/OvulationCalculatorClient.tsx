@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 
 interface OvulationResult {
@@ -66,7 +66,7 @@ export default function OvulationCalculatorClient() {
     const t = useTranslations('OvulationCalculator');
     const { theme } = useTheme();
     const dark = theme === 'dark';
-    const locale = typeof window !== 'undefined' ? document.documentElement.lang || 'ko' : 'ko';
+    const locale = useLocale();
 
     const today = new Date();
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;

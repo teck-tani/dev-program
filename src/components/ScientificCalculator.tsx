@@ -9,6 +9,13 @@ import { useTheme } from '@/contexts/ThemeContext';
 const config = { };
 const math = create(all, config);
 
+// Custom degree-output inverse trig functions
+math.import({
+  asind: (x: number) => Math.asin(x) * (180 / Math.PI),
+  acosd: (x: number) => Math.acos(x) * (180 / Math.PI),
+  atand: (x: number) => Math.atan(x) * (180 / Math.PI),
+}, { override: true });
+
 interface HistoryItem {
   expression: string;
   result: string;
@@ -22,6 +29,7 @@ const ScientificCalculator = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [isDegree, setIsDegree] = useState(true);
+  const [isInverse, setIsInverse] = useState(false);
   const [error, setError] = useState(false);
   
   // Ref for auto-scrolling input
@@ -30,6 +38,48 @@ const ScientificCalculator = () => {
   
   // Track if the last action was "=" so we know if next input starts fresh
   const [isFinalResult, setIsFinalResult] = useState(false);
+
+  // Keyboard input support
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if focus is on an input/textarea/contenteditable
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement).isContentEditable) return;
+
+      const key = e.key;
+
+      if (/^[0-9]$/.test(key)) {
+        addToDisplay(key);
+      } else if (key === '+') {
+        addToDisplay('+');
+      } else if (key === '-') {
+        addToDisplay('-');
+      } else if (key === '*') {
+        addToDisplay('×');
+      } else if (key === '/') {
+        e.preventDefault();
+        addToDisplay('÷');
+      } else if (key === '.') {
+        addToDisplay('.');
+      } else if (key === '(' || key === ')') {
+        addToDisplay(key);
+      } else if (key === 'Enter' || key === '=') {
+        e.preventDefault();
+        handleCalculate();
+      } else if (key === 'Backspace') {
+        handleBackspace();
+      } else if (key === 'Escape' || key === 'c' || key === 'C') {
+        handleClear();
+      } else if (key === '%') {
+        addToDisplay('/100');
+      } else if (key === '^') {
+        addToDisplay('^');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
 
   // Load history from local storage on mount
   useEffect(() => {
@@ -81,33 +131,40 @@ const ScientificCalculator = () => {
   const calculateResult = (expression: string): string | null => {
     try {
       let expr = expression;
-      
+
       // Replace visual symbols with math operators
       expr = expr.replace(/×/g, '*')
                  .replace(/÷/g, '/')
                  .replace(/π/g, 'pi')
-                 .replace(/e/g, 'e')
-                 .replace(/\^/g, '^') // ensure power works
                  .replace(/√\(/g, 'sqrt(');
 
+      // Replace nPr/nCr with mathjs functions
+      expr = expr.replace(/nPr\(/g, 'permutations(')
+                 .replace(/nCr\(/g, 'combinations(');
+
       if (isDegree) {
+         // Convert inverse trig to degree-output versions FIRST
+         expr = expr.replace(/asin\(/g, 'asind(')
+                    .replace(/acos\(/g, 'acosd(')
+                    .replace(/atan\(/g, 'atand(');
+
+         // Then convert forward trig input from degrees (with lookbehind to avoid matching asind/acosd/atand)
          const trigFunctions = ['sin', 'cos', 'tan'];
          trigFunctions.forEach(func => {
-            const regex = new RegExp(`${func}\\(([0-9.]+)`, 'g');
-            expr = expr.replace(regex, `${func}($1 deg`); 
+            const regex = new RegExp(`(?<![a-zA-Z])${func}\\(([0-9.]+)`, 'g');
+            expr = expr.replace(regex, `${func}($1 deg`);
          });
       }
 
       const res = math.evaluate(expr);
-      
+
       // Format result
-      if (typeof res === 'number' || typeof res === 'object') { // mathjs returns objects for some types
+      if (typeof res === 'number' || typeof res === 'object') {
           return math.format(res, { precision: 14 });
       }
       return String(res);
-      
+
     } catch (err) {
-      // Return null on error so we don't update result
       return null;
     }
   };
@@ -119,15 +176,17 @@ const ScientificCalculator = () => {
 
   const addToDisplay = (val: string) => {
     if (isFinalResult) {
-       // If we just finished a calc, start new if it's a number, continue if operator
-       if (['+', '-', '×', '÷', '^'].includes(val)) {
-         setInput(result + val); // Continue with result
-         setError(false); 
-         setResult(result); 
+       // Continue with result for operators and postfix operations
+       const continueWithResult = ['+', '-', '×', '÷'].includes(val) ||
+                                   val.startsWith('^') || val === '!' || val === '/100';
+       if (continueWithResult) {
+         setInput(result + val);
+         setError(false);
+         setResult(result);
        } else {
          setInput(val); // Start fresh
          setError(false);
-         setResult('0'); 
+         setResult('0');
        }
        setIsFinalResult(false);
     } else {
@@ -376,48 +435,55 @@ const ScientificCalculator = () => {
 
           {/* Keypad */}
           <div className={`flex-1 p-4 ${dark ? 'bg-slate-800' : 'bg-white'}`}>
-            <div className="grid grid-cols-5 gap-3"> {/* Increased gap for better mobile UX */}
-              
-              {/* Row 1: Advanced Functions */}
-              <Button label={isDegree ? "Rad" : "Deg"} onClick={() => setIsDegree(!isDegree)} styleType="function" ariaLabel={`Switch to ${isDegree ? "Radians" : "Degrees"} mode`} />
-              <Button label="sin" onClick={() => addToDisplay('sin(')} styleType="function" ariaLabel="Sine" />
-              <Button label="cos" onClick={() => addToDisplay('cos(')} styleType="function" ariaLabel="Cosine" />
-              <Button label="tan" onClick={() => addToDisplay('tan(')} styleType="function" ariaLabel="Tangent" />
+            <div className="grid grid-cols-5 gap-2 sm:gap-3">
+
+              {/* Row 1: 2nd Toggle & Trig */}
+              <Button label="2nd" onClick={() => setIsInverse(!isInverse)} styleType={isInverse ? "action" : "function"} ariaLabel="Second function toggle" />
+              <Button label={isInverse ? "sin⁻¹" : "sin"} onClick={() => { addToDisplay(isInverse ? 'asin(' : 'sin('); setIsInverse(false); }} styleType="function" ariaLabel={isInverse ? "Arc sine" : "Sine"} />
+              <Button label={isInverse ? "cos⁻¹" : "cos"} onClick={() => { addToDisplay(isInverse ? 'acos(' : 'cos('); setIsInverse(false); }} styleType="function" ariaLabel={isInverse ? "Arc cosine" : "Cosine"} />
+              <Button label={isInverse ? "tan⁻¹" : "tan"} onClick={() => { addToDisplay(isInverse ? 'atan(' : 'tan('); setIsInverse(false); }} styleType="function" ariaLabel={isInverse ? "Arc tangent" : "Tangent"} />
               <Button label="AC" onClick={handleClear} styleType="warning" ariaLabel="All Clear" />
-              
-              {/* Row 2 */}
-              <Button label="(" onClick={() => addToDisplay('(')} styleType="function" ariaLabel="Open parenthesis" />
-              <Button label=")" onClick={() => addToDisplay(')')} styleType="function" ariaLabel="Close parenthesis" />
-              <Button label="ln" onClick={() => addToDisplay('log(')} styleType="function" ariaLabel="Natural logarithm" />
-              <Button label="log" onClick={() => addToDisplay('log10(')} styleType="function" ariaLabel="Logarithm base 10" />
+
+              {/* Row 2: Advanced Functions */}
+              <Button label="x²" onClick={() => addToDisplay('^2')} styleType="function" ariaLabel="Square" />
+              <Button label="n!" onClick={() => addToDisplay('!')} styleType="function" ariaLabel="Factorial" />
+              <Button label={isInverse ? "eˣ" : "ln"} onClick={() => { addToDisplay(isInverse ? 'e^(' : 'log('); setIsInverse(false); }} styleType="function" ariaLabel={isInverse ? "e to the power" : "Natural logarithm"} />
+              <Button label={isInverse ? "10ˣ" : "log"} onClick={() => { addToDisplay(isInverse ? '10^(' : 'log10('); setIsInverse(false); }} styleType="function" ariaLabel={isInverse ? "10 to the power" : "Logarithm base 10"} />
               <Button label={<LuDelete size={20} />} onClick={handleBackspace} styleType="warning" ariaLabel="Backspace" />
 
-              {/* Row 3 */}
+              {/* Row 3: Parentheses & Special */}
+              <Button label="(" onClick={() => addToDisplay('(')} styleType="function" ariaLabel="Open parenthesis" />
+              <Button label=")" onClick={() => addToDisplay(')')} styleType="function" ariaLabel="Close parenthesis" />
+              <Button label="," onClick={() => addToDisplay(',')} styleType="function" ariaLabel="Comma" />
+              <Button label={isInverse ? "nCr" : "nPr"} onClick={() => { addToDisplay(isInverse ? 'nCr(' : 'nPr('); setIsInverse(false); }} styleType="function" ariaLabel={isInverse ? "Combinations" : "Permutations"} />
+              <Button label="%" onClick={() => addToDisplay('/100')} styleType="function" ariaLabel="Percent (divide by 100)" />
+
+              {/* Row 4: Numbers */}
               <Button label="π" onClick={() => addToDisplay('π')} styleType="function" ariaLabel="Pi" />
               <Button label="7" onClick={() => addToDisplay('7')} styleType="number" />
               <Button label="8" onClick={() => addToDisplay('8')} styleType="number" />
               <Button label="9" onClick={() => addToDisplay('9')} styleType="number" />
               <Button label="÷" onClick={() => addToDisplay('÷')} styleType="operator" ariaLabel="Divide" />
 
-              {/* Row 4 */}
+              {/* Row 5 */}
               <Button label="e" onClick={() => addToDisplay('e')} styleType="function" ariaLabel="Euler's number" />
               <Button label="4" onClick={() => addToDisplay('4')} styleType="number" />
               <Button label="5" onClick={() => addToDisplay('5')} styleType="number" />
               <Button label="6" onClick={() => addToDisplay('6')} styleType="number" />
               <Button label="×" onClick={() => addToDisplay('×')} styleType="operator" ariaLabel="Multiply" />
 
-              {/* Row 5 */}
+              {/* Row 6 */}
               <Button label="√" onClick={() => addToDisplay('√(')} styleType="function" ariaLabel="Square root" />
               <Button label="1" onClick={() => addToDisplay('1')} styleType="number" />
               <Button label="2" onClick={() => addToDisplay('2')} styleType="number" />
               <Button label="3" onClick={() => addToDisplay('3')} styleType="number" />
               <Button label="-" onClick={() => addToDisplay('-')} styleType="operator" ariaLabel="Subtract" />
 
-              {/* Row 6 */}
+              {/* Row 7 */}
               <Button label="x^y" onClick={() => addToDisplay('^')} styleType="function" ariaLabel="Power" />
               <Button label="0" onClick={() => addToDisplay('0')} styleType="number" />
               <Button label="." onClick={() => addToDisplay('.')} styleType="number" ariaLabel="Decimal point" />
-              <Button label="=" onClick={handleCalculate} styleType="action" className="col-span-1" ariaLabel="Calculate" />
+              <Button label="=" onClick={handleCalculate} styleType="action" ariaLabel="Calculate" />
               <Button label="+" onClick={() => addToDisplay('+')} styleType="operator" ariaLabel="Add" />
             </div>
           </div>

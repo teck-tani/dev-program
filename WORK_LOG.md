@@ -83,16 +83,16 @@
 
 ## 우선순위별 작업 TODO
 
-### Phase 1: 긴급 버그 수정 (1-2일)
-- [ ] Calculator 키보드 입력 지원 추가
-- [ ] Interest Calculator GrowthChart i18n 수정
-- [ ] Ovulation Calculator locale 버그 수정
-- [ ] Barcode 다운로드 버튼 i18n 수정
-- [ ] Sitemap 누락 도구 3개 추가
-- [ ] Spell Checker 홈페이지/Header 등록 (또는 삭제 결정)
-- [ ] Exchange Rate API 키 환경변수로 이동
-- [ ] Footer 저작권 연도 동적 변경
-- [ ] Salary Calculator 소득세율 8단계 보완
+### Phase 1: 긴급 버그 수정 (1-2일) ✅ 완료
+- [x] Calculator 키보드 입력 지원 추가 (0-9, +-*/, Enter, Backspace, Esc)
+- [x] Interest Calculator GrowthChart i18n 수정 (chartPrincipal, chartInterest 키 추가)
+- [x] Ovulation Calculator locale 버그 수정 (document.documentElement.lang → useLocale())
+- [x] Barcode 다운로드 버튼 i18n 수정 (ko/en download 키 추가)
+- [x] Sitemap 누락 도구 4개 추가 (text-diff, ladder-game, cron-generator, spell-checker)
+- [x] Spell Checker Header 등록 + 번역 전체 추가 (meta, input, result, common, why 섹션)
+- [x] Exchange Rate API 키 환경변수로 이동 (.env.local + process.env.EXCHANGE_RATE_API_KEY)
+- [x] Footer 저작권 연도 동적 변경 (new Date().getFullYear() + {year} 플레이스홀더)
+- [x] Salary Calculator 소득세율 8단계 보완 (5→8단계, 최고 45%, 누진공제액 수정)
 
 ### Phase 2: 핵심 기능 추가 - 가장 약한 도구 개선 (3-5일)
 - [ ] Timer: 프리셋 버튼, 원형 프로그레스바, 탭 제목, Notification API
@@ -131,9 +131,10 @@
 ---
 
 ## 진행중인 작업
-- (없음)
+- Phase 2 대기중
 
 ## 완료된 작업
+- [x] Phase 1: 긴급 버그 9건 수정 완료 (2026-02-07)
 - [x] 전체 도구 스캔 & 글로벌 경쟁사 대비 분석 (2026-02-07)
 - [x] WORK_LOG.md 생성 & CLAUDE.md 연동 (2026-02-07)
 

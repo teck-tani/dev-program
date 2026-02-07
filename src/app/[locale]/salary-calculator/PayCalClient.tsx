@@ -256,10 +256,13 @@ export default function PayCalClient() {
 
         const taxRates = [
             { limit: 14000000, rate: 0.06, deduction: 0 },
-            { limit: 50000000, rate: 0.15, deduction: 840000 },
-            { limit: 88000000, rate: 0.24, deduction: 6240000 },
-            { limit: 150000000, rate: 0.35, deduction: 15360000 },
-            { limit: Infinity, rate: 0.38, deduction: 37060000 },
+            { limit: 50000000, rate: 0.15, deduction: 1260000 },
+            { limit: 88000000, rate: 0.24, deduction: 5760000 },
+            { limit: 150000000, rate: 0.35, deduction: 15440000 },
+            { limit: 300000000, rate: 0.38, deduction: 19940000 },
+            { limit: 500000000, rate: 0.40, deduction: 25940000 },
+            { limit: 1000000000, rate: 0.42, deduction: 35940000 },
+            { limit: Infinity, rate: 0.45, deduction: 65940000 },
         ];
 
         let tax = 0;

@@ -42,11 +42,13 @@ function GrowthChart({
     principal,
     interest,
     isDark,
+    tResult,
 }: {
     principal: number;
     interest: number;
     isDark: boolean;
     months?: number;
+    tResult: (key: string) => string;
 }) {
     const total = principal + interest;
     const principalRatio = (principal / total) * 100;
@@ -108,7 +110,7 @@ function GrowthChart({
                         borderRadius: '3px',
                         background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
                     }} />
-                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>원금</span>
+                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>{tResult('chartPrincipal')}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{
@@ -117,7 +119,7 @@ function GrowthChart({
                         borderRadius: '3px',
                         background: 'linear-gradient(135deg, #d4a574, #f0c987)',
                     }} />
-                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>이자 수익</span>
+                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>{tResult('chartInterest')}</span>
                 </div>
             </div>
         </div>
@@ -738,6 +740,7 @@ export default function InterestCalculatorClient() {
                                 principal={result.totalPrincipal}
                                 interest={result.afterTaxInterest}
                                 isDark={isDark}
+                                tResult={tResult}
                                 months={parseInt(period) || 0}
                             />
                         </div>

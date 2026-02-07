@@ -73,6 +73,7 @@ export default function Header() {
         { href: '/ladder-game', labelKey: 'ladderGame' },
         { href: '/youtube-thumbnail', labelKey: 'youtubeThumbnail' },
         { href: '/ip-address', labelKey: 'ipAddress' },
+        { href: '/spell-checker', labelKey: 'spellChecker' },
       ]
     },
     {
