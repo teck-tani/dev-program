@@ -3,9 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { FaHourglassStart } from "react-icons/fa";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function TimerView() {
     const t = useTranslations('Clock.Timer');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const [duration, setDuration] = useState(0); // in seconds
     const [timeLeft, setTimeLeft] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
@@ -75,7 +78,7 @@ export default function TimerView() {
     return (
         <div style={{
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)',
+            background: isDark ? '#0f172a' : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)',
         }}>
             <audio ref={audioRef} src="/alarm.mp3" />
 
@@ -94,12 +97,12 @@ export default function TimerView() {
                     zIndex: 1000
                 }}>
                     <div style={{
-                        backgroundColor: 'white',
+                        backgroundColor: isDark ? '#1e293b' : 'white',
                         width: '90%',
                         maxWidth: '400px',
                         borderRadius: '16px',
                         overflow: 'hidden',
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                        boxShadow: isDark ? 'none' : '0 20px 40px rgba(0,0,0,0.2)',
                         fontFamily: "'Noto Sans KR', sans-serif"
                     }}>
                         <div style={{
@@ -132,13 +135,13 @@ export default function TimerView() {
                             }}>
                                 <FaHourglassStart style={{ fontSize: '30px', color: 'white' }} />
                             </div>
-                            <div style={{ fontSize: '2.5rem', color: '#333', fontWeight: 600 }}>
+                            <div style={{ fontSize: '2.5rem', color: isDark ? '#f1f5f9' : '#333', fontWeight: 600 }}>
                                 00:00:00
                             </div>
                         </div>
                         <div style={{
                             padding: '20px 24px',
-                            borderTop: '1px solid #eee',
+                            borderTop: `1px solid ${isDark ? '#334155' : '#eee'}`,
                             display: 'flex',
                             justifyContent: 'center'
                         }}>
@@ -170,19 +173,19 @@ export default function TimerView() {
                 padding: '0 20px',
             }}>
                 <div style={{
-                    background: 'white',
+                    background: isDark ? '#1e293b' : 'white',
                     borderRadius: '20px',
-                    boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+                    boxShadow: isDark ? 'none' : '0 10px 40px rgba(0,0,0,0.1)',
                     padding: '40px 30px',
                     textAlign: 'center',
                 }}>
                     {isSetting ? (
                         <div style={{ marginBottom: '30px', display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
-                            <TimeInput value={inputValues.h} onChange={(v) => setInputValues({ ...inputValues, h: v })} label={t('labels.hour')} />
-                            <span style={{ fontSize: '2rem', color: '#ccc', fontWeight: 300 }}>:</span>
-                            <TimeInput value={inputValues.m} onChange={(v) => setInputValues({ ...inputValues, m: v })} label={t('labels.minute')} max={59} />
-                            <span style={{ fontSize: '2rem', color: '#ccc', fontWeight: 300 }}>:</span>
-                            <TimeInput value={inputValues.s} onChange={(v) => setInputValues({ ...inputValues, s: v })} label={t('labels.second')} max={59} />
+                            <TimeInput value={inputValues.h} onChange={(v) => setInputValues({ ...inputValues, h: v })} label={t('labels.hour')} isDark={isDark} />
+                            <span style={{ fontSize: '2rem', color: isDark ? '#475569' : '#ccc', fontWeight: 300 }}>:</span>
+                            <TimeInput value={inputValues.m} onChange={(v) => setInputValues({ ...inputValues, m: v })} label={t('labels.minute')} max={59} isDark={isDark} />
+                            <span style={{ fontSize: '2rem', color: isDark ? '#475569' : '#ccc', fontWeight: 300 }}>:</span>
+                            <TimeInput value={inputValues.s} onChange={(v) => setInputValues({ ...inputValues, s: v })} label={t('labels.second')} max={59} isDark={isDark} />
                         </div>
                     ) : (
                         <div style={{
@@ -260,7 +263,7 @@ export default function TimerView() {
     );
 }
 
-function TimeInput({ value, onChange, label, max }: { value: number, onChange: (v: number) => void, label: string, max?: number }) {
+function TimeInput({ value, onChange, label, max, isDark }: { value: number, onChange: (v: number) => void, label: string, max?: number, isDark: boolean }) {
     const [isFocused, setIsFocused] = useState(false);
 
     return (
@@ -287,21 +290,21 @@ function TimeInput({ value, onChange, label, max }: { value: number, onChange: (
                     textAlign: 'center',
                     fontSize: '1.8rem',
                     fontWeight: 600,
-                    border: '2px solid #e0e0e0',
+                    border: `2px solid ${isDark ? '#334155' : '#e0e0e0'}`,
                     borderRadius: '12px',
                     outline: 'none',
-                    color: '#333',
-                    background: '#f8f9fa',
+                    color: isDark ? '#e2e8f0' : '#333',
+                    background: isDark ? '#1e293b' : '#f8f9fa',
                     transition: 'border-color 0.2s, box-shadow 0.2s',
                 }}
                 onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = '#667eea';
                 }}
                 onMouseLeave={(e) => {
-                    if (!isFocused) e.currentTarget.style.borderColor = '#e0e0e0';
+                    if (!isFocused) e.currentTarget.style.borderColor = isDark ? '#334155' : '#e0e0e0';
                 }}
             />
-            <span style={{ color: '#888', marginTop: '8px', fontSize: '0.9rem' }}>{label}</span>
+            <span style={{ color: isDark ? '#64748b' : '#888', marginTop: '8px', fontSize: '0.9rem' }}>{label}</span>
         </div>
     );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type UnitKey = 'bit' | 'byte' | 'kb' | 'mb' | 'gb' | 'tb' | 'pb';
 
@@ -13,6 +14,9 @@ interface UnitInfo {
 
 export default function FileSizeConverterClient() {
     const t = useTranslations('FileSizeConverter');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+
     const [inputValue, setInputValue] = useState<string>('1');
     const [selectedUnit, setSelectedUnit] = useState<UnitKey>('gb');
     const [results, setResults] = useState<Record<UnitKey, string>>({
@@ -91,10 +95,10 @@ export default function FileSizeConverterClient() {
     ];
 
     return (
-        <div style={{ background: 'white', borderRadius: '20px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', padding: '30px', marginBottom: '40px' }}>
+        <div style={{ background: isDark ? "#1e293b" : "white", borderRadius: '20px', boxShadow: isDark ? "none" : '0 4px 20px rgba(0,0,0,0.08)', padding: '30px', marginBottom: '40px' }}>
             {/* 입력 영역 */}
             <div style={{ marginBottom: '30px' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', color: '#666', marginBottom: '10px', fontWeight: 500 }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', marginBottom: '10px', fontWeight: 500 }}>
                     {t('input.label')}
                 </label>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -110,14 +114,16 @@ export default function FileSizeConverterClient() {
                             padding: '15px 20px',
                             fontSize: '1.5rem',
                             fontWeight: 600,
-                            border: '2px solid #e0e0e0',
+                            border: `2px solid ${isDark ? "#334155" : '#e0e0e0'}`,
                             borderRadius: '12px',
                             textAlign: 'center',
                             outline: 'none',
                             transition: 'border-color 0.2s',
+                            color: isDark ? "#e2e8f0" : "#1f2937",
+                            background: isDark ? "#0f172a" : "#fff",
                         }}
                         onFocus={(e) => e.target.style.borderColor = '#667eea'}
-                        onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+                        onBlur={(e) => e.target.style.borderColor = isDark ? "#334155" : '#e0e0e0'}
                     />
                     <select
                         value={selectedUnit}
@@ -126,9 +132,10 @@ export default function FileSizeConverterClient() {
                             padding: '15px 20px',
                             fontSize: '1.2rem',
                             fontWeight: 600,
-                            border: '2px solid #e0e0e0',
+                            border: `2px solid ${isDark ? "#334155" : '#e0e0e0'}`,
                             borderRadius: '12px',
-                            background: 'white',
+                            background: isDark ? "#0f172a" : "white",
+                            color: isDark ? "#e2e8f0" : "#1f2937",
                             cursor: 'pointer',
                             minWidth: '120px',
                         }}
@@ -142,7 +149,7 @@ export default function FileSizeConverterClient() {
 
             {/* 빠른 선택 버튼 */}
             <div style={{ marginBottom: '30px' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', color: '#666', marginBottom: '10px', fontWeight: 500 }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', marginBottom: '10px', fontWeight: 500 }}>
                     {t('input.quick')}
                 </label>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -156,8 +163,9 @@ export default function FileSizeConverterClient() {
                             style={{
                                 padding: '8px 16px',
                                 borderRadius: '20px',
-                                border: '1px solid #e0e0e0',
-                                background: '#f8f9fa',
+                                border: `1px solid ${isDark ? "#334155" : '#e0e0e0'}`,
+                                background: isDark ? "#1e293b" : '#f8f9fa',
+                                color: isDark ? "#e2e8f0" : "inherit",
                                 cursor: 'pointer',
                                 fontSize: '0.9rem',
                                 fontWeight: 500,
@@ -169,9 +177,9 @@ export default function FileSizeConverterClient() {
                                 e.currentTarget.style.borderColor = '#667eea';
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.background = '#f8f9fa';
-                                e.currentTarget.style.color = 'inherit';
-                                e.currentTarget.style.borderColor = '#e0e0e0';
+                                e.currentTarget.style.background = isDark ? "#1e293b" : '#f8f9fa';
+                                e.currentTarget.style.color = isDark ? "#e2e8f0" : 'inherit';
+                                e.currentTarget.style.borderColor = isDark ? "#334155" : '#e0e0e0';
                             }}
                         >
                             {item.label}
@@ -182,7 +190,7 @@ export default function FileSizeConverterClient() {
 
             {/* 변환 결과 */}
             <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', color: '#666', marginBottom: '15px', fontWeight: 500 }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', marginBottom: '15px', fontWeight: 500 }}>
                     {t('result.title')}
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
@@ -193,13 +201,13 @@ export default function FileSizeConverterClient() {
                             style={{
                                 padding: '15px 20px',
                                 borderRadius: '12px',
-                                border: selectedUnit === key ? `2px solid ${units[key].color}` : '2px solid #e8e8e8',
-                                background: selectedUnit === key ? `${units[key].color}10` : '#fafafa',
+                                border: selectedUnit === key ? `2px solid ${units[key].color}` : `2px solid ${isDark ? "#334155" : '#e8e8e8'}`,
+                                background: selectedUnit === key ? `${units[key].color}10` : (isDark ? "#1e293b" : '#fafafa'),
                                 cursor: 'pointer',
                                 transition: 'all 0.2s',
                             }}
                         >
-                            <div style={{ fontSize: '0.85rem', color: '#888', marginBottom: '5px' }}>
+                            <div style={{ fontSize: '0.85rem', color: isDark ? "#64748b" : '#888', marginBottom: '5px' }}>
                                 {units[key].name}
                             </div>
                             <div style={{

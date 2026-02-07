@@ -619,6 +619,173 @@
 }
 
 /* ============================================
+   다크모드
+   ============================================ */
+:global(body[data-theme="dark"]) .qrWrapper {
+    background-color: #1e293b;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+:global(body[data-theme="dark"]) .headerTitle {
+    color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .headerSubtitle {
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .inputGroup label {
+    color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .inputGroup input,
+:global(body[data-theme="dark"]) .inputGroup textarea {
+    background: #0f172a;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .inputGroup input:focus,
+:global(body[data-theme="dark"]) .inputGroup textarea:focus {
+    background: #0f172a;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+:global(body[data-theme="dark"]) .optionItem label {
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .optionItem select,
+:global(body[data-theme="dark"]) .optionItem input[type="number"] {
+    background: #0f172a;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .optionItem input[type="color"] {
+    border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .colorInputWrapper input[type="color"] {
+    border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .colorInputWrapper span {
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .clearButton {
+    background: #334155;
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .clearButton:hover {
+    background: #475569;
+    color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .error {
+    background: #450a0a;
+    color: #fca5a5;
+    border-left-color: #ef4444;
+}
+
+:global(body[data-theme="dark"]) .resultSection {
+    background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+    border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .qrCodeContainer {
+    background: #1e293b;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+:global(body[data-theme="dark"]) .qrValue {
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .copyButton {
+    background: #1e293b;
+    color: #94a3b8;
+    border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .copyButton:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: #172554;
+}
+
+:global(body[data-theme="dark"]) .bulkSection {
+    border-top-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .bulkSection h3 {
+    color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .bulkItem {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+:global(body[data-theme="dark"]) .bulkItem:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+:global(body[data-theme="dark"]) .bulkItemValue {
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .bulkItemRemove {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+:global(body[data-theme="dark"]) .bulkItemRemove:hover {
+    background: #ef4444;
+    color: white;
+}
+
+:global(body[data-theme="dark"]) .bulkItemDownload {
+    background: #052e16;
+    color: #34d399;
+}
+
+:global(body[data-theme="dark"]) .bulkItemDownload:hover {
+    background: #10b981;
+    color: white;
+}
+
+:global(body[data-theme="dark"]) .emptyState {
+    color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .articleSection {
+    background: #0f172a;
+}
+
+:global(body[data-theme="dark"]) .faqSection {
+    background: #1e293b;
+}
+
+:global(body[data-theme="dark"]) .faqSection details {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .faqSection summary {
+    color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .faqSection details p {
+    color: #94a3b8;
+}
+
+/* ============================================
    아주 작은 화면 (375px 이하 - iPhone SE 등)
    ============================================ */
 @media (max-width: 375px) {

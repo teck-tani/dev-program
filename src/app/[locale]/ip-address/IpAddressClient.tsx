@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface IpInfo {
     ip: string;
@@ -21,6 +22,8 @@ interface IpInfo {
 
 export default function IpAddressClient() {
     const t = useTranslations('IpAddress');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [ipv4, setIpv4] = useState<string | null>(null);
     const [ipInfo, setIpInfo] = useState<IpInfo | null>(null);
@@ -160,68 +163,68 @@ export default function IpAddressClient() {
             {/* 위치 정보 */}
             {ipInfo && !loading && (
                 <div style={{
-                    background: "white", borderRadius: "10px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
+                    background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
                 }}>
-                    <h2 style={{ fontSize: "1.2rem", color: "#333", marginBottom: "20px" }}>
+                    <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#333", marginBottom: "20px" }}>
                         {t('locationTitle')}
                     </h2>
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
                         {/* 국가 */}
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('country')}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('country')}</span>
                         </div>
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ fontWeight: 600 }}>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>
                                 {getFlagEmoji(ipInfo.countryCode)} {ipInfo.country}
                             </span>
                         </div>
 
                         {/* 지역 */}
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('region')}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('region')}</span>
                         </div>
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ fontWeight: 600 }}>{ipInfo.regionName}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.regionName}</span>
                         </div>
 
                         {/* 도시 */}
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('city')}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('city')}</span>
                         </div>
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ fontWeight: 600 }}>{ipInfo.city}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.city}</span>
                         </div>
 
                         {/* 우편번호 */}
                         {ipInfo.zip && (
                             <>
-                                <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                                    <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('zip')}</span>
+                                <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                                    <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('zip')}</span>
                                 </div>
-                                <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                                    <span style={{ fontWeight: 600 }}>{ipInfo.zip}</span>
+                                <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                                    <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.zip}</span>
                                 </div>
                             </>
                         )}
 
                         {/* 위도/경도 */}
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('coordinates')}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('coordinates')}</span>
                         </div>
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ fontWeight: 600, fontFamily: "monospace" }}>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ fontWeight: 600, fontFamily: "monospace", color: isDark ? "#e2e8f0" : "inherit" }}>
                                 {ipInfo.lat.toFixed(4)}, {ipInfo.lon.toFixed(4)}
                             </span>
                         </div>
 
                         {/* 시간대 */}
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('timezone')}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('timezone')}</span>
                         </div>
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ fontWeight: 600 }}>{ipInfo.timezone}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.timezone}</span>
                         </div>
                     </div>
                 </div>
@@ -230,30 +233,30 @@ export default function IpAddressClient() {
             {/* 네트워크 정보 */}
             {ipInfo && !loading && (
                 <div style={{
-                    background: "white", borderRadius: "10px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
+                    background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
                 }}>
-                    <h2 style={{ fontSize: "1.2rem", color: "#333", marginBottom: "20px" }}>
+                    <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#333", marginBottom: "20px" }}>
                         {t('networkTitle')}
                     </h2>
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
                         {/* ISP */}
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('isp')}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('isp')}</span>
                         </div>
-                        <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                            <span style={{ fontWeight: 600 }}>{ipInfo.isp}</span>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.isp}</span>
                         </div>
 
                         {/* 조직 */}
                         {ipInfo.org && (
                             <>
-                                <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                                    <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('org')}</span>
+                                <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                                    <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('org')}</span>
                                 </div>
-                                <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                                    <span style={{ fontWeight: 600 }}>{ipInfo.org}</span>
+                                <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                                    <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.org}</span>
                                 </div>
                             </>
                         )}
@@ -261,11 +264,11 @@ export default function IpAddressClient() {
                         {/* AS */}
                         {ipInfo.as && (
                             <>
-                                <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                                    <span style={{ color: "#888", fontSize: "0.85rem" }}>{t('asn')}</span>
+                                <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                                    <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('asn')}</span>
                                 </div>
-                                <div style={{ padding: "14px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                                    <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{ipInfo.as}</span>
+                                <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                                    <span style={{ fontWeight: 600, fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.as}</span>
                                 </div>
                             </>
                         )}
@@ -276,16 +279,16 @@ export default function IpAddressClient() {
             {/* 지도 (Google Maps Embed) */}
             {ipInfo && !loading && (
                 <div style={{
-                    background: "white", borderRadius: "10px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
+                    background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
                 }}>
-                    <h2 style={{ fontSize: "1.2rem", color: "#333", marginBottom: "15px" }}>
+                    <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#333", marginBottom: "15px" }}>
                         {t('mapTitle')}
                     </h2>
-                    <p style={{ color: "#888", fontSize: "0.85rem", marginBottom: "15px" }}>
+                    <p style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem", marginBottom: "15px" }}>
                         {t('mapDesc')}
                     </p>
-                    <div style={{ borderRadius: "10px", overflow: "hidden", border: "1px solid #eee" }}>
+                    <div style={{ borderRadius: "10px", overflow: "hidden", border: `1px solid ${isDark ? "#334155" : "#eee"}` }}>
                         <iframe
                             title="IP Location Map"
                             width="100%"
@@ -305,7 +308,7 @@ export default function IpAddressClient() {
                     <button
                         onClick={fetchIpInfo}
                         style={{
-                            padding: "12px 30px", background: "#f0f4f8", color: "#555",
+                            padding: "12px 30px", background: isDark ? "#0f172a" : "#f0f4f8", color: isDark ? "#94a3b8" : "#555",
                             border: "none", borderRadius: "8px", fontSize: "0.95rem",
                             fontWeight: 500, cursor: "pointer"
                         }}
@@ -317,34 +320,34 @@ export default function IpAddressClient() {
 
             {/* 안내 정보 */}
             <div style={{
-                background: "white", borderRadius: "10px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
+                background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
             }}>
-                <h2 style={{ marginBottom: "15px", fontSize: "1.2rem", color: "#333" }}>
+                <h2 style={{ marginBottom: "15px", fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#333" }}>
                     {t('infoTitle')}
                 </h2>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
-                    <div style={{ padding: "15px", background: "#f8f9fa", borderRadius: "8px" }}>
-                        <h3 style={{ fontSize: "1rem", color: "#2c3e50", marginBottom: "8px" }}>
+                    <div style={{ padding: "15px", background: isDark ? "#1e293b" : "#f8f9fa", borderRadius: "8px" }}>
+                        <h3 style={{ fontSize: "1rem", color: isDark ? "#f1f5f9" : "#2c3e50", marginBottom: "8px" }}>
                             {t('info.whatIs.title')}
                         </h3>
-                        <p style={{ fontSize: "0.9rem", color: "#555", lineHeight: 1.6 }}>
+                        <p style={{ fontSize: "0.9rem", color: isDark ? "#94a3b8" : "#555", lineHeight: 1.6 }}>
                             {t('info.whatIs.desc')}
                         </p>
                     </div>
-                    <div style={{ padding: "15px", background: "#f8f9fa", borderRadius: "8px" }}>
-                        <h3 style={{ fontSize: "1rem", color: "#2c3e50", marginBottom: "8px" }}>
+                    <div style={{ padding: "15px", background: isDark ? "#1e293b" : "#f8f9fa", borderRadius: "8px" }}>
+                        <h3 style={{ fontSize: "1rem", color: isDark ? "#f1f5f9" : "#2c3e50", marginBottom: "8px" }}>
                             {t('info.privacy.title')}
                         </h3>
-                        <p style={{ fontSize: "0.9rem", color: "#555", lineHeight: 1.6 }}>
+                        <p style={{ fontSize: "0.9rem", color: isDark ? "#94a3b8" : "#555", lineHeight: 1.6 }}>
                             {t('info.privacy.desc')}
                         </p>
                     </div>
-                    <div style={{ padding: "15px", background: "#f8f9fa", borderRadius: "8px" }}>
-                        <h3 style={{ fontSize: "1rem", color: "#2c3e50", marginBottom: "8px" }}>
+                    <div style={{ padding: "15px", background: isDark ? "#1e293b" : "#f8f9fa", borderRadius: "8px" }}>
+                        <h3 style={{ fontSize: "1rem", color: isDark ? "#f1f5f9" : "#2c3e50", marginBottom: "8px" }}>
                             {t('info.accuracy.title')}
                         </h3>
-                        <p style={{ fontSize: "0.9rem", color: "#555", lineHeight: 1.6 }}>
+                        <p style={{ fontSize: "0.9rem", color: isDark ? "#94a3b8" : "#555", lineHeight: 1.6 }}>
                             {t('info.accuracy.desc')}
                         </p>
                     </div>
@@ -353,13 +356,13 @@ export default function IpAddressClient() {
 
             {/* 사용 가이드 */}
             <div style={{
-                background: "white", borderRadius: "10px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px"
+                background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px"
             }}>
-                <h2 style={{ marginBottom: "15px", fontSize: "1.2rem", color: "#333" }}>
+                <h2 style={{ marginBottom: "15px", fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#333" }}>
                     {t('guideTitle')}
                 </h2>
-                <div style={{ color: "#555", lineHeight: 1.8 }}>
+                <div style={{ color: isDark ? "#94a3b8" : "#555", lineHeight: 1.8 }}>
                     <p style={{ marginBottom: "10px" }}>
                         <strong>1. {t('guideStep1Title')}</strong><br />
                         {t('guideStep1Desc')}

@@ -80,6 +80,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "월복리 상품이 실제로 있나요?",
             answer: "대부분의 시중 은행 예적금은 단리입니다. 월복리는 주로 CMA, 발행어음 등 일부 금융상품에서 제공됩니다. 가입 전 상품 설명서를 확인하세요."
+        },
+        {
+            question: "비과세 저축 상품이란 무엇인가요?",
+            answer: "비과세 종합저축은 만 65세 이상, 장애인 등 일정 요건을 갖춘 분들이 이자 소득세(15.4%) 없이 저축할 수 있는 상품입니다. 1인당 5,000만 원까지 가입 가능합니다."
+        },
+        {
+            question: "예적금 중도해지 시 이자는 어떻게 되나요?",
+            answer: "만기 전 중도해지 시 약정 이자율이 아닌 중도해지 이자율이 적용됩니다. 보통 약정 이자율의 절반 이하로 떨어지며, 가입 기간이 짧을수록 더 낮은 이자율이 적용됩니다."
         }
     ] : [
         {
@@ -97,6 +105,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "Do monthly compound interest products actually exist?",
             answer: "Most bank deposits use simple interest. Monthly compounding is mainly offered by CMA accounts and some special financial products. Always check product details before signing up."
+        },
+        {
+            question: "What are tax-free savings products?",
+            answer: "Tax-free comprehensive savings accounts allow eligible individuals (aged 65+, persons with disabilities, etc.) to save without the 15.4% interest income tax. Up to 50 million KRW per person can be deposited."
+        },
+        {
+            question: "What happens to interest if I withdraw early?",
+            answer: "If you break your deposit/savings before maturity, a reduced early withdrawal rate applies instead of the agreed rate. It typically drops to less than half the original rate."
         }
     ];
 
@@ -201,8 +217,6 @@ function generateHowToSchema(locale: string) {
 export default async function InterestCalculatorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
-    const t = await getTranslations('InterestCalculator');
-    const tFaq = await getTranslations('InterestCalculator.faq');
 
     const faqSchema = generateFaqSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
@@ -225,198 +239,6 @@ export default async function InterestCalculatorPage({ params }: { params: Promi
             />
 
             <InterestCalculatorClient />
-
-            {/* FAQ 섹션 (SEO용 추가 콘텐츠) */}
-            <div style={{
-                maxWidth: "900px",
-                margin: "0 auto",
-                padding: "0 16px 48px"
-            }}>
-                <section style={{
-                    background: 'linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%)',
-                    padding: '32px',
-                    borderRadius: '24px',
-                    border: '1px solid rgba(30, 58, 95, 0.08)',
-                    boxShadow: '0 4px 24px rgba(30, 58, 95, 0.06)',
-                }}>
-                    <h2 style={{
-                        fontSize: '1.5rem',
-                        fontWeight: '700',
-                        color: '#1e3a5f',
-                        marginBottom: '24px',
-                        textAlign: 'center',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '10px',
-                    }}>
-                        <span style={{ fontSize: '1.75rem' }}>💬</span>
-                        {tFaq('title')}
-                    </h2>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <details style={{
-                            background: 'white',
-                            padding: '20px',
-                            borderRadius: '16px',
-                            border: '1px solid #e2e8f0',
-                            transition: 'all 0.2s ease',
-                        }}>
-                            <summary style={{
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                                color: '#1e3a5f',
-                                fontSize: '1rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                            }}>
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '24px',
-                                    height: '24px',
-                                    borderRadius: '6px',
-                                    background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
-                                    color: '#fff',
-                                    fontSize: '0.75rem',
-                                    fontWeight: '700',
-                                    flexShrink: 0,
-                                }}>Q</span>
-                                {tFaq('list.difference.q')}
-                            </summary>
-                            <p style={{
-                                marginTop: '14px',
-                                color: '#64748b',
-                                paddingLeft: '32px',
-                                lineHeight: '1.7',
-                                fontSize: '0.95rem',
-                            }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.difference.a') }} />
-                        </details>
-
-                        <details style={{
-                            background: 'white',
-                            padding: '20px',
-                            borderRadius: '16px',
-                            border: '1px solid #e2e8f0',
-                            transition: 'all 0.2s ease',
-                        }}>
-                            <summary style={{
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                                color: '#1e3a5f',
-                                fontSize: '1rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                            }}>
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '24px',
-                                    height: '24px',
-                                    borderRadius: '6px',
-                                    background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
-                                    color: '#fff',
-                                    fontSize: '0.75rem',
-                                    fontWeight: '700',
-                                    flexShrink: 0,
-                                }}>Q</span>
-                                {tFaq('list.tax.q')}
-                            </summary>
-                            <p style={{
-                                marginTop: '14px',
-                                color: '#64748b',
-                                paddingLeft: '32px',
-                                lineHeight: '1.7',
-                                fontSize: '0.95rem',
-                            }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.tax.a') }} />
-                        </details>
-
-                        <details style={{
-                            background: 'white',
-                            padding: '20px',
-                            borderRadius: '16px',
-                            border: '1px solid #e2e8f0',
-                            transition: 'all 0.2s ease',
-                        }}>
-                            <summary style={{
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                                color: '#1e3a5f',
-                                fontSize: '1rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                            }}>
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '24px',
-                                    height: '24px',
-                                    borderRadius: '6px',
-                                    background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
-                                    color: '#fff',
-                                    fontSize: '0.75rem',
-                                    fontWeight: '700',
-                                    flexShrink: 0,
-                                }}>Q</span>
-                                {tFaq('list.which.q')}
-                            </summary>
-                            <p style={{
-                                marginTop: '14px',
-                                color: '#64748b',
-                                paddingLeft: '32px',
-                                lineHeight: '1.7',
-                                fontSize: '0.95rem',
-                            }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.which.a') }} />
-                        </details>
-
-                        <details style={{
-                            background: 'white',
-                            padding: '20px',
-                            borderRadius: '16px',
-                            border: '1px solid #e2e8f0',
-                            transition: 'all 0.2s ease',
-                        }}>
-                            <summary style={{
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                                color: '#1e3a5f',
-                                fontSize: '1rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                            }}>
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '24px',
-                                    height: '24px',
-                                    borderRadius: '6px',
-                                    background: 'linear-gradient(135deg, #1e3a5f, #2d5a87)',
-                                    color: '#fff',
-                                    fontSize: '0.75rem',
-                                    fontWeight: '700',
-                                    flexShrink: 0,
-                                }}>Q</span>
-                                {tFaq('list.compound.q')}
-                            </summary>
-                            <p style={{
-                                marginTop: '14px',
-                                color: '#64748b',
-                                paddingLeft: '32px',
-                                lineHeight: '1.7',
-                                fontSize: '0.95rem',
-                            }} dangerouslySetInnerHTML={{ __html: tFaq.raw('list.compound.a') }} />
-                        </details>
-                    </div>
-                </section>
-            </div>
         </>
     );
 }

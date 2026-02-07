@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // Animated number component
 function AnimatedNumber({ value, duration = 600 }: { value: number; duration?: number }) {
@@ -135,11 +136,13 @@ function Stepper({
     onChange,
     min = 0,
     label,
+    isDark,
 }: {
     value: number;
     onChange: (val: number) => void;
     min?: number;
     label: string;
+    isDark: boolean;
 }) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -147,7 +150,7 @@ function Stepper({
                 display: 'block',
                 fontSize: '0.8rem',
                 fontWeight: '600',
-                color: '#374151',
+                color: isDark ? '#e2e8f0' : '#374151',
                 marginBottom: '8px',
                 textAlign: 'center',
             }}>
@@ -157,7 +160,7 @@ function Stepper({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                background: '#f3f4f6',
+                background: isDark ? '#0f172a' : '#f3f4f6',
                 borderRadius: '12px',
                 padding: '4px',
                 width: 'fit-content',
@@ -169,7 +172,7 @@ function Stepper({
                         height: '40px',
                         border: 'none',
                         borderRadius: '10px',
-                        background: value > min ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : '#d1d5db',
+                        background: value > min ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : (isDark ? '#334155' : '#d1d5db'),
                         color: '#fff',
                         fontSize: '1.25rem',
                         fontWeight: '700',
@@ -187,7 +190,7 @@ function Stepper({
                     textAlign: 'center',
                     fontSize: '1.25rem',
                     fontWeight: '700',
-                    color: '#1f2937',
+                    color: isDark ? '#e2e8f0' : '#1f2937',
                 }}>
                     {value}
                 </div>
@@ -222,6 +225,9 @@ export default function PayCalClient() {
     const tResult = useTranslations('PayCal.result');
     const tInfo = useTranslations('PayCal.info');
     const tFaq = useTranslations('PayCal.faq');
+
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [annualSalary, setAnnualSalary] = useState("");
     const [nonTaxable, setNonTaxable] = useState("");
@@ -319,12 +325,18 @@ export default function PayCalClient() {
         <div className="paycal-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
             {/* Calculator Card */}
             <div className="paycal-card" style={{
-                background: 'linear-gradient(145deg, #ffffff 0%, #f0f4ff 100%)',
+                background: isDark
+                    ? 'linear-gradient(145deg, #1e293b 0%, #1a2332 100%)'
+                    : 'linear-gradient(145deg, #ffffff 0%, #f0f4ff 100%)',
                 borderRadius: '24px',
-                boxShadow: '0 4px 24px rgba(61, 92, 185, 0.12), 0 1px 3px rgba(0,0,0,0.04)',
+                boxShadow: isDark
+                    ? '0 4px 24px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0,0,0,0.2)'
+                    : '0 4px 24px rgba(61, 92, 185, 0.12), 0 1px 3px rgba(0,0,0,0.04)',
                 padding: '28px',
                 marginBottom: '24px',
-                border: '1px solid rgba(61, 92, 185, 0.15)',
+                border: isDark
+                    ? '1px solid #334155'
+                    : '1px solid rgba(61, 92, 185, 0.15)',
             }}>
                 {/* Annual Salary Input */}
                 <div className="paycal-section" style={{ marginBottom: '24px' }}>
@@ -332,7 +344,7 @@ export default function PayCalClient() {
                         display: 'block',
                         fontSize: '0.8rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: isDark ? '#e2e8f0' : '#374151',
                         marginBottom: '8px',
                     }}>
                         {tInput('salary')}
@@ -352,12 +364,13 @@ export default function PayCalClient() {
                                 width: '100%',
                                 padding: '16px 20px',
                                 paddingRight: '50px',
-                                border: '2px solid #e5e7eb',
+                                border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
                                 borderRadius: '14px',
                                 fontSize: '1.1rem',
                                 fontWeight: '600',
                                 transition: 'all 0.2s',
-                                background: '#fff',
+                                background: isDark ? '#0f172a' : '#fff',
+                                color: isDark ? '#e2e8f0' : '#1f2937',
                                 boxSizing: 'border-box',
                                 outline: 'none',
                                 textAlign: 'right',
@@ -368,7 +381,7 @@ export default function PayCalClient() {
                             right: '16px',
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            color: '#9ca3af',
+                            color: isDark ? '#94a3b8' : '#9ca3af',
                             fontSize: '0.9rem',
                             fontWeight: '500',
                         }}>{tResult('currency')}</span>
@@ -381,7 +394,7 @@ export default function PayCalClient() {
                         display: 'block',
                         fontSize: '0.8rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: isDark ? '#e2e8f0' : '#374151',
                         marginBottom: '10px',
                     }}>
                         {tInput('retirement')}
@@ -390,7 +403,7 @@ export default function PayCalClient() {
                         display: 'flex',
                         gap: '8px',
                         padding: '4px',
-                        background: '#f3f4f6',
+                        background: isDark ? '#0f172a' : '#f3f4f6',
                         borderRadius: '14px',
                     }}>
                         <button
@@ -406,7 +419,7 @@ export default function PayCalClient() {
                                 cursor: 'pointer',
                                 transition: 'all 0.25s',
                                 background: !retirementIncluded ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : 'transparent',
-                                color: !retirementIncluded ? '#fff' : '#6b7280',
+                                color: !retirementIncluded ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
                                 boxShadow: !retirementIncluded ? '0 4px 12px rgba(61, 92, 185, 0.35)' : 'none',
                             }}
                         >
@@ -425,7 +438,7 @@ export default function PayCalClient() {
                                 cursor: 'pointer',
                                 transition: 'all 0.25s',
                                 background: retirementIncluded ? 'linear-gradient(135deg, #3d5cb9, #4f6dc5)' : 'transparent',
-                                color: retirementIncluded ? '#fff' : '#6b7280',
+                                color: retirementIncluded ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
                                 boxShadow: retirementIncluded ? '0 4px 12px rgba(61, 92, 185, 0.35)' : 'none',
                             }}
                         >
@@ -440,7 +453,7 @@ export default function PayCalClient() {
                         display: 'block',
                         fontSize: '0.8rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: isDark ? '#e2e8f0' : '#374151',
                         marginBottom: '8px',
                     }}>
                         {tInput('nonTaxable')}
@@ -460,11 +473,12 @@ export default function PayCalClient() {
                                 width: '100%',
                                 padding: '14px 16px',
                                 paddingRight: '50px',
-                                border: '2px solid #e5e7eb',
+                                border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
                                 borderRadius: '14px',
                                 fontSize: '1rem',
                                 transition: 'all 0.2s',
-                                background: '#fff',
+                                background: isDark ? '#0f172a' : '#fff',
+                                color: isDark ? '#e2e8f0' : '#1f2937',
                                 boxSizing: 'border-box',
                                 outline: 'none',
                                 textAlign: 'right',
@@ -475,13 +489,13 @@ export default function PayCalClient() {
                             right: '16px',
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            color: '#9ca3af',
+                            color: isDark ? '#94a3b8' : '#9ca3af',
                             fontSize: '0.875rem',
                         }}>{tResult('currency')}</span>
                     </div>
                     <p className="paycal-hint" style={{
                         fontSize: '0.75rem',
-                        color: '#9ca3af',
+                        color: isDark ? '#64748b' : '#9ca3af',
                         marginTop: '6px',
                     }}>{tInput('nonTaxableDesc')}</p>
                 </div>
@@ -498,12 +512,14 @@ export default function PayCalClient() {
                         onChange={setDependents}
                         min={1}
                         label={tInput('dependents')}
+                        isDark={isDark}
                     />
                     <Stepper
                         value={children}
                         onChange={setChildren}
                         min={0}
                         label={tInput('children')}
+                        isDark={isDark}
                     />
                 </div>
 
@@ -679,10 +695,10 @@ export default function PayCalClient() {
                 <h2 style={{
                     fontSize: '1.5rem',
                     fontWeight: '700',
-                    color: '#3d5cb9',
+                    color: isDark ? '#93b4f8' : '#3d5cb9',
                     marginBottom: '24px',
                     paddingBottom: '12px',
-                    borderBottom: '3px solid #4f6dc5',
+                    borderBottom: `3px solid ${isDark ? '#3d5cb9' : '#4f6dc5'}`,
                     display: 'inline-block',
                 }}>
                     {tInfo('title')}
@@ -694,15 +710,17 @@ export default function PayCalClient() {
                     gap: '16px',
                 }}>
                     {[
-                        { key: 'pension', color: '#f59e0b', bg: '#fffbeb' },
-                        { key: 'health', color: '#3b82f6', bg: '#eff6ff' },
-                        { key: 'employment', color: '#8b5cf6', bg: '#f5f3ff' },
+                        { key: 'pension', color: '#f59e0b', bg: '#fffbeb', darkBg: '#1e293b', darkBorder: '#78350f' },
+                        { key: 'health', color: '#3b82f6', bg: '#eff6ff', darkBg: '#1e293b', darkBorder: '#1e3a5f' },
+                        { key: 'employment', color: '#8b5cf6', bg: '#f5f3ff', darkBg: '#1e293b', darkBorder: '#3b0764' },
                     ].map((item) => (
                         <div key={item.key} style={{
-                            background: `linear-gradient(145deg, ${item.bg} 0%, #fff 100%)`,
+                            background: isDark
+                                ? `linear-gradient(145deg, ${item.darkBg} 0%, #162032 100%)`
+                                : `linear-gradient(145deg, ${item.bg} 0%, #fff 100%)`,
                             borderRadius: '16px',
                             padding: '20px',
-                            border: `1px solid ${item.color}22`,
+                            border: `1px solid ${isDark ? '#334155' : `${item.color}22`}`,
                         }}>
                             <h3 style={{
                                 fontSize: '1.05rem',
@@ -714,7 +732,7 @@ export default function PayCalClient() {
                             </h3>
                             <p style={{
                                 fontSize: '0.9rem',
-                                color: '#64748b',
+                                color: isDark ? '#94a3b8' : '#64748b',
                                 lineHeight: '1.6',
                             }}>
                                 {tInfo(`${item.key}.desc`)}
@@ -727,15 +745,17 @@ export default function PayCalClient() {
             {/* FAQ Section */}
             <section className="paycal-faq-section" style={{
                 marginTop: '40px',
-                background: 'linear-gradient(145deg, #f0f4ff 0%, #e8f0fe 100%)',
+                background: isDark
+                    ? 'linear-gradient(145deg, #162032 0%, #0f172a 100%)'
+                    : 'linear-gradient(145deg, #f0f4ff 0%, #e8f0fe 100%)',
                 borderRadius: '24px',
                 padding: '32px',
-                border: '1px solid rgba(61, 92, 185, 0.15)',
+                border: `1px solid ${isDark ? '#334155' : 'rgba(61, 92, 185, 0.15)'}`,
             }}>
                 <h2 style={{
                     fontSize: '1.35rem',
                     fontWeight: '700',
-                    color: '#3d5cb9',
+                    color: isDark ? '#93b4f8' : '#3d5cb9',
                     marginBottom: '20px',
                     textAlign: 'center',
                     display: 'flex',
@@ -743,22 +763,21 @@ export default function PayCalClient() {
                     justifyContent: 'center',
                     gap: '8px',
                 }}>
-                    <span style={{ fontSize: '1.5rem' }}>💬</span>
                     {tFaq('title')}
                 </h2>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {['nonTaxable', 'severance'].map((key) => (
                         <details key={key} style={{
-                            background: '#fff',
+                            background: isDark ? '#1e293b' : '#fff',
                             padding: '18px',
                             borderRadius: '14px',
-                            border: '1px solid #c7d2fe',
+                            border: `1px solid ${isDark ? '#334155' : '#c7d2fe'}`,
                         }}>
                             <summary style={{
                                 cursor: 'pointer',
                                 fontWeight: '600',
-                                color: '#1e3a8a',
+                                color: isDark ? '#e2e8f0' : '#1e3a8a',
                                 fontSize: '0.95rem',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -781,7 +800,7 @@ export default function PayCalClient() {
                             </summary>
                             <p style={{
                                 marginTop: '12px',
-                                color: '#64748b',
+                                color: isDark ? '#94a3b8' : '#64748b',
                                 paddingLeft: '30px',
                                 lineHeight: '1.7',
                                 fontSize: '0.9rem',
@@ -806,7 +825,7 @@ export default function PayCalClient() {
                 }
 
                 .paycal-input::placeholder {
-                    color: #9ca3af;
+                    color: ${isDark ? '#475569' : '#9ca3af'};
                 }
 
                 button:hover:not(:disabled) {

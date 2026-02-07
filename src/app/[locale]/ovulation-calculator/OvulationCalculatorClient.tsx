@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface OvulationResult {
     ovulationDate: Date;
@@ -63,6 +64,8 @@ function isInRange(date: Date, start: Date, end: Date): boolean {
 
 export default function OvulationCalculatorClient() {
     const t = useTranslations('OvulationCalculator');
+    const { theme } = useTheme();
+    const dark = theme === 'dark';
     const locale = typeof window !== 'undefined' ? document.documentElement.lang || 'ko' : 'ko';
 
     const today = new Date();
@@ -161,14 +164,14 @@ export default function OvulationCalculatorClient() {
     return (
         <div className="ovulation-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
             {/* 입력 폼 */}
-            <section className="card" style={{ background: '#fff', borderRadius: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '20px', marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', color: '#2c3e50' }}>
+            <section className="card" style={{ background: dark ? '#1e293b' : '#fff', borderRadius: '16px', boxShadow: dark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.08)', padding: '20px', marginBottom: '30px' }}>
+                <h2 style={{ fontSize: '1.15rem', marginBottom: '16px', color: dark ? '#e2e8f0' : '#2c3e50' }}>
                     {t('input.title')}
                 </h2>
 
                 <div style={{ display: 'grid', gap: '14px' }}>
                     <div>
-                        <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: '#555', fontSize: '0.95rem' }}>
+                        <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: dark ? '#94a3b8' : '#555', fontSize: '0.95rem' }}>
                             {t('input.lastPeriod')}
                         </label>
                         <input
@@ -179,16 +182,19 @@ export default function OvulationCalculatorClient() {
                                 width: '100%',
                                 padding: '10px 14px',
                                 borderRadius: '10px',
-                                border: '2px solid #e0e0e0',
+                                border: dark ? '2px solid #334155' : '2px solid #e0e0e0',
+                                background: dark ? '#0f172a' : '#fff',
+                                color: dark ? '#e2e8f0' : '#333',
                                 fontSize: '1rem',
                                 transition: 'border-color 0.2s',
                                 boxSizing: 'border-box',
+                                colorScheme: dark ? 'dark' : 'light',
                             }}
                         />
                     </div>
 
                     <div>
-                        <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: '#555', fontSize: '0.95rem' }}>
+                        <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: dark ? '#94a3b8' : '#555', fontSize: '0.95rem' }}>
                             {t('input.cycleLength')}
                         </label>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -202,14 +208,16 @@ export default function OvulationCalculatorClient() {
                                     width: '100px',
                                     padding: '10px 14px',
                                     borderRadius: '10px',
-                                    border: '2px solid #e0e0e0',
+                                    border: dark ? '2px solid #334155' : '2px solid #e0e0e0',
+                                    background: dark ? '#0f172a' : '#fff',
+                                    color: dark ? '#e2e8f0' : '#333',
                                     fontSize: '1rem',
                                     textAlign: 'center',
                                 }}
                             />
-                            <span style={{ color: '#888' }}>{t('input.days')}</span>
+                            <span style={{ color: dark ? '#64748b' : '#888' }}>{t('input.days')}</span>
                         </div>
-                        <p style={{ fontSize: '0.8rem', color: '#999', marginTop: '4px' }}>
+                        <p style={{ fontSize: '0.8rem', color: dark ? '#64748b' : '#999', marginTop: '4px' }}>
                             {t('input.cycleDesc')}
                         </p>
                     </div>
@@ -226,7 +234,7 @@ export default function OvulationCalculatorClient() {
                             fontWeight: '700',
                             cursor: 'pointer',
                             transition: 'transform 0.2s, box-shadow 0.2s',
-                            boxShadow: '0 4px 15px rgba(196,69,105,0.3)',
+                            boxShadow: dark ? '0 4px 15px rgba(196,69,105,0.4)' : '0 4px 15px rgba(196,69,105,0.3)',
                         }}
                     >
                         {t('input.calculate')}
@@ -276,58 +284,58 @@ export default function OvulationCalculatorClient() {
                     </section>
 
                     {/* 상세 결과 테이블 */}
-                    <section className="card" style={{ background: '#fff', borderRadius: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '30px', marginBottom: '30px' }}>
-                        <h2 style={{ fontSize: '1.3rem', marginBottom: '20px', color: '#2c3e50' }}>
+                    <section className="card" style={{ background: dark ? '#1e293b' : '#fff', borderRadius: '16px', boxShadow: dark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.08)', padding: '30px', marginBottom: '30px' }}>
+                        <h2 style={{ fontSize: '1.3rem', marginBottom: '20px', color: dark ? '#e2e8f0' : '#2c3e50' }}>
                             {t('result.detailTitle')}
                         </h2>
                         <div style={{ overflow: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <tbody>
-                                    <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
-                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: '#555', width: '45%' }}>
+                                    <tr style={{ borderBottom: dark ? '1px solid #334155' : '1px solid #f0f0f0' }}>
+                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: dark ? '#94a3b8' : '#555', width: '45%' }}>
                                             {t('result.lastPeriod')}
                                         </td>
-                                        <td style={{ padding: '14px 12px', color: '#333' }}>
+                                        <td style={{ padding: '14px 12px', color: dark ? '#cbd5e1' : '#333' }}>
                                             {formatDate(new Date(lastPeriodDate), locale)}
                                         </td>
                                     </tr>
-                                    <tr style={{ borderBottom: '1px solid #f0f0f0', background: '#fff5f8' }}>
-                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: '#c44569' }}>
+                                    <tr style={{ borderBottom: dark ? '1px solid #334155' : '1px solid #f0f0f0', background: dark ? 'rgba(196,69,105,0.15)' : '#fff5f8' }}>
+                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: dark ? '#f472b6' : '#c44569' }}>
                                             {t('result.ovulationDate')}
                                         </td>
-                                        <td style={{ padding: '14px 12px', color: '#c44569', fontWeight: '600' }}>
+                                        <td style={{ padding: '14px 12px', color: dark ? '#f472b6' : '#c44569', fontWeight: '600' }}>
                                             {formatDate(result.ovulationDate, locale)}
                                         </td>
                                     </tr>
-                                    <tr style={{ borderBottom: '1px solid #f0f0f0', background: '#fff8f0' }}>
-                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: '#e85d04' }}>
+                                    <tr style={{ borderBottom: dark ? '1px solid #334155' : '1px solid #f0f0f0', background: dark ? 'rgba(232,93,4,0.15)' : '#fff8f0' }}>
+                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: dark ? '#fb923c' : '#e85d04' }}>
                                             {t('result.fertilePeriod')}
                                         </td>
-                                        <td style={{ padding: '14px 12px', color: '#e85d04', fontWeight: '600' }}>
+                                        <td style={{ padding: '14px 12px', color: dark ? '#fb923c' : '#e85d04', fontWeight: '600' }}>
                                             {formatDate(result.fertileStart, locale)} ~ {formatDate(result.fertileEnd, locale)}
                                         </td>
                                     </tr>
-                                    <tr style={{ borderBottom: '1px solid #f0f0f0', background: '#f0faff' }}>
-                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: '#0077b6' }}>
+                                    <tr style={{ borderBottom: dark ? '1px solid #334155' : '1px solid #f0f0f0', background: dark ? 'rgba(0,119,182,0.15)' : '#f0faff' }}>
+                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: dark ? '#38bdf8' : '#0077b6' }}>
                                             {t('result.safePeriodEarly')}
                                         </td>
-                                        <td style={{ padding: '14px 12px', color: '#0077b6' }}>
+                                        <td style={{ padding: '14px 12px', color: dark ? '#38bdf8' : '#0077b6' }}>
                                             {formatDate(result.safeEarlyStart, locale)} ~ {formatDate(result.safeEarlyEnd, locale)}
                                         </td>
                                     </tr>
-                                    <tr style={{ background: '#f0faff' }}>
-                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: '#0077b6' }}>
+                                    <tr style={{ background: dark ? 'rgba(0,119,182,0.15)' : '#f0faff' }}>
+                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: dark ? '#38bdf8' : '#0077b6' }}>
                                             {t('result.safePeriodLate')}
                                         </td>
-                                        <td style={{ padding: '14px 12px', color: '#0077b6' }}>
+                                        <td style={{ padding: '14px 12px', color: dark ? '#38bdf8' : '#0077b6' }}>
                                             {formatDate(result.safeLateStart, locale)} ~ {formatDate(result.safeLateEnd, locale)}
                                         </td>
                                     </tr>
-                                    <tr style={{ borderTop: '2px solid #e0e0e0' }}>
-                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: '#555' }}>
+                                    <tr style={{ borderTop: dark ? '2px solid #334155' : '2px solid #e0e0e0' }}>
+                                        <td style={{ padding: '14px 12px', fontWeight: '600', color: dark ? '#94a3b8' : '#555' }}>
                                             {t('result.nextPeriod')}
                                         </td>
-                                        <td style={{ padding: '14px 12px', color: '#333', fontWeight: '600' }}>
+                                        <td style={{ padding: '14px 12px', color: dark ? '#cbd5e1' : '#333', fontWeight: '600' }}>
                                             {formatDate(result.nextPeriodDate, locale)}
                                         </td>
                                     </tr>
@@ -337,23 +345,23 @@ export default function OvulationCalculatorClient() {
                     </section>
 
                     {/* 달력 */}
-                    <section className="card" style={{ background: '#fff', borderRadius: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '30px', marginBottom: '30px' }}>
-                        <h2 style={{ fontSize: '1.3rem', marginBottom: '20px', color: '#2c3e50' }}>
+                    <section className="card" style={{ background: dark ? '#1e293b' : '#fff', borderRadius: '16px', boxShadow: dark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.08)', padding: '30px', marginBottom: '30px' }}>
+                        <h2 style={{ fontSize: '1.3rem', marginBottom: '20px', color: dark ? '#e2e8f0' : '#2c3e50' }}>
                             {t('calendar.title')}
                         </h2>
 
                         {/* 월 네비게이션 */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <button onClick={() => navigateMonth(-1)} style={{
-                                padding: '8px 16px', border: '1px solid #ddd', borderRadius: '8px',
-                                background: '#fff', cursor: 'pointer', fontSize: '1rem'
+                                padding: '8px 16px', border: dark ? '1px solid #334155' : '1px solid #ddd', borderRadius: '8px',
+                                background: dark ? '#0f172a' : '#fff', color: dark ? '#e2e8f0' : '#333', cursor: 'pointer', fontSize: '1rem'
                             }}>
                                 &lt;
                             </button>
-                            <span style={{ fontSize: '1.2rem', fontWeight: '600' }}>{getCalendarMonthLabel()}</span>
+                            <span style={{ fontSize: '1.2rem', fontWeight: '600', color: dark ? '#e2e8f0' : '#333' }}>{getCalendarMonthLabel()}</span>
                             <button onClick={() => navigateMonth(1)} style={{
-                                padding: '8px 16px', border: '1px solid #ddd', borderRadius: '8px',
-                                background: '#fff', cursor: 'pointer', fontSize: '1rem'
+                                padding: '8px 16px', border: dark ? '1px solid #334155' : '1px solid #ddd', borderRadius: '8px',
+                                background: dark ? '#0f172a' : '#fff', color: dark ? '#e2e8f0' : '#333', cursor: 'pointer', fontSize: '1rem'
                             }}>
                                 &gt;
                             </button>
@@ -367,7 +375,7 @@ export default function OvulationCalculatorClient() {
                                     fontWeight: '600',
                                     fontSize: '0.85rem',
                                     padding: '8px 4px',
-                                    color: i === 0 ? '#e74c3c' : i === 6 ? '#3498db' : '#555',
+                                    color: i === 0 ? (dark ? '#f87171' : '#e74c3c') : i === 6 ? (dark ? '#60a5fa' : '#3498db') : (dark ? '#94a3b8' : '#555'),
                                 }}>
                                     {day}
                                 </div>
@@ -379,7 +387,7 @@ export default function OvulationCalculatorClient() {
                             {calendarDays.map((day, idx) => {
                                 const dayClass = getDayClass(day);
                                 let bgColor = 'transparent';
-                                let textColor = '#333';
+                                let textColor = dark ? '#cbd5e1' : '#333';
                                 let fontWeight = '400';
                                 let border = 'none';
 
@@ -388,12 +396,12 @@ export default function OvulationCalculatorClient() {
                                     textColor = '#fff';
                                     fontWeight = '700';
                                 } else if (dayClass.includes('cal-fertile')) {
-                                    bgColor = '#ff9a76';
+                                    bgColor = dark ? 'rgba(255,154,118,0.8)' : '#ff9a76';
                                     textColor = '#fff';
                                     fontWeight = '600';
                                 } else if (dayClass.includes('cal-safe')) {
-                                    bgColor = '#dff6ff';
-                                    textColor = '#0077b6';
+                                    bgColor = dark ? 'rgba(0,119,182,0.2)' : '#dff6ff';
+                                    textColor = dark ? '#38bdf8' : '#0077b6';
                                 }
 
                                 if (dayClass.includes('cal-period') || dayClass.includes('cal-next-period')) {
@@ -422,19 +430,19 @@ export default function OvulationCalculatorClient() {
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '20px', justifyContent: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#c44569' }} />
-                                <span style={{ fontSize: '0.85rem', color: '#555' }}>{t('calendar.legendOvulation')}</span>
+                                <span style={{ fontSize: '0.85rem', color: dark ? '#94a3b8' : '#555' }}>{t('calendar.legendOvulation')}</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#ff9a76' }} />
-                                <span style={{ fontSize: '0.85rem', color: '#555' }}>{t('calendar.legendFertile')}</span>
+                                <span style={{ fontSize: '0.85rem', color: dark ? '#94a3b8' : '#555' }}>{t('calendar.legendFertile')}</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#dff6ff' }} />
-                                <span style={{ fontSize: '0.85rem', color: '#555' }}>{t('calendar.legendSafe')}</span>
+                                <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: dark ? 'rgba(0,119,182,0.3)' : '#dff6ff' }} />
+                                <span style={{ fontSize: '0.85rem', color: dark ? '#94a3b8' : '#555' }}>{t('calendar.legendSafe')}</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <div style={{ width: '16px', height: '16px', borderRadius: '4px', border: '2px solid #e74c3c', background: '#fff' }} />
-                                <span style={{ fontSize: '0.85rem', color: '#555' }}>{t('calendar.legendPeriod')}</span>
+                                <div style={{ width: '16px', height: '16px', borderRadius: '4px', border: '2px solid #e74c3c', background: dark ? '#1e293b' : '#fff' }} />
+                                <span style={{ fontSize: '0.85rem', color: dark ? '#94a3b8' : '#555' }}>{t('calendar.legendPeriod')}</span>
                             </div>
                         </div>
                     </section>
@@ -442,41 +450,41 @@ export default function OvulationCalculatorClient() {
             )}
 
             {/* 안내 정보 */}
-            <section className="card" style={{ background: '#fff', borderRadius: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '30px', marginBottom: '30px' }}>
-                <h2 style={{ fontSize: '1.3rem', marginBottom: '20px', color: '#2c3e50' }}>
+            <section className="card" style={{ background: dark ? '#1e293b' : '#fff', borderRadius: '16px', boxShadow: dark ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.08)', padding: '30px', marginBottom: '30px' }}>
+                <h2 style={{ fontSize: '1.3rem', marginBottom: '20px', color: dark ? '#e2e8f0' : '#2c3e50' }}>
                     {t('info.title')}
                 </h2>
                 <div style={{ display: 'grid', gap: '20px' }}>
-                    <div style={{ background: '#fff5f8', padding: '20px', borderRadius: '12px' }}>
-                        <h3 style={{ fontSize: '1.05rem', marginBottom: '8px', color: '#c44569' }}>
+                    <div style={{ background: dark ? 'rgba(196,69,105,0.15)' : '#fff5f8', padding: '20px', borderRadius: '12px' }}>
+                        <h3 style={{ fontSize: '1.05rem', marginBottom: '8px', color: dark ? '#f472b6' : '#c44569' }}>
                             {t('info.ovulation.title')}
                         </h3>
-                        <p style={{ color: '#555', lineHeight: '1.7', fontSize: '0.95rem' }}
+                        <p style={{ color: dark ? '#94a3b8' : '#555', lineHeight: '1.7', fontSize: '0.95rem' }}
                             dangerouslySetInnerHTML={{ __html: t.raw('info.ovulation.desc') }} />
                     </div>
-                    <div style={{ background: '#fff8f0', padding: '20px', borderRadius: '12px' }}>
-                        <h3 style={{ fontSize: '1.05rem', marginBottom: '8px', color: '#e85d04' }}>
+                    <div style={{ background: dark ? 'rgba(232,93,4,0.15)' : '#fff8f0', padding: '20px', borderRadius: '12px' }}>
+                        <h3 style={{ fontSize: '1.05rem', marginBottom: '8px', color: dark ? '#fb923c' : '#e85d04' }}>
                             {t('info.fertile.title')}
                         </h3>
-                        <p style={{ color: '#555', lineHeight: '1.7', fontSize: '0.95rem' }}
+                        <p style={{ color: dark ? '#94a3b8' : '#555', lineHeight: '1.7', fontSize: '0.95rem' }}
                             dangerouslySetInnerHTML={{ __html: t.raw('info.fertile.desc') }} />
                     </div>
-                    <div style={{ background: '#f0faff', padding: '20px', borderRadius: '12px' }}>
-                        <h3 style={{ fontSize: '1.05rem', marginBottom: '8px', color: '#0077b6' }}>
+                    <div style={{ background: dark ? 'rgba(0,119,182,0.15)' : '#f0faff', padding: '20px', borderRadius: '12px' }}>
+                        <h3 style={{ fontSize: '1.05rem', marginBottom: '8px', color: dark ? '#38bdf8' : '#0077b6' }}>
                             {t('info.safe.title')}
                         </h3>
-                        <p style={{ color: '#555', lineHeight: '1.7', fontSize: '0.95rem' }}
+                        <p style={{ color: dark ? '#94a3b8' : '#555', lineHeight: '1.7', fontSize: '0.95rem' }}
                             dangerouslySetInnerHTML={{ __html: t.raw('info.safe.desc') }} />
                     </div>
                 </div>
             </section>
 
             {/* 주의사항 */}
-            <section style={{ background: '#fffbe6', borderRadius: '16px', padding: '24px', marginBottom: '30px', border: '1px solid #ffe58f' }}>
-                <h3 style={{ fontSize: '1.1rem', marginBottom: '10px', color: '#d48806' }}>
+            <section style={{ background: dark ? 'rgba(212,136,6,0.15)' : '#fffbe6', borderRadius: '16px', padding: '24px', marginBottom: '30px', border: dark ? '1px solid rgba(212,136,6,0.3)' : '1px solid #ffe58f' }}>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: '10px', color: dark ? '#fbbf24' : '#d48806' }}>
                     {t('caution.title')}
                 </h3>
-                <p style={{ color: '#8c6d1f', lineHeight: '1.7', fontSize: '0.95rem' }}
+                <p style={{ color: dark ? '#d4a94b' : '#8c6d1f', lineHeight: '1.7', fontSize: '0.95rem' }}
                     dangerouslySetInnerHTML={{ __html: t.raw('caution.desc') }} />
             </section>
 

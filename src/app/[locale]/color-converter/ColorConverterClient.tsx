@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface ColorValues {
     hex: string;
@@ -11,6 +12,8 @@ interface ColorValues {
 
 export default function ColorConverterClient() {
     const t = useTranslations('ColorConverter');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [colorValues, setColorValues] = useState<ColorValues>({
         hex: "#3B82F6",
@@ -155,15 +158,15 @@ export default function ColorConverterClient() {
 
             <section style={{ textAlign: "center", marginBottom: "30px" }}>
                 <h1 style={{ marginBottom: "15px" }}>{t('title')}</h1>
-                <p style={{ color: '#666', fontSize: '1.05rem', maxWidth: '700px', margin: '0 auto' }}
+                <p style={{ color: isDark ? "#94a3b8" : '#666', fontSize: '1.05rem', maxWidth: '700px', margin: '0 auto' }}
                    dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
             </section>
 
             {/* Color Preview & Picker */}
             <div style={{
-                background: "white",
+                background: isDark ? "#1e293b" : "white",
                 borderRadius: "16px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.08)",
+                boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.08)",
                 padding: "25px",
                 marginBottom: "25px"
             }}>
@@ -211,7 +214,7 @@ export default function ColorConverterClient() {
 
                         {/* Preset Colors */}
                         <div>
-                            <p style={{ fontSize: "0.9rem", color: "#666", marginBottom: "10px" }}>{t('presets')}</p>
+                            <p style={{ fontSize: "0.9rem", color: isDark ? "#94a3b8" : "#666", marginBottom: "10px" }}>{t('presets')}</p>
                             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                                 {presetColors.map((color) => (
                                     <button
@@ -222,7 +225,7 @@ export default function ColorConverterClient() {
                                             height: "32px",
                                             borderRadius: "6px",
                                             backgroundColor: color,
-                                            border: colorValues.hex === color ? "3px solid #333" : "2px solid #e5e7eb",
+                                            border: colorValues.hex === color ? (isDark ? "3px solid #f1f5f9" : "3px solid #333") : (isDark ? "2px solid #334155" : "2px solid #e5e7eb"),
                                             cursor: "pointer",
                                             transition: "transform 0.15s"
                                         }}
@@ -237,7 +240,7 @@ export default function ColorConverterClient() {
                     {/* Color Values */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
                         {/* HEX */}
-                        <div style={{ background: "#f8fafc", padding: "15px", borderRadius: "10px" }}>
+                        <div style={{ background: isDark ? "#0f172a" : "#f8fafc", padding: "15px", borderRadius: "10px" }}>
                             <label style={{ display: "block", fontSize: "0.85rem", fontWeight: "600", color: "#64748b", marginBottom: "8px" }}>HEX</label>
                             <div style={{ display: "flex", gap: "10px" }}>
                                 <input
@@ -256,11 +259,13 @@ export default function ColorConverterClient() {
                                     style={{
                                         flex: 1,
                                         padding: "10px 12px",
-                                        border: "1px solid #e2e8f0",
+                                        border: isDark ? "1px solid #334155" : "1px solid #e2e8f0",
                                         borderRadius: "8px",
                                         fontSize: "1.1rem",
                                         fontFamily: "monospace",
-                                        fontWeight: "600"
+                                        fontWeight: "600",
+                                        color: isDark ? "#e2e8f0" : "#1f2937",
+                                        background: isDark ? "#1e293b" : "#fff"
                                     }}
                                 />
                                 <button
@@ -282,7 +287,7 @@ export default function ColorConverterClient() {
                         </div>
 
                         {/* RGB */}
-                        <div style={{ background: "#f8fafc", padding: "15px", borderRadius: "10px" }}>
+                        <div style={{ background: isDark ? "#0f172a" : "#f8fafc", padding: "15px", borderRadius: "10px" }}>
                             <label style={{ display: "block", fontSize: "0.85rem", fontWeight: "600", color: "#64748b", marginBottom: "8px" }}>RGB</label>
                             <div className="rgb-inputs" style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
                                 {(['r', 'g', 'b'] as const).map((channel) => (
@@ -304,10 +309,12 @@ export default function ColorConverterClient() {
                                             style={{
                                                 width: "100%",
                                                 padding: "8px",
-                                                border: "1px solid #e2e8f0",
+                                                border: isDark ? "1px solid #334155" : "1px solid #e2e8f0",
                                                 borderRadius: "6px",
                                                 textAlign: "center",
-                                                fontFamily: "monospace"
+                                                fontFamily: "monospace",
+                                                color: isDark ? "#e2e8f0" : "#1f2937",
+                                                background: isDark ? "#1e293b" : "#fff"
                                             }}
                                         />
                                     </div>
@@ -318,8 +325,8 @@ export default function ColorConverterClient() {
                                 style={{
                                     width: "100%",
                                     padding: "8px",
-                                    background: copiedField === 'rgb' ? "#22c55e" : "#e2e8f0",
-                                    color: copiedField === 'rgb' ? "white" : "#374151",
+                                    background: copiedField === 'rgb' ? "#22c55e" : isDark ? "#334155" : "#e2e8f0",
+                                    color: copiedField === 'rgb' ? "white" : isDark ? "#f1f5f9" : "#374151",
                                     border: "none",
                                     borderRadius: "6px",
                                     cursor: "pointer",
@@ -332,7 +339,7 @@ export default function ColorConverterClient() {
                         </div>
 
                         {/* HSL */}
-                        <div style={{ background: "#f8fafc", padding: "15px", borderRadius: "10px" }}>
+                        <div style={{ background: isDark ? "#0f172a" : "#f8fafc", padding: "15px", borderRadius: "10px" }}>
                             <label style={{ display: "block", fontSize: "0.85rem", fontWeight: "600", color: "#64748b", marginBottom: "8px" }}>HSL</label>
                             <div className="hsl-inputs" style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
                                 {([
@@ -358,10 +365,12 @@ export default function ColorConverterClient() {
                                             style={{
                                                 width: "100%",
                                                 padding: "8px",
-                                                border: "1px solid #e2e8f0",
+                                                border: isDark ? "1px solid #334155" : "1px solid #e2e8f0",
                                                 borderRadius: "6px",
                                                 textAlign: "center",
-                                                fontFamily: "monospace"
+                                                fontFamily: "monospace",
+                                                color: isDark ? "#e2e8f0" : "#1f2937",
+                                                background: isDark ? "#1e293b" : "#fff"
                                             }}
                                         />
                                     </div>
@@ -372,8 +381,8 @@ export default function ColorConverterClient() {
                                 style={{
                                     width: "100%",
                                     padding: "8px",
-                                    background: copiedField === 'hsl' ? "#22c55e" : "#e2e8f0",
-                                    color: copiedField === 'hsl' ? "white" : "#374151",
+                                    background: copiedField === 'hsl' ? "#22c55e" : isDark ? "#334155" : "#e2e8f0",
+                                    color: copiedField === 'hsl' ? "white" : isDark ? "#f1f5f9" : "#374151",
                                     border: "none",
                                     borderRadius: "6px",
                                     cursor: "pointer",
@@ -391,26 +400,26 @@ export default function ColorConverterClient() {
             {/* Info Section */}
             <article style={{ maxWidth: '800px', margin: '50px auto 0', lineHeight: '1.7' }}>
                 <section style={{ marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                    <h2 style={{ fontSize: '1.6rem', color: isDark ? "#f1f5f9" : '#333', marginBottom: '20px', borderBottom: isDark ? '2px solid #334155' : '2px solid #eee', paddingBottom: '10px' }}>
                         {t('info.title')}
                     </h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-                        <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
+                        <div style={{ background: isDark ? "#1e293b" : '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
                             <h3 style={{ fontSize: '1.1rem', color: '#3d5cb9', marginBottom: '10px' }}>{t('info.hex.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: '#555' }}>{t('info.hex.desc')}</p>
+                            <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#555' }}>{t('info.hex.desc')}</p>
                         </div>
-                        <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
+                        <div style={{ background: isDark ? "#1e293b" : '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
                             <h3 style={{ fontSize: '1.1rem', color: '#3d5cb9', marginBottom: '10px' }}>{t('info.rgb.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: '#555' }}>{t('info.rgb.desc')}</p>
+                            <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#555' }}>{t('info.rgb.desc')}</p>
                         </div>
-                        <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
+                        <div style={{ background: isDark ? "#1e293b" : '#f8f9fa', padding: '20px', borderRadius: '10px' }}>
                             <h3 style={{ fontSize: '1.1rem', color: '#3d5cb9', marginBottom: '10px' }}>{t('info.hsl.title')}</h3>
-                            <p style={{ fontSize: '0.9rem', color: '#555' }}>{t('info.hsl.desc')}</p>
+                            <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#555' }}>{t('info.hsl.desc')}</p>
                         </div>
                     </div>
                 </section>
 
-                <section style={{ background: '#fff3cd', padding: '20px', borderRadius: '10px', border: '1px solid #ffeeba', color: '#856404' }}>
+                <section style={{ background: isDark ? "#332b00" : '#fff3cd', padding: '20px', borderRadius: '10px', border: isDark ? '1px solid #554400' : '1px solid #ffeeba', color: isDark ? "#fbbf24" : '#856404' }}>
                     <h3 style={{ fontSize: '1.1rem', marginBottom: '10px' }}>{t('tips.title')}</h3>
                     <p style={{ fontSize: '0.9rem' }} dangerouslySetInnerHTML={{ __html: t.raw('tips.desc') }} />
                 </section>

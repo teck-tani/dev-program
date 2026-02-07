@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // SQL 키워드 목록
 const KEYWORDS_NEWLINE = [
@@ -252,6 +253,8 @@ function minifySQL(sql: string): string {
 
 export default function SqlFormatterClient() {
     const t = useTranslations('SqlFormatter');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
@@ -312,8 +315,8 @@ export default function SqlFormatterClient() {
         <div className="container" style={{ maxWidth: "1000px", padding: "20px" }}>
             {/* 옵션 바 */}
             <div style={{
-                background: "white", borderRadius: "10px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "20px", marginBottom: "20px"
+                background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "20px", marginBottom: "20px"
             }}>
                 <div style={{
                     display: "flex", gap: "20px", flexWrap: "wrap", alignItems: "center"
@@ -324,8 +327,10 @@ export default function SqlFormatterClient() {
                             value={indentSize}
                             onChange={(e) => setIndentSize(Number(e.target.value))}
                             style={{
-                                padding: "6px 10px", border: "1px solid #ddd",
-                                borderRadius: "6px", fontSize: "0.95rem"
+                                padding: "6px 10px", border: `1px solid ${isDark ? "#334155" : "#ddd"}`,
+                                borderRadius: "6px", fontSize: "0.95rem",
+                                color: isDark ? "#e2e8f0" : "#1f2937",
+                                background: isDark ? "#0f172a" : "#fff"
                             }}
                         >
                             <option value={2}>2 {t('spaces')}</option>
@@ -354,16 +359,16 @@ export default function SqlFormatterClient() {
             >
                 {/* 입력 */}
                 <div style={{
-                    background: "white", borderRadius: "10px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.1)", overflow: "hidden"
+                    background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", overflow: "hidden"
                 }}>
                     <div style={{
-                        padding: "12px 15px", background: "#f8f9fa",
-                        borderBottom: "1px solid #eee", display: "flex",
+                        padding: "12px 15px", background: isDark ? "#1e293b" : "#f8f9fa",
+                        borderBottom: `1px solid ${isDark ? "#334155" : "#eee"}`, display: "flex",
                         justifyContent: "space-between", alignItems: "center"
                     }}>
-                        <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>{t('inputLabel')}</span>
-                        <span style={{ color: "#999", fontSize: "0.85rem" }}>{inputLines} {t('lines')}</span>
+                        <span style={{ fontWeight: 600, fontSize: "0.95rem", color: isDark ? "#f1f5f9" : undefined }}>{t('inputLabel')}</span>
+                        <span style={{ color: isDark ? "#64748b" : "#999", fontSize: "0.85rem" }}>{inputLines} {t('lines')}</span>
                     </div>
                     <textarea
                         value={input}
@@ -375,23 +380,24 @@ export default function SqlFormatterClient() {
                             border: "none", outline: "none", resize: "vertical",
                             fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
                             fontSize: "0.9rem", lineHeight: 1.6,
-                            boxSizing: "border-box", background: "#fafbfc"
+                            boxSizing: "border-box", background: isDark ? "#0f172a" : "#fafbfc",
+                            color: isDark ? "#e2e8f0" : "#1f2937"
                         }}
                     />
                 </div>
 
                 {/* 출력 */}
                 <div style={{
-                    background: "white", borderRadius: "10px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.1)", overflow: "hidden"
+                    background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", overflow: "hidden"
                 }}>
                     <div style={{
-                        padding: "12px 15px", background: "#f8f9fa",
-                        borderBottom: "1px solid #eee", display: "flex",
+                        padding: "12px 15px", background: isDark ? "#1e293b" : "#f8f9fa",
+                        borderBottom: `1px solid ${isDark ? "#334155" : "#eee"}`, display: "flex",
                         justifyContent: "space-between", alignItems: "center"
                     }}>
-                        <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>{t('outputLabel')}</span>
-                        <span style={{ color: "#999", fontSize: "0.85rem" }}>
+                        <span style={{ fontWeight: 600, fontSize: "0.95rem", color: isDark ? "#f1f5f9" : undefined }}>{t('outputLabel')}</span>
+                        <span style={{ color: isDark ? "#64748b" : "#999", fontSize: "0.85rem" }}>
                             {output ? `${outputLines} ${t('lines')}` : ''}
                         </span>
                     </div>
@@ -405,7 +411,8 @@ export default function SqlFormatterClient() {
                             border: "none", outline: "none", resize: "vertical",
                             fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
                             fontSize: "0.9rem", lineHeight: 1.6,
-                            boxSizing: "border-box", background: "#f5f7f5"
+                            boxSizing: "border-box", background: isDark ? "#0f172a" : "#f5f7f5",
+                            color: isDark ? "#e2e8f0" : "#1f2937"
                         }}
                     />
                 </div>
@@ -440,7 +447,7 @@ export default function SqlFormatterClient() {
                     disabled={!output}
                     style={{
                         flex: 1, padding: "14px",
-                        background: copied ? "#27ae60" : (output ? "#2ecc71" : "#eee"),
+                        background: copied ? "#27ae60" : (output ? "#2ecc71" : (isDark ? "#334155" : "#eee")),
                         color: output ? "white" : "#999",
                         border: "none", borderRadius: "8px", fontSize: "1rem",
                         fontWeight: 500, cursor: output ? "pointer" : "default", minWidth: "100px"
@@ -452,8 +459,8 @@ export default function SqlFormatterClient() {
                     onClick={handleSwap}
                     disabled={!output}
                     style={{
-                        padding: "14px 18px", background: output ? "#f0f4f8" : "#eee",
-                        color: output ? "#555" : "#999",
+                        padding: "14px 18px", background: output ? (isDark ? "#0f172a" : "#f0f4f8") : (isDark ? "#334155" : "#eee"),
+                        color: output ? (isDark ? "#94a3b8" : "#555") : (isDark ? "#64748b" : "#999"),
                         border: "none", borderRadius: "8px", fontSize: "1rem",
                         cursor: output ? "pointer" : "default"
                     }}
@@ -464,7 +471,7 @@ export default function SqlFormatterClient() {
                 <button
                     onClick={handleSample}
                     style={{
-                        padding: "14px 18px", background: "#f0f4f8", color: "#555",
+                        padding: "14px 18px", background: isDark ? "#0f172a" : "#f0f4f8", color: isDark ? "#94a3b8" : "#555",
                         border: "none", borderRadius: "8px", fontSize: "0.9rem",
                         fontWeight: 500, cursor: "pointer"
                     }}
@@ -474,7 +481,7 @@ export default function SqlFormatterClient() {
                 <button
                     onClick={handleClear}
                     style={{
-                        padding: "14px 18px", background: "#f0f4f8", color: "#555",
+                        padding: "14px 18px", background: isDark ? "#0f172a" : "#f0f4f8", color: isDark ? "#94a3b8" : "#555",
                         border: "none", borderRadius: "8px", fontSize: "0.9rem",
                         fontWeight: 500, cursor: "pointer"
                     }}
@@ -485,13 +492,13 @@ export default function SqlFormatterClient() {
 
             {/* 사용 가이드 */}
             <div style={{
-                background: "white", borderRadius: "10px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
+                background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
             }}>
-                <h2 style={{ marginBottom: "15px", fontSize: "1.2rem", color: "#333" }}>
+                <h2 style={{ marginBottom: "15px", fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#333" }}>
                     {t('guideTitle')}
                 </h2>
-                <div style={{ color: "#555", lineHeight: 1.8 }}>
+                <div style={{ color: isDark ? "#94a3b8" : "#555", lineHeight: 1.8 }}>
                     <p style={{ marginBottom: "10px" }}>
                         <strong>1. {t('guideStep1Title')}</strong><br />
                         {t('guideStep1Desc')}

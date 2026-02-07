@@ -1375,6 +1375,144 @@ body[data-theme="dark"] .calc-faq-item p {
     color: #94a3b8;
 }
 
+/* Calculator Salary Table */
+.paycal-salary-table table {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.paycal-table-head {
+    background: #f8f9fa;
+}
+
+.paycal-table-head th {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.paycal-table-row-even {
+    background: #fff;
+}
+
+.paycal-table-row-odd {
+    background: #f8f9fa;
+}
+
+.paycal-table-row-even td,
+.paycal-table-row-odd td {
+    border-bottom: 1px solid #eee;
+}
+
+.paycal-table-highlight {
+    color: #0066cc;
+}
+
+body[data-theme="dark"] .paycal-salary-table table {
+    background: #1e293b;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+body[data-theme="dark"] .paycal-table-head {
+    background: #0f172a;
+}
+
+body[data-theme="dark"] .paycal-table-head th {
+    border-bottom-color: #334155;
+    color: #e2e8f0;
+}
+
+body[data-theme="dark"] .paycal-table-row-even {
+    background: #1e293b;
+}
+
+body[data-theme="dark"] .paycal-table-row-odd {
+    background: #162032;
+}
+
+body[data-theme="dark"] .paycal-table-row-even td,
+body[data-theme="dark"] .paycal-table-row-odd td {
+    border-bottom-color: #334155;
+    color: #cbd5e1;
+}
+
+body[data-theme="dark"] .paycal-table-highlight {
+    color: #60a5fa;
+}
+
+/* ============================================
+   Korean Age Calculator Dark Mode
+   ============================================ */
+body[data-theme="dark"] .age-card {
+    background: linear-gradient(145deg, #1e293b 0%, #1a1f35 100%) !important;
+    border-color: #334155 !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+body[data-theme="dark"] .age-label {
+    color: #cbd5e1 !important;
+}
+
+body[data-theme="dark"] .age-input {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+body[data-theme="dark"] .age-input::placeholder {
+    color: #475569 !important;
+}
+
+body[data-theme="dark"] .age-input:focus {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25) !important;
+}
+
+body[data-theme="dark"] .age-info-section h2 {
+    color: #a78bfa !important;
+    border-bottom-color: #7c3aed !important;
+}
+
+body[data-theme="dark"] .age-info-section > div > div {
+    background: linear-gradient(145deg, #1e293b 0%, #162032 100%) !important;
+    border-color: #334155 !important;
+}
+
+body[data-theme="dark"] .age-info-section > div > div h3 {
+    color: #a5b4fc !important;
+}
+
+body[data-theme="dark"] .age-info-section > div > div:nth-child(2) h3 {
+    color: #fdba74 !important;
+}
+
+body[data-theme="dark"] .age-info-section > div > div:nth-child(3) h3 {
+    color: #6ee7b7 !important;
+}
+
+body[data-theme="dark"] .age-info-section > div > div p {
+    color: #94a3b8 !important;
+}
+
+/* Korean Age Calculator FAQ Dark Mode */
+body[data-theme="dark"] .faq-section {
+    background: #162032 !important;
+}
+
+body[data-theme="dark"] .faq-section h2 {
+    color: #f1f5f9 !important;
+}
+
+body[data-theme="dark"] .faq-section details {
+    background: #1e293b !important;
+}
+
+body[data-theme="dark"] .faq-section details summary {
+    color: #e2e8f0 !important;
+}
+
+body[data-theme="dark"] .faq-section details p {
+    color: #94a3b8 !important;
+}
+
 /* ============================================
    Money Converter Article Styles
    ============================================ */

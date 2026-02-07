@@ -2,9 +2,12 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function JsonFormatterClient() {
     const t = useTranslations('JsonFormatter');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const [input, setInput] = useState<string>('');
     const [output, setOutput] = useState<string>('');
     const [error, setError] = useState<string>('');
@@ -122,7 +125,7 @@ export default function JsonFormatterClient() {
     };
 
     return (
-        <div style={{ background: 'white', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', padding: '25px', marginBottom: '30px' }}>
+        <div style={{ background: isDark ? '#1e293b' : 'white', borderRadius: '16px', boxShadow: isDark ? 'none' : '0 4px 20px rgba(0,0,0,0.08)', padding: '25px', marginBottom: '30px' }}>
             {/* 컨트롤 바 */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
                 <button onClick={formatJson} style={buttonStyle('#3b82f6')}>{t('btn.format')}</button>
@@ -130,11 +133,11 @@ export default function JsonFormatterClient() {
                 <button onClick={validateJson} style={buttonStyle('#10b981')}>{t('btn.validate')}</button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-                    <label style={{ fontSize: '0.85rem', color: '#666' }}>{t('indent')}:</label>
+                    <label style={{ fontSize: '0.85rem', color: isDark ? '#94a3b8' : '#666' }}>{t('indent')}:</label>
                     <select
                         value={indentSize}
                         onChange={(e) => setIndentSize(Number(e.target.value))}
-                        style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.9rem' }}
+                        style={{ padding: '6px 12px', borderRadius: '6px', border: `1px solid ${isDark ? '#334155' : '#ddd'}`, fontSize: '0.9rem', background: isDark ? '#0f172a' : '#fff', color: isDark ? '#e2e8f0' : '#1f2937' }}
                     >
                         <option value={2}>2 spaces</option>
                         <option value={4}>4 spaces</option>
@@ -148,10 +151,10 @@ export default function JsonFormatterClient() {
                 {/* 입력 */}
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>{t('input.label')}</label>
+                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>{t('input.label')}</label>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <button onClick={loadSample} style={smallButtonStyle}>{t('btn.sample')}</button>
-                            <button onClick={clearAll} style={smallButtonStyle}>{t('btn.clear')}</button>
+                            <button onClick={loadSample} style={smallButtonStyle(isDark)}>{t('btn.sample')}</button>
+                            <button onClick={clearAll} style={smallButtonStyle(isDark)}>{t('btn.clear')}</button>
                         </div>
                     </div>
                     <textarea
@@ -165,14 +168,16 @@ export default function JsonFormatterClient() {
                             fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
                             fontSize: '0.85rem',
                             lineHeight: 1.5,
-                            border: error ? '2px solid #ef4444' : '2px solid #e5e7eb',
+                            border: error ? '2px solid #ef4444' : `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
                             borderRadius: '10px',
                             resize: 'vertical',
                             outline: 'none',
                             transition: 'border-color 0.2s',
+                            color: isDark ? '#e2e8f0' : '#1f2937',
+                            background: isDark ? '#0f172a' : '#fff',
                         }}
                         onFocus={(e) => { if (!error) e.target.style.borderColor = '#3b82f6'; }}
-                        onBlur={(e) => { if (!error) e.target.style.borderColor = '#e5e7eb'; }}
+                        onBlur={(e) => { if (!error) e.target.style.borderColor = isDark ? '#334155' : '#e5e7eb'; }}
                         spellCheck={false}
                     />
                 </div>
@@ -180,14 +185,14 @@ export default function JsonFormatterClient() {
                 {/* 출력 */}
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>{t('output.label')}</label>
+                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>{t('output.label')}</label>
                         <button
                             onClick={copyToClipboard}
                             disabled={!output}
                             style={{
-                                ...smallButtonStyle,
-                                background: copied ? '#10b981' : '#f3f4f6',
-                                color: copied ? 'white' : '#374151',
+                                ...smallButtonStyle(isDark),
+                                background: copied ? '#10b981' : (isDark ? '#0f172a' : '#f3f4f6'),
+                                color: copied ? 'white' : (isDark ? '#f1f5f9' : '#374151'),
                             }}
                         >
                             {copied ? t('btn.copied') : t('btn.copy')}
@@ -204,11 +209,12 @@ export default function JsonFormatterClient() {
                             fontFamily: "'SF Mono', 'Consolas', 'Monaco', monospace",
                             fontSize: '0.85rem',
                             lineHeight: 1.5,
-                            border: '2px solid #e5e7eb',
+                            border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
                             borderRadius: '10px',
-                            background: '#fafafa',
+                            background: isDark ? '#1e293b' : '#fafafa',
                             resize: 'vertical',
                             outline: 'none',
+                            color: isDark ? '#e2e8f0' : '#1f2937',
                         }}
                         spellCheck={false}
                     />
@@ -219,10 +225,10 @@ export default function JsonFormatterClient() {
             {error && (
                 <div style={{
                     padding: '12px 16px',
-                    background: '#fef2f2',
-                    border: '1px solid #fecaca',
+                    background: isDark ? '#2d1b1b' : '#fef2f2',
+                    border: `1px solid ${isDark ? '#7f1d1d' : '#fecaca'}`,
                     borderRadius: '8px',
-                    color: '#dc2626',
+                    color: isDark ? '#f87171' : '#dc2626',
                     fontSize: '0.9rem',
                     marginBottom: '10px',
                 }}>
@@ -233,8 +239,8 @@ export default function JsonFormatterClient() {
             {stats && !error && (
                 <div style={{
                     padding: '12px 16px',
-                    background: '#f0fdf4',
-                    border: '1px solid #bbf7d0',
+                    background: isDark ? '#0f2918' : '#f0fdf4',
+                    border: `1px solid ${isDark ? '#166534' : '#bbf7d0'}`,
                     borderRadius: '8px',
                     color: '#16a34a',
                     fontSize: '0.9rem',
@@ -273,13 +279,13 @@ const buttonStyle = (color: string): React.CSSProperties => ({
     transition: 'opacity 0.2s',
 });
 
-const smallButtonStyle: React.CSSProperties = {
+const smallButtonStyle = (isDark: boolean): React.CSSProperties => ({
     padding: '6px 12px',
     borderRadius: '6px',
     border: 'none',
-    background: '#f3f4f6',
-    color: '#374151',
+    background: isDark ? '#0f172a' : '#f3f4f6',
+    color: isDark ? '#f1f5f9' : '#374151',
     fontSize: '0.8rem',
     cursor: 'pointer',
     transition: 'background 0.2s',
-};
+});

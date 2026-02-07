@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface FieldConfig {
     type: 'every' | 'specific' | 'range' | 'interval';
@@ -97,6 +98,8 @@ function parseCronToFields(cron: string): Record<string, FieldConfig> {
 
 export default function CronGeneratorClient() {
     const t = useTranslations('CronGenerator');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [fields, setFields] = useState<Record<string, FieldConfig>>({
         minute: createDefaultField(),
@@ -297,10 +300,10 @@ export default function CronGeneratorClient() {
                             padding: fieldName === 'dayOfWeek' || fieldName === 'month' ? '4px 8px' : '4px 6px',
                             minWidth: fieldName === 'dayOfWeek' || fieldName === 'month' ? '36px' : '30px',
                             border: '1px solid',
-                            borderColor: field.specific.includes(v) ? '#4A90D9' : '#ddd',
+                            borderColor: field.specific.includes(v) ? '#4A90D9' : isDark ? '#334155' : '#ddd',
                             borderRadius: '4px',
-                            background: field.specific.includes(v) ? '#4A90D9' : 'white',
-                            color: field.specific.includes(v) ? 'white' : '#333',
+                            background: field.specific.includes(v) ? '#4A90D9' : isDark ? '#1e293b' : 'white',
+                            color: field.specific.includes(v) ? 'white' : isDark ? '#f1f5f9' : '#333',
                             cursor: 'pointer',
                             fontSize: '0.8rem',
                             fontWeight: field.specific.includes(v) ? 600 : 400,
@@ -320,7 +323,7 @@ export default function CronGeneratorClient() {
         <div className="container" style={{ maxWidth: "1000px", padding: "20px" }}>
             <section style={{ textAlign: "center", marginBottom: "40px" }}>
                 <h1 style={{ marginBottom: "20px" }}>{t('title')}</h1>
-                <p style={{ color: "#666", fontSize: "1.1rem", maxWidth: "700px", margin: "0 auto" }}
+                <p style={{ color: isDark ? "#94a3b8" : "#666", fontSize: "1.1rem", maxWidth: "700px", margin: "0 auto" }}
                     dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
             </section>
 
@@ -389,12 +392,12 @@ export default function CronGeneratorClient() {
 
             {/* 수동 입력 */}
             <div style={{
-                background: 'white', borderRadius: '10px',
-                boxShadow: '0 2px 15px rgba(0,0,0,0.1)', padding: '15px 20px',
+                background: isDark ? '#1e293b' : 'white', borderRadius: '10px',
+                boxShadow: isDark ? 'none' : '0 2px 15px rgba(0,0,0,0.1)', padding: '15px 20px',
                 marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'center',
                 flexWrap: 'wrap'
             }}>
-                <label style={{ fontWeight: 500, fontSize: '0.95rem', whiteSpace: 'nowrap' }}>
+                <label style={{ fontWeight: 500, fontSize: '0.95rem', whiteSpace: 'nowrap', color: isDark ? '#f1f5f9' : undefined }}>
                     {t('manualInput')}:
                 </label>
                 <input
@@ -404,9 +407,11 @@ export default function CronGeneratorClient() {
                     onKeyDown={(e) => e.key === 'Enter' && handleManualApply()}
                     placeholder="* * * * *"
                     style={{
-                        flex: 1, padding: '8px 12px', border: '1px solid #ddd',
+                        flex: 1, padding: '8px 12px', border: isDark ? '1px solid #334155' : '1px solid #ddd',
                         borderRadius: '6px', fontFamily: "'Consolas', monospace",
-                        fontSize: '1rem', minWidth: '150px'
+                        fontSize: '1rem', minWidth: '150px',
+                        color: isDark ? '#e2e8f0' : '#1f2937',
+                        background: isDark ? '#0f172a' : '#fff'
                     }}
                 />
                 <button
@@ -423,11 +428,11 @@ export default function CronGeneratorClient() {
 
             {/* 프리셋 */}
             <div style={{
-                background: 'white', borderRadius: '10px',
-                boxShadow: '0 2px 15px rgba(0,0,0,0.1)', padding: '20px',
+                background: isDark ? '#1e293b' : 'white', borderRadius: '10px',
+                boxShadow: isDark ? 'none' : '0 2px 15px rgba(0,0,0,0.1)', padding: '20px',
                 marginBottom: '20px'
             }}>
-                <h2 style={{ fontSize: '1.1rem', marginBottom: '12px', color: '#333' }}>
+                <h2 style={{ fontSize: '1.1rem', marginBottom: '12px', color: isDark ? '#f1f5f9' : '#333' }}>
                     {t('presetsTitle')}
                 </h2>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -436,12 +441,12 @@ export default function CronGeneratorClient() {
                             key={preset.key}
                             onClick={() => handlePreset(preset.cron)}
                             style={{
-                                padding: '8px 14px', border: '1px solid #e2e8f0',
-                                borderRadius: '8px', background: cronExpression === preset.cron ? '#eef2ff' : '#f8fafc',
-                                color: cronExpression === preset.cron ? '#4A90D9' : '#475569',
+                                padding: '8px 14px', border: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
+                                borderRadius: '8px', background: cronExpression === preset.cron ? (isDark ? '#1e3a5f' : '#eef2ff') : (isDark ? '#0f172a' : '#f8fafc'),
+                                color: cronExpression === preset.cron ? '#4A90D9' : (isDark ? '#94a3b8' : '#475569'),
                                 cursor: 'pointer', fontSize: '0.85rem',
                                 fontWeight: cronExpression === preset.cron ? 600 : 400,
-                                borderColor: cronExpression === preset.cron ? '#4A90D9' : '#e2e8f0',
+                                borderColor: cronExpression === preset.cron ? '#4A90D9' : (isDark ? '#334155' : '#e2e8f0'),
                             }}
                         >
                             <span style={{ fontWeight: 600, marginRight: '6px', fontFamily: "'Consolas', monospace", fontSize: '0.8rem' }}>
@@ -463,14 +468,14 @@ export default function CronGeneratorClient() {
 
                     return (
                         <div key={fieldName} style={{
-                            background: 'white', borderRadius: '10px',
-                            boxShadow: '0 2px 15px rgba(0,0,0,0.1)', padding: '20px'
+                            background: isDark ? '#1e293b' : 'white', borderRadius: '10px',
+                            boxShadow: isDark ? 'none' : '0 2px 15px rgba(0,0,0,0.1)', padding: '20px'
                         }}>
                             <div style={{
                                 display: 'flex', alignItems: 'center', gap: '12px',
                                 marginBottom: '12px', flexWrap: 'wrap'
                             }}>
-                                <h3 style={{ fontSize: '1rem', margin: 0, color: '#333', minWidth: '80px' }}>
+                                <h3 style={{ fontSize: '1rem', margin: 0, color: isDark ? '#f1f5f9' : '#333', minWidth: '80px' }}>
                                     {fieldLabels[fieldName]}
                                 </h3>
                                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -480,10 +485,10 @@ export default function CronGeneratorClient() {
                                             onClick={() => updateField(fieldName, { type })}
                                             style={{
                                                 padding: '5px 12px', border: '1px solid',
-                                                borderColor: field.type === type ? '#4A90D9' : '#ddd',
+                                                borderColor: field.type === type ? '#4A90D9' : isDark ? '#334155' : '#ddd',
                                                 borderRadius: '6px',
-                                                background: field.type === type ? '#4A90D9' : 'white',
-                                                color: field.type === type ? 'white' : '#555',
+                                                background: field.type === type ? '#4A90D9' : isDark ? '#0f172a' : 'white',
+                                                color: field.type === type ? 'white' : isDark ? '#94a3b8' : '#555',
                                                 cursor: 'pointer', fontSize: '0.85rem',
                                                 fontWeight: field.type === type ? 600 : 400,
                                             }}
@@ -494,7 +499,7 @@ export default function CronGeneratorClient() {
                                 </div>
                                 <div style={{
                                     marginLeft: 'auto', fontFamily: "'Consolas', monospace",
-                                    background: '#f1f5f9', padding: '4px 12px', borderRadius: '6px',
+                                    background: isDark ? '#0f172a' : '#f1f5f9', padding: '4px 12px', borderRadius: '6px',
                                     color: '#4A90D9', fontWeight: 600, fontSize: '0.95rem'
                                 }}>
                                     {fieldToExpression(field, fieldName)}
@@ -513,8 +518,10 @@ export default function CronGeneratorClient() {
                                         value={field.rangeStart}
                                         onChange={(e) => updateField(fieldName, { rangeStart: parseInt(e.target.value) || def.min })}
                                         style={{
-                                            width: '70px', padding: '5px 8px', border: '1px solid #ddd',
-                                            borderRadius: '6px', textAlign: 'center'
+                                            width: '70px', padding: '5px 8px', border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                            borderRadius: '6px', textAlign: 'center',
+                                            color: isDark ? '#e2e8f0' : '#1f2937',
+                                            background: isDark ? '#0f172a' : '#fff'
                                         }}
                                     />
                                     <label style={{ fontSize: '0.9rem' }}>{t('rangeTo')}:</label>
@@ -525,8 +532,10 @@ export default function CronGeneratorClient() {
                                         value={field.rangeEnd}
                                         onChange={(e) => updateField(fieldName, { rangeEnd: parseInt(e.target.value) || def.min })}
                                         style={{
-                                            width: '70px', padding: '5px 8px', border: '1px solid #ddd',
-                                            borderRadius: '6px', textAlign: 'center'
+                                            width: '70px', padding: '5px 8px', border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                            borderRadius: '6px', textAlign: 'center',
+                                            color: isDark ? '#e2e8f0' : '#1f2937',
+                                            background: isDark ? '#0f172a' : '#fff'
                                         }}
                                     />
                                 </div>
@@ -542,8 +551,10 @@ export default function CronGeneratorClient() {
                                         value={field.intervalStart}
                                         onChange={(e) => updateField(fieldName, { intervalStart: parseInt(e.target.value) || def.min })}
                                         style={{
-                                            width: '70px', padding: '5px 8px', border: '1px solid #ddd',
-                                            borderRadius: '6px', textAlign: 'center'
+                                            width: '70px', padding: '5px 8px', border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                            borderRadius: '6px', textAlign: 'center',
+                                            color: isDark ? '#e2e8f0' : '#1f2937',
+                                            background: isDark ? '#0f172a' : '#fff'
                                         }}
                                     />
                                     <label style={{ fontSize: '0.9rem' }}>{t('intervalEvery')}:</label>
@@ -554,8 +565,10 @@ export default function CronGeneratorClient() {
                                         value={field.intervalStep}
                                         onChange={(e) => updateField(fieldName, { intervalStep: parseInt(e.target.value) || 1 })}
                                         style={{
-                                            width: '70px', padding: '5px 8px', border: '1px solid #ddd',
-                                            borderRadius: '6px', textAlign: 'center'
+                                            width: '70px', padding: '5px 8px', border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                            borderRadius: '6px', textAlign: 'center',
+                                            color: isDark ? '#e2e8f0' : '#1f2937',
+                                            background: isDark ? '#0f172a' : '#fff'
                                         }}
                                     />
                                 </div>
@@ -567,20 +580,20 @@ export default function CronGeneratorClient() {
 
             {/* Cron 구조 설명 */}
             <div style={{
-                background: 'white', borderRadius: '10px',
-                boxShadow: '0 2px 15px rgba(0,0,0,0.1)', padding: '25px', marginBottom: '20px'
+                background: isDark ? '#1e293b' : 'white', borderRadius: '10px',
+                boxShadow: isDark ? 'none' : '0 2px 15px rgba(0,0,0,0.1)', padding: '25px', marginBottom: '20px'
             }}>
-                <h2 style={{ marginBottom: '15px', fontSize: '1.2rem', color: '#333' }}>
+                <h2 style={{ marginBottom: '15px', fontSize: '1.2rem', color: isDark ? '#f1f5f9' : '#333' }}>
                     {t('guideTitle')}
                 </h2>
                 <div style={{
-                    background: '#f8fafc', borderRadius: '8px', padding: '20px',
+                    background: isDark ? '#0f172a' : '#f8fafc', borderRadius: '8px', padding: '20px',
                     fontFamily: "'Consolas', monospace", marginBottom: '15px',
-                    overflowX: 'auto'
+                    overflowX: 'auto', color: isDark ? '#e2e8f0' : undefined
                 }}>
                     <pre style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.8 }}>{t.raw('cronStructure')}</pre>
                 </div>
-                <div style={{ color: '#555', lineHeight: 1.8 }}>
+                <div style={{ color: isDark ? '#94a3b8' : '#555', lineHeight: 1.8 }}>
                     <p style={{ marginBottom: '10px' }}>
                         <strong>1. {t('guideStep1Title')}</strong><br />
                         {t('guideStep1Desc')}
@@ -602,31 +615,31 @@ export default function CronGeneratorClient() {
 
             {/* 특수문자 설명 */}
             <div style={{
-                background: 'white', borderRadius: '10px',
-                boxShadow: '0 2px 15px rgba(0,0,0,0.1)', padding: '25px', marginBottom: '20px'
+                background: isDark ? '#1e293b' : 'white', borderRadius: '10px',
+                boxShadow: isDark ? 'none' : '0 2px 15px rgba(0,0,0,0.1)', padding: '25px', marginBottom: '20px'
             }}>
-                <h2 style={{ marginBottom: '15px', fontSize: '1.2rem', color: '#333' }}>
+                <h2 style={{ marginBottom: '15px', fontSize: '1.2rem', color: isDark ? '#f1f5f9' : '#333' }}>
                     {t('syntaxTitle')}
                 </h2>
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr style={{ background: '#f8fafc' }}>
-                                <th style={{ padding: '10px 15px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontSize: '0.9rem' }}>{t('syntaxChar')}</th>
-                                <th style={{ padding: '10px 15px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontSize: '0.9rem' }}>{t('syntaxMeaning')}</th>
-                                <th style={{ padding: '10px 15px', textAlign: 'left', borderBottom: '2px solid #e2e8f0', fontSize: '0.9rem' }}>{t('syntaxExample')}</th>
+                            <tr style={{ background: isDark ? '#0f172a' : '#f8fafc' }}>
+                                <th style={{ padding: '10px 15px', textAlign: 'left', borderBottom: isDark ? '2px solid #334155' : '2px solid #e2e8f0', fontSize: '0.9rem', color: isDark ? '#f1f5f9' : undefined }}>{t('syntaxChar')}</th>
+                                <th style={{ padding: '10px 15px', textAlign: 'left', borderBottom: isDark ? '2px solid #334155' : '2px solid #e2e8f0', fontSize: '0.9rem', color: isDark ? '#f1f5f9' : undefined }}>{t('syntaxMeaning')}</th>
+                                <th style={{ padding: '10px 15px', textAlign: 'left', borderBottom: isDark ? '2px solid #334155' : '2px solid #e2e8f0', fontSize: '0.9rem', color: isDark ? '#f1f5f9' : undefined }}>{t('syntaxExample')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {['star', 'comma', 'dash', 'slash'].map(key => (
                                 <tr key={key}>
-                                    <td style={{ padding: '10px 15px', borderBottom: '1px solid #f1f5f9', fontFamily: "'Consolas', monospace", fontWeight: 600, color: '#4A90D9' }}>
+                                    <td style={{ padding: '10px 15px', borderBottom: isDark ? '1px solid #334155' : '1px solid #f1f5f9', fontFamily: "'Consolas', monospace", fontWeight: 600, color: '#4A90D9' }}>
                                         {t(`syntax.${key}.char`)}
                                     </td>
-                                    <td style={{ padding: '10px 15px', borderBottom: '1px solid #f1f5f9', color: '#555' }}>
+                                    <td style={{ padding: '10px 15px', borderBottom: isDark ? '1px solid #334155' : '1px solid #f1f5f9', color: isDark ? '#94a3b8' : '#555' }}>
                                         {t(`syntax.${key}.meaning`)}
                                     </td>
-                                    <td style={{ padding: '10px 15px', borderBottom: '1px solid #f1f5f9', fontFamily: "'Consolas', monospace", color: '#666', fontSize: '0.9rem' }}>
+                                    <td style={{ padding: '10px 15px', borderBottom: isDark ? '1px solid #334155' : '1px solid #f1f5f9', fontFamily: "'Consolas', monospace", color: isDark ? '#94a3b8' : '#666', fontSize: '0.9rem' }}>
                                         {t(`syntax.${key}.example`)}
                                     </td>
                                 </tr>

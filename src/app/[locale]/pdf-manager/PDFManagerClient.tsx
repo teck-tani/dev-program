@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 import { FaFilePdf, FaDownload, FaTrash, FaPlus, FaCut, FaLayerGroup, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { PDFDocument } from "pdf-lib";
 
@@ -17,6 +18,8 @@ type TabType = 'merge' | 'split';
 
 export default function PDFManagerClient() {
     const t = useTranslations('PDFManager');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const [activeTab, setActiveTab] = useState<TabType>('merge');
     const [mergeFiles, setMergeFiles] = useState<PDFFile[]>([]);
     const [splitFile, setSplitFile] = useState<PDFFile | null>(null);
@@ -227,13 +230,13 @@ export default function PDFManagerClient() {
     const totalMergeSize = mergeFiles.reduce((sum, f) => sum + f.size, 0);
 
     return (
-        <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%)' }}>
+        <div style={{ minHeight: '100vh', background: isDark ? '#0f172a' : 'linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%)' }}>
             {/* Header */}
             <section style={{ textAlign: "center", paddingTop: "40px", paddingBottom: "20px" }}>
                 <h1 style={{ fontSize: '2rem', color: '#c0392b', marginBottom: "15px", fontWeight: 700 }}>
                     {t('title')}
                 </h1>
-                <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', padding: '0 20px' }}
+                <p style={{ color: isDark ? '#94a3b8' : '#666', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', padding: '0 20px' }}
                    dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
             </section>
 
@@ -243,10 +246,10 @@ export default function PDFManagerClient() {
                     display: 'flex',
                     gap: '10px',
                     marginBottom: '20px',
-                    background: 'white',
+                    background: isDark ? '#1e293b' : 'white',
                     padding: '8px',
                     borderRadius: '12px',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+                    boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)'
                 }}>
                     <button
                         onClick={() => setActiveTab('merge')}
@@ -254,7 +257,7 @@ export default function PDFManagerClient() {
                             flex: 1,
                             padding: '14px 20px',
                             background: activeTab === 'merge' ? 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)' : 'transparent',
-                            color: activeTab === 'merge' ? 'white' : '#666',
+                            color: activeTab === 'merge' ? 'white' : (isDark ? '#94a3b8' : '#666'),
                             border: 'none',
                             borderRadius: '8px',
                             fontSize: '1rem',
@@ -276,7 +279,7 @@ export default function PDFManagerClient() {
                             flex: 1,
                             padding: '14px 20px',
                             background: activeTab === 'split' ? 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)' : 'transparent',
-                            color: activeTab === 'split' ? 'white' : '#666',
+                            color: activeTab === 'split' ? 'white' : (isDark ? '#94a3b8' : '#666'),
                             border: 'none',
                             borderRadius: '8px',
                             fontSize: '1rem',
@@ -297,8 +300,8 @@ export default function PDFManagerClient() {
                 {/* Error Message */}
                 {error && (
                     <div style={{
-                        background: '#fee',
-                        color: '#c0392b',
+                        background: isDark ? '#3b1111' : '#fee',
+                        color: isDark ? '#f87171' : '#c0392b',
                         padding: '12px 16px',
                         borderRadius: '8px',
                         marginBottom: '20px',
@@ -315,7 +318,7 @@ export default function PDFManagerClient() {
                         <div
                             onClick={() => mergeInputRef.current?.click()}
                             style={{
-                                background: 'white',
+                                background: isDark ? '#1e293b' : 'white',
                                 border: '2px dashed #e74c3c',
                                 borderRadius: '16px',
                                 padding: '40px 20px',
@@ -324,12 +327,12 @@ export default function PDFManagerClient() {
                                 marginBottom: '20px',
                                 transition: 'all 0.3s ease',
                             }}
-                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.background = '#fff5f5'; }}
-                            onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = 'white'; }}
+                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.background = isDark ? '#2d1a1a' : '#fff5f5'; }}
+                            onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = isDark ? '#1e293b' : 'white'; }}
                             onDrop={(e) => {
                                 e.preventDefault();
                                 e.currentTarget.style.borderColor = '#e74c3c';
-                                e.currentTarget.style.background = 'white';
+                                e.currentTarget.style.background = isDark ? '#1e293b' : 'white';
                                 const files = e.dataTransfer.files;
                                 if (files.length > 0) {
                                     const event = { target: { files } } as React.ChangeEvent<HTMLInputElement>;
@@ -338,10 +341,10 @@ export default function PDFManagerClient() {
                             }}
                         >
                             <FaFilePdf style={{ fontSize: '3rem', color: '#e74c3c', marginBottom: '15px' }} />
-                            <p style={{ color: '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
+                            <p style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
                                 {t('merge.upload.title')}
                             </p>
-                            <p style={{ color: '#888', fontSize: '0.9rem' }}>
+                            <p style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.9rem' }}>
                                 {t('merge.upload.subtitle')}
                             </p>
                             <input
@@ -358,27 +361,27 @@ export default function PDFManagerClient() {
                         {mergeFiles.length > 0 && (
                             <>
                                 <div style={{
-                                    background: 'white',
+                                    background: isDark ? '#1e293b' : 'white',
                                     borderRadius: '16px',
                                     padding: '20px',
                                     marginBottom: '20px',
-                                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                    boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
                                     gap: '15px',
                                     textAlign: 'center',
                                 }}>
                                     <div>
-                                        <div style={{ color: '#888', fontSize: '0.85rem' }}>{t('merge.summary.files')}</div>
-                                        <div style={{ color: '#333', fontSize: '1.3rem', fontWeight: 700 }}>{mergeFiles.length}</div>
+                                        <div style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.85rem' }}>{t('merge.summary.files')}</div>
+                                        <div style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.3rem', fontWeight: 700 }}>{mergeFiles.length}</div>
                                     </div>
                                     <div>
-                                        <div style={{ color: '#888', fontSize: '0.85rem' }}>{t('merge.summary.pages')}</div>
-                                        <div style={{ color: '#333', fontSize: '1.3rem', fontWeight: 700 }}>{totalMergePages}</div>
+                                        <div style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.85rem' }}>{t('merge.summary.pages')}</div>
+                                        <div style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.3rem', fontWeight: 700 }}>{totalMergePages}</div>
                                     </div>
                                     <div>
-                                        <div style={{ color: '#888', fontSize: '0.85rem' }}>{t('merge.summary.size')}</div>
-                                        <div style={{ color: '#333', fontSize: '1.3rem', fontWeight: 700 }}>{formatBytes(totalMergeSize)}</div>
+                                        <div style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.85rem' }}>{t('merge.summary.size')}</div>
+                                        <div style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.3rem', fontWeight: 700 }}>{formatBytes(totalMergeSize)}</div>
                                     </div>
                                 </div>
 
@@ -387,10 +390,10 @@ export default function PDFManagerClient() {
                                         <div
                                             key={pdfFile.id}
                                             style={{
-                                                background: 'white',
+                                                background: isDark ? '#1e293b' : 'white',
                                                 borderRadius: '12px',
                                                 padding: '15px',
-                                                boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                                boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '12px',
@@ -402,11 +405,11 @@ export default function PDFManagerClient() {
                                                     disabled={index === 0}
                                                     style={{
                                                         padding: '4px 8px',
-                                                        background: index === 0 ? '#eee' : '#f8f9fa',
-                                                        border: '1px solid #ddd',
+                                                        background: index === 0 ? (isDark ? '#334155' : '#eee') : (isDark ? '#0f172a' : '#f8f9fa'),
+                                                        border: isDark ? '1px solid #334155' : '1px solid #ddd',
                                                         borderRadius: '4px',
                                                         cursor: index === 0 ? 'not-allowed' : 'pointer',
-                                                        color: index === 0 ? '#ccc' : '#666',
+                                                        color: index === 0 ? (isDark ? '#475569' : '#ccc') : (isDark ? '#94a3b8' : '#666'),
                                                     }}
                                                 >
                                                     <FaArrowUp size={12} />
@@ -416,11 +419,11 @@ export default function PDFManagerClient() {
                                                     disabled={index === mergeFiles.length - 1}
                                                     style={{
                                                         padding: '4px 8px',
-                                                        background: index === mergeFiles.length - 1 ? '#eee' : '#f8f9fa',
-                                                        border: '1px solid #ddd',
+                                                        background: index === mergeFiles.length - 1 ? (isDark ? '#334155' : '#eee') : (isDark ? '#0f172a' : '#f8f9fa'),
+                                                        border: isDark ? '1px solid #334155' : '1px solid #ddd',
                                                         borderRadius: '4px',
                                                         cursor: index === mergeFiles.length - 1 ? 'not-allowed' : 'pointer',
-                                                        color: index === mergeFiles.length - 1 ? '#ccc' : '#666',
+                                                        color: index === mergeFiles.length - 1 ? (isDark ? '#475569' : '#ccc') : (isDark ? '#94a3b8' : '#666'),
                                                     }}
                                                 >
                                                     <FaArrowDown size={12} />
@@ -428,10 +431,10 @@ export default function PDFManagerClient() {
                                             </div>
                                             <FaFilePdf style={{ fontSize: '2rem', color: '#e74c3c', flexShrink: 0 }} />
                                             <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ fontWeight: 600, color: '#333', marginBottom: '4px', wordBreak: 'break-all' }}>
+                                                <div style={{ fontWeight: 600, color: isDark ? '#f1f5f9' : '#333', marginBottom: '4px', wordBreak: 'break-all' }}>
                                                     {pdfFile.name}
                                                 </div>
-                                                <div style={{ fontSize: '0.85rem', color: '#888' }}>
+                                                <div style={{ fontSize: '0.85rem', color: isDark ? '#64748b' : '#888' }}>
                                                     {t('merge.file.pages', { count: pdfFile.pageCount })} · {formatBytes(pdfFile.size)}
                                                 </div>
                                             </div>
@@ -439,9 +442,9 @@ export default function PDFManagerClient() {
                                                 onClick={() => removeMergeFile(pdfFile.id)}
                                                 style={{
                                                     padding: '8px',
-                                                    background: '#f8f9fa',
-                                                    color: '#666',
-                                                    border: '1px solid #ddd',
+                                                    background: isDark ? '#0f172a' : '#f8f9fa',
+                                                    color: isDark ? '#94a3b8' : '#666',
+                                                    border: isDark ? '1px solid #334155' : '1px solid #ddd',
                                                     borderRadius: '50%',
                                                     cursor: 'pointer',
                                                     display: 'flex',
@@ -484,9 +487,9 @@ export default function PDFManagerClient() {
                                         onClick={() => mergeInputRef.current?.click()}
                                         style={{
                                             padding: '14px 24px',
-                                            background: '#f8f9fa',
-                                            color: '#666',
-                                            border: '1px solid #ddd',
+                                            background: isDark ? '#1e293b' : '#f8f9fa',
+                                            color: isDark ? '#94a3b8' : '#666',
+                                            border: isDark ? '1px solid #334155' : '1px solid #ddd',
                                             borderRadius: '25px',
                                             fontSize: '1rem',
                                             fontWeight: 600,
@@ -504,9 +507,9 @@ export default function PDFManagerClient() {
                                         onClick={clearMergeFiles}
                                         style={{
                                             padding: '14px 24px',
-                                            background: '#f8f9fa',
-                                            color: '#666',
-                                            border: '1px solid #ddd',
+                                            background: isDark ? '#1e293b' : '#f8f9fa',
+                                            color: isDark ? '#94a3b8' : '#666',
+                                            border: isDark ? '1px solid #334155' : '1px solid #ddd',
                                             borderRadius: '25px',
                                             fontSize: '1rem',
                                             fontWeight: 600,
@@ -534,7 +537,7 @@ export default function PDFManagerClient() {
                             <div
                                 onClick={() => splitInputRef.current?.click()}
                                 style={{
-                                    background: 'white',
+                                    background: isDark ? '#1e293b' : 'white',
                                     border: '2px dashed #e74c3c',
                                     borderRadius: '16px',
                                     padding: '40px 20px',
@@ -543,12 +546,12 @@ export default function PDFManagerClient() {
                                     marginBottom: '20px',
                                     transition: 'all 0.3s ease',
                                 }}
-                                onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.background = '#fff5f5'; }}
-                                onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = 'white'; }}
+                                onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.background = isDark ? '#2d1a1a' : '#fff5f5'; }}
+                                onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = isDark ? '#1e293b' : 'white'; }}
                                 onDrop={(e) => {
                                     e.preventDefault();
                                     e.currentTarget.style.borderColor = '#e74c3c';
-                                    e.currentTarget.style.background = 'white';
+                                    e.currentTarget.style.background = isDark ? '#1e293b' : 'white';
                                     const files = e.dataTransfer.files;
                                     if (files.length > 0) {
                                         const event = { target: { files } } as React.ChangeEvent<HTMLInputElement>;
@@ -557,10 +560,10 @@ export default function PDFManagerClient() {
                                 }}
                             >
                                 <FaFilePdf style={{ fontSize: '3rem', color: '#e74c3c', marginBottom: '15px' }} />
-                                <p style={{ color: '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
+                                <p style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
                                     {t('split.upload.title')}
                                 </p>
-                                <p style={{ color: '#888', fontSize: '0.9rem' }}>
+                                <p style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.9rem' }}>
                                     {t('split.upload.subtitle')}
                                 </p>
                                 <input
@@ -577,19 +580,19 @@ export default function PDFManagerClient() {
                         {splitFile && (
                             <>
                                 <div style={{
-                                    background: 'white',
+                                    background: isDark ? '#1e293b' : 'white',
                                     borderRadius: '16px',
                                     padding: '20px',
                                     marginBottom: '20px',
-                                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                    boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                                         <FaFilePdf style={{ fontSize: '2.5rem', color: '#e74c3c' }} />
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 600, color: '#333', marginBottom: '4px' }}>
+                                            <div style={{ fontWeight: 600, color: isDark ? '#f1f5f9' : '#333', marginBottom: '4px' }}>
                                                 {splitFile.name}
                                             </div>
-                                            <div style={{ fontSize: '0.9rem', color: '#888' }}>
+                                            <div style={{ fontSize: '0.9rem', color: isDark ? '#64748b' : '#888' }}>
                                                 {t('split.file.info', { pages: splitFile.pageCount, size: formatBytes(splitFile.size) })}
                                             </div>
                                         </div>
@@ -597,9 +600,9 @@ export default function PDFManagerClient() {
                                             onClick={() => setSplitFile(null)}
                                             style={{
                                                 padding: '8px 16px',
-                                                background: '#f8f9fa',
-                                                color: '#666',
-                                                border: '1px solid #ddd',
+                                                background: isDark ? '#0f172a' : '#f8f9fa',
+                                                color: isDark ? '#94a3b8' : '#666',
+                                                border: isDark ? '1px solid #334155' : '1px solid #ddd',
                                                 borderRadius: '20px',
                                                 cursor: 'pointer',
                                                 display: 'flex',
@@ -613,8 +616,8 @@ export default function PDFManagerClient() {
                                     </div>
 
                                     {/* Split Options */}
-                                    <div style={{ borderTop: '1px solid #eee', paddingTop: '20px' }}>
-                                        <div style={{ marginBottom: '15px', fontWeight: 600, color: '#333' }}>
+                                    <div style={{ borderTop: isDark ? '1px solid #334155' : '1px solid #eee', paddingTop: '20px' }}>
+                                        <div style={{ marginBottom: '15px', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>
                                             {t('split.options.title')}
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -626,7 +629,7 @@ export default function PDFManagerClient() {
                                                     onChange={() => setSplitMode('all')}
                                                     style={{ accentColor: '#e74c3c' }}
                                                 />
-                                                <span style={{ color: '#333' }}>{t('split.options.all')}</span>
+                                                <span style={{ color: isDark ? '#f1f5f9' : '#333' }}>{t('split.options.all')}</span>
                                             </label>
                                             <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
                                                 <input
@@ -637,7 +640,7 @@ export default function PDFManagerClient() {
                                                     style={{ accentColor: '#e74c3c', marginTop: '4px' }}
                                                 />
                                                 <div style={{ flex: 1 }}>
-                                                    <span style={{ color: '#333' }}>{t('split.options.range')}</span>
+                                                    <span style={{ color: isDark ? '#f1f5f9' : '#333' }}>{t('split.options.range')}</span>
                                                     {splitMode === 'range' && (
                                                         <input
                                                             type="text"
@@ -649,9 +652,11 @@ export default function PDFManagerClient() {
                                                                 width: '100%',
                                                                 marginTop: '8px',
                                                                 padding: '10px 12px',
-                                                                border: '1px solid #ddd',
+                                                                border: isDark ? '1px solid #334155' : '1px solid #ddd',
                                                                 borderRadius: '8px',
                                                                 fontSize: '0.95rem',
+                                                                background: isDark ? '#0f172a' : '#fff',
+                                                                color: isDark ? '#e2e8f0' : '#1f2937',
                                                             }}
                                                         />
                                                     )}
@@ -692,7 +697,7 @@ export default function PDFManagerClient() {
                 {/* Info Section */}
                 <article style={{ marginTop: '50px', lineHeight: '1.7' }}>
                     <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
+                        <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
                             {t('info.title')}
                         </h2>
                         <div style={{
@@ -700,27 +705,27 @@ export default function PDFManagerClient() {
                             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                             gap: '15px'
                         }}>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? '#1e293b' : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#e74c3c', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.privacy.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', margin: 0 }}>
                                     {t('info.privacy.desc')}
                                 </p>
                             </div>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? '#1e293b' : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#e74c3c', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.free.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', margin: 0 }}>
                                     {t('info.free.desc')}
                                 </p>
                             </div>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? '#1e293b' : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#e74c3c', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.easy.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', margin: 0 }}>
                                     {t('info.easy.desc')}
                                 </p>
                             </div>
@@ -729,35 +734,35 @@ export default function PDFManagerClient() {
 
                     {/* FAQ Section */}
                     <section style={{
-                        background: 'white',
+                        background: isDark ? '#1e293b' : 'white',
                         padding: '30px',
                         borderRadius: '15px',
-                        boxShadow: '0 2px 15px rgba(0,0,0,0.05)'
+                        boxShadow: isDark ? 'none' : '0 2px 15px rgba(0,0,0,0.05)'
                     }}>
-                        <h2 style={{ fontSize: '1.4rem', color: '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
+                        <h2 style={{ fontSize: '1.4rem', color: isDark ? '#f1f5f9' : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
                             {t('faq.title')}
                         </h2>
-                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: isDark ? '1px solid #334155' : '1px solid #eee' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? '#f1f5f9' : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q1')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a1')}
                             </p>
                         </details>
-                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: isDark ? '1px solid #334155' : '1px solid #eee' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? '#f1f5f9' : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q2')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a2')}
                             </p>
                         </details>
                         <details style={{ padding: '15px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? '#f1f5f9' : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q3')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a3')}
                             </p>
                         </details>

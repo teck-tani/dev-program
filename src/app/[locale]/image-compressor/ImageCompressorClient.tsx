@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 import { FaImage, FaDownload, FaTrash, FaCog, FaCompress } from "react-icons/fa";
 
 interface CompressedImage {
@@ -17,6 +18,9 @@ interface CompressedImage {
 
 export default function ImageCompressorClient() {
     const t = useTranslations('ImageCompressor');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+
     const [images, setImages] = useState<CompressedImage[]>([]);
     const [quality, setQuality] = useState(80);
     const [maxWidth, setMaxWidth] = useState(1920);
@@ -180,13 +184,13 @@ export default function ImageCompressorClient() {
     const completedCount = images.filter(img => img.status === 'done').length;
 
     return (
-        <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
+        <div style={{ minHeight: '100vh', background: isDark ? "#0f172a" : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
                 {/* Upload Area */}
                 <div
                     onClick={() => fileInputRef.current?.click()}
                     style={{
-                        background: 'white',
+                        background: isDark ? "#1e293b" : "white",
                         border: '2px dashed #667eea',
                         borderRadius: '16px',
                         padding: '40px 20px',
@@ -208,10 +212,10 @@ export default function ImageCompressorClient() {
                     }}
                 >
                     <FaImage style={{ fontSize: '3rem', color: '#667eea', marginBottom: '15px' }} />
-                    <p style={{ color: '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
+                    <p style={{ color: isDark ? "#f1f5f9" : '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
                         {t('upload.title')}
                     </p>
-                    <p style={{ color: '#888', fontSize: '0.9rem' }}>
+                    <p style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.9rem' }}>
                         {t('upload.subtitle')}
                     </p>
                     <input
@@ -226,19 +230,19 @@ export default function ImageCompressorClient() {
 
                 {/* Settings */}
                 <div style={{
-                    background: 'white',
+                    background: isDark ? "#1e293b" : "white",
                     borderRadius: '16px',
                     padding: '20px',
                     marginBottom: '20px',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+                    boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
                         <FaCog style={{ color: '#667eea' }} />
-                        <span style={{ fontWeight: 600, color: '#333' }}>{t('settings.title')}</span>
+                        <span style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333' }}>{t('settings.title')}</span>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '8px', color: '#555', fontSize: '0.9rem' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
                                 {t('settings.quality')}: {quality}%
                             </label>
                             <input
@@ -251,7 +255,7 @@ export default function ImageCompressorClient() {
                             />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '8px', color: '#555', fontSize: '0.9rem' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
                                 {t('settings.maxWidth')}: {maxWidth}px
                             </label>
                             <input
@@ -321,9 +325,9 @@ export default function ImageCompressorClient() {
                             onClick={handleClearAll}
                             style={{
                                 padding: '14px 24px',
-                                background: '#f8f9fa',
-                                color: '#666',
-                                border: '1px solid #ddd',
+                                background: isDark ? "#1e293b" : '#f8f9fa',
+                                color: isDark ? "#94a3b8" : '#666',
+                                border: `1px solid ${isDark ? "#334155" : '#ddd'}`,
                                 borderRadius: '25px',
                                 fontSize: '1rem',
                                 fontWeight: 600,
@@ -343,30 +347,30 @@ export default function ImageCompressorClient() {
                 {/* Summary */}
                 {images.length > 0 && (
                     <div style={{
-                        background: 'white',
+                        background: isDark ? "#1e293b" : "white",
                         borderRadius: '16px',
                         padding: '20px',
                         marginBottom: '20px',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                        boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)',
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
                         gap: '15px',
                         textAlign: 'center',
                     }}>
                         <div>
-                            <div style={{ color: '#888', fontSize: '0.85rem' }}>{t('summary.images')}</div>
-                            <div style={{ color: '#333', fontSize: '1.3rem', fontWeight: 700 }}>{images.length}</div>
+                            <div style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.85rem' }}>{t('summary.images')}</div>
+                            <div style={{ color: isDark ? "#f1f5f9" : '#333', fontSize: '1.3rem', fontWeight: 700 }}>{images.length}</div>
                         </div>
                         <div>
-                            <div style={{ color: '#888', fontSize: '0.85rem' }}>{t('summary.original')}</div>
-                            <div style={{ color: '#333', fontSize: '1.3rem', fontWeight: 700 }}>{formatBytes(totalOriginalSize)}</div>
+                            <div style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.85rem' }}>{t('summary.original')}</div>
+                            <div style={{ color: isDark ? "#f1f5f9" : '#333', fontSize: '1.3rem', fontWeight: 700 }}>{formatBytes(totalOriginalSize)}</div>
                         </div>
                         <div>
-                            <div style={{ color: '#888', fontSize: '0.85rem' }}>{t('summary.compressed')}</div>
+                            <div style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.85rem' }}>{t('summary.compressed')}</div>
                             <div style={{ color: '#11998e', fontSize: '1.3rem', fontWeight: 700 }}>{formatBytes(totalCompressedSize)}</div>
                         </div>
                         <div>
-                            <div style={{ color: '#888', fontSize: '0.85rem' }}>{t('summary.saved')}</div>
+                            <div style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.85rem' }}>{t('summary.saved')}</div>
                             <div style={{ color: '#667eea', fontSize: '1.3rem', fontWeight: 700 }}>
                                 {totalCompressedSize > 0 ? `${calculateReduction(totalOriginalSize, totalCompressedSize)}%` : '-'}
                             </div>
@@ -381,10 +385,10 @@ export default function ImageCompressorClient() {
                             <div
                                 key={img.id}
                                 style={{
-                                    background: 'white',
+                                    background: isDark ? "#1e293b" : "white",
                                     borderRadius: '12px',
                                     padding: '15px',
-                                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                    boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '15px',
@@ -402,10 +406,10 @@ export default function ImageCompressorClient() {
                                     }}
                                 />
                                 <div style={{ flex: 1, minWidth: '150px' }}>
-                                    <div style={{ fontWeight: 600, color: '#333', marginBottom: '4px', wordBreak: 'break-all' }}>
+                                    <div style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333', marginBottom: '4px', wordBreak: 'break-all' }}>
                                         {img.originalFile.name}
                                     </div>
-                                    <div style={{ fontSize: '0.85rem', color: '#888' }}>
+                                    <div style={{ fontSize: '0.85rem', color: isDark ? "#64748b" : '#888' }}>
                                         {formatBytes(img.originalSize)}
                                         {img.status === 'done' && (
                                             <span style={{ color: '#11998e', marginLeft: '8px' }}>
@@ -445,9 +449,9 @@ export default function ImageCompressorClient() {
                                         onClick={() => handleRemove(img.id)}
                                         style={{
                                             padding: '8px',
-                                            background: '#f8f9fa',
-                                            color: '#666',
-                                            border: '1px solid #ddd',
+                                            background: isDark ? "#1e293b" : '#f8f9fa',
+                                            color: isDark ? "#94a3b8" : '#666',
+                                            border: `1px solid ${isDark ? "#334155" : '#ddd'}`,
                                             borderRadius: '50%',
                                             cursor: 'pointer',
                                             display: 'flex',
@@ -466,7 +470,7 @@ export default function ImageCompressorClient() {
                 {/* Info Section */}
                 <article style={{ marginTop: '50px', lineHeight: '1.7' }}>
                     <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
+                        <h2 style={{ fontSize: '1.5rem', color: isDark ? "#f1f5f9" : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
                             {t('info.title')}
                         </h2>
                         <div style={{
@@ -474,27 +478,27 @@ export default function ImageCompressorClient() {
                             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                             gap: '15px'
                         }}>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? "#1e293b" : "white", padding: '20px', borderRadius: '12px', boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#667eea', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.privacy.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', margin: 0 }}>
                                     {t('info.privacy.desc')}
                                 </p>
                             </div>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? "#1e293b" : "white", padding: '20px', borderRadius: '12px', boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#667eea', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.quality.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', margin: 0 }}>
                                     {t('info.quality.desc')}
                                 </p>
                             </div>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? "#1e293b" : "white", padding: '20px', borderRadius: '12px', boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#667eea', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.bulk.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', margin: 0 }}>
                                     {t('info.bulk.desc')}
                                 </p>
                             </div>
@@ -503,35 +507,35 @@ export default function ImageCompressorClient() {
 
                     {/* FAQ Section */}
                     <section style={{
-                        background: 'white',
+                        background: isDark ? "#1e293b" : "white",
                         padding: '30px',
                         borderRadius: '15px',
-                        boxShadow: '0 2px 15px rgba(0,0,0,0.05)'
+                        boxShadow: isDark ? "none" : '0 2px 15px rgba(0,0,0,0.05)'
                     }}>
-                        <h2 style={{ fontSize: '1.4rem', color: '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
+                        <h2 style={{ fontSize: '1.4rem', color: isDark ? "#f1f5f9" : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
                             {t('faq.title')}
                         </h2>
-                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: `1px solid ${isDark ? "#334155" : '#eee'}` }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q1')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a1')}
                             </p>
                         </details>
-                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: `1px solid ${isDark ? "#334155" : '#eee'}` }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q2')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a2')}
                             </p>
                         </details>
                         <details style={{ padding: '15px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q3')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a3')}
                             </p>
                         </details>

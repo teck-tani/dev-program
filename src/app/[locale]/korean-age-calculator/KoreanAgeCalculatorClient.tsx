@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // 숫자 입력을 YYYY-MM-DD 형식으로 변환
 function formatDateInput(value: string): string {
@@ -32,6 +33,8 @@ export default function KoreanAgeCalculatorClient() {
     const tResult = useTranslations('KoreanAgeCalculator.result');
     const tInfo = useTranslations('KoreanAgeCalculator.info');
     const locale = useLocale();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const today = new Date();
     const todayFormatted = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -121,12 +124,12 @@ export default function KoreanAgeCalculatorClient() {
         <div className="age-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
             {/* Calculator Card */}
             <div className="age-card" style={{
-                background: 'linear-gradient(145deg, #ffffff 0%, #faf5ff 100%)',
+                background: isDark ? '#1e293b' : 'linear-gradient(145deg, #ffffff 0%, #faf5ff 100%)',
                 borderRadius: '24px',
-                boxShadow: '0 4px 24px rgba(99, 102, 241, 0.12), 0 1px 3px rgba(0,0,0,0.04)',
+                boxShadow: isDark ? 'none' : '0 4px 24px rgba(99, 102, 241, 0.12), 0 1px 3px rgba(0,0,0,0.04)',
                 padding: '28px',
                 marginBottom: '24px',
-                border: '1px solid rgba(139, 92, 246, 0.15)',
+                border: isDark ? '1px solid #334155' : '1px solid rgba(139, 92, 246, 0.15)',
             }}>
                 {/* Birth Date Input */}
                 <div className="age-section" style={{ marginBottom: '24px' }}>
@@ -134,7 +137,7 @@ export default function KoreanAgeCalculatorClient() {
                         display: 'block',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: isDark ? '#f1f5f9' : '#374151',
                         marginBottom: '8px',
                     }}>
                         {tInput('birthDate')}
@@ -150,13 +153,14 @@ export default function KoreanAgeCalculatorClient() {
                         style={{
                             width: '100%',
                             padding: '14px 16px',
-                            border: '2px solid #e5e7eb',
+                            border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
                             borderRadius: '14px',
                             fontSize: '1.1rem',
                             fontWeight: '500',
                             letterSpacing: '0.05em',
                             transition: 'all 0.2s',
-                            background: '#fff',
+                            background: isDark ? '#0f172a' : '#fff',
+                            color: isDark ? '#e2e8f0' : '#1f2937',
                             boxSizing: 'border-box',
                             outline: 'none',
                             textAlign: 'center',
@@ -164,7 +168,7 @@ export default function KoreanAgeCalculatorClient() {
                     />
                     <p style={{
                         fontSize: '0.75rem',
-                        color: '#9ca3af',
+                        color: isDark ? '#64748b' : '#9ca3af',
                         marginTop: '6px',
                         textAlign: 'center',
                     }}>
@@ -178,7 +182,7 @@ export default function KoreanAgeCalculatorClient() {
                         display: 'block',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: isDark ? '#f1f5f9' : '#374151',
                         marginBottom: '8px',
                     }}>
                         {tInput('referenceDate')}
@@ -194,13 +198,14 @@ export default function KoreanAgeCalculatorClient() {
                         style={{
                             width: '100%',
                             padding: '14px 16px',
-                            border: '2px solid #e5e7eb',
+                            border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
                             borderRadius: '14px',
                             fontSize: '1.1rem',
                             fontWeight: '500',
                             letterSpacing: '0.05em',
                             transition: 'all 0.2s',
-                            background: '#fff',
+                            background: isDark ? '#0f172a' : '#fff',
+                            color: isDark ? '#e2e8f0' : '#1f2937',
                             boxSizing: 'border-box',
                             outline: 'none',
                             textAlign: 'center',
@@ -457,22 +462,22 @@ export default function KoreanAgeCalculatorClient() {
                     gap: '16px',
                 }}>
                     <div style={{
-                        background: 'linear-gradient(145deg, #eef2ff 0%, #e0e7ff 100%)',
+                        background: isDark ? '#0f172a' : 'linear-gradient(145deg, #eef2ff 0%, #e0e7ff 100%)',
                         borderRadius: '16px',
                         padding: '20px',
-                        border: '1px solid rgba(99,102,241,0.2)',
+                        border: isDark ? '1px solid #334155' : '1px solid rgba(99,102,241,0.2)',
                     }}>
                         <h3 style={{
                             fontSize: '1.05rem',
                             fontWeight: '700',
-                            color: '#4f46e5',
+                            color: isDark ? '#a5b4fc' : '#4f46e5',
                             marginBottom: '10px',
                         }}>
                             {tInfo('man.title')}
                         </h3>
                         <p style={{
                             fontSize: '0.9rem',
-                            color: '#64748b',
+                            color: isDark ? '#94a3b8' : '#64748b',
                             lineHeight: '1.6',
                         }}>
                             {tInfo('man.desc')}
@@ -480,22 +485,22 @@ export default function KoreanAgeCalculatorClient() {
                     </div>
 
                     <div style={{
-                        background: 'linear-gradient(145deg, #fff7ed 0%, #ffedd5 100%)',
+                        background: isDark ? '#0f172a' : 'linear-gradient(145deg, #fff7ed 0%, #ffedd5 100%)',
                         borderRadius: '16px',
                         padding: '20px',
-                        border: '1px solid rgba(249,115,22,0.2)',
+                        border: isDark ? '1px solid #334155' : '1px solid rgba(249,115,22,0.2)',
                     }}>
                         <h3 style={{
                             fontSize: '1.05rem',
                             fontWeight: '700',
-                            color: '#ea580c',
+                            color: isDark ? '#fdba74' : '#ea580c',
                             marginBottom: '10px',
                         }}>
                             {tInfo('korean.title')}
                         </h3>
                         <p style={{
                             fontSize: '0.9rem',
-                            color: '#64748b',
+                            color: isDark ? '#94a3b8' : '#64748b',
                             lineHeight: '1.6',
                         }}>
                             {tInfo('korean.desc')}
@@ -503,22 +508,22 @@ export default function KoreanAgeCalculatorClient() {
                     </div>
 
                     <div style={{
-                        background: 'linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%)',
+                        background: isDark ? '#0f172a' : 'linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%)',
                         borderRadius: '16px',
                         padding: '20px',
-                        border: '1px solid rgba(16,185,129,0.2)',
+                        border: isDark ? '1px solid #334155' : '1px solid rgba(16,185,129,0.2)',
                     }}>
                         <h3 style={{
                             fontSize: '1.05rem',
                             fontWeight: '700',
-                            color: '#059669',
+                            color: isDark ? '#6ee7b7' : '#059669',
                             marginBottom: '10px',
                         }}>
                             {tInfo('year.title')}
                         </h3>
                         <p style={{
                             fontSize: '0.9rem',
-                            color: '#64748b',
+                            color: isDark ? '#94a3b8' : '#64748b',
                             lineHeight: '1.6',
                         }}>
                             {tInfo('year.desc')}

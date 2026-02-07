@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Quality = "maxresdefault" | "sddefault" | "hqdefault" | "mqdefault" | "default";
 
@@ -34,6 +35,8 @@ function extractVideoId(url: string): string | null {
 
 export default function YoutubeThumbnailClient() {
   const t = useTranslations("YoutubeThumbnail");
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<ThumbnailResult | null>(null);
   const [error, setError] = useState("");
@@ -108,15 +111,15 @@ export default function YoutubeThumbnailClient() {
       {/* Input Section */}
       <div
         style={{
-          background: "white",
+          background: isDark ? "#1e293b" : "white",
           borderRadius: "16px",
           padding: "24px",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.08)",
           marginBottom: "24px",
         }}
       >
         <label
-          style={{ display: "block", fontWeight: "600", marginBottom: "8px", color: "#333" }}
+          style={{ display: "block", fontWeight: "600", marginBottom: "8px", color: isDark ? "#f1f5f9" : "#333" }}
         >
           {t("inputLabel")}
         </label>
@@ -131,13 +134,15 @@ export default function YoutubeThumbnailClient() {
               flex: 1,
               padding: "12px 16px",
               borderRadius: "10px",
-              border: "2px solid #e0e0e0",
+              border: `2px solid ${isDark ? "#334155" : "#e0e0e0"}`,
               fontSize: "1rem",
               outline: "none",
               transition: "border-color 0.2s",
+              color: isDark ? "#e2e8f0" : "#1f2937",
+              background: isDark ? "#0f172a" : "#fff",
             }}
             onFocus={(e) => (e.target.style.borderColor = "#4a90d9")}
-            onBlur={(e) => (e.target.style.borderColor = "#e0e0e0")}
+            onBlur={(e) => (e.target.style.borderColor = isDark ? "#334155" : "#e0e0e0")}
           />
           <button
             onClick={handleExtract}
@@ -168,10 +173,10 @@ export default function YoutubeThumbnailClient() {
       {result && (
         <div
           style={{
-            background: "white",
+            background: isDark ? "#1e293b" : "white",
             borderRadius: "16px",
             padding: "24px",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+            boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.08)",
             marginBottom: "24px",
           }}
         >
@@ -179,7 +184,7 @@ export default function YoutubeThumbnailClient() {
             style={{
               fontSize: "1.3rem",
               fontWeight: "bold",
-              color: "#333",
+              color: isDark ? "#f1f5f9" : "#333",
               marginBottom: "20px",
             }}
           >
@@ -195,7 +200,7 @@ export default function YoutubeThumbnailClient() {
                 <div
                   key={q.key}
                   style={{
-                    border: "1px solid #eee",
+                    border: `1px solid ${isDark ? "#334155" : "#eee"}`,
                     borderRadius: "12px",
                     overflow: "hidden",
                     display: isFailed ? "none" : "block",
@@ -207,11 +212,11 @@ export default function YoutubeThumbnailClient() {
                       justifyContent: "space-between",
                       alignItems: "center",
                       padding: "12px 16px",
-                      background: "#f8f9fa",
-                      borderBottom: "1px solid #eee",
+                      background: isDark ? "#1e293b" : "#f8f9fa",
+                      borderBottom: `1px solid ${isDark ? "#334155" : "#eee"}`,
                     }}
                   >
-                    <span style={{ fontWeight: "600", color: "#333" }}>
+                    <span style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333" }}>
                       {q.label}
                       <span
                         style={{
@@ -285,10 +290,10 @@ export default function YoutubeThumbnailClient() {
       {/* Info Section */}
       <div
         style={{
-          background: "white",
+          background: isDark ? "#1e293b" : "white",
           borderRadius: "16px",
           padding: "24px",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.08)",
           marginBottom: "24px",
         }}
       >
@@ -296,7 +301,7 @@ export default function YoutubeThumbnailClient() {
           style={{
             fontSize: "1.4rem",
             fontWeight: "bold",
-            color: "#333",
+            color: isDark ? "#f1f5f9" : "#333",
             marginBottom: "20px",
             textAlign: "center",
           }}
@@ -315,16 +320,16 @@ export default function YoutubeThumbnailClient() {
             <div
               key={key}
               style={{
-                background: "#f8f9fa",
+                background: isDark ? "#0f172a" : "#f8f9fa",
                 padding: "20px",
                 borderRadius: "12px",
               }}
             >
               <h3
-                style={{ fontSize: "1rem", fontWeight: "600", color: "#333", marginBottom: "8px" }}
+                style={{ fontSize: "1rem", fontWeight: "600", color: isDark ? "#f1f5f9" : "#333", marginBottom: "8px" }}
                 dangerouslySetInnerHTML={{ __html: t(`info.${key}.title`) }}
               />
-              <p style={{ color: "#666", fontSize: "0.9rem", lineHeight: "1.5" }}>
+              <p style={{ color: isDark ? "#94a3b8" : "#666", fontSize: "0.9rem", lineHeight: "1.5" }}>
                 {t(`info.${key}.desc`)}
               </p>
             </div>
@@ -335,10 +340,10 @@ export default function YoutubeThumbnailClient() {
       {/* Guide Section */}
       <div
         style={{
-          background: "white",
+          background: isDark ? "#1e293b" : "white",
           borderRadius: "16px",
           padding: "24px",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.08)",
           marginBottom: "24px",
         }}
       >
@@ -346,7 +351,7 @@ export default function YoutubeThumbnailClient() {
           style={{
             fontSize: "1.4rem",
             fontWeight: "bold",
-            color: "#333",
+            color: isDark ? "#f1f5f9" : "#333",
             marginBottom: "20px",
             textAlign: "center",
           }}
@@ -358,7 +363,7 @@ export default function YoutubeThumbnailClient() {
           {(["step1", "step2", "step3"] as const).map((step) => (
             <li
               key={step}
-              style={{ color: "#555", lineHeight: "1.6" }}
+              style={{ color: isDark ? "#94a3b8" : "#555", lineHeight: "1.6" }}
               dangerouslySetInnerHTML={{ __html: t(`guide.${step}`) }}
             />
           ))}

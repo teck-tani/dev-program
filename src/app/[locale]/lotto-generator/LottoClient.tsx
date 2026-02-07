@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // Types
 interface LottoRound {
@@ -28,6 +29,8 @@ interface NumberStat {
 
 export default function LottoClient() {
     const t = useTranslations('Lotto');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     // --- State: Data & History ---
     const [history, setHistory] = useState<LottoRound[]>([]);
     const [selectedRound, setSelectedRound] = useState<LottoRound | null>(null);
@@ -202,7 +205,7 @@ export default function LottoClient() {
     const getRandomTransform = () => `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px)`;
 
     return (
-        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 20px", fontFamily: "'Pretendard', sans-serif", color: "#333" }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "40px 20px", fontFamily: "'Pretendard', sans-serif", color: isDark ? "#f1f5f9" : "#333" }}>
 
             <header style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "30px" }}>
                 <button
@@ -210,9 +213,9 @@ export default function LottoClient() {
                     disabled={syncing}
                     style={{
                         padding: "8px 16px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "bold",
-                        border: "1px solid #ddd",
-                        background: syncing ? "#eef2ff" : "white",
-                        color: syncing ? "#2563eb" : "#555",
+                        border: isDark ? "1px solid #334155" : "1px solid #ddd",
+                        background: syncing ? (isDark ? "#1e3a5f" : "#eef2ff") : (isDark ? "#1e293b" : "white"),
+                        color: syncing ? "#2563eb" : (isDark ? "#94a3b8" : "#555"),
                         cursor: syncing ? "wait" : "pointer",
                         display: "flex", alignItems: "center", gap: "6px",
                         transition: "all 0.2s"
@@ -233,7 +236,7 @@ export default function LottoClient() {
             </header>
 
             {/* --- GENERATOR SECTION --- */}
-            <section style={{ marginBottom: "50px", background: "white", padding: "40px 30px", borderRadius: "24px", boxShadow: "0 10px 30px rgba(0,0,0,0.05)", border: "1px solid #f0f0f0" }}>
+            <section style={{ marginBottom: "50px", background: isDark ? "#1e293b" : "white", padding: "40px 30px", borderRadius: "24px", boxShadow: isDark ? "none" : "0 10px 30px rgba(0,0,0,0.05)", border: isDark ? "1px solid #334155" : "1px solid #f0f0f0" }}>
 
                 {/* 1. Animation Area (Result Tray + Drum) */}
                 <div style={{ textAlign: "center", position: 'relative', minHeight: "450px" }}>
@@ -262,8 +265,8 @@ export default function LottoClient() {
                         width: "260px", height: "260px", borderRadius: "50%",
                         border: "12px solid #e0e0e0", margin: "0 auto",
                         position: "relative", overflow: "visible",
-                        background: "linear-gradient(135deg, #fff 0%, #f4f4f4 100%)",
-                        boxShadow: "inset 0 0 40px rgba(0,0,0,0.1), 0 20px 40px rgba(0,0,0,0.1)"
+                        background: isDark ? "#0f172a" : "linear-gradient(135deg, #fff 0%, #f4f4f4 100%)",
+                        boxShadow: isDark ? "none" : "inset 0 0 40px rgba(0,0,0,0.1), 0 20px 40px rgba(0,0,0,0.1)"
                     }}>
                         {/* Top Hole Visual */}
                         <div style={{
@@ -323,8 +326,8 @@ export default function LottoClient() {
                 `}</style>
 
                 {/* 2. Fixed Numbers (Moved Below & Smaller) */}
-                <div style={{ marginTop: "50px", borderTop: "1px solid #eee", paddingTop: "30px" }}>
-                    <h3 style={{ fontSize: "0.9rem", fontWeight: "bold", marginBottom: "15px", color: "#888", textAlign: "center" }}>
+                <div style={{ marginTop: "50px", borderTop: isDark ? "1px solid #334155" : "1px solid #eee", paddingTop: "30px" }}>
+                    <h3 style={{ fontSize: "0.9rem", fontWeight: "bold", marginBottom: "15px", color: isDark ? "#64748b" : "#888", textAlign: "center" }}>
                         {t('generator.fixedTitle')}
                     </h3>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(9, 1fr)", gap: "4px", maxWidth: "400px", margin: "0 auto" }}>
@@ -332,9 +335,9 @@ export default function LottoClient() {
                             <button
                                 key={num} onClick={() => toggleFixedNumber(num)}
                                 style={{
-                                    width: "100%", aspectRatio: "1", borderRadius: "6px", border: "1px solid #f0f0f0",
-                                    background: fixedNumbers.includes(num) ? getBallColor(num) : "white",
-                                    color: fixedNumbers.includes(num) ? "white" : "#aaa",
+                                    width: "100%", aspectRatio: "1", borderRadius: "6px", border: isDark ? "1px solid #334155" : "1px solid #f0f0f0",
+                                    background: fixedNumbers.includes(num) ? getBallColor(num) : (isDark ? "#1e293b" : "white"),
+                                    color: fixedNumbers.includes(num) ? "white" : (isDark ? "#64748b" : "#aaa"),
                                     fontWeight: "bold", fontSize: "0.75rem", cursor: "pointer",
                                     transition: "all 0.1s"
                                 }}
@@ -349,11 +352,11 @@ export default function LottoClient() {
 
             {/* --- HISTORY SECTION --- */}
             {selectedRound && (
-                <section style={{ marginBottom: "60px", background: "white", padding: "40px 30px", borderRadius: "24px", boxShadow: "0 10px 30px rgba(0,0,0,0.05)", border: "1px solid #f0f0f0", textAlign: "center" }}>
+                <section style={{ marginBottom: "60px", background: isDark ? "#1e293b" : "white", padding: "40px 30px", borderRadius: "24px", boxShadow: isDark ? "none" : "0 10px 30px rgba(0,0,0,0.05)", border: isDark ? "1px solid #334155" : "1px solid #f0f0f0", textAlign: "center" }}>
                     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "20px", marginBottom: "40px" }}>
                         <button onClick={() => selectedRound && setSelectedRound(history.find(h => h.drwNo === selectedRound.drwNo - 1) || selectedRound)}
                             disabled={!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo - 1)}
-                            style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #eee", background: "white", cursor: "pointer", fontSize: "1.2rem", color: "#666", opacity: (!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo - 1)) ? 0.3 : 1 }}
+                            style={{ width: "40px", height: "40px", borderRadius: "50%", border: isDark ? "1px solid #334155" : "1px solid #eee", background: isDark ? "#0f172a" : "white", cursor: "pointer", fontSize: "1.2rem", color: isDark ? "#94a3b8" : "#666", opacity: (!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo - 1)) ? 0.3 : 1 }}
                         > &lt; </button>
 
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -361,17 +364,17 @@ export default function LottoClient() {
                                 <select
                                     value={selectedRound.drwNo}
                                     onChange={(e) => setSelectedRound(history.find(h => h.drwNo === parseInt(e.target.value)) || selectedRound)}
-                                    style={{ fontSize: "2rem", fontWeight: "bold", border: "none", outline: "none", background: "transparent", cursor: "pointer", appearance: "none", textAlign: "right", paddingRight: "10px", color: "#333" }}
+                                    style={{ fontSize: "2rem", fontWeight: "bold", border: "none", outline: "none", background: "transparent", cursor: "pointer", appearance: "none", textAlign: "right", paddingRight: "10px", color: isDark ? "#f1f5f9" : "#333" }}
                                 >
                                     {history.map(h => <option key={h.drwNo} value={h.drwNo}>{t('history.round', { round: h.drwNo })}</option>)}
                                 </select>
                             </div>
-                            <span style={{ fontSize: "1.1rem", color: "#888", marginTop: "5px" }}>({selectedRound.drwNoDate})</span>
+                            <span style={{ fontSize: "1.1rem", color: isDark ? "#64748b" : "#888", marginTop: "5px" }}>({selectedRound.drwNoDate})</span>
                         </div>
 
                         <button onClick={() => selectedRound && setSelectedRound(history.find(h => h.drwNo === selectedRound.drwNo + 1) || selectedRound)}
                             disabled={!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo + 1)}
-                            style={{ width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #eee", background: "white", cursor: "pointer", fontSize: "1.2rem", color: "#666", opacity: (!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo + 1)) ? 0.3 : 1 }}
+                            style={{ width: "40px", height: "40px", borderRadius: "50%", border: isDark ? "1px solid #334155" : "1px solid #eee", background: isDark ? "#0f172a" : "white", cursor: "pointer", fontSize: "1.2rem", color: isDark ? "#94a3b8" : "#666", opacity: (!selectedRound || !history.find(h => h.drwNo === selectedRound.drwNo + 1)) ? 0.3 : 1 }}
                         > &gt; </button>
                     </div>
 
@@ -381,43 +384,43 @@ export default function LottoClient() {
                                 {num}
                             </div>
                         ))}
-                        <div style={{ fontSize: "2.5rem", color: "#ddd", fontWeight: "300", margin: "0 10px" }}>+</div>
+                        <div style={{ fontSize: "2.5rem", color: isDark ? "#334155" : "#ddd", fontWeight: "300", margin: "0 10px" }}>+</div>
                         <div style={{ width: "60px", height: "60px", borderRadius: "50%", background: getBallColor(selectedRound.bnusNo), display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: "bold", fontSize: "1.8rem", boxShadow: "inset -3px -3px 5px rgba(0,0,0,0.15)" }}>
                             {selectedRound.bnusNo}
                         </div>
                     </div>
 
-                    <div style={{ background: "#f8f9fa", borderRadius: "16px", padding: "25px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                    <div style={{ background: isDark ? "#0f172a" : "#f8f9fa", borderRadius: "16px", padding: "25px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                         <div>
-                            <div style={{ fontSize: "0.9rem", color: "#666", marginBottom: "5px" }}>{t('history.firstPrize')}</div>
-                            <div style={{ fontSize: "1.3rem", fontWeight: "bold", color: "#333" }}>{selectedRound.firstWinamnt.toLocaleString()}원</div>
-                            <div style={{ fontSize: "0.85rem", color: "#666" }}>{t('history.totalWinners', { count: selectedRound.firstPrzwnerCo })}</div>
+                            <div style={{ fontSize: "0.9rem", color: isDark ? "#94a3b8" : "#666", marginBottom: "5px" }}>{t('history.firstPrize')}</div>
+                            <div style={{ fontSize: "1.3rem", fontWeight: "bold", color: isDark ? "#f1f5f9" : "#333" }}>{selectedRound.firstWinamnt.toLocaleString()}원</div>
+                            <div style={{ fontSize: "0.85rem", color: isDark ? "#94a3b8" : "#666" }}>{t('history.totalWinners', { count: selectedRound.firstPrzwnerCo })}</div>
                         </div>
                         <div>
-                            <div style={{ fontSize: "0.9rem", color: "#666", marginBottom: "5px" }}>{t('history.totalSales')}</div>
-                            <div style={{ fontSize: "1.3rem", fontWeight: "bold", color: "#555" }}>{selectedRound.totSellamnt.toLocaleString()}원</div>
+                            <div style={{ fontSize: "0.9rem", color: isDark ? "#94a3b8" : "#666", marginBottom: "5px" }}>{t('history.totalSales')}</div>
+                            <div style={{ fontSize: "1.3rem", fontWeight: "bold", color: isDark ? "#94a3b8" : "#555" }}>{selectedRound.totSellamnt.toLocaleString()}원</div>
                         </div>
                     </div>
                 </section>
             )}
 
             {/* --- STATS SECTION --- */}
-            <section style={{ marginBottom: "60px", background: "white", padding: "30px", borderRadius: "24px", boxShadow: "0 10px 30px rgba(0,0,0,0.05)", border: "1px solid #f0f0f0" }}>
+            <section style={{ marginBottom: "60px", background: isDark ? "#1e293b" : "white", padding: "30px", borderRadius: "24px", boxShadow: isDark ? "none" : "0 10px 30px rgba(0,0,0,0.05)", border: isDark ? "1px solid #334155" : "1px solid #f0f0f0" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                     <h2 style={{ fontSize: "1.4rem", fontWeight: "bold" }}>{t('stats.title')}</h2>
-                    <div style={{ display: "flex", gap: "5px", background: "#f3f4f6", padding: "4px", borderRadius: "10px" }}>
-                        <button onClick={() => setSortBy('number')} style={{ padding: "6px 12px", borderRadius: "8px", border: "none", background: sortBy === 'number' ? "white" : "transparent", color: sortBy === 'number' ? "#2563eb" : "#666", fontWeight: "bold", fontSize: "0.8rem", cursor: "pointer" }}>{t('stats.sortByNum')}</button>
-                        <button onClick={() => setSortBy('prob')} style={{ padding: "6px 12px", borderRadius: "8px", border: "none", background: sortBy === 'prob' ? "white" : "transparent", color: sortBy === 'prob' ? "#2563eb" : "#666", fontWeight: "bold", fontSize: "0.8rem", cursor: "pointer" }}>{t('stats.sortByProb')}</button>
+                    <div style={{ display: "flex", gap: "5px", background: isDark ? "#0f172a" : "#f3f4f6", padding: "4px", borderRadius: "10px" }}>
+                        <button onClick={() => setSortBy('number')} style={{ padding: "6px 12px", borderRadius: "8px", border: "none", background: sortBy === 'number' ? (isDark ? "#1e293b" : "white") : "transparent", color: sortBy === 'number' ? "#2563eb" : (isDark ? "#94a3b8" : "#666"), fontWeight: "bold", fontSize: "0.8rem", cursor: "pointer" }}>{t('stats.sortByNum')}</button>
+                        <button onClick={() => setSortBy('prob')} style={{ padding: "6px 12px", borderRadius: "8px", border: "none", background: sortBy === 'prob' ? (isDark ? "#1e293b" : "white") : "transparent", color: sortBy === 'prob' ? "#2563eb" : (isDark ? "#94a3b8" : "#666"), fontWeight: "bold", fontSize: "0.8rem", cursor: "pointer" }}>{t('stats.sortByProb')}</button>
                     </div>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(60px, 1fr))", gap: "8px" }}>
                     {sortedStats.map((stat) => (
-                        <div key={stat.num} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px", borderRadius: "12px", background: "#f9fafb" }}>
+                        <div key={stat.num} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px", borderRadius: "12px", background: isDark ? "#0f172a" : "#f9fafb" }}>
                             <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: getBallColor(stat.num), color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", fontWeight: "bold", marginBottom: "5px" }}>
                                 {stat.num}
                             </div>
-                            <div style={{ fontSize: "0.75rem", color: "#444", fontWeight: "bold" }}>{stat.probability.toFixed(2)}%</div>
+                            <div style={{ fontSize: "0.75rem", color: isDark ? "#94a3b8" : "#444", fontWeight: "bold" }}>{stat.probability.toFixed(2)}%</div>
                         </div>
                     ))}
                 </div>

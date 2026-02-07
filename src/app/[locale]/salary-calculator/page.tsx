@@ -332,75 +332,64 @@ export default async function SalaryCalculatorPage(props: { params: Promise<{ lo
             <PayCalClient />
 
             {/* SEO Content Section (SSR) */}
-            <section
-                aria-label={seo.ariaLabel}
-                style={{
-                    maxWidth: '800px',
-                    margin: '60px auto 40px',
-                    padding: '0 20px',
-                    lineHeight: '1.8',
-                    color: '#444'
-                }}
-            >
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.section1Title}
-                </h2>
-                <p style={{ marginBottom: '30px' }}>{seo.section1Desc}</p>
+            <article className="calc-article" aria-label={seo.ariaLabel}>
+                <section className="calc-section">
+                    <h2 className="calc-section-title">{seo.section1Title}</h2>
+                    <p className="calc-section-desc">{seo.section1Desc}</p>
+                </section>
 
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.section2Title}
-                </h2>
-                <p style={{ marginBottom: '30px' }}>{seo.section2Desc}</p>
+                <section className="calc-section">
+                    <h2 className="calc-section-title">{seo.section2Title}</h2>
+                    <p className="calc-section-desc">{seo.section2Desc}</p>
+                </section>
 
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.featuresTitle}
-                </h2>
-                <ol style={{ marginBottom: '30px', paddingLeft: '20px' }}>
-                    {seo.featureItems.map((item: string, index: number) => (
-                        <li key={index} style={{ marginBottom: '8px' }}>{item}</li>
-                    ))}
-                </ol>
+                <section className="calc-section">
+                    <h2 className="calc-section-title">{seo.featuresTitle}</h2>
+                    <ol className="calc-instruction-list">
+                        {seo.featureItems.map((item: string, index: number) => (
+                            <li key={index}>{item}</li>
+                        ))}
+                    </ol>
+                </section>
 
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.tipsTitle}
-                </h2>
-                <p style={{ marginBottom: '30px' }}>{seo.tipsDesc}</p>
+                <section className="calc-section">
+                    <h2 className="calc-section-title">{seo.tipsTitle}</h2>
+                    <p className="calc-section-desc">{seo.tipsDesc}</p>
+                </section>
 
                 {/* 연봉별 실수령액표 */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.salaryTableTitle}
-                </h2>
-                <p style={{ marginBottom: '15px', fontSize: '0.9rem', color: '#666' }}>{seo.salaryTableDesc}</p>
-                <div style={{ overflowX: 'auto', marginBottom: '30px' }}>
-                    <table style={{
-                        width: '100%',
-                        borderCollapse: 'collapse',
-                        background: '#fff',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                        borderRadius: '8px',
-                        overflow: 'hidden'
-                    }}>
-                        <thead>
-                            <tr style={{ background: '#f8f9fa' }}>
-                                <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: 600 }}>
-                                    {locale === 'ko' ? '연봉' : 'Annual Salary'}
-                                </th>
-                                <th style={{ padding: '12px 15px', textAlign: 'right', borderBottom: '2px solid #dee2e6', fontWeight: 600 }}>
-                                    {locale === 'ko' ? '월 실수령액' : 'Monthly Net'}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {seo.salaryTable.map((row: { annual: string; monthly: string }, index: number) => (
-                                <tr key={index} style={{ background: index % 2 === 0 ? '#fff' : '#f8f9fa' }}>
-                                    <td style={{ padding: '10px 15px', borderBottom: '1px solid #eee' }}>{row.annual}</td>
-                                    <td style={{ padding: '10px 15px', borderBottom: '1px solid #eee', textAlign: 'right', fontWeight: 500, color: '#0066cc' }}>{row.monthly}</td>
+                <section className="calc-section">
+                    <h2 className="calc-section-title">{seo.salaryTableTitle}</h2>
+                    <p className="calc-section-desc" style={{ fontSize: '0.9rem' }}>{seo.salaryTableDesc}</p>
+                    <div className="paycal-salary-table" style={{ overflowX: 'auto', marginTop: '16px' }}>
+                        <table style={{
+                            width: '100%',
+                            borderCollapse: 'collapse',
+                            borderRadius: '8px',
+                            overflow: 'hidden'
+                        }}>
+                            <thead>
+                                <tr className="paycal-table-head">
+                                    <th style={{ padding: '12px 15px', textAlign: 'left', fontWeight: 600 }}>
+                                        {locale === 'ko' ? '연봉' : 'Annual Salary'}
+                                    </th>
+                                    <th style={{ padding: '12px 15px', textAlign: 'right', fontWeight: 600 }}>
+                                        {locale === 'ko' ? '월 실수령액' : 'Monthly Net'}
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                            </thead>
+                            <tbody>
+                                {seo.salaryTable.map((row: { annual: string; monthly: string }, index: number) => (
+                                    <tr key={index} className={index % 2 === 0 ? 'paycal-table-row-even' : 'paycal-table-row-odd'}>
+                                        <td style={{ padding: '10px 15px' }}>{row.annual}</td>
+                                        <td className="paycal-table-highlight" style={{ padding: '10px 15px', textAlign: 'right', fontWeight: 500 }}>{row.monthly}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </article>
         </>
     );
 }

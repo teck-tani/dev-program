@@ -438,7 +438,48 @@
       "rateDate": "As of {date} (Korea Exim Bank)",
       "quickAmount": "Quick amount",
       "buyRate": "Buy",
-      "sellRate": "Sell"
+      "sellRate": "Sell",
+      "chartTitle": "{currency}/KRW Exchange Rate Trend",
+      "chartCollapse": "Collapse",
+      "chartExpand": "View Chart",
+      "period7d": "7D",
+      "period30d": "30D",
+      "period90d": "90D",
+      "period1y": "1Y",
+      "chartHigh": "High",
+      "chartLow": "Low",
+      "chartChange": "Change",
+      "chartLoading": "Loading chart data...",
+      "chartNoData": "No data available",
+      "vsYesterday": "vs Yesterday",
+      "historicalRate": "Historical Rate Lookup",
+      "selectDate": "Select Date",
+      "searchDate": "Search",
+      "historicalRateResult": "{date} Rate: {rate} KRW",
+      "share": "Share",
+      "shareText": "1 {currency} = {rate} KRW (Korea Exim Bank)",
+      "shareSuccess": "Shared!",
+      "shareFailed": "Share failed",
+      "copyLink": "Copy Link",
+      "allRatesTitle": "All Currency Rates",
+      "showAllRates": "View All Rates",
+      "hideAllRates": "Hide",
+      "currency": "Currency",
+      "currencyName": "Name",
+      "rate": "Rate",
+      "change": "Change",
+      "alertTitle": "Rate Alert Settings",
+      "alertCurrency": "Currency",
+      "alertTargetRate": "Target Rate",
+      "alertCondition": "Condition",
+      "alertAbove": "Above",
+      "alertBelow": "Below",
+      "alertAdd": "Add Alert",
+      "alertDelete": "Delete",
+      "alertActive": "Alert Active",
+      "alertTriggered": "🔔 {currency} rate {condition} {rate} KRW!",
+      "noAlerts": "No alerts set",
+      "alertsHeader": "🔔 Rate Alerts"
     },
     "definition": {
       "title": "What is an Exchange Rate Calculator?",
@@ -679,8 +720,56 @@
         "compound": {
           "q": "Do monthly compound interest products actually exist?",
           "a": "Most bank deposits use simple interest. Monthly compounding is mainly offered by <strong>CMA accounts</strong> and some special financial products. Always check product details before signing up."
+        },
+        "taxfree": {
+          "q": "What are tax-free savings products?",
+          "a": "Tax-free comprehensive savings accounts allow eligible individuals (aged <strong>65+</strong>, persons with disabilities, etc.) to save without the 15.4% interest income tax. Up to 50 million KRW per person can be deposited, and all interest is received in full — more favorable than standard taxed products."
+        },
+        "earlyWithdraw": {
+          "q": "What happens to interest if I withdraw early?",
+          "a": "If you break your deposit/savings before maturity, a <strong>reduced early withdrawal rate</strong> applies instead of the agreed rate. It typically drops to less than half the original rate, and shorter holding periods result in even lower rates. To avoid early withdrawal, keep an emergency fund separate."
         }
       }
+    },
+    "definition": {
+      "title": "What is Interest Calculation?",
+      "desc": "Interest is the cost of borrowing money or the return for depositing money. When you open a savings account at a bank, the bank uses your funds and pays interest as compensation. Higher rates, longer periods, and compound methods yield more interest.",
+      "formula": {
+        "title": "Interest Formulas",
+        "simple": "Simple Interest = Principal × Annual Rate × Period (years)",
+        "compound": "Compound Maturity = Principal × (1 + Annual Rate ÷ 12) ^ Months",
+        "savings": "Savings Simple Interest = Monthly Deposit × Months × (Months+1) ÷ 2 × (Annual Rate ÷ 12)",
+        "note": "※ Interest income tax of 15.4% (14% income tax + 1.4% local tax) is withheld from interest."
+      }
+    },
+    "guide": {
+      "title": "How to Use the Interest Calculator",
+      "steps": {
+        "1": { "label": "STEP 1. Select Calculation Type", "desc": "Choose between Deposit (lump sum placed at once) and Savings (monthly installment deposits)." },
+        "2": { "label": "STEP 2. Select Interest Type", "desc": "Choose between Simple Interest (interest on principal only) and Compound Interest (interest on principal + accumulated interest, monthly compounding)." },
+        "3": { "label": "STEP 3. Enter Amount", "desc": "For deposits, enter the lump sum principal. For savings, enter the monthly installment amount." },
+        "4": { "label": "STEP 4. Enter Period and Rate", "desc": "Enter the savings period (in months) and annual interest rate (%). Check the product details for the exact rate." },
+        "5": { "label": "STEP 5. View Results", "desc": "Click 'Calculate Interest' to see total principal, pre-tax interest, interest income tax (15.4%), and final after-tax payout at a glance." }
+      }
+    },
+    "useCases": {
+      "title": "Interest Calculator Use Cases",
+      "case1": {
+        "title": "Compare Returns Before Opening an Account",
+        "desc": "When comparing deposit/savings products from different banks, interest rates alone don't tell the full story. Use the calculator to compare maturity amounts after tax and choose the most advantageous product."
+      },
+      "case2": {
+        "title": "See the Real Difference: Simple vs Compound",
+        "desc": "Curious about how much simple and compound interest actually differ? Calculate both under the same conditions. For long-term savings (3+ years), the power of compounding becomes clearly visible — useful data for your investment strategy."
+      },
+      "case3": {
+        "title": "Plan Savings for a Target Amount",
+        "desc": "If you have a specific financial goal — wedding fund, housing deposit, or tuition — adjust the monthly amount and period to see if you can reach your target. Helps you create a realistic savings plan."
+      }
+    },
+    "notice": {
+      "title": "Disclaimer",
+      "content": "Results from this calculator are for reference only and may differ from actual bank product calculations. Please consult your bank for exact maturity amounts. Tax rate is based on standard taxation (15.4%); tax-free or tax-advantaged products have different rates."
     },
     "disqus": {
       "title": "Interest Calculator"

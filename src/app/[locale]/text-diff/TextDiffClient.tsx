@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaTrash, FaExchangeAlt, FaCheckCircle, FaTimesCircle, FaPlus, FaMinus } from "react-icons/fa";
 
 interface DiffLine {
@@ -14,6 +15,8 @@ interface DiffLine {
 
 export default function TextDiffClient() {
     const t = useTranslations('TextDiff');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [text1, setText1] = useState("");
     const [text2, setText2] = useState("");
@@ -171,7 +174,7 @@ export default function TextDiffClient() {
                 alignItems: "stretch"
             }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                    <label style={{ marginBottom: "8px", fontWeight: "bold", color: "#374151" }}>
+                    <label style={{ marginBottom: "8px", fontWeight: "bold", color: isDark ? "#f1f5f9" : "#374151" }}>
                         {t('input.original')}
                     </label>
                     <textarea
@@ -182,12 +185,14 @@ export default function TextDiffClient() {
                             flex: 1,
                             minHeight: "250px",
                             padding: "16px",
-                            border: "2px solid #e5e7eb",
+                            border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                             borderRadius: "12px",
                             fontSize: "14px",
                             fontFamily: "monospace",
                             resize: "vertical",
-                            lineHeight: "1.6"
+                            lineHeight: "1.6",
+                            color: isDark ? "#e2e8f0" : "#1f2937",
+                            background: isDark ? "#0f172a" : "#fff"
                         }}
                     />
                 </div>
@@ -205,7 +210,7 @@ export default function TextDiffClient() {
                             padding: "12px",
                             borderRadius: "8px",
                             border: "none",
-                            background: "#f3f4f6",
+                            background: isDark ? "#0f172a" : "#f3f4f6",
                             cursor: "pointer",
                             transition: "all 0.2s"
                         }}
@@ -230,7 +235,7 @@ export default function TextDiffClient() {
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                    <label style={{ marginBottom: "8px", fontWeight: "bold", color: "#374151" }}>
+                    <label style={{ marginBottom: "8px", fontWeight: "bold", color: isDark ? "#f1f5f9" : "#374151" }}>
                         {t('input.modified')}
                     </label>
                     <textarea
@@ -241,12 +246,14 @@ export default function TextDiffClient() {
                             flex: 1,
                             minHeight: "250px",
                             padding: "16px",
-                            border: "2px solid #e5e7eb",
+                            border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                             borderRadius: "12px",
                             fontSize: "14px",
                             fontFamily: "monospace",
                             resize: "vertical",
-                            lineHeight: "1.6"
+                            lineHeight: "1.6",
+                            color: isDark ? "#e2e8f0" : "#1f2937",
+                            background: isDark ? "#0f172a" : "#fff"
                         }}
                     />
                 </div>
@@ -300,7 +307,7 @@ export default function TextDiffClient() {
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "6px",
-                                color: "#6b7280"
+                                color: isDark ? "#94a3b8" : "#6b7280"
                             }}>
                                 <span>{t('stats.unchanged', { count: stats.unchanged })}</span>
                             </div>
@@ -318,7 +325,7 @@ export default function TextDiffClient() {
                         alignItems: "center",
                         marginBottom: "12px"
                     }}>
-                        <h2 style={{ fontSize: "1.2rem", color: "#374151" }}>{t('result.title')}</h2>
+                        <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#374151" }}>{t('result.title')}</h2>
                         <button
                             onClick={handleCopyDiff}
                             style={{
@@ -328,8 +335,8 @@ export default function TextDiffClient() {
                                 padding: "8px 16px",
                                 borderRadius: "8px",
                                 border: "none",
-                                background: copied ? "#d1fae5" : "#f3f4f6",
-                                color: copied ? "#059669" : "#374151",
+                                background: copied ? "#d1fae5" : (isDark ? "#0f172a" : "#f3f4f6"),
+                                color: copied ? "#059669" : (isDark ? "#f1f5f9" : "#374151"),
                                 cursor: "pointer",
                                 transition: "all 0.2s"
                             }}
@@ -339,7 +346,7 @@ export default function TextDiffClient() {
                         </button>
                     </div>
                     <div style={{
-                        border: "2px solid #e5e7eb",
+                        border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                         borderRadius: "12px",
                         overflow: "hidden",
                         fontFamily: "monospace",
@@ -351,26 +358,26 @@ export default function TextDiffClient() {
                                 style={{
                                     display: "grid",
                                     gridTemplateColumns: "50px 50px 1fr",
-                                    background: line.type === 'add' ? '#dcfce7' :
-                                        line.type === 'remove' ? '#fee2e2' : '#fff',
-                                    borderBottom: idx < diffResult.length - 1 ? "1px solid #e5e7eb" : "none"
+                                    background: line.type === 'add' ? (isDark ? '#064e3b' : '#dcfce7') :
+                                        line.type === 'remove' ? (isDark ? '#7f1d1d' : '#fee2e2') : (isDark ? '#1e293b' : '#fff'),
+                                    borderBottom: idx < diffResult.length - 1 ? `1px solid ${isDark ? "#334155" : "#e5e7eb"}` : "none"
                                 }}
                             >
                                 <div style={{
                                     padding: "8px",
                                     textAlign: "center",
-                                    color: "#9ca3af",
-                                    background: "rgba(0,0,0,0.02)",
-                                    borderRight: "1px solid #e5e7eb"
+                                    color: isDark ? "#64748b" : "#9ca3af",
+                                    background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+                                    borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`
                                 }}>
                                     {line.lineNum1 || ''}
                                 </div>
                                 <div style={{
                                     padding: "8px",
                                     textAlign: "center",
-                                    color: "#9ca3af",
-                                    background: "rgba(0,0,0,0.02)",
-                                    borderRight: "1px solid #e5e7eb"
+                                    color: isDark ? "#64748b" : "#9ca3af",
+                                    background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+                                    borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`
                                 }}>
                                     {line.lineNum2 || ''}
                                 </div>
@@ -381,7 +388,7 @@ export default function TextDiffClient() {
                                 }}>
                                     <span style={{
                                         color: line.type === 'add' ? '#059669' :
-                                            line.type === 'remove' ? '#dc2626' : '#374151',
+                                            line.type === 'remove' ? '#dc2626' : (isDark ? '#f1f5f9' : '#374151'),
                                         fontWeight: line.type !== 'equal' ? 'bold' : 'normal'
                                     }}>
                                         {line.type === 'add' ? '+ ' : line.type === 'remove' ? '- ' : '  '}
@@ -397,7 +404,7 @@ export default function TextDiffClient() {
             {/* Features Section */}
             <section style={{ marginTop: "60px" }}>
                 <h2 style={{ textAlign: "center", marginBottom: "30px" }}>{t('features.title')}</h2>
-                <p style={{ textAlign: "center", color: '#666', marginBottom: "40px", maxWidth: "700px", margin: "0 auto 40px" }}
+                <p style={{ textAlign: "center", color: isDark ? '#94a3b8' : '#666', marginBottom: "40px", maxWidth: "700px", margin: "0 auto 40px" }}
                     dangerouslySetInnerHTML={{ __html: t.raw('features.desc') }} />
                 <div style={{
                     display: "grid",
@@ -407,12 +414,12 @@ export default function TextDiffClient() {
                     {['instant', 'lineByLine', 'options'].map((key) => (
                         <div key={key} style={{
                             padding: "24px",
-                            background: "#f9fafb",
+                            background: isDark ? "#1e293b" : "#f9fafb",
                             borderRadius: "12px",
                             textAlign: "center"
                         }}>
-                            <h3 style={{ marginBottom: "12px", color: "#374151" }}>{t(`features.list.${key}.title`)}</h3>
-                            <p style={{ color: "#6b7280", fontSize: "0.95rem" }}>{t(`features.list.${key}.desc`)}</p>
+                            <h3 style={{ marginBottom: "12px", color: isDark ? "#f1f5f9" : "#374151" }}>{t(`features.list.${key}.title`)}</h3>
+                            <p style={{ color: isDark ? "#94a3b8" : "#6b7280", fontSize: "0.95rem" }}>{t(`features.list.${key}.desc`)}</p>
                         </div>
                     ))}
                 </div>
@@ -424,7 +431,7 @@ export default function TextDiffClient() {
                 <div style={{
                     maxWidth: "700px",
                     margin: "0 auto",
-                    background: "#f9fafb",
+                    background: isDark ? "#1e293b" : "#f9fafb",
                     borderRadius: "12px",
                     padding: "30px"
                 }}>
@@ -448,7 +455,7 @@ export default function TextDiffClient() {
                             }}>
                                 {idx + 1}
                             </div>
-                            <p style={{ color: "#374151", lineHeight: "1.6" }}
+                            <p style={{ color: isDark ? "#f1f5f9" : "#374151", lineHeight: "1.6" }}
                                 dangerouslySetInnerHTML={{ __html: t.raw(`instruction.${step}`) }} />
                         </div>
                     ))}
@@ -463,11 +470,11 @@ export default function TextDiffClient() {
                         <div key={key} style={{
                             marginBottom: "20px",
                             padding: "24px",
-                            background: "#f9fafb",
+                            background: isDark ? "#1e293b" : "#f9fafb",
                             borderRadius: "12px"
                         }}>
-                            <h3 style={{ marginBottom: "12px", color: "#374151" }}>{t(`faq.${key}.q`)}</h3>
-                            <p style={{ color: "#6b7280", lineHeight: "1.6" }}>{t(`faq.${key}.a`)}</p>
+                            <h3 style={{ marginBottom: "12px", color: isDark ? "#f1f5f9" : "#374151" }}>{t(`faq.${key}.q`)}</h3>
+                            <p style={{ color: isDark ? "#94a3b8" : "#6b7280", lineHeight: "1.6" }}>{t(`faq.${key}.a`)}</p>
                         </div>
                     ))}
                 </div>

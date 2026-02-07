@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface Person {
     id: number;
@@ -18,6 +19,8 @@ interface Settlement {
 
 export default function DutchPayClient() {
     const t = useTranslations('DutchPay');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [people, setPeople] = useState<Person[]>([
         { id: 1, name: "", paid: "", shouldPay: 0 },
@@ -165,10 +168,10 @@ export default function DutchPayClient() {
         <div className="dutch-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
             {/* 정산 모드 선택 */}
             <div className="dutch-card" style={{
-                background: 'white', borderRadius: '14px',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
+                background: isDark ? "#1e293b" : "white", borderRadius: '14px',
+                boxShadow: isDark ? "none" : '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
             }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '0.9rem', color: '#374151' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '0.9rem', color: isDark ? "#f1f5f9" : '#374151' }}>
                     {t('modeLabel')}
                 </label>
                 <div className="dutch-toggle-group" style={{ display: 'flex', gap: '8px' }}>
@@ -177,9 +180,9 @@ export default function DutchPayClient() {
                         onClick={() => { setSplitMode("equal"); setCalculated(false); }}
                         style={{
                             flex: 1, padding: '10px', borderRadius: '8px', border: '2px solid',
-                            borderColor: splitMode === "equal" ? '#4A90D9' : '#e5e7eb',
-                            background: splitMode === "equal" ? '#EBF4FF' : 'white',
-                            color: splitMode === "equal" ? '#4A90D9' : '#6b7280',
+                            borderColor: splitMode === "equal" ? '#4A90D9' : (isDark ? "#334155" : '#e5e7eb'),
+                            background: splitMode === "equal" ? (isDark ? "#1e293b" : '#EBF4FF') : (isDark ? "#1e293b" : 'white'),
+                            color: splitMode === "equal" ? '#4A90D9' : (isDark ? "#94a3b8" : '#6b7280'),
                             fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.9rem'
                         }}
                     >
@@ -190,9 +193,9 @@ export default function DutchPayClient() {
                         onClick={() => { setSplitMode("custom"); setCalculated(false); }}
                         style={{
                             flex: 1, padding: '10px', borderRadius: '8px', border: '2px solid',
-                            borderColor: splitMode === "custom" ? '#4A90D9' : '#e5e7eb',
-                            background: splitMode === "custom" ? '#EBF4FF' : 'white',
-                            color: splitMode === "custom" ? '#4A90D9' : '#6b7280',
+                            borderColor: splitMode === "custom" ? '#4A90D9' : (isDark ? "#334155" : '#e5e7eb'),
+                            background: splitMode === "custom" ? (isDark ? "#1e293b" : '#EBF4FF') : (isDark ? "#1e293b" : 'white'),
+                            color: splitMode === "custom" ? '#4A90D9' : (isDark ? "#94a3b8" : '#6b7280'),
                             fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.9rem'
                         }}
                     >
@@ -204,10 +207,10 @@ export default function DutchPayClient() {
             {/* 총 금액 입력 (균등 분할 모드) */}
             {splitMode === "equal" && (
                 <div className="dutch-card" style={{
-                    background: 'white', borderRadius: '14px',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
+                    background: isDark ? "#1e293b" : "white", borderRadius: '14px',
+                    boxShadow: isDark ? "none" : '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
                 }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '0.9rem', color: '#374151' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '0.9rem', color: isDark ? "#f1f5f9" : '#374151' }}>
                         {t('totalAmountLabel')}
                     </label>
                     <div style={{ position: 'relative' }}>
@@ -220,13 +223,15 @@ export default function DutchPayClient() {
                             placeholder={t('totalAmountPlaceholder')}
                             style={{
                                 width: '100%', padding: '12px 40px 12px 12px',
-                                border: '2px solid #e5e7eb', borderRadius: '10px', fontSize: '1rem',
-                                boxSizing: 'border-box', outline: 'none'
+                                border: `2px solid ${isDark ? "#334155" : '#e5e7eb'}`, borderRadius: '10px', fontSize: '1rem',
+                                boxSizing: 'border-box', outline: 'none',
+                                color: isDark ? "#e2e8f0" : "#1f2937",
+                                background: isDark ? "#0f172a" : "#fff"
                             }}
                         />
                         <span style={{
                             position: 'absolute', right: '12px', top: '50%',
-                            transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '0.9rem'
+                            transform: 'translateY(-50%)', color: isDark ? "#64748b" : '#9ca3af', fontSize: '0.9rem'
                         }}>
                             {t('currency')}
                         </span>
@@ -241,11 +246,11 @@ export default function DutchPayClient() {
 
             {/* 참가자 목록 */}
             <div className="dutch-card" style={{
-                background: 'white', borderRadius: '14px',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
+                background: isDark ? "#1e293b" : "white", borderRadius: '14px',
+                boxShadow: isDark ? "none" : '0 2px 12px rgba(0,0,0,0.08)', padding: '16px', marginBottom: '12px'
             }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <label style={{ fontWeight: 600, fontSize: '0.9rem', color: '#374151' }}>
+                    <label style={{ fontWeight: 600, fontSize: '0.9rem', color: isDark ? "#f1f5f9" : '#374151' }}>
                         {t('participantsLabel')} ({people.length}{t('peopleUnit')})
                     </label>
                     <button
@@ -264,7 +269,7 @@ export default function DutchPayClient() {
                     {people.map((person, index) => (
                         <div key={person.id} style={{
                             display: 'flex', gap: '8px', alignItems: 'center',
-                            padding: '8px', background: '#f8f9fa', borderRadius: '8px'
+                            padding: '8px', background: isDark ? "#1e293b" : '#f8f9fa', borderRadius: '8px'
                         }}>
                             <input
                                 className="dutch-input"
@@ -273,8 +278,10 @@ export default function DutchPayClient() {
                                 onChange={(e) => updatePerson(person.id, "name", e.target.value)}
                                 placeholder={`${t('person')} ${index + 1}`}
                                 style={{
-                                    flex: 1, padding: '10px', border: '1.5px solid #e5e7eb',
-                                    borderRadius: '6px', minWidth: 0, fontSize: '0.9rem', outline: 'none'
+                                    flex: 1, padding: '10px', border: `1.5px solid ${isDark ? "#334155" : '#e5e7eb'}`,
+                                    borderRadius: '6px', minWidth: 0, fontSize: '0.9rem', outline: 'none',
+                                    color: isDark ? "#e2e8f0" : "#1f2937",
+                                    background: isDark ? "#0f172a" : "#fff"
                                 }}
                             />
                             <div style={{ position: 'relative', flex: 1.5 }}>
@@ -287,13 +294,15 @@ export default function DutchPayClient() {
                                     placeholder={t('paidPlaceholder')}
                                     style={{
                                         width: '100%', padding: '10px 32px 10px 10px',
-                                        border: '1.5px solid #e5e7eb', borderRadius: '6px',
-                                        boxSizing: 'border-box', fontSize: '0.9rem', outline: 'none'
+                                        border: `1.5px solid ${isDark ? "#334155" : '#e5e7eb'}`, borderRadius: '6px',
+                                        boxSizing: 'border-box', fontSize: '0.9rem', outline: 'none',
+                                        color: isDark ? "#e2e8f0" : "#1f2937",
+                                        background: isDark ? "#0f172a" : "#fff"
                                     }}
                                 />
                                 <span style={{
                                     position: 'absolute', right: '8px', top: '50%',
-                                    transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '0.8rem'
+                                    transform: 'translateY(-50%)', color: isDark ? "#64748b" : '#9ca3af', fontSize: '0.8rem'
                                 }}>
                                     {t('currency')}
                                 </span>
@@ -302,7 +311,7 @@ export default function DutchPayClient() {
                                 onClick={() => removePerson(person.id)}
                                 disabled={people.length <= 2}
                                 style={{
-                                    padding: '8px 10px', background: people.length <= 2 ? '#eee' : '#ff6b6b',
+                                    padding: '8px 10px', background: people.length <= 2 ? (isDark ? "#334155" : '#eee') : '#ff6b6b',
                                     color: people.length <= 2 ? '#999' : 'white',
                                     border: 'none', borderRadius: '6px', cursor: people.length <= 2 ? 'default' : 'pointer',
                                     fontWeight: 'bold', fontSize: '0.9rem', flexShrink: 0
@@ -315,7 +324,7 @@ export default function DutchPayClient() {
                 </div>
 
                 {splitMode === "custom" && totalPaid > 0 && (
-                    <p style={{ marginTop: '8px', color: '#6b7280', fontSize: '0.85rem' }}>
+                    <p style={{ marginTop: '8px', color: isDark ? "#94a3b8" : '#6b7280', fontSize: '0.85rem' }}>
                         {t('totalPaidSummary', { total: formatNumber(totalPaid), perPerson: formatNumber(perPerson) })}
                     </p>
                 )}
@@ -339,7 +348,7 @@ export default function DutchPayClient() {
                 <button
                     onClick={reset}
                     style={{
-                        flex: 1, padding: '14px', background: '#f1f3f5', color: '#6b7280',
+                        flex: 1, padding: '14px', background: isDark ? "#0f172a" : '#f1f3f5', color: isDark ? "#94a3b8" : '#6b7280',
                         border: 'none', borderRadius: '12px', fontSize: '0.95rem',
                         fontWeight: 500, cursor: 'pointer'
                     }}
@@ -426,13 +435,13 @@ export default function DutchPayClient() {
 
             {/* 사용법 안내 */}
             <div className="dutch-guide" style={{
-                background: 'white', borderRadius: '14px',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '20px'
+                background: isDark ? "#1e293b" : "white", borderRadius: '14px',
+                boxShadow: isDark ? "none" : '0 2px 12px rgba(0,0,0,0.08)', padding: '20px'
             }}>
-                <h2 style={{ marginBottom: '12px', fontSize: '1.1rem', color: '#374151', fontWeight: 700 }}>
+                <h2 style={{ marginBottom: '12px', fontSize: '1.1rem', color: isDark ? "#f1f5f9" : '#374151', fontWeight: 700 }}>
                     {t('guideTitle')}
                 </h2>
-                <div style={{ color: '#6b7280', lineHeight: 1.7, fontSize: '0.9rem' }}>
+                <div style={{ color: isDark ? "#94a3b8" : '#6b7280', lineHeight: 1.7, fontSize: '0.9rem' }}>
                     <p style={{ marginBottom: '8px' }}>
                         <strong style={{ color: '#4A90D9' }}>1. {t('guideStep1Title')}</strong><br />
                         {t('guideStep1Desc')}

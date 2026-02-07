@@ -2,10 +2,13 @@
 
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 import { FaClipboard, FaTrash, FaCheck } from "react-icons/fa";
 
 export default function CharacterCounterClient() {
     const t = useTranslations('CharacterCounter');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
 
@@ -70,7 +73,7 @@ export default function CharacterCounterClient() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
+        <div style={{ minHeight: '100vh', background: isDark ? "#0f172a" : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
                 {/* Main Stats Cards */}
                 <div style={{
@@ -87,9 +90,9 @@ export default function CharacterCounterClient() {
 
                 {/* Textarea */}
                 <div style={{
-                    background: 'white',
+                    background: isDark ? "#1e293b" : 'white',
                     borderRadius: '16px',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                    boxShadow: isDark ? "none" : '0 4px 20px rgba(0,0,0,0.08)',
                     overflow: 'hidden',
                     marginBottom: '20px',
                 }}>
@@ -98,10 +101,10 @@ export default function CharacterCounterClient() {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         padding: '12px 20px',
-                        borderBottom: '1px solid #eee',
-                        background: '#fafbfc',
+                        borderBottom: isDark ? '1px solid #334155' : '1px solid #eee',
+                        background: isDark ? "#1e293b" : '#fafbfc',
                     }}>
-                        <span style={{ fontWeight: 600, color: '#333' }}>{t('input.title')}</span>
+                        <span style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333' }}>{t('input.title')}</span>
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <button
                                 onClick={handleCopy}
@@ -132,9 +135,9 @@ export default function CharacterCounterClient() {
                                     alignItems: 'center',
                                     gap: '6px',
                                     padding: '8px 16px',
-                                    background: '#f8f9fa',
-                                    color: '#666',
-                                    border: '1px solid #ddd',
+                                    background: isDark ? "#1e293b" : '#f8f9fa',
+                                    color: isDark ? "#94a3b8" : '#666',
+                                    border: isDark ? '1px solid #334155' : '1px solid #ddd',
                                     borderRadius: '20px',
                                     fontSize: '0.85rem',
                                     cursor: text ? 'pointer' : 'not-allowed',
@@ -160,19 +163,21 @@ export default function CharacterCounterClient() {
                             lineHeight: '1.7',
                             resize: 'vertical',
                             fontFamily: "'Noto Sans KR', sans-serif",
+                            color: isDark ? "#e2e8f0" : "#1f2937",
+                            background: isDark ? "#0f172a" : "#fff",
                         }}
                     />
                 </div>
 
                 {/* Detailed Stats */}
                 <div style={{
-                    background: 'white',
+                    background: isDark ? "#1e293b" : 'white',
                     borderRadius: '16px',
                     padding: '24px',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                    boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)',
                     marginBottom: '30px',
                 }}>
-                    <h2 style={{ fontSize: '1.1rem', color: '#2c3e50', marginBottom: '16px', fontWeight: 600 }}>
+                    <h2 style={{ fontSize: '1.1rem', color: isDark ? "#f1f5f9" : '#2c3e50', marginBottom: '16px', fontWeight: 600 }}>
                         {t('details.title')}
                     </h2>
                     <div style={{
@@ -192,7 +197,7 @@ export default function CharacterCounterClient() {
                 {/* Info Section */}
                 <article style={{ lineHeight: '1.7' }}>
                     <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
+                        <h2 style={{ fontSize: '1.5rem', color: isDark ? "#f1f5f9" : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
                             {t('info.title')}
                         </h2>
                         <div style={{
@@ -200,27 +205,27 @@ export default function CharacterCounterClient() {
                             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                             gap: '15px'
                         }}>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? "#1e293b" : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#667eea', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.withSpace.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', margin: 0 }}>
                                     {t('info.withSpace.desc')}
                                 </p>
                             </div>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? "#1e293b" : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#667eea', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.withoutSpace.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', margin: 0 }}>
                                     {t('info.withoutSpace.desc')}
                                 </p>
                             </div>
-                            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: isDark ? "#1e293b" : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#667eea', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.bytes.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', margin: 0 }}>
                                     {t('info.bytes.desc')}
                                 </p>
                             </div>
@@ -229,35 +234,35 @@ export default function CharacterCounterClient() {
 
                     {/* FAQ Section */}
                     <section style={{
-                        background: 'white',
+                        background: isDark ? "#1e293b" : 'white',
                         padding: '30px',
                         borderRadius: '15px',
-                        boxShadow: '0 2px 15px rgba(0,0,0,0.05)'
+                        boxShadow: isDark ? "none" : '0 2px 15px rgba(0,0,0,0.05)'
                     }}>
-                        <h2 style={{ fontSize: '1.4rem', color: '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
+                        <h2 style={{ fontSize: '1.4rem', color: isDark ? "#f1f5f9" : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
                             {t('faq.title')}
                         </h2>
-                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: isDark ? '1px solid #334155' : '1px solid #eee' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q1')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a1')}
                             </p>
                         </details>
-                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: isDark ? '1px solid #334155' : '1px solid #eee' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q2')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a2')}
                             </p>
                         </details>
                         <details style={{ padding: '15px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
                                 {t('faq.q3')}
                             </summary>
-                            <p style={{ marginTop: '12px', color: '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
+                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
                                 {t('faq.a3')}
                             </p>
                         </details>
@@ -269,14 +274,16 @@ export default function CharacterCounterClient() {
 }
 
 function StatCard({ label, value, highlight }: { label: string; value: string | number; highlight?: boolean }) {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     return (
         <div style={{
-            background: highlight ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white',
-            color: highlight ? 'white' : '#333',
+            background: highlight ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : isDark ? "#1e293b" : 'white',
+            color: highlight ? 'white' : isDark ? "#f1f5f9" : '#333',
             padding: '20px 16px',
             borderRadius: '12px',
             textAlign: 'center',
-            boxShadow: highlight ? '0 4px 15px rgba(102, 126, 234, 0.3)' : '0 2px 10px rgba(0,0,0,0.05)',
+            boxShadow: highlight ? (isDark ? "none" : '0 4px 15px rgba(102, 126, 234, 0.3)') : (isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)'),
         }}>
             <div style={{
                 fontSize: '1.8rem',
@@ -297,17 +304,19 @@ function StatCard({ label, value, highlight }: { label: string; value: string | 
 }
 
 function DetailRow({ label, value }: { label: string; value: number }) {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     return (
         <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '10px 14px',
-            background: '#f8f9fa',
+            background: isDark ? "#0f172a" : '#f8f9fa',
             borderRadius: '8px',
         }}>
-            <span style={{ color: '#555', fontSize: '0.9rem' }}>{label}</span>
-            <span style={{ fontWeight: 600, color: '#333', fontSize: '1.1rem' }}>{value}</span>
+            <span style={{ color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>{label}</span>
+            <span style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333', fontSize: '1.1rem' }}>{value}</span>
         </div>
     );
 }

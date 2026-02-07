@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface Player {
     id: number;
@@ -26,6 +27,8 @@ interface GameResult {
 
 export default function LadderGameClient() {
     const t = useTranslations('LadderGame');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [players, setPlayers] = useState<Player[]>([
         { id: 1, name: '' },
@@ -135,7 +138,7 @@ export default function LadderGameClient() {
         ctx.clearRect(0, 0, width, height);
 
         // Draw vertical lines
-        ctx.strokeStyle = '#ddd';
+        ctx.strokeStyle = isDark ? '#334155' : '#ddd';
         ctx.lineWidth = 3;
         for (let col = 0; col < numColumns; col++) {
             const x = padding + col * columnWidth;
@@ -146,7 +149,7 @@ export default function LadderGameClient() {
         }
 
         // Draw horizontal lines (ladder rungs)
-        ctx.strokeStyle = '#888';
+        ctx.strokeStyle = isDark ? '#64748b' : '#888';
         ctx.lineWidth = 3;
         for (const line of ladderLines) {
             const x1 = padding + line.fromColumn * columnWidth;
@@ -206,7 +209,7 @@ export default function LadderGameClient() {
                 ctx.fill();
             }
         }
-    }, [players.length, ladderLines]);
+    }, [players.length, ladderLines, isDark]);
 
     useEffect(() => {
         if (ladderGenerated) {
@@ -454,7 +457,7 @@ export default function LadderGameClient() {
                 }
 
                 .ladder-input-group {
-                    background: #f8f9fa;
+                    background: ${isDark ? '#1e293b' : '#f8f9fa'};
                     padding: 16px;
                     border-radius: 12px;
                 }
@@ -463,7 +466,7 @@ export default function LadderGameClient() {
                     font-size: 1rem;
                     font-weight: 600;
                     margin-bottom: 12px;
-                    color: #333;
+                    color: ${isDark ? '#f1f5f9' : '#333'};
                 }
 
                 .ladder-items {
@@ -481,10 +484,12 @@ export default function LadderGameClient() {
                 .ladder-input {
                     flex: 1;
                     padding: 10px 12px;
-                    border: 1px solid #ddd;
+                    border: 1px solid ${isDark ? '#334155' : '#ddd'};
                     border-radius: 8px;
                     font-size: 0.95rem;
                     transition: border-color 0.2s;
+                    background: ${isDark ? '#0f172a' : '#fff'};
+                    color: ${isDark ? '#e2e8f0' : '#1f2937'};
                 }
 
                 .ladder-input:focus {
@@ -493,7 +498,7 @@ export default function LadderGameClient() {
                 }
 
                 .ladder-input:disabled {
-                    background: #e9ecef;
+                    background: ${isDark ? '#334155' : '#e9ecef'};
                     cursor: not-allowed;
                 }
 
@@ -517,18 +522,18 @@ export default function LadderGameClient() {
                 }
 
                 .ladder-remove-btn:disabled {
-                    background: #ccc;
+                    background: ${isDark ? '#475569' : '#ccc'};
                     cursor: not-allowed;
                 }
 
                 .ladder-add-btn {
                     margin-top: 12px;
                     padding: 8px 16px;
-                    border: 2px dashed #ddd;
+                    border: 2px dashed ${isDark ? '#334155' : '#ddd'};
                     background: transparent;
                     border-radius: 8px;
                     cursor: pointer;
-                    color: #666;
+                    color: ${isDark ? '#94a3b8' : '#666'};
                     font-size: 0.9rem;
                     transition: all 0.2s;
                     width: 100%;
@@ -598,10 +603,10 @@ export default function LadderGameClient() {
                 }
 
                 .ladder-display {
-                    background: white;
+                    background: ${isDark ? '#1e293b' : 'white'};
                     border-radius: 16px;
                     padding: 20px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    box-shadow: ${isDark ? 'none' : '0 2px 8px rgba(0,0,0,0.1)'};
                 }
 
                 .ladder-top-labels,
@@ -612,8 +617,8 @@ export default function LadderGameClient() {
                 }
 
                 .ladder-label {
-                    background: #e0f2fe;
-                    color: #0369a1;
+                    background: ${isDark ? '#1e3a5f' : '#e0f2fe'};
+                    color: ${isDark ? '#7dd3fc' : '#0369a1'};
                     padding: 8px 16px;
                     border-radius: 20px;
                     font-weight: 500;
@@ -630,8 +635,8 @@ export default function LadderGameClient() {
                 }
 
                 .ladder-label.result {
-                    background: #fef3c7;
-                    color: #92400e;
+                    background: ${isDark ? '#332b00' : '#fef3c7'};
+                    color: ${isDark ? '#fbbf24' : '#92400e'};
                 }
 
                 .ladder-canvas {
@@ -644,7 +649,7 @@ export default function LadderGameClient() {
 
                 .ladder-results {
                     margin-top: 24px;
-                    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+                    background: ${isDark ? '#0f2918' : 'linear-gradient(135deg, #f0fdf4, #ecfdf5)'};
                     border-radius: 16px;
                     padding: 24px;
                 }
@@ -653,7 +658,7 @@ export default function LadderGameClient() {
                     text-align: center;
                     font-size: 1.3rem;
                     font-weight: 700;
-                    color: #166534;
+                    color: ${isDark ? '#4ade80' : '#166534'};
                     margin-bottom: 16px;
                 }
 
@@ -669,14 +674,14 @@ export default function LadderGameClient() {
                     justify-content: center;
                     gap: 16px;
                     padding: 12px;
-                    background: white;
+                    background: ${isDark ? '#1e293b' : 'white'};
                     border-radius: 12px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                    box-shadow: ${isDark ? 'none' : '0 2px 4px rgba(0,0,0,0.05)'};
                 }
 
                 .ladder-result-player {
                     font-weight: 600;
-                    color: #333;
+                    color: ${isDark ? '#f1f5f9' : '#333'};
                     min-width: 80px;
                     text-align: right;
                 }

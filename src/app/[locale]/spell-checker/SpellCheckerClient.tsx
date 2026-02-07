@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface SpellError {
     start: number;
@@ -17,6 +18,8 @@ export default function SpellCheckerClient() {
     const tResult = useTranslations('SpellChecker.result');
     const tCommon = useTranslations('SpellChecker.common');
     const tWhy = useTranslations('SpellChecker.why');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [inputText, setInputText] = useState("");
     const [errors, setErrors] = useState<SpellError[]>([]);
@@ -97,10 +100,10 @@ export default function SpellCheckerClient() {
 
     return (
         <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
-            <div style={{ background: "white", borderRadius: "10px", boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "30px" }}>
+            <div style={{ background: isDark ? "#1e293b" : "white", borderRadius: "10px", boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "30px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                    <h2 style={{ margin: 0, fontSize: "1.2rem" }}>{tInput('title')}</h2>
-                    <div style={{ color: "#666" }}>
+                    <h2 style={{ margin: 0, fontSize: "1.2rem", color: isDark ? "#f1f5f9" : undefined }}>{tInput('title')}</h2>
+                    <div style={{ color: isDark ? "#94a3b8" : "#666" }}>
                         {tInput.rich('count', {
                             count: inputText.length,
                             strong: (chunks) => <strong>{chunks}</strong>
@@ -117,12 +120,14 @@ export default function SpellCheckerClient() {
                         width: "100%",
                         minHeight: "200px",
                         padding: "15px",
-                        border: "1px solid #ddd",
+                        border: `1px solid ${isDark ? "#334155" : "#ddd"}`,
                         borderRadius: "5px",
                         fontSize: "1rem",
                         resize: "vertical",
                         marginBottom: "15px",
                         lineHeight: "1.6",
+                        color: isDark ? "#e2e8f0" : "#1f2937",
+                        background: isDark ? "#0f172a" : "#fff",
                     }}
                 />
 
@@ -149,8 +154,8 @@ export default function SpellCheckerClient() {
                         onClick={reset}
                         style={{
                             padding: "12px 30px",
-                            background: "#f0f0f0",
-                            color: "#333",
+                            background: isDark ? "#334155" : "#f0f0f0",
+                            color: isDark ? "#f1f5f9" : "#333",
                             border: "none",
                             borderRadius: "50px",
                             fontSize: "1.1rem",
@@ -163,16 +168,16 @@ export default function SpellCheckerClient() {
                 </div>
             </div>
 
-            <div style={{ background: "white", borderRadius: "10px", boxShadow: "0 2px 15px rgba(0,0,0,0.1)", padding: "25px" }}>
+            <div style={{ background: isDark ? "#1e293b" : "white", borderRadius: "10px", boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                    <h2 style={{ margin: 0, fontSize: "1.2rem" }}>{tResult('title')}</h2>
+                    <h2 style={{ margin: 0, fontSize: "1.2rem", color: isDark ? "#f1f5f9" : undefined }}>{tResult('title')}</h2>
                     <div style={{ color: errors.length > 0 ? "#ff4444" : "#44ff44", fontWeight: 600 }}>
                         {tResult('found', { count: errors.length })}
                     </div>
                 </div>
 
                 {errors.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+                    <div style={{ textAlign: "center", padding: "40px", color: isDark ? "#94a3b8" : "#666" }}>
                         {inputText.length === 0
                             ? tResult('empty')
                             : tResult('perfect')}
@@ -184,7 +189,7 @@ export default function SpellCheckerClient() {
                                 key={index}
                                 style={{
                                     padding: "15px",
-                                    background: "#f9f9f9",
+                                    background: isDark ? "#1e293b" : "#f9f9f9",
                                     borderRadius: "8px",
                                     borderLeft: "4px solid #ff4444",
                                 }}
@@ -216,8 +221,8 @@ export default function SpellCheckerClient() {
                                         onClick={() => setErrors(errors.filter((_, i) => i !== index))}
                                         style={{
                                             padding: "6px 15px",
-                                            background: "#f0f0f0",
-                                            color: "#666",
+                                            background: isDark ? "#334155" : "#f0f0f0",
+                                            color: isDark ? "#94a3b8" : "#666",
                                             border: "none",
                                             borderRadius: "4px",
                                             cursor: "pointer",
@@ -235,10 +240,10 @@ export default function SpellCheckerClient() {
 
             <article style={{ maxWidth: '800px', margin: '60px auto 0', lineHeight: '1.7' }}>
                 <section style={{ marginBottom: '50px' }}>
-                    <h2 style={{ fontSize: '1.8rem', color: '#333', marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                    <h2 style={{ fontSize: '1.8rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '20px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
                         {tCommon('title')}
                     </h2>
-                    <ul style={{ paddingLeft: '20px', color: '#555' }}>
+                    <ul style={{ paddingLeft: '20px', color: isDark ? '#94a3b8' : '#555' }}>
                         <li style={{ marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: tCommon.raw('list.1') }}></li>
                         <li style={{ marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: tCommon.raw('list.2') }}></li>
                         <li style={{ marginBottom: '15px' }} dangerouslySetInnerHTML={{ __html: tCommon.raw('list.3') }}></li>
@@ -247,14 +252,14 @@ export default function SpellCheckerClient() {
                     </ul>
                 </section>
 
-                <section style={{ background: '#f0f4f8', padding: '30px', borderRadius: '15px' }}>
-                    <h2 style={{ fontSize: "1.6rem", color: "#333", marginBottom: "20px", textAlign: "center" }}>
+                <section style={{ background: isDark ? '#0f172a' : '#f0f4f8', padding: '30px', borderRadius: '15px' }}>
+                    <h2 style={{ fontSize: "1.6rem", color: isDark ? "#f1f5f9" : "#333", marginBottom: "20px", textAlign: "center" }}>
                         {tWhy('title')}
                     </h2>
-                    <p style={{ marginBottom: '15px', color: '#555' }}>
+                    <p style={{ marginBottom: '15px', color: isDark ? '#94a3b8' : '#555' }}>
                         {tWhy('desc1')}
                     </p>
-                    <p style={{ color: '#555' }}>
+                    <p style={{ color: isDark ? '#94a3b8' : '#555' }}>
                         {tWhy('desc2')}
                     </p>
                 </section>

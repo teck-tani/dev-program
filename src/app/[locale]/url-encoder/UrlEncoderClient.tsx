@@ -2,12 +2,15 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaExchangeAlt, FaTrash } from "react-icons/fa";
 
 type EncodeMode = 'component' | 'uri';
 
 export default function UrlEncoderClient() {
     const t = useTranslations('UrlEncoder');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const [input, setInput] = useState("");
     const [output, setOutput] = useState("");
@@ -101,7 +104,7 @@ export default function UrlEncoderClient() {
                 justifyContent: "center",
                 gap: "10px",
                 marginBottom: "20px",
-                background: "#f3f4f6",
+                background: isDark ? "#0f172a" : "#f3f4f6",
                 padding: "6px",
                 borderRadius: "12px",
                 maxWidth: "400px",
@@ -115,7 +118,7 @@ export default function UrlEncoderClient() {
                         borderRadius: "8px",
                         border: "none",
                         background: mode === 'encode' ? "#2563eb" : "transparent",
-                        color: mode === 'encode' ? "white" : "#666",
+                        color: mode === 'encode' ? "white" : (isDark ? "#94a3b8" : "#666"),
                         fontWeight: "bold",
                         cursor: "pointer",
                         transition: "all 0.2s"
@@ -131,7 +134,7 @@ export default function UrlEncoderClient() {
                         borderRadius: "8px",
                         border: "none",
                         background: mode === 'decode' ? "#2563eb" : "transparent",
-                        color: mode === 'decode' ? "white" : "#666",
+                        color: mode === 'decode' ? "white" : (isDark ? "#94a3b8" : "#666"),
                         fontWeight: "bold",
                         cursor: "pointer",
                         transition: "all 0.2s"
@@ -158,7 +161,7 @@ export default function UrlEncoderClient() {
                         onChange={() => { setEncodeMode('component'); setOutput(""); }}
                         style={{ width: "18px", height: "18px", cursor: "pointer" }}
                     />
-                    <span style={{ fontSize: "0.95rem", color: "#555" }}>{t('modeComponent')}</span>
+                    <span style={{ fontSize: "0.95rem", color: isDark ? "#94a3b8" : "#555" }}>{t('modeComponent')}</span>
                 </label>
                 <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
                     <input
@@ -168,7 +171,7 @@ export default function UrlEncoderClient() {
                         onChange={() => { setEncodeMode('uri'); setOutput(""); }}
                         style={{ width: "18px", height: "18px", cursor: "pointer" }}
                     />
-                    <span style={{ fontSize: "0.95rem", color: "#555" }}>{t('modeUri')}</span>
+                    <span style={{ fontSize: "0.95rem", color: isDark ? "#94a3b8" : "#555" }}>{t('modeUri')}</span>
                 </label>
                 <button
                     onClick={fillExample}
@@ -196,15 +199,15 @@ export default function UrlEncoderClient() {
             }} className="converter-grid">
                 {/* Input */}
                 <div style={{
-                    background: "white",
+                    background: isDark ? "#1e293b" : "white",
                     borderRadius: "12px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.08)",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.08)",
                     padding: "20px",
                     display: "flex",
                     flexDirection: "column"
                 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                        <label style={{ fontWeight: "600", color: "#333" }}>
+                        <label style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333" }}>
                             {mode === 'encode' ? t('originalText') : t('encodedText')}
                         </label>
                     </div>
@@ -216,18 +219,20 @@ export default function UrlEncoderClient() {
                             flex: 1,
                             minHeight: "200px",
                             padding: "15px",
-                            border: "1px solid #e0e0e0",
+                            border: `1px solid ${isDark ? "#334155" : "#e0e0e0"}`,
                             borderRadius: "8px",
                             fontSize: "0.95rem",
                             fontFamily: "monospace",
                             resize: "vertical",
-                            outline: "none"
+                            outline: "none",
+                            color: isDark ? "#e2e8f0" : "#1f2937",
+                            background: isDark ? "#0f172a" : "#fff"
                         }}
                     />
                     <div style={{
                         marginTop: "10px",
                         fontSize: "0.85rem",
-                        color: "#888"
+                        color: isDark ? "#64748b" : "#888"
                     }}>
                         <span>{t('characters')}: {input.length}</span>
                     </div>
@@ -260,7 +265,7 @@ export default function UrlEncoderClient() {
                         onClick={handleSwap}
                         style={{
                             padding: "10px",
-                            background: "#f3f4f6",
+                            background: isDark ? "#0f172a" : "#f3f4f6",
                             border: "none",
                             borderRadius: "8px",
                             cursor: "pointer",
@@ -292,15 +297,15 @@ export default function UrlEncoderClient() {
 
                 {/* Output */}
                 <div style={{
-                    background: "white",
+                    background: isDark ? "#1e293b" : "white",
                     borderRadius: "12px",
-                    boxShadow: "0 2px 15px rgba(0,0,0,0.08)",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.08)",
                     padding: "20px",
                     display: "flex",
                     flexDirection: "column"
                 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                        <label style={{ fontWeight: "600", color: "#333" }}>
+                        <label style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333" }}>
                             {mode === 'encode' ? t('encodedText') : t('originalText')}
                         </label>
                         <button
@@ -311,8 +316,8 @@ export default function UrlEncoderClient() {
                                 alignItems: "center",
                                 gap: "6px",
                                 padding: "6px 12px",
-                                background: copied ? "#22c55e" : "#f0f0f0",
-                                color: copied ? "white" : "#333",
+                                background: copied ? "#22c55e" : (isDark ? "#334155" : "#f0f0f0"),
+                                color: copied ? "white" : (isDark ? "#f1f5f9" : "#333"),
                                 border: "none",
                                 borderRadius: "6px",
                                 cursor: output ? "pointer" : "not-allowed",
@@ -332,19 +337,20 @@ export default function UrlEncoderClient() {
                             flex: 1,
                             minHeight: "200px",
                             padding: "15px",
-                            border: "1px solid #e0e0e0",
+                            border: `1px solid ${isDark ? "#334155" : "#e0e0e0"}`,
                             borderRadius: "8px",
                             fontSize: "0.95rem",
                             fontFamily: "monospace",
                             resize: "vertical",
                             outline: "none",
-                            background: "#fafafa"
+                            background: isDark ? "#0f172a" : "#fafafa",
+                            color: isDark ? "#e2e8f0" : "#1f2937"
                         }}
                     />
                     <div style={{
                         marginTop: "10px",
                         fontSize: "0.85rem",
-                        color: "#888"
+                        color: isDark ? "#64748b" : "#888"
                     }}>
                         <span>{t('characters')}: {output.length}</span>
                     </div>
@@ -367,22 +373,22 @@ export default function UrlEncoderClient() {
 
             {/* Reference Table */}
             <section style={{
-                background: "white",
+                background: isDark ? "#1e293b" : "white",
                 borderRadius: "12px",
-                boxShadow: "0 2px 15px rgba(0,0,0,0.08)",
+                boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.08)",
                 padding: "25px",
                 marginBottom: "30px"
             }}>
-                <h2 style={{ fontSize: '1.3rem', color: '#333', marginBottom: '15px' }}>
+                <h2 style={{ fontSize: '1.3rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '15px' }}>
                     {t('reference.title')}
                 </h2>
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                         <thead>
-                            <tr style={{ background: '#f8f9fa' }}>
-                                <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0' }}>{t('reference.char')}</th>
-                                <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0' }}>{t('reference.encoded')}</th>
-                                <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #e0e0e0' }}>{t('reference.desc')}</th>
+                            <tr style={{ background: isDark ? '#1e293b' : '#f8f9fa' }}>
+                                <th style={{ padding: '12px', textAlign: 'left', borderBottom: `2px solid ${isDark ? '#334155' : '#e0e0e0'}`, color: isDark ? '#f1f5f9' : undefined }}>{t('reference.char')}</th>
+                                <th style={{ padding: '12px', textAlign: 'left', borderBottom: `2px solid ${isDark ? '#334155' : '#e0e0e0'}`, color: isDark ? '#f1f5f9' : undefined }}>{t('reference.encoded')}</th>
+                                <th style={{ padding: '12px', textAlign: 'left', borderBottom: `2px solid ${isDark ? '#334155' : '#e0e0e0'}`, color: isDark ? '#f1f5f9' : undefined }}>{t('reference.desc')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -398,10 +404,10 @@ export default function UrlEncoderClient() {
                                 { char: '=', encoded: '%3D', descKey: 'equal' },
                                 { char: '@', encoded: '%40', descKey: 'at' },
                             ].map((item, index) => (
-                                <tr key={index} style={{ borderBottom: '1px solid #e0e0e0' }}>
-                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontWeight: 'bold' }}>{item.char}</td>
+                                <tr key={index} style={{ borderBottom: `1px solid ${isDark ? '#334155' : '#e0e0e0'}` }}>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontWeight: 'bold', color: isDark ? '#f1f5f9' : undefined }}>{item.char}</td>
                                     <td style={{ padding: '10px', fontFamily: 'monospace', color: '#2563eb' }}>{item.encoded}</td>
-                                    <td style={{ padding: '10px', color: '#666' }}>{t(`reference.${item.descKey}`)}</td>
+                                    <td style={{ padding: '10px', color: isDark ? '#94a3b8' : '#666' }}>{t(`reference.${item.descKey}`)}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -412,14 +418,14 @@ export default function UrlEncoderClient() {
             {/* Info Section */}
             <article style={{ maxWidth: '800px', margin: '40px auto 0', lineHeight: '1.7' }}>
                 <section style={{ marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '15px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
                         {t('info.title')}
                     </h2>
-                    <p style={{ marginBottom: '15px', color: '#555' }}>{t('info.desc')}</p>
+                    <p style={{ marginBottom: '15px', color: isDark ? '#94a3b8' : '#555' }}>{t('info.desc')}</p>
                 </section>
 
                 <section style={{ marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '15px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
                         {t('difference.title')}
                     </h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
@@ -463,16 +469,16 @@ export default function UrlEncoderClient() {
                 </section>
 
                 <section style={{ marginBottom: '40px' }}>
-                    <h2 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                    <h2 style={{ fontSize: '1.5rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '15px', borderBottom: `2px solid ${isDark ? '#334155' : '#eee'}`, paddingBottom: '10px' }}>
                         {t('useCases.title')}
                     </h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                         {['queryParam', 'api', 'form', 'share'].map((key) => (
-                            <div key={key} style={{ background: '#f8f9fa', padding: '15px', borderRadius: '10px' }}>
+                            <div key={key} style={{ background: isDark ? '#1e293b' : '#f8f9fa', padding: '15px', borderRadius: '10px' }}>
                                 <h3 style={{ fontSize: '1rem', color: '#2563eb', marginBottom: '8px' }}>
                                     {t(`useCases.${key}.title`)}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#666' }}>
+                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666' }}>
                                     {t(`useCases.${key}.desc`)}
                                 </p>
                             </div>
@@ -480,16 +486,16 @@ export default function UrlEncoderClient() {
                     </div>
                 </section>
 
-                <section className="faq-section" style={{ background: '#f0f4f8', padding: '25px', borderRadius: '15px' }}>
-                    <h2 style={{ fontSize: '1.4rem', color: '#333', marginBottom: '20px', textAlign: 'center' }}>
+                <section className="faq-section" style={{ background: isDark ? '#0f172a' : '#f0f4f8', padding: '25px', borderRadius: '15px' }}>
+                    <h2 style={{ fontSize: '1.4rem', color: isDark ? '#f1f5f9' : '#333', marginBottom: '20px', textAlign: 'center' }}>
                         {t('faq.title')}
                     </h2>
                     {['q1', 'q2', 'q3', 'q4'].map((key) => (
-                        <details key={key} style={{ marginBottom: '12px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>
+                        <details key={key} style={{ marginBottom: '12px', background: isDark ? '#1e293b' : 'white', padding: '15px', borderRadius: '8px' }}>
+                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: isDark ? '#f1f5f9' : '#2c3e50' }}>
                                 {t(`faq.${key}.q`)}
                             </summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '15px' }}>
+                            <p style={{ marginTop: '10px', color: isDark ? '#94a3b8' : '#555', paddingLeft: '15px' }}>
                                 {t(`faq.${key}.a`)}
                             </p>
                         </details>
