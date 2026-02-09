@@ -8,7 +8,6 @@ const baseUrl = 'https://teck-tani.com';
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'Meta' });
-    const otherLocale = locale === 'ko' ? 'en' : 'ko';
 
     return {
         title: t('defaultTitle'),
@@ -30,8 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         alternates: {
             canonical: `${baseUrl}/${locale}`,
             languages: {
-                [locale]: `${baseUrl}/${locale}`,
-                [otherLocale]: `${baseUrl}/${otherLocale}`,
+                'ko': `${baseUrl}/ko`,
+                'en': `${baseUrl}/en`,
+                'x-default': `${baseUrl}/ko`,
             },
         },
         robots: {
