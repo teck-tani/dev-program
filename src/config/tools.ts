@@ -4,7 +4,8 @@ import {
     FaUserClock, FaStopwatch, FaHourglassHalf, FaCode,
     FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette,
     FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase,
-    FaTerminal, FaYoutube, FaGlobe, FaQrcode, FaTools
+    FaTerminal, FaYoutube, FaGlobe, FaQrcode, FaTools, FaBell,
+    FaServer, FaCalendarAlt
 } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
@@ -35,10 +36,11 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/ovulation-calculator', labelKey: 'ovulationCalculator', icon: FaFemale, category: 'calculators' },
     { href: '/dutch-pay', labelKey: 'dutchPay', icon: FaUsers, category: 'calculators' },
 
-    // 시간 (3)
+    // 시간 (4)
     { href: '/clock', labelKey: 'clock', icon: FaClock, category: 'time' },
     { href: '/stopwatch', labelKey: 'stopwatch', icon: FaStopwatch, category: 'time' },
     { href: '/timer', labelKey: 'timer', icon: FaHourglassHalf, category: 'time' },
+    { href: '/alarm', labelKey: 'alarm', icon: FaBell, category: 'time' },
 
     // 유틸리티 (17)
     { href: '/barcode', labelKey: 'barcode', icon: FaBarcode, category: 'utilities' },

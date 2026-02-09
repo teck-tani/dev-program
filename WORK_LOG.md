@@ -5,7 +5,7 @@
 
 ---
 
-## 전체 도구 목록 & 현황 (31개 도구)
+## 전체 도구 목록 & 현황 (32개 도구)
 
 | # | 도구 | 경로 | 현재 수준 | 핵심 개선사항 |
 |---|------|------|-----------|-------------|
@@ -14,141 +14,320 @@
 | 3 | 연봉 계산기 | salary-calculator | A- | 월급/연봉 모드, 2026년 기준 뱃지, 연간 실수령액, 소득세 8단계 |
 | 4 | 퇴직금 계산기 | severance-calculator | B- | 계산과정 미표시, 퇴직소득세 미계산, 날짜입력 UX |
 | 5 | 나이 계산기 | korean-age-calculator | B | 상세나이(년/월/일) 미표시, 별자리, 만나이통일법 설명 |
-| 6 | 더치페이 | dutch-pay | C+ | **결과 공유/복사 전혀 없음(치명적)**, 비균등분할, 항목별 정산 |
-| 7 | 배란일 계산기 | ovulation-calculator | B- | locale 버그, 단일주기만 표시, 생리기간 입력 없음 |
+| 6 | 더치페이 | dutch-pay | C+ | 비균등분할, 항목별 정산 |
+| 7 | 배란일 계산기 | ovulation-calculator | B- | 단일주기만 표시, 생리기간 입력 없음 |
 | 8 | 세계시계 | clock | A- | 시간대비교 슬라이더, 24h 타임라인바, 도시DB 확대 |
 | 9 | 스톱워치 | stopwatch | A- | 탭 제목 시간표시, 전체화면, 랩 그래프 |
-| 10 | 타이머 | timer | D+ | **프리셋 없음, 프로그레스바 없음, 탭제목 없음, 포모도로 없음** |
-| 11 | 환율 계산기 | money-converter | B+ | 환율 차트 구현완료(recharts), 전일대비 변동, API키 환경변수 이동완료 |
-| 12 | 단위 변환기 | unit-converter | D+ | **카테고리 4개뿐(경쟁사 20+)**, 한국단위(평/근) 없음, 다크모드 미지원 |
+| 10 | 타이머 | timer | D+ | 포모도로 없음 |
+| 11 | 환율 계산기 | money-converter | B+ | 환율 차트 구현완료(recharts), 전일대비 변동 |
+| 12 | 단위 변환기 | unit-converter | D+ | 카테고리 4개뿐(경쟁사 20+), 한국단위(평/근) 없음 |
 | 13 | 파일사이즈 변환기 | file-size-converter | B+ | 이진/십진 구분, 전송시간 계산 |
 | 14 | 색상 변환기 | color-converter | B- | CMYK 없음, RGBA 없음, 대비비율 체크 없음 |
 | 15 | JSON 포맷터 | json-formatter | A- | Syntax Highlighting, Tree View(접기/펼치기), 텍스트/트리 뷰 모드 |
 | 16 | SQL 포맷터 | sql-formatter | C+ | 자체구현 엔진 품질이슈, Dialect 미지원, Highlighting 없음 |
 | 17 | Base64 인코더 | base64-encoder | B | 실시간 변환, 이미지 미리보기, 드래그앤드롭 |
 | 18 | URL 인코더 | url-encoder | B | 실시간 변환, URL 파서, 이중인코딩 감지 |
-| 19 | Cron 생성기 | cron-generator | C | **다음 실행시간 표시 없음(핵심기능 누락)**, 6-field 미지원 |
+| 19 | Cron 생성기 | cron-generator | C | 6-field 미지원 |
 | 20 | IP 주소 조회 | ip-address | B- | 임의 IP/도메인 조회 불가, IPv6 미지원 |
 | 21 | 텍스트 비교 | text-diff | A- | 통합/나란히보기 뷰, 문자 단위 LCS diff, 스크롤 동기화 |
 | 22 | QR 생성기 | qr-generator | A- | Wi-Fi/vCard 탭, SVG 다운로드, 로고 삽입(에러보정H), 색상커스텀 |
-| 23 | 바코드 생성기 | barcode | B | PC 다운로드 없음, 크기 커스터마이징, i18n 버그 |
+| 23 | 바코드 생성기 | barcode | B | PC 다운로드 없음, 크기 커스터마이징 |
 | 24 | 로또 생성기 | lotto-generator | B | 다중세트, 제외번호, 당첨확인, 공유 |
 | 25 | 사다리 게임 | ladder-game | B- | 개별선택 모드, 캔버스 반응형, 프리셋 |
 | 26 | 유튜브 썸네일 | youtube-thumbnail | B | 해상도 표시, 동영상 정보, 라이트박스 |
-| 27 | 특수문자 | special-characters | D | **이모지만 있음, 실제 특수문자 없음(페이지명과 불일치)** |
+| 27 | 특수문자 | special-characters | D | 이모지만 있음, 실제 특수문자 부족 |
 | 28 | 글자수 세기 | character-counter | B | 읽기시간, SNS 가이드, 키워드분석 |
 | 30 | 이미지 압축 | image-compressor | A- | JPEG/WebP/PNG 출력, 투명도 경고, Before/After 비교 슬라이더 |
 | 31 | PDF 관리 | pdf-manager | C | 병합/분할만(경쟁사 20+ 기능), 페이지 미리보기 없음 |
 | 32 | 통화쌍 페이지 | money-converter/[pair] | B | 환율 차트 미구현 |
+| 33 | 온라인 알람 시계 | alarm | A | 신규: 5종 알람음(Web Audio), 멀티알람(10개), 빠른프리셋, 스누즈, 브라우저알림, SEO 6섹션 완비 |
 
 ---
 
-## 긴급 버그 (즉시 수정 필요)
+## 전체 페이지 A등급 달성 프로젝트
 
-1. ~~**[Calculator]** FAQ에 "키보드 지원" 명시되어 있으나 실제 미구현~~ ✅ 해결 (키보드 완전 지원)
-2. **[Interest Calculator]** GrowthChart 범례 "원금", "이자 수익" 한국어 하드코딩 → 영어 페이지에서도 한국어 표시
-3. **[Ovulation Calculator]** locale을 `document.documentElement.lang`으로 감지 → `useLocale()` 사용해야 함
-4. **[Salary Calculator]** 소득세율 5단계만 구현(8단계 필요, 최고 45% 누락)
-5. **[Barcode]** 모바일 다운로드 버튼 "다운로드" 한국어 하드코딩
-6. **[Image Compressor]** PNG 투명도 손실 시 사용자 경고 없음 (데이터 손상)
-7. **[Exchange Rate]** API 키 소스코드 하드코딩 (보안 이슈)
-8. **[Sitemap]** text-diff, ladder-game, cron-generator 누락
-9. **[Spell Checker]** 홈페이지/Header/Sitemap 어디에도 등록 안됨
-10. **[Footer]** 저작권 연도 2024 고정
-
----
-
-## 사이트 공통 개선사항
-
-### SEO 긴급
-- sitemap 누락 도구 3개 추가
-- JSON-LD 누락 3개 페이지 추가 (character-counter, image-compressor, pdf-manager)
-- 홈페이지 WebSite + ItemList JSON-LD 추가
-- OG 이미지 전체 없음
-
-### UX 공통
-- 도구 검색 기능 없음 (30개+ 도구인데)
-- 최근 사용 / 즐겨찾기 기능 없음
-- 데스크톱 상단 네비게이션 없음 (햄버거만)
-- Header aria-label 한국어 하드코딩
-- 도구 목록 5곳 산재 → 단일 config로 통합 필요
-
-### 구조
-- 유틸리티 카테고리 17개 과다 → 세분화 필요
-- Footer에 도구 링크/About/Privacy 없음
-- Breadcrumb 없음
+> **A등급 기준** (CLAUDE.md SEO 필수 6섹션):
+> 1. 도구 설명 (What is this?) — 1~2문단
+> 2. 주요 기능 (Key Features) — 3~6개 카드/리스트
+> 3. 사용법 (How to Use) — 3~6단계 가이드 (HowTo JSON-LD 일치)
+> 4. 활용 예시 (Use Cases) — 3~6개 시나리오
+> 5. FAQ — 4~8개 (FAQPage JSON-LD 일치)
+> 6. 개인정보 안내 (Privacy Notice) — 1문단
+>
+> **추가 필수**: JSON-LD 3종(FAQPage, HowTo, WebApplication), Meta i18n, OG/Twitter
+>
+> **이미 A등급**: 공학용 계산기, 이자 계산기 (2개 제외)
 
 ---
 
-## 우선순위별 작업 TODO
+### Phase 1: Quick Wins — 거의 완성된 페이지 (1~2섹션 추가)
 
-### Phase 1: 긴급 버그 수정 (1-2일) ✅ 완료
-- [x] Calculator 키보드 입력 지원 추가 (0-9, +-*/, Enter, Backspace, Esc)
-- [x] Interest Calculator GrowthChart i18n 수정 (chartPrincipal, chartInterest 키 추가)
-- [x] Ovulation Calculator locale 버그 수정 (document.documentElement.lang → useLocale())
-- [x] Barcode 다운로드 버튼 i18n 수정 (ko/en download 키 추가)
-- [x] Sitemap 누락 도구 4개 추가 (text-diff, ladder-game, cron-generator, spell-checker)
-- [x] Spell Checker Header 등록 + 번역 전체 추가 (meta, input, result, common, why 섹션)
-- [x] Exchange Rate API 키 환경변수로 이동 (.env.local + process.env.EXCHANGE_RATE_API_KEY)
-- [x] Footer 저작권 연도 동적 변경 (new Date().getFullYear() + {year} 플레이스홀더)
-- [x] Salary Calculator 소득세율 8단계 보완 (5→8단계, 최고 45%, 누진공제액 수정)
+**환율 계산기** (money-converter) B+ → A
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 5/6 (도구설명✅ 주요기능✅ 사용법✅ 활용예시✅ FAQ✅)
 
-### Phase 2: 핵심 기능 추가 - 가장 약한 도구 개선 (3-5일) ✅ 완료
-- [x] Timer: 프리셋 버튼(1m~1h), 원형 SVG 프로그레스바, 탭 제목 업데이트, Notification API
-- [x] Unit Converter: 8개 카테고리(면적/부피/데이터/시간 추가), 한국단위(평/근/리), 다크모드
-- [x] Special Characters: 6개 특수문자 카테고리(수학/화살표/통화/문장/기술/선) ~160개, 검색 기능
-- [x] Cron Generator: 다음 5회 실행시간 표시 (커스텀 파서 구현)
-- [x] Dutch Pay: 결과 텍스트 복사 + Web Share API (클립보드 fallback)
-- [x] Calculator: 결과 복사 기능 (LuCopy/LuCheck 아이콘)
+**로또 생성기** (lotto-generator) B → A
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 5/6 (도구설명✅ 주요기능✅ 팁✅ 확률정보✅ FAQ✅)
 
-### Phase 3: 경쟁력 강화 (5-10일) ✅ 완료
-- [x] Calculator: Tier 1~3 전면 업그레이드 (키보드, 복사, +/-, |x|, 1/x, ANS, EXP, 괄호카운터, sinh/cosh/tanh, mod, cbrt, x³)
-- [x] Calculator: A등급 업그레이드 (천단위콤마, 구체적에러메시지, 메모리M+/M-/MR/MC, RNG, 버튼툴팁, 키보드단축키범례)
-- [x] Exchange Rate: 환율 추이 차트 (recharts, history API 활용)
-- [x] Interest Calculator: Tier 1~3 전면 업그레이드 (세금옵션 3가지, 월별 내역표+복사, 결과 복사/공유, 은행 금리 프리셋 6개, 중도해지 입력)
-- [x] Salary Calculator: 월급/연봉 모드 토글, 2026년 기준 뱃지, 연간 실수령액
-- [x] JSON Formatter: Syntax Highlighting + Tree View (텍스트/트리 뷰 모드 토글)
-- [x] Text Diff: Side-by-Side View + Character-level LCS diff + 스크롤 동기화
-- [x] Image Compressor: JPEG/WebP/PNG 출력 선택, 투명도 경고, Before/After 비교 슬라이더
-- [x] QR Generator: Wi-Fi/vCard 타입 탭, SVG 다운로드, 로고 삽입 (에러보정 H)
+**통화쌍 페이지** (money-converter/[pair]) B → A
+- [ ] 주요 기능 섹션 추가 (실시간 환율, 정확도, 다중통화 등)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 4.5/6 (정의✅ 사용법✅ 활용예시✅ FAQ✅ 참고사항✅)
 
-### Phase 4: 사이트 전체 UX (3-5일) ✅ 완료
-- [x] 도구 목록 단일 config 통합 (src/config/tools.ts → 30개 도구 단일 소스)
-- [x] 홈페이지 도구 검색 기능 (HomeToolsClient: useMemo 필터, 한/영 양쪽)
-- [x] 인기 도구 섹션 활성화 (수동 큐레이션 6개)
-- [x] 데스크톱 상단 네비게이션 (CSS hover 드롭다운, 4개 카테고리)
-- [x] Breadcrumb 추가 (홈 > 도구이름, 홈페이지에서는 숨김)
-- [x] SEO: JSON-LD 보완 (홈: WebSite+ItemList, 3페이지: WebApplication+FAQPage)
-- [ ] SEO: OG 이미지 (미착수)
+**사다리 게임** (ladder-game) B- → A
+- [ ] 주요 기능 섹션 추가 (랜덤 생성, 2-10명, 애니메이션, 공정성)
+- [ ] 사용법 섹션 렌더링 (HowTo JSON-LD 5단계 → HTML로)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 4/6 (도구설명✅ 활용예시✅ 팁✅ 공정성✅)
 
-### Phase 5: 추가 개선 (ongoing)
-- [ ] PDF Manager 기능 확대 (회전, 이미지변환, 압축)
-- [ ] Color Converter CMYK/RGBA 추가
-- [ ] Severance Calculator 계산과정 표시, 퇴직소득세
-- [ ] Ovulation Calculator 멀티사이클 예측
-- [ ] Stopwatch 탭 제목, 전체화면
-- [ ] Lotto Generator 다중세트, 당첨확인
+---
+
+### Phase 2: i18n 정리 — 하드코딩 콘텐츠 번역파일 이동 + Privacy
+
+**연봉 계산기** (salary-calculator) A- → A
+- [ ] seoContent 객체(page.tsx 237-300행) → messages/ko.json, en.json으로 이동
+- [ ] featureList 배열 → 번역파일로 이동
+- [ ] 개인정보 안내 섹션 추가
+- [ ] FAQ 밸런스 맞추기 (한국어 5개 vs 영어 3개 → 영어도 5개로)
+- 현황: SEO 5/6 완성이나 하드코딩 위반
+
+**세계시계** (clock) A- → A
+- [ ] featureLists(72-93행) + seoContent(95-172행) → 번역파일로 이동
+- [ ] ClockView.tsx 인라인 i18n 객체(80-111행) → 번역파일로 이동
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 5/6 완성이나 하드코딩 위반
+
+**스톱워치** (stopwatch) A- → A
+- [ ] content 객체(210-287행) → 번역파일로 이동
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 5/6 (도구설명✅ 주요기능✅ 사용법✅ 활용예시✅ FAQ✅) 하드코딩
+
+**타이머** (timer) D+ → A
+- [ ] seoContent 객체(198-239행) → 번역파일로 이동 (가장 심각한 i18n 위반)
+- [ ] 주요 기능 섹션 추가 (프리셋, 프로그레스바, 알림 등)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 3.5/6 (도구설명✅ 사용법✅ 활용예시✅ FAQ✅) 전부 하드코딩
+
+---
+
+### Phase 3: SEO 중간 보강 — 2~4개 섹션 추가 필요
+
+**JSON 포맷터** (json-formatter) A- → A
+- [ ] 사용법 섹션 시각적 렌더링 (현재 JSON-LD에만 존재)
+- [ ] 활용 예시 섹션 추가 (API 개발, 디버깅, 학습 등)
+- [ ] HowTo JSON-LD 스키마 추가 (현재 누락)
+- [ ] 개인정보 안내 섹션 추가
+- [ ] FAQ 4개 이상으로 확대 (현재 3개)
+- 현황: SEO 4/6 (도구설명✅ 주요기능✅ FAQ✅)
+
+**QR 생성기** (qr-generator) A- → A
+- [ ] 메타데이터 i18n 적용 (현재 18-34행 하드코딩 → t() 사용)
+- [ ] 도구 설명 섹션 추가 ("QR코드란?")
+- [ ] 주요 기능 섹션 추가 (Wi-Fi, vCard, 로고 삽입, SVG 등)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 3/6 (사용법✅ 활용예시✅ FAQ✅)
+
+**파일사이즈 변환기** (file-size-converter) B+ → A
+- [ ] 사용법 섹션 시각적 렌더링
+- [ ] 활용 예시 섹션 추가
+- [ ] HowTo JSON-LD 스키마 추가 (현재 누락)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 3/6 (도구설명✅ 주요기능✅ FAQ✅)
+
+**바코드 생성기** (barcode) B → A
+- [ ] 주요 기능 섹션 추가 (다양한 포맷, 커스터마이징, 다운로드)
+- [ ] 사용법 섹션 렌더링 (HowTo JSON-LD 4단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (재고관리, 도서, 마케팅)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 2/6 (도구설명✅ FAQ✅)
+
+**단위 변환기** (unit-converter) D+ → A
+- [ ] 도구 설명 섹션 추가
+- [ ] 활용 예시 섹션 추가
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 2.5/6 (주요기능✅ FAQ✅, 사용법 HowTo만)
+
+**더치페이** (dutch-pay) C+ → A
+- [ ] 도구 설명 섹션 추가 ("더치페이란?")
+- [ ] 주요 기능 섹션 추가 (N명 분할, 최소 거래, 공유)
+- [ ] 활용 예시 섹션 추가 (회식, 여행, 공동구매)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 2/6 (사용법✅ FAQ✅)
+
+**SQL 포맷터** (sql-formatter) C+ → A
+- [ ] 도구 설명 섹션 추가 ("SQL 포맷터란?")
+- [ ] 주요 기능 섹션 추가 (들여쓰기, 대문자, 압축)
+- [ ] 활용 예시 섹션 추가 (코드리뷰, 디버깅, 학습)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 2/6 (사용법✅ FAQ✅)
+
+**Cron 생성기** (cron-generator) C → A
+- [ ] 도구 설명 섹션 추가 ("Cron 표현식이란?")
+- [ ] 주요 기능 섹션 추가 (시각적 빌더, 프리셋, 실행시간 미리보기)
+- [ ] 활용 예시 섹션 추가 (서버 백업, 배치 작업, CI/CD)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 2/6 (사용법✅ FAQ✅, HowTo schema 있으나 미렌더링)
+
+---
+
+### Phase 4: SEO 전면 추가 — FAQ만 있는 페이지 (5개 섹션 추가)
+
+**텍스트 비교** (text-diff) A- → A
+- [ ] 도구 설명 섹션 추가 ("텍스트 비교란?")
+- [ ] 주요 기능 섹션 추가 (통합/나란히 뷰, 문자단위 diff, 스크롤동기화)
+- [ ] 사용법 섹션 렌더링 (HowTo 4단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (코드리뷰, 문서비교, 번역)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 0/6 시각적 콘텐츠 **없음** (JSON-LD만 존재, FAQ도 미렌더링)
+
+**이미지 압축** (image-compressor) A- → A
+- [ ] 도구 설명 섹션 추가 ("이미지 압축이란?")
+- [ ] 주요 기능 섹션 추가 (JPEG/WebP/PNG, Before/After, 투명도 경고)
+- [ ] 사용법 섹션 추가
+- [ ] 활용 예시 섹션 추가 (웹 최적화, 이메일 첨부, SNS)
+- [ ] HowTo JSON-LD 스키마 추가 (현재 누락)
+- [ ] 개인정보 안내 섹션 추가
+- [ ] FAQ 4개 이상으로 확대 (현재 2개, 하드코딩)
+- [ ] robots meta googleBot 지시어 추가
+- 현황: SEO 0/6 시각적 콘텐츠 **없음** (JSON-LD + 컴포넌트만)
+
+**나이 계산기** (korean-age-calculator) B → A
+- [ ] 도구 설명 섹션 추가 ("한국 나이 계산기란?")
+- [ ] 주요 기능 섹션 추가 (만나이/한국나이, 디데이, 별자리)
+- [ ] 사용법 섹션 렌더링 (HowTo 5단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (만나이통일법, 입학/군입대, 보험)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 1/6 (FAQ✅만)
+
+**유튜브 썸네일** (youtube-thumbnail) B → A
+- [ ] 도구 설명 섹션 추가 ("유튜브 썸네일 다운로드란?")
+- [ ] 주요 기능 섹션 추가 (5가지 해상도, 원클릭 다운로드, 미리보기)
+- [ ] 사용법 섹션 렌더링 (HowTo 3단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (브랜딩, 분석, 프레젠테이션)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 1/6 (FAQ✅만)
+
+**배란일 계산기** (ovulation-calculator) B- → A
+- [ ] 도구 설명 섹션 추가 ("배란일 계산기란?")
+- [ ] 주요 기능 섹션 추가 (캘린더, 가임기, 안전기간)
+- [ ] 사용법 섹션 렌더링 (HowTo 4단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (임신계획, 피임, 건강관리)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 1/6 (FAQ✅만)
+
+**색상 변환기** (color-converter) B- → A
+- [ ] 도구 설명 섹션 추가 ("색상 변환기란?")
+- [ ] 주요 기능 섹션 추가 (HEX/RGB/HSL, 컬러피커, 원클릭복사)
+- [ ] 사용법 섹션 렌더링 (HowTo 4단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (웹디자인, 앱개발, 그래픽)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 1/6 (FAQ✅만)
+
+**IP 주소 조회** (ip-address) B- → A
+- [ ] 도구 설명 섹션 추가 ("IP 주소 조회란?")
+- [ ] 주요 기능 섹션 추가 (공인IP, 위치정보, ISP, 지도)
+- [ ] 사용법 섹션 렌더링 (HowTo 4단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (보안점검, VPN확인, 네트워크진단)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 1/6 (FAQ✅만)
+
+**특수문자** (special-characters) D → A
+- [ ] 도구 설명 섹션 추가 ("특수문자 모음이란?")
+- [ ] 주요 기능 섹션 추가 (6개 카테고리, 160+문자, 검색, 원클릭복사)
+- [ ] 사용법 섹션 렌더링
+- [ ] 활용 예시 섹션 추가 (문서작성, SNS, 프로그래밍)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO 1/6 (FAQ✅만)
+
+---
+
+### Phase 5: SEO 완전 신규 — 콘텐츠 0인 페이지 (6개 섹션 전부 작성)
+
+**Base64 인코더** (base64-encoder) B → A
+- [ ] 도구 설명 섹션 추가 ("Base64 인코딩이란?")
+- [ ] 주요 기능 섹션 추가 (인코딩/디코딩, URL-Safe, 파일업로드, 실시간)
+- [ ] 사용법 섹션 렌더링 (HowTo 5단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (API 개발, 이메일, 데이터 전송)
+- [ ] FAQ 섹션 시각적 렌더링 (현재 JSON-LD에만 3개)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO **0/6** (JSON-LD + 컴포넌트만, 시각적 콘텐츠 전무)
+
+**URL 인코더** (url-encoder) B → A
+- [ ] 도구 설명 섹션 추가 ("URL 인코딩이란?")
+- [ ] 주요 기능 섹션 추가 (실시간 변환, URL 파서, 이중인코딩 감지)
+- [ ] 사용법 섹션 렌더링 (HowTo 5단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (웹개발, API, SEO)
+- [ ] FAQ 섹션 시각적 렌더링 (현재 JSON-LD에만 3개)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO **0/6** (JSON-LD + 컴포넌트만, 시각적 콘텐츠 전무)
+
+**퇴직금 계산기** (severance-calculator) B- → A
+- [ ] 도구 설명 섹션 추가 ("퇴직금 계산기란?")
+- [ ] 주요 기능 섹션 추가 (퇴직금 산출, 세금 계산, 근속일수)
+- [ ] 사용법 섹션 렌더링 (HowTo 4단계 → HTML로)
+- [ ] 활용 예시 섹션 추가 (퇴직준비, 이직, 연금전환)
+- [ ] FAQ 섹션 시각적 렌더링 (현재 JSON-LD에만 4개)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO **0/6** (JSON-LD + 컴포넌트만, 시각적 콘텐츠 전무)
+
+**글자수 세기** (character-counter) B → A
+- [ ] FAQ 하드코딩 수정 → 번역파일(messages)로 이동 (i18n 위반)
+- [ ] HowTo JSON-LD 스키마 추가 (현재 누락)
+- [ ] 도구 설명 섹션 추가 ("글자수 세기란?")
+- [ ] 주요 기능 섹션 추가 (읽기시간, SNS가이드, 키워드분석)
+- [ ] 사용법 섹션 추가
+- [ ] 활용 예시 섹션 추가 (블로그, SNS, 이력서, 논문)
+- [ ] FAQ 섹션 시각적 렌더링 + 4개 이상으로 확대 (현재 2개)
+- [ ] 개인정보 안내 섹션 추가
+- 현황: SEO **0/6** + HowTo 누락 + i18n 위반 (가장 심각)
+
+**PDF 관리** (pdf-manager) C → A
+- [ ] HowTo JSON-LD 스키마 추가 (현재 누락)
+- [ ] 도구 설명 섹션 추가 ("PDF 관리 도구란?")
+- [ ] 주요 기능 섹션 추가 (병합, 분할, 브라우저 처리)
+- [ ] 사용법 섹션 추가
+- [ ] 활용 예시 섹션 추가 (계약서, 보고서, 학술자료)
+- [ ] FAQ 섹션 시각적 렌더링 + 4개 이상으로 확대 (현재 2개, 미렌더링)
+- [ ] 개인정보 안내 섹션 추가
+- [ ] robots meta googleBot 지시어 추가
+- 현황: SEO **0/6** + HowTo 누락 (전체 페이지 중 최악)
+
+---
+
+### 전체 현황 요약
+
+| Phase | 대상 | 페이지수 | 작업량 | 설명 |
+|-------|------|:--------:|--------|------|
+| 1 | Quick Wins | 4 | ⭐ | Privacy + 1~2섹션만 추가 |
+| 2 | i18n 정리 | 4 | ⭐⭐ | 하드코딩→번역파일 이동 + Privacy |
+| 3 | SEO 중간 보강 | 8 | ⭐⭐⭐ | 2~4개 섹션 추가 |
+| 4 | SEO 전면 추가 | 8 | ⭐⭐⭐⭐ | 5개 섹션 추가 (FAQ만 있는 페이지) |
+| 5 | SEO 완전 신규 | 5 | ⭐⭐⭐⭐⭐ | 6개 섹션 전부 새로 작성 |
+| **합계** | | **29** | | A등급 2개 제외 전체 |
+
+**공통 패턴**:
+- 개인정보 안내: 전체 29/29 페이지 누락 (100%)
+- 하드코딩 i18n: 7페이지 (salary, clock, stopwatch, timer, lotto, ladder, qr)
+- HowTo 스키마 누락: 5페이지 (json-formatter, image-compressor, file-size, character-counter, pdf-manager)
+- 시각적 SEO 콘텐츠 0: 5페이지 (base64, url-encoder, severance, character-counter, pdf-manager)
 
 ---
 
 ## 진행중인 작업
-- (없음 - Phase 4 완료, Phase 5 대기중)
+- 시계 카테고리 Tier 1 구현 (3개): 알람 ✅ → 서버시간/티켓팅 → D-day 카운트다운
+- Phase 1~5 SEO A등급 달성 대기중
 
 ## 완료된 작업
-- [x] Phase 4: 사이트 전체 UX 개선 완료 (2026-02-07): config 통합, 검색, 인기도구, 데스크톱 네비, Breadcrumb, SEO JSON-LD
-- [x] Phase 3 나머지 5개 도구 업그레이드 완료 (2026-02-07): Salary Calculator, JSON Formatter, Text Diff, Image Compressor, QR Generator
-- [x] Interest Calculator A등급 업그레이드: Tier 1~3 전면 업그레이드 (2026-02-07)
-- [x] Calculator A등급 업그레이드: 천단위콤마, 에러메시지, 메모리, RNG, 툴팁, 키보드범례 (2026-02-07)
-- [x] Calculator Tier 1~3 전면 업그레이드 (2026-02-07)
-- [x] Exchange Rate 환율 차트 프론트엔드 (2026-02-07)
-- [x] Phase 2: 핵심 기능 6건 추가 완료 (2026-02-07)
-- [x] Phase 1: 긴급 버그 9건 수정 완료 (2026-02-07)
-- [x] 전체 도구 스캔 & 글로벌 경쟁사 대비 분석 (2026-02-07)
-- [x] WORK_LOG.md 생성 & CLAUDE.md 연동 (2026-02-07)
+- [x] 온라인 알람 시계 구현 (2026-02-08): /alarm 페이지 신규 생성. 5종 알람음(Web Audio API), 멀티알람(최대10개), 빠른프리셋(10분/30분/1시간/2시간), 스누즈(5분), 브라우저 Notification, 탭 제목 카운트다운, localStorage 영속성, 다크/라이트 반응형, SEO 6섹션+JSON-LD 3종
+- [x] 전체 페이지 A등급 분석 (2026-02-08): 29페이지 SEO 6섹션 + JSON-LD + i18n 점검 완료
+- [x] (구) Phase 4: 사이트 전체 UX 개선 완료 (2026-02-07): config 통합, 검색, 인기도구, 데스크톱 네비, Breadcrumb, SEO JSON-LD
+- [x] (구) Phase 3: 경쟁력 강화 완료 (2026-02-07): Calculator/Interest/Salary/JSON/TextDiff/ImageCompressor/QR 업그레이드, 환율 차트
+- [x] (구) Phase 2: 핵심 기능 6건 추가 완료 (2026-02-07): Timer/UnitConverter/SpecialChars/Cron/DutchPay/Calculator
+- [x] (구) Phase 1: 긴급 버그 9건 수정 완료 (2026-02-07)
 
 ## 보류/아이디어
-- 환율 계산기 차트 (Phase 3에 포함)
-- 모바일에서 SEO 콘텐츠 display:none 처리 → 구글 모바일 우선 인덱싱에 부정적 가능성
+- SEO: OG 이미지 (미착수)
 
 ---
-*마지막 업데이트: 2026-02-07 (Phase 4 완료 - 사이트 전체 UX 개선)*
+*마지막 업데이트: 2026-02-08 (온라인 알람 시계 구현 완료, Tier 1 Step 1/3)*

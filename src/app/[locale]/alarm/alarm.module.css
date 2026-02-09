@@ -1,0 +1,771 @@
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ===== Current Time ===== */
+.timeSection {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.timeLabel {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.timeDisplay {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(3rem, 12vw, 5rem);
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+.dateDisplay {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-top: 8px;
+}
+
+/* ===== Set Alarm Form ===== */
+.setAlarmSection {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionIcon {
+  font-size: 1.2rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.timeInputGroup {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inputLabel {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.timeInput {
+  width: 80px;
+  height: 52px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.timeInput:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  background: #fff;
+}
+
+.timeSeparator {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #94a3b8;
+  padding-bottom: 4px;
+}
+
+.labelInput {
+  flex: 1;
+  min-width: 120px;
+  height: 52px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.labelInput:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  background: #fff;
+}
+
+/* Sound Selector */
+.soundRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.soundSelect {
+  flex: 1;
+  min-width: 160px;
+  height: 44px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  background: #f8fafc;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.soundSelect:focus {
+  border-color: #6366f1;
+}
+
+.previewBtn {
+  height: 44px;
+  padding: 0 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.previewBtn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: #eef2ff;
+}
+
+.previewBtnActive {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+/* Add Alarm Button */
+.addAlarmBtn {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.addAlarmBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.addAlarmBtn:active {
+  transform: translateY(0);
+}
+
+/* ===== Quick Presets ===== */
+.presetsSection {
+  margin-bottom: 24px;
+}
+
+.presetsTitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.presetsGrid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.presetBtn {
+  padding: 10px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.presetBtn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: #eef2ff;
+}
+
+.presetBtn:active {
+  transform: scale(0.97);
+}
+
+/* ===== Alarm List ===== */
+.alarmsSection {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.alarmList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alarmItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  transition: all 0.2s;
+}
+
+.alarmItemActive {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+}
+
+.alarmItemRinging {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  animation: ringPulse 1s ease-in-out infinite;
+}
+
+@keyframes ringPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+.alarmTime {
+  font-family: 'Courier New', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  min-width: 90px;
+}
+
+.alarmInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.alarmLabel {
+  font-size: 0.9rem;
+  color: #475569;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alarmRemaining {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.alarmTomorrow {
+  font-size: 0.7rem;
+  color: #f59e0b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.alarmActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggleBtn {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  border: none;
+  border-radius: 13px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: background 0.3s;
+  padding: 0;
+}
+
+.toggleBtnActive {
+  background: #6366f1;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggleBtnActive .toggleKnob {
+  transform: translateX(22px);
+}
+
+.deleteBtn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.emptyText {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.emptyDesc {
+  font-size: 0.85rem;
+}
+
+/* ===== Alarm Modal ===== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 24px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  animation: modalIn 0.3s ease-out;
+}
+
+@keyframes modalIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modalIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  animation: bellSwing 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes bellSwing {
+  from { transform: rotate(-15deg); }
+  to { transform: rotate(15deg); }
+}
+
+.modalTime {
+  font-family: 'Courier New', monospace;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.modalLabel {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.modalMessage {
+  font-size: 1rem;
+  color: #ef4444;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.dismissBtn {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dismissBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.snoozeBtn {
+  width: 100%;
+  height: 48px;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.snoozeBtn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: #eef2ff;
+}
+
+/* ===== Notification Banner ===== */
+.notificationBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.notificationText {
+  flex: 1;
+  font-size: 0.85rem;
+  color: #92400e;
+  min-width: 200px;
+}
+
+.notificationBtn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.notificationBtn:hover {
+  background: #d97706;
+}
+
+/* ===== Max Alarm Warning ===== */
+.maxWarning {
+  text-align: center;
+  padding: 10px;
+  color: #f59e0b;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* ===== Dark Theme ===== */
+:global(body[data-theme="dark"]) .timeDisplay {
+  color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .timeLabel,
+:global(body[data-theme="dark"]) .dateDisplay {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .setAlarmSection,
+:global(body[data-theme="dark"]) .alarmsSection {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .sectionTitle {
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .timeInput,
+:global(body[data-theme="dark"]) .labelInput,
+:global(body[data-theme="dark"]) .soundSelect {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .timeInput:focus,
+:global(body[data-theme="dark"]) .labelInput:focus,
+:global(body[data-theme="dark"]) .soundSelect:focus {
+  border-color: #818cf8;
+  background: #1e293b;
+}
+
+:global(body[data-theme="dark"]) .timeSeparator {
+  color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .presetBtn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .presetBtn:hover {
+  border-color: #818cf8;
+  color: #818cf8;
+  background: #1e1b4b;
+}
+
+:global(body[data-theme="dark"]) .previewBtn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .previewBtn:hover {
+  border-color: #818cf8;
+  color: #818cf8;
+  background: #1e1b4b;
+}
+
+:global(body[data-theme="dark"]) .alarmItem {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .alarmItemActive {
+  background: #1e1b4b;
+  border-color: #4338ca;
+}
+
+:global(body[data-theme="dark"]) .alarmTime {
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .alarmLabel {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .alarmRemaining {
+  color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .deleteBtn {
+  color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .deleteBtn:hover {
+  background: #450a0a;
+  color: #f87171;
+}
+
+:global(body[data-theme="dark"]) .emptyText {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .emptyDesc {
+  color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .modalContent {
+  background: #1e293b;
+}
+
+:global(body[data-theme="dark"]) .modalTime {
+  color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .modalLabel {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .snoozeBtn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .snoozeBtn:hover {
+  border-color: #818cf8;
+  color: #818cf8;
+  background: #1e1b4b;
+}
+
+:global(body[data-theme="dark"]) .notificationBanner {
+  background: #1c1917;
+  border-color: #78350f;
+}
+
+:global(body[data-theme="dark"]) .notificationText {
+  color: #fbbf24;
+}
+
+:global(body[data-theme="dark"]) .presetsTitle,
+:global(body[data-theme="dark"]) .inputLabel {
+  color: #94a3b8;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .container {
+    padding: 16px;
+  }
+
+  .setAlarmSection,
+  .alarmsSection {
+    padding: 18px;
+  }
+
+  .formRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .timeInputGroup {
+    justify-content: center;
+  }
+
+  .soundRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .alarmItem {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .alarmTime {
+    font-size: 1.5rem;
+  }
+
+  .alarmActions {
+    margin-left: auto;
+  }
+
+  .presetsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .presetBtn {
+    text-align: center;
+  }
+}
+
+@media (max-width: 375px) {
+  .timeDisplay {
+    font-size: 2.5rem;
+  }
+
+  .timeInput {
+    width: 65px;
+    height: 46px;
+    font-size: 1.3rem;
+  }
+
+  .alarmTime {
+    font-size: 1.3rem;
+    min-width: 70px;
+  }
+}

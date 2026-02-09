@@ -43,7 +43,8 @@
       "cronGenerator": "Cron Expression Generator",
       "youtubeThumbnail": "YouTube Thumbnail Extractor",
       "ipAddress": "My IP Address",
-      "qrGenerator": "QR Code Generator"
+      "qrGenerator": "QR Code Generator",
+      "alarm": "Online Alarm Clock"
     }
   },
   "Header": {
@@ -2443,6 +2444,147 @@
           "q": "What is the difference between IPv4 and IPv6?",
           "a": "IPv4 uses 32-bit addresses (e.g., 192.168.0.1) providing about 4.3 billion addresses. IPv6 uses 128-bit addresses (e.g., 2001:0db8::1) providing virtually unlimited addresses."
         }
+      }
+    }
+  },
+  "Alarm": {
+    "meta": {
+      "title": "Online Alarm Clock - Free Web Alarm | teck-tani",
+      "description": "Free online alarm clock that works directly in your browser. Features 5 alarm sounds, quick presets, multiple alarms, and snooze. Use on PC and mobile without installation.",
+      "keywords": "online alarm, alarm clock, web alarm, free alarm, set alarm, timer alarm, wake up alarm, reminder clock",
+      "ogTitle": "Online Alarm Clock - Free Web Alarm",
+      "ogDescription": "Free online alarm clock with 5 alarm sounds, multiple alarms, and snooze. Works in your browser."
+    },
+    "title": "Online Alarm Clock",
+    "currentTime": "Current Time",
+    "setAlarm": "Set Alarm",
+    "hour": "Hour",
+    "minute": "Min",
+    "label": "Label",
+    "labelPlaceholder": "Alarm name (optional)",
+    "sound": "Alarm Sound",
+    "sounds": {
+      "classic": "Classic Bell",
+      "digital": "Digital Beep",
+      "gentle": "Gentle Chime",
+      "bird": "Morning Bird",
+      "school": "School Bell"
+    },
+    "preview": "Preview",
+    "addAlarm": "Add Alarm",
+    "quickPresets": "Quick Set",
+    "minutesLater": "In {min} min",
+    "hourLater": "In {hour} hour",
+    "hoursLater": "In {hour} hours",
+    "myAlarms": "My Alarms",
+    "noAlarms": "No alarms set",
+    "noAlarmsDesc": "Add an alarm above to get started",
+    "remainingTime": "In {hours}h {minutes}m",
+    "remainingMinutes": "In {minutes}m",
+    "remainingLessThan": "Less than 1 min",
+    "tomorrow": "Tomorrow",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "delete": "Delete",
+    "alarmRinging": "Alarm is ringing!",
+    "dismiss": "Dismiss",
+    "snooze": "Snooze (5 min)",
+    "maxAlarms": "You can set up to 10 alarms",
+    "notificationPermission": "Allow notifications to receive alarms even when the tab is inactive.",
+    "allowNotification": "Allow Notifications",
+    "seo": {
+      "description": {
+        "title": "What is an Online Alarm Clock?",
+        "p1": "An online alarm clock is a free alarm service that works directly in your web browser without any app installation. You can easily set and manage alarms on any device with an internet connection — PC, laptop, tablet, or smartphone.",
+        "p2": "It offers practical features including 5 different alarm sounds, multiple alarm support, snooze functionality, and quick presets. All settings are automatically saved in your browser and persist between visits."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "multiAlarm": {
+            "title": "Multiple Alarms",
+            "desc": "Set and manage up to 10 alarms simultaneously. Label each alarm to distinguish its purpose."
+          },
+          "sounds": {
+            "title": "5 Alarm Sounds",
+            "desc": "Choose from Classic Bell, Digital Beep, Gentle Chime, Morning Bird, or School Bell for your alarm."
+          },
+          "presets": {
+            "title": "Quick Presets",
+            "desc": "One-click alarm setup with buttons for 10 minutes, 30 minutes, 1 hour, or 2 hours from now."
+          },
+          "snooze": {
+            "title": "Snooze Function",
+            "desc": "When the alarm rings, press the snooze button to be reminded again in 5 minutes."
+          },
+          "notification": {
+            "title": "Browser Notifications",
+            "desc": "Receive alarm notifications even when the tab is inactive through browser notifications."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Step 1: Set Time</strong> — Enter the hour and minute for the alarm, or use the quick preset buttons.",
+          "step2": "<strong>Step 2: Choose Sound</strong> — Select one of the 5 alarm sounds and preview it to confirm.",
+          "step3": "<strong>Step 3: Add Alarm</strong> — Click the 'Add Alarm' button to activate it. Optionally add a label.",
+          "step4": "<strong>Step 4: Manage Alarm</strong> — When the alarm rings, choose 'Dismiss' or 'Snooze (5 min)' to respond."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "nap": {
+            "title": "Power Nap Alarm",
+            "desc": "Use quick presets to set a 10-30 minute alarm for a refreshing short nap."
+          },
+          "medicine": {
+            "title": "Medication Reminder",
+            "desc": "Set precise times for medication and use labels to distinguish different prescriptions."
+          },
+          "cooking": {
+            "title": "Cooking Timer",
+            "desc": "Set alarms matching cooking times so you never miss the perfect moment."
+          },
+          "meeting": {
+            "title": "Meeting Reminder",
+            "desc": "Set alarms before important meetings or events to ensure you have preparation time."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions (FAQ)",
+        "list": {
+          "tabClose": {
+            "q": "Will the alarm work if I close the tab?",
+            "a": "No, closing the browser tab completely will stop the alarm. However, the alarm will ring even if you're using other tabs. Enable browser notifications to receive alerts even when the tab is inactive."
+          },
+          "noSound": {
+            "q": "What if the alarm sound doesn't play?",
+            "a": "Make sure your browser sound is not muted. Also check that your device volume is high enough and no Bluetooth headphones are connected unexpectedly. On first use, you may need to click the page once to enable sound."
+          },
+          "multiple": {
+            "q": "Can I set multiple alarms?",
+            "a": "Yes, you can set up to 10 alarms simultaneously. Each alarm can have different times, sounds, and labels for various purposes."
+          },
+          "mobile": {
+            "q": "Does it work on mobile devices?",
+            "a": "Yes, it works perfectly on smartphones and tablets with mobile browsers. The responsive design adapts to any screen size. Note that some mobile browsers may limit alarms in power-saving mode."
+          },
+          "save": {
+            "q": "Are alarm settings saved?",
+            "a": "Yes, all alarm settings are automatically saved in your browser's localStorage. When you revisit on the same device and browser, your previously set alarms will be preserved."
+          },
+          "free": {
+            "q": "Is this service free?",
+            "a": "Yes, the online alarm clock is completely free with no registration or installation required. Ads may be displayed, but all features are available without any restrictions."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This online alarm clock stores your alarm settings only in your browser's localStorage. No data is sent to any server. There is no personal data collection whatsoever, so you can use it with confidence."
       }
     }
   }
