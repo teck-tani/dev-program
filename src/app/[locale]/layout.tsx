@@ -29,7 +29,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     metadataBase: new URL(baseUrl),
     title: t('defaultTitle'),
     description: t('defaultDescription'),
-    alternates: { canonical: `${baseUrl}/${locale}` },
+    alternates: {
+      canonical: `${baseUrl}/${locale}`,
+      languages: {
+        'ko': `${baseUrl}/ko`,
+        'en': `${baseUrl}/en`,
+        'x-default': `${baseUrl}/ko`,
+      },
+    },
   };
 }
 

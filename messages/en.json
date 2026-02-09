@@ -1419,6 +1419,13 @@
     }
   },
   "ImageCompressor": {
+    "meta": {
+      "title": "Image Compressor | Reduce JPG, PNG, WebP Size - Free Online",
+      "description": "Free online image compressor. Reduce JPG, PNG, WebP file sizes by up to 90%. Compressed safely in your browser without server upload. Quality control, format conversion, and batch processing supported.",
+      "keywords": "image compressor, compress image online, reduce image size, JPG compressor, PNG compressor, WebP converter, image optimizer, photo compressor, free image compression",
+      "ogTitle": "Image Compressor | Reduce JPG, PNG & WebP File Size",
+      "ogDescription": "Compress images safely in your browser without server upload. Adjust quality, convert formats. Completely free!"
+    },
     "title": "Image Compressor",
     "subtitle": "Reduce image file size! Compressed safely in your browser without server upload.",
     "upload": {
@@ -1648,6 +1655,13 @@
     }
   },
   "CharacterCounter": {
+    "meta": {
+      "title": "Character Counter | Count Letters, Words, Bytes - Free Online",
+      "description": "Free online character counter. Count characters with/without spaces, bytes, words, and lines in real-time. Analyze Korean, English, number, and special character ratios. Essential for SNS, blogs, and resumes!",
+      "keywords": "character counter, letter counter, word counter, byte counter, text analysis, character count online, word count tool, free character counter, text length checker",
+      "ogTitle": "Character Counter | Letters, Words & Bytes in Real-Time",
+      "ogDescription": "Enter text to instantly count characters, words, bytes, and lines. Supports detailed analysis including character type ratios. Completely free!"
+    },
     "title": "Character Counter",
     "subtitle": "Enter text to count characters with/without spaces, bytes, and words in real-time.",
     "stats": {
