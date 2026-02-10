@@ -41,6 +41,8 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/stopwatch', labelKey: 'stopwatch', icon: FaStopwatch, category: 'time' },
     { href: '/timer', labelKey: 'timer', icon: FaHourglassHalf, category: 'time' },
     { href: '/alarm', labelKey: 'alarm', icon: FaBell, category: 'time' },
+    { href: '/server-time', labelKey: 'serverTime', icon: FaServer, category: 'time' },
+    { href: '/dday-counter', labelKey: 'ddayCounter', icon: FaCalendarAlt, category: 'time' },
 
     // 유틸리티 (17)
     { href: '/barcode', labelKey: 'barcode', icon: FaBarcode, category: 'utilities' },
