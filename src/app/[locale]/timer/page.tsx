@@ -195,55 +195,15 @@ function generateWebAppSchema(locale: string) {
     };
 }
 
-const seoContent = {
-    ko: {
-        ariaLabel: "페이지 설명",
-        title: "다양한 상황에서 활용하는 온라인 타이머",
-        description: "원하는 시간을 설정하고 카운트다운이 완료되면 알람으로 알려주는 온라인 타이머입니다. 타바타(TABATA) 운동, 인터벌 트레이닝, 라면 끓이기, 휴식 시간 관리 등 일상의 다양한 장면에서 유용하게 사용할 수 있습니다.",
-        useCasesTitle: "활용 사례",
-        useCases: [
-            { title: "타바타 운동", desc: "20초 운동 + 10초 휴식 반복 훈련" },
-            { title: "인터벌 트레이닝", desc: "고강도 운동과 휴식 시간 관리" },
-            { title: "라면 타이머", desc: "정확한 3분, 4분 조리 시간 측정" },
-            { title: "요리/베이킹", desc: "정확한 조리 시간 체크" },
-            { title: "뽀모도로 기법", desc: "25분 집중 + 5분 휴식 학습법" },
-            { title: "휴식 알림", desc: "정해진 시간마다 쉬어가기" }
-        ],
-        faqTitle: "자주 묻는 질문",
-        faq: [
-            { q: "타이머 알람 소리가 안 들려요", a: "브라우저의 볼륨 설정을 확인해주세요. 또한 일부 브라우저에서는 사용자 상호작용(클릭 등) 전에 소리 재생이 제한될 수 있습니다." },
-            { q: "타바타 운동에 적합한 타이머 설정은?", a: "타바타 운동은 20초 운동 + 10초 휴식을 8세트 반복하는 고강도 인터벌 트레이닝입니다." },
-            { q: "라면 타이머는 몇 분으로 설정하나요?", a: "일반적인 라면은 3분, 짜파게티 등 일부 제품은 4분~5분입니다." }
-        ]
-    },
-    en: {
-        ariaLabel: "Page description",
-        title: "Online Timer for Various Situations",
-        description: "An online timer that counts down from your set time and alerts you with an alarm when complete. Useful for Tabata workouts, interval training, cooking, break time management, and many everyday situations.",
-        useCasesTitle: "Use Cases",
-        useCases: [
-            { title: "Tabata Workout", desc: "20-second exercise + 10-second rest intervals" },
-            { title: "Interval Training", desc: "High-intensity workout and rest management" },
-            { title: "Noodle Timer", desc: "Precise 3-minute, 4-minute cooking time" },
-            { title: "Cooking/Baking", desc: "Check precise cooking times" },
-            { title: "Pomodoro Technique", desc: "25-minute focus + 5-minute break" },
-            { title: "Break Reminder", desc: "Take breaks at regular intervals" }
-        ],
-        faqTitle: "Frequently Asked Questions",
-        faq: [
-            { q: "I can't hear the timer alarm", a: "Please check your browser's volume settings. Some browsers may restrict audio playback before user interaction." },
-            { q: "What's the best setting for Tabata?", a: "Tabata is a high-intensity interval training with 20 seconds of exercise + 10 seconds of rest, repeated for 8 sets." },
-            { q: "How long should I set for cooking noodles?", a: "Standard instant noodles typically require 3 minutes. Some products may need 4-5 minutes." }
-        ]
-    }
-};
+const useCaseKeys = ['tabata', 'interval', 'noodle', 'cooking', 'pomodoro', 'break'] as const;
+const featureKeys = ['presets', 'progress', 'pomodoro', 'sounds', 'vibration', 'tabTitle'] as const;
+const howToStepKeys = ['step1', 'step2', 'step3', 'step4'] as const;
+const faqKeys = ['noSound', 'tabata', 'noodle', 'complete'] as const;
 
 export default async function TimerPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
-
-    const currentLocale = (locale as 'ko' | 'en') || 'en';
-    const content = seoContent[currentLocale] || seoContent.en;
+    const t = await getTranslations({ locale, namespace: 'Clock.Timer' });
 
     const faqSchema = generateFaqSchema(locale);
     const howToSchema = generateHowToSchema(locale);
@@ -273,7 +233,7 @@ export default async function TimerPage(props: { params: Promise<{ locale: strin
                 paddingBottom: '60px'
             }}>
                 <article style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px', lineHeight: '1.7' }}>
-                    {/* 활용 사례 섹션 */}
+                    {/* 도구 설명 섹션 */}
                     <section style={{ marginBottom: '40px' }}>
                         <h2 style={{
                             fontSize: '1.5rem',
@@ -282,22 +242,35 @@ export default async function TimerPage(props: { params: Promise<{ locale: strin
                             textAlign: 'center',
                             fontWeight: 600
                         }}>
-                            {content.useCasesTitle}
+                            {t('seo.description.title')}
                         </h2>
                         <p style={{
                             color: '#555',
                             textAlign: 'center',
                             marginBottom: '25px'
                         }}>
-                            {content.description}
+                            {t('seo.description.p1')}
                         </p>
+                    </section>
+
+                    {/* 주요 기능 섹션 */}
+                    <section style={{ marginBottom: '40px' }}>
+                        <h2 style={{
+                            fontSize: '1.5rem',
+                            color: '#2c3e50',
+                            marginBottom: '20px',
+                            textAlign: 'center',
+                            fontWeight: 600
+                        }}>
+                            {t('seo.features.title')}
+                        </h2>
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                             gap: '15px'
                         }}>
-                            {content.useCases.map((item, index) => (
-                                <div key={index} style={{
+                            {featureKeys.map((key) => (
+                                <div key={key} style={{
                                     background: 'white',
                                     padding: '20px',
                                     borderRadius: '12px',
@@ -309,14 +282,85 @@ export default async function TimerPage(props: { params: Promise<{ locale: strin
                                         marginBottom: '8px',
                                         fontWeight: 600
                                     }}>
-                                        {item.title}
+                                        {t(`seo.features.list.${key}.title`)}
                                     </h3>
                                     <p style={{
                                         fontSize: '0.9rem',
                                         color: '#666',
                                         margin: 0
                                     }}>
-                                        {item.desc}
+                                        {t(`seo.features.list.${key}.desc`)}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* 사용 방법 섹션 */}
+                    <section style={{ marginBottom: '40px' }}>
+                        <h2 style={{
+                            fontSize: '1.5rem',
+                            color: '#2c3e50',
+                            marginBottom: '20px',
+                            textAlign: 'center',
+                            fontWeight: 600
+                        }}>
+                            {t('seo.howto.title')}
+                        </h2>
+                        <div style={{
+                            background: 'white',
+                            padding: '25px',
+                            borderRadius: '12px',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+                        }}>
+                            {howToStepKeys.map((key) => (
+                                <p key={key} style={{
+                                    marginBottom: '12px',
+                                    color: '#555',
+                                    fontSize: '0.95rem',
+                                    lineHeight: 1.8
+                                }} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* 활용 사례 섹션 */}
+                    <section style={{ marginBottom: '40px' }}>
+                        <h2 style={{
+                            fontSize: '1.5rem',
+                            color: '#2c3e50',
+                            marginBottom: '20px',
+                            textAlign: 'center',
+                            fontWeight: 600
+                        }}>
+                            {t('seo.usecases.title')}
+                        </h2>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                            gap: '15px'
+                        }}>
+                            {useCaseKeys.map((key) => (
+                                <div key={key} style={{
+                                    background: 'white',
+                                    padding: '20px',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+                                }}>
+                                    <h3 style={{
+                                        fontSize: '1rem',
+                                        color: '#667eea',
+                                        marginBottom: '8px',
+                                        fontWeight: 600
+                                    }}>
+                                        {t(`seo.usecases.list.${key}.title`)}
+                                    </h3>
+                                    <p style={{
+                                        fontSize: '0.9rem',
+                                        color: '#666',
+                                        margin: 0
+                                    }}>
+                                        {t(`seo.usecases.list.${key}.desc`)}
                                     </p>
                                 </div>
                             ))}
@@ -328,7 +372,8 @@ export default async function TimerPage(props: { params: Promise<{ locale: strin
                         background: 'white',
                         padding: '30px',
                         borderRadius: '15px',
-                        boxShadow: '0 2px 15px rgba(0,0,0,0.05)'
+                        boxShadow: '0 2px 15px rgba(0,0,0,0.05)',
+                        marginBottom: '40px'
                     }}>
                         <h2 style={{
                             fontSize: '1.4rem',
@@ -337,13 +382,13 @@ export default async function TimerPage(props: { params: Promise<{ locale: strin
                             textAlign: 'center',
                             fontWeight: 600
                         }}>
-                            {content.faqTitle}
+                            {t('seo.faq.title')}
                         </h2>
-                        {content.faq.map((item, index) => (
-                            <details key={index} style={{
+                        {faqKeys.map((key, index) => (
+                            <details key={key} style={{
                                 marginBottom: '15px',
                                 padding: '15px',
-                                borderBottom: index < content.faq.length - 1 ? '1px solid #eee' : 'none'
+                                borderBottom: index < faqKeys.length - 1 ? '1px solid #eee' : 'none'
                             }}>
                                 <summary style={{
                                     cursor: 'pointer',
@@ -351,7 +396,7 @@ export default async function TimerPage(props: { params: Promise<{ locale: strin
                                     color: '#2c3e50',
                                     fontSize: '1rem'
                                 }}>
-                                    {item.q}
+                                    {t(`seo.faq.list.${key}.q`)}
                                 </summary>
                                 <p style={{
                                     marginTop: '12px',
@@ -359,10 +404,34 @@ export default async function TimerPage(props: { params: Promise<{ locale: strin
                                     paddingLeft: '10px',
                                     fontSize: '0.95rem'
                                 }}>
-                                    {item.a}
+                                    {t(`seo.faq.list.${key}.a`)}
                                 </p>
                             </details>
                         ))}
+                    </section>
+
+                    {/* 개인정보 안내 */}
+                    <section style={{
+                        background: 'white',
+                        padding: '25px',
+                        borderRadius: '12px',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
+                    }}>
+                        <h2 style={{
+                            fontSize: '1.3rem',
+                            color: '#2c3e50',
+                            marginBottom: '12px',
+                            fontWeight: 600
+                        }}>
+                            {t('seo.privacy.title')}
+                        </h2>
+                        <p style={{
+                            color: '#555',
+                            fontSize: '0.95rem',
+                            margin: 0
+                        }}>
+                            {t('seo.privacy.text')}
+                        </p>
                     </section>
                 </article>
             </div>

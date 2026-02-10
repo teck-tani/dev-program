@@ -197,6 +197,7 @@ function generateHowToSchema(locale: string) {
 export default async function SqlFormatterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const t = await getTranslations({ locale, namespace: 'SqlFormatter' });
     const tFaq = await getTranslations('SqlFormatter.faq');
 
     const faqSchema = generateFaqSchema(locale);
@@ -220,33 +221,62 @@ export default async function SqlFormatterPage({ params }: { params: Promise<{ l
 
             <SqlFormatterClient />
 
-            <div className="container" style={{ maxWidth: "1000px", padding: "0 20px 40px" }}>
-                <section className="faq-section" style={{ background: '#f0f4f8', padding: '30px', borderRadius: '15px' }}>
-                    <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', textAlign: 'center' }}>
-                        {tFaq('title')}
-                    </h2>
-
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.support.q')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>{tFaq('list.support.a')}</p>
-                    </details>
-
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.oneline.q')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>{tFaq('list.oneline.a')}</p>
-                    </details>
-
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.privacy.q')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>{tFaq('list.privacy.a')}</p>
-                    </details>
-
-                    <details style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('list.uppercase.q')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>{tFaq('list.uppercase.a')}</p>
-                    </details>
+            <article style={{ maxWidth: 700, margin: "0 auto", padding: "40px 20px" }}>
+                {/* 1. Description */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.description.title")}</h2>
+                    <p style={{ lineHeight: 1.8, marginBottom: 12 }}>{t("seo.description.p1")}</p>
+                    <p style={{ lineHeight: 1.8 }}>{t("seo.description.p2")}</p>
                 </section>
-            </div>
+                {/* 2. Features */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.features.title")}</h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                        {(["key1", "key2", "key3", "key4"] as const).map((key) => (
+                            <div key={key} style={{ padding: 20, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: 8 }}>{t(`seo.features.list.${key}.title`)}</h3>
+                                <p style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{t(`seo.features.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* 3. How to Use */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.howto.title")}</h2>
+                    <ol style={{ paddingLeft: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+                        {(["step1", "step2", "step3", "step4"] as const).map((key) => (
+                            <li key={key} style={{ lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
+                        ))}
+                    </ol>
+                </section>
+                {/* 4. Use Cases */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.usecases.title")}</h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                        {(["case1", "case2", "case3", "case4"] as const).map((key) => (
+                            <div key={key} style={{ padding: 20, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: 8 }}>{t(`seo.usecases.list.${key}.title`)}</h3>
+                                <p style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{t(`seo.usecases.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* 5. FAQ */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{tFaq("title")}</h2>
+                    {(["support", "oneline", "privacy", "uppercase"] as const).map((key) => (
+                        <details key={key} style={{ marginBottom: 8, padding: "12px 16px", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+                            <summary style={{ fontWeight: 600, cursor: "pointer" }}>{tFaq(`list.${key}.q`)}</summary>
+                            <p style={{ marginTop: 8, lineHeight: 1.7 }}>{tFaq(`list.${key}.a`)}</p>
+                        </details>
+                    ))}
+                </section>
+                {/* 6. Privacy */}
+                <section style={{ marginBottom: 20 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.privacy.title")}</h2>
+                    <p style={{ lineHeight: 1.8 }}>{t("seo.privacy.text")}</p>
+                </section>
+            </article>
         </>
     );
 }

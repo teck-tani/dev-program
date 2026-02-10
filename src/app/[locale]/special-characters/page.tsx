@@ -141,6 +141,63 @@ function generateWebAppSchema(locale: string) {
     };
 }
 
+// HowTo 구조화 데이터
+function generateHowToSchema(locale: string) {
+    const isKo = locale === 'ko';
+
+    return {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": isKo ? "특수문자 & 이모지 복사하는 방법" : "How to Copy Special Characters & Emojis",
+        "description": isKo
+            ? "카테고리에서 원하는 이모지나 특수문자를 찾아 클릭 한 번으로 복사하는 방법"
+            : "How to find and copy emojis and special characters from categories with one click",
+        "step": isKo ? [
+            {
+                "@type": "HowToStep",
+                "name": "카테고리 선택",
+                "text": "상단의 카테고리 탭에서 원하는 유형(표정, 하트, 수학 기호 등)을 선택합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "문자 클릭하여 복사",
+                "text": "원하는 이모지나 특수문자를 클릭하면 자동으로 클립보드에 복사됩니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "대량 선택 & 복사",
+                "text": "대량 선택 모드를 켜고 여러 문자를 선택한 후, '모두 복사' 버튼으로 한 번에 복사합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "즐겨찾기 저장",
+                "text": "자주 사용하는 문자를 즐겨찾기에 추가하면 다음 방문 시에도 바로 접근할 수 있습니다."
+            }
+        ] : [
+            {
+                "@type": "HowToStep",
+                "name": "Select a Category",
+                "text": "Choose the type you want (faces, hearts, math symbols, etc.) from the category tabs at the top."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Click to Copy",
+                "text": "Click any emoji or special character to automatically copy it to your clipboard."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Bulk Select & Copy",
+                "text": "Enable bulk selection mode, select multiple characters, then click 'Copy All' to copy them all at once."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Save Favorites",
+                "text": "Add frequently used characters to favorites for quick access on your next visit."
+            }
+        ]
+    };
+}
+
 // ItemList 구조화 데이터 (이모지 카테고리)
 function generateItemListSchema(locale: string) {
     const isKo = locale === 'ko';
@@ -166,10 +223,11 @@ function generateItemListSchema(locale: string) {
 export default async function SpecialCharactersPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
-    const tFaq = await getTranslations('SpecialCharacters.faq');
+    const t = await getTranslations('SpecialCharacters');
 
     const faqSchema = generateFaqSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
+    const howToSchema = generateHowToSchema(locale);
     const itemListSchema = generateItemListSchema(locale);
 
     return (
@@ -185,39 +243,72 @@ export default async function SpecialCharactersPage({ params }: { params: Promis
             />
             <script
                 type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+            />
+            <script
+                type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
             />
 
             <SpecialCharactersClient />
 
-            {/* FAQ 섹션 (SEO용 추가 콘텐츠) */}
-            <div className="container" style={{ maxWidth: "800px", padding: "0 20px 40px" }}>
-                <section className="faq-section" style={{ background: '#f0f4f8', padding: '30px', borderRadius: '15px' }}>
-                    <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', textAlign: 'center' }}>
-                        {tFaq('title')}
-                    </h2>
-
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('q1')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>{tFaq('a1')}</p>
-                    </details>
-
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('q2')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>{tFaq('a2')}</p>
-                    </details>
-
-                    <details style={{ marginBottom: '15px', background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('q3')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }} dangerouslySetInnerHTML={{ __html: tFaq.raw('a3') }} />
-                    </details>
-
-                    <details style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{tFaq('q4')}</summary>
-                        <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>{tFaq('a4')}</p>
-                    </details>
+            {/* SEO Article */}
+            <article style={{ maxWidth: 700, margin: "0 auto", padding: "40px 20px" }}>
+                {/* 1. Description */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.description.title")}</h2>
+                    <p style={{ lineHeight: 1.8, marginBottom: 12 }}>{t("seo.description.p1")}</p>
+                    <p style={{ lineHeight: 1.8 }}>{t("seo.description.p2")}</p>
                 </section>
-            </div>
+                {/* 2. Features */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.features.title")}</h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                        {(["feat1", "feat2", "feat3", "feat4"] as const).map((key) => (
+                            <div key={key} style={{ padding: 20, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: 8 }}>{t(`seo.features.list.${key}.title`)}</h3>
+                                <p style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{t(`seo.features.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* 3. How to Use */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.howto.title")}</h2>
+                    <ol style={{ paddingLeft: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+                        {(["step1", "step2", "step3", "step4"] as const).map((key) => (
+                            <li key={key} style={{ lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
+                        ))}
+                    </ol>
+                </section>
+                {/* 4. Use Cases */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.usecases.title")}</h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                        {(["uc1", "uc2", "uc3", "uc4"] as const).map((key) => (
+                            <div key={key} style={{ padding: 20, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: 8 }}>{t(`seo.usecases.list.${key}.title`)}</h3>
+                                <p style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{t(`seo.usecases.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* 5. FAQ */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.faq.title")}</h2>
+                    {(["q1", "q2", "q3", "q4"] as const).map((key) => (
+                        <details key={key} style={{ marginBottom: 8, padding: "12px 16px", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+                            <summary style={{ fontWeight: 600, cursor: "pointer" }}>{t(`seo.faq.list.${key}.q`)}</summary>
+                            <p style={{ marginTop: 8, lineHeight: 1.7 }}>{t(`seo.faq.list.${key}.a`)}</p>
+                        </details>
+                    ))}
+                </section>
+                {/* 6. Privacy */}
+                <section style={{ marginBottom: 20 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.privacy.title")}</h2>
+                    <p style={{ lineHeight: 1.8 }}>{t("seo.privacy.text")}</p>
+                </section>
+            </article>
         </>
     );
 }

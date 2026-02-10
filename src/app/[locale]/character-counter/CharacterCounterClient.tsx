@@ -342,28 +342,7 @@ export default function CharacterCounterClient() {
                         </div>
                     </section>
 
-                    {/* FAQ Section */}
-                    <section style={{
-                        background: cardBg, padding: '30px', borderRadius: '15px', boxShadow: cardShadow,
-                    }}>
-                        <h2 style={{ fontSize: '1.4rem', color: isDark ? "#f1f5f9" : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
-                            {t('faq.title')}
-                        </h2>
-                        {(['q1', 'q2', 'q3'] as const).map((key, i, arr) => (
-                            <details key={key} style={{
-                                marginBottom: i < arr.length - 1 ? '15px' : 0,
-                                padding: '15px',
-                                borderBottom: i < arr.length - 1 ? (isDark ? '1px solid #334155' : '1px solid #eee') : 'none',
-                            }}>
-                                <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
-                                    {t(`faq.${key}`)}
-                                </summary>
-                                <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
-                                    {t(`faq.a${key.slice(1)}`)}
-                                </p>
-                            </details>
-                        ))}
-                    </section>
+                    {/* FAQ Section - moved to server-side article in page.tsx */}
                 </article>
             </div>
         </div>

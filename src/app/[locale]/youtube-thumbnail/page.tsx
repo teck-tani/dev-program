@@ -187,11 +187,16 @@ function generateHowToSchema(locale: string) {
 export default async function YoutubeThumbnailPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
-    const tFaq = await getTranslations('YoutubeThumbnail.faq');
+    const t = await getTranslations({ locale, namespace: 'YoutubeThumbnail' });
 
     const faqSchema = generateFaqSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
     const howToSchema = generateHowToSchema(locale);
+
+    const featureKeys = ["feat1", "feat2", "feat3", "feat4"] as const;
+    const howtoKeys = ["step1", "step2", "step3"] as const;
+    const usecaseKeys = ["uc1", "uc2", "uc3", "uc4"] as const;
+    const faqKeys = ["q1", "q2", "q3", "q4"] as const;
 
     return (
         <>
@@ -210,33 +215,62 @@ export default async function YoutubeThumbnailPage({ params }: { params: Promise
 
             <YoutubeThumbnailClient />
 
-            {/* FAQ Section */}
-            <div className="container" style={{ maxWidth: "800px", padding: "0 20px 40px" }}>
-                <section className="faq-section" style={{ background: '#f0f4f8', padding: '30px', borderRadius: '15px' }}>
-                    <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', textAlign: 'center' }}>
-                        {tFaq('title')}
-                    </h2>
-
-                    {(['q1', 'q2', 'q3', 'q4'] as const).map((key, idx) => (
-                        <details
-                            key={key}
-                            style={{
-                                marginBottom: idx < 3 ? '15px' : 0,
-                                background: 'white',
-                                padding: '15px',
-                                borderRadius: '8px'
-                            }}
-                        >
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>
-                                {tFaq(`${key}.q`)}
-                            </summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '20px' }}>
-                                {tFaq(`${key}.a`)}
-                            </p>
+            <article style={{ maxWidth: 700, margin: "0 auto", padding: "40px 20px" }}>
+                {/* 1. Description */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.description.title")}</h2>
+                    <p style={{ lineHeight: 1.8, marginBottom: 12 }}>{t("seo.description.p1")}</p>
+                    <p style={{ lineHeight: 1.8 }}>{t("seo.description.p2")}</p>
+                </section>
+                {/* 2. Features */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.features.title")}</h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                        {featureKeys.map((key) => (
+                            <div key={key} style={{ padding: 20, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: 8 }}>{t(`seo.features.list.${key}.title`)}</h3>
+                                <p style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{t(`seo.features.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* 3. How to Use */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.howto.title")}</h2>
+                    <ol style={{ paddingLeft: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+                        {howtoKeys.map((key) => (
+                            <li key={key} style={{ lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
+                        ))}
+                    </ol>
+                </section>
+                {/* 4. Use Cases */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.usecases.title")}</h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                        {usecaseKeys.map((key) => (
+                            <div key={key} style={{ padding: 20, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: 8 }}>{t(`seo.usecases.list.${key}.title`)}</h3>
+                                <p style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{t(`seo.usecases.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* 5. FAQ */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("faq.title")}</h2>
+                    {faqKeys.map((key) => (
+                        <details key={key} style={{ marginBottom: 8, padding: "12px 16px", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+                            <summary style={{ fontWeight: 600, cursor: "pointer" }}>{t(`faq.${key}.q`)}</summary>
+                            <p style={{ marginTop: 8, lineHeight: 1.7 }}>{t(`faq.${key}.a`)}</p>
                         </details>
                     ))}
                 </section>
-            </div>
+                {/* 6. Privacy */}
+                <section style={{ marginBottom: 20 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.privacy.title")}</h2>
+                    <p style={{ lineHeight: 1.8 }}>{t("seo.privacy.text")}</p>
+                </section>
+            </article>
         </>
     );
 }

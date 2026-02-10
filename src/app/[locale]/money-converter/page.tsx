@@ -336,6 +336,12 @@ export default async function MoneyConverterPage({ params }: { params: Promise<{
                             <p dangerouslySetInnerHTML={{ __html: t.raw('faq.list.save.a') }} />
                         </details>
                     </section>
+
+                    {/* 5. 개인정보 안내 섹션 */}
+                    <section className="mc-section">
+                        <h2 className="mc-section-title">{t('privacy.title')}</h2>
+                        <p style={{ lineHeight: 1.8 }}>{t('privacy.text')}</p>
+                    </section>
                 </article>
             </div>
         </>

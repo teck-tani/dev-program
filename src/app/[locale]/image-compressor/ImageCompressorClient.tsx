@@ -682,41 +682,6 @@ export default function ImageCompressorClient() {
                         </div>
                     </section>
 
-                    {/* FAQ Section */}
-                    <section style={{
-                        background: isDark ? "#1e293b" : "white",
-                        padding: '30px',
-                        borderRadius: '15px',
-                        boxShadow: isDark ? "none" : '0 2px 15px rgba(0,0,0,0.05)'
-                    }}>
-                        <h2 style={{ fontSize: '1.4rem', color: isDark ? "#f1f5f9" : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
-                            {t('faq.title')}
-                        </h2>
-                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: `1px solid ${isDark ? "#334155" : '#eee'}` }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
-                                {t('faq.q1')}
-                            </summary>
-                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
-                                {t('faq.a1')}
-                            </p>
-                        </details>
-                        <details style={{ marginBottom: '15px', padding: '15px', borderBottom: `1px solid ${isDark ? "#334155" : '#eee'}` }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
-                                {t('faq.q2')}
-                            </summary>
-                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
-                                {t('faq.a2')}
-                            </p>
-                        </details>
-                        <details style={{ padding: '15px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 600, color: isDark ? "#f1f5f9" : '#2c3e50', fontSize: '1rem' }}>
-                                {t('faq.q3')}
-                            </summary>
-                            <p style={{ marginTop: '12px', color: isDark ? "#94a3b8" : '#555', paddingLeft: '10px', fontSize: '0.95rem' }}>
-                                {t('faq.a3')}
-                            </p>
-                        </details>
-                    </section>
                 </article>
             </div>
         </div>

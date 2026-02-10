@@ -316,7 +316,34 @@ export default async function PairPage({ params }: { params: Promise<{ locale: s
                         </div>
                     </section>
 
-                    {/* 4. FAQ 섹션 */}
+                    {/* 4. 주요 기능 섹션 */}
+                    <section className="mc-section">
+                        <h2 className="mc-section-title">{t('featuresTitle')}</h2>
+                        <div className="mc-usecase-grid">
+                            <div className="mc-usecase-card">
+                                <span className="mc-usecase-number">01</span>
+                                <h3 className="mc-usecase-card-title">{t('featureRealTime')}</h3>
+                                <p className="mc-usecase-card-desc">{t('featureRealTimeDesc')}</p>
+                            </div>
+                            <div className="mc-usecase-card">
+                                <span className="mc-usecase-number">02</span>
+                                <h3 className="mc-usecase-card-title">{t('featureAccuracy')}</h3>
+                                <p className="mc-usecase-card-desc">{t('featureAccuracyDesc')}</p>
+                            </div>
+                            <div className="mc-usecase-card">
+                                <span className="mc-usecase-number">03</span>
+                                <h3 className="mc-usecase-card-title">{t('featureEasyCalc')}</h3>
+                                <p className="mc-usecase-card-desc">{t('featureEasyCalcDesc')}</p>
+                            </div>
+                            <div className="mc-usecase-card">
+                                <span className="mc-usecase-number">04</span>
+                                <h3 className="mc-usecase-card-title">{t('featureMultiPlatform')}</h3>
+                                <p className="mc-usecase-card-desc">{t('featureMultiPlatformDesc')}</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* 5. FAQ 섹션 */}
                     <section className="mc-faq-section">
                         <h2 className="mc-faq-title">{t('faqTitle')}</h2>
                         {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -346,6 +373,12 @@ export default async function PairPage({ params }: { params: Promise<{ locale: s
                             ⚠️ {t('noticeTitle')}
                         </strong>
                         {t('noticeText')}
+                    </section>
+
+                    {/* 7. 개인정보 안내 섹션 */}
+                    <section className="mc-section">
+                        <h2 className="mc-section-title">{t('privacyTitle')}</h2>
+                        <p style={{ lineHeight: 1.8 }}>{t('privacyText')}</p>
                     </section>
                 </article>
             </div>

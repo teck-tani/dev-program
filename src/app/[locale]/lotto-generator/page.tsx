@@ -232,7 +232,9 @@ const seoContent = {
         probabilityTitle: "로또 당첨 확률",
         probabilityDesc: "로또 6/45의 1등 당첨 확률은 8,145,060분의 1입니다. 2등(5개+보너스)은 약 135만분의 1, 3등(5개)은 약 3만5천분의 1, 4등(4개)은 약 733분의 1, 5등(3개)은 약 45분의 1입니다.",
         historyTitle: "로또 역사",
-        historyDesc: "대한민국 로또 6/45는 2002년 12월 첫 추첨을 시작했습니다. 매주 토요일 오후 8시 45분에 MBC에서 생방송으로 추첨이 진행되며, 1등 당첨금의 최고 기록은 2003년 407억원(4명 공동 당첨)입니다."
+        historyDesc: "대한민국 로또 6/45는 2002년 12월 첫 추첨을 시작했습니다. 매주 토요일 오후 8시 45분에 MBC에서 생방송으로 추첨이 진행되며, 1등 당첨금의 최고 기록은 2003년 407억원(4명 공동 당첨)입니다.",
+        privacyTitle: "개인정보 안내",
+        privacyDesc: "로또 번호 생성과 고정수 설정은 모두 브라우저에서 처리되며, 생성된 번호나 설정 정보는 외부 서버로 전송되지 않습니다. 당첨 이력 데이터는 공개 API에서 조회되며, 개인정보를 수집하거나 저장하지 않습니다."
     },
     en: {
         ariaLabel: "Page description",
@@ -251,7 +253,9 @@ const seoContent = {
         probabilityTitle: "Winning Odds",
         probabilityDesc: "The odds of winning the Korean Lotto 6/45 jackpot are 1 in 8,145,060. Second prize (5+bonus) is about 1 in 1.35 million, third prize (5) is about 1 in 35,000.",
         historyTitle: "Lotto History",
-        historyDesc: "Korean Lotto 6/45 began its first draw in December 2002. Draws are held every Saturday at 8:45 PM KST, broadcast live on MBC."
+        historyDesc: "Korean Lotto 6/45 began its first draw in December 2002. Draws are held every Saturday at 8:45 PM KST, broadcast live on MBC.",
+        privacyTitle: "Privacy Notice",
+        privacyDesc: "All lotto number generation and fixed number settings are processed entirely in your browser. Generated numbers and settings are never sent to any external server. Winning history data is retrieved from a public API. We do not collect or store any personal information."
     }
 };
 
@@ -321,6 +325,11 @@ export default async function LottoGeneratorPage(props: { params: Promise<{ loca
                     {seo.historyTitle}
                 </h2>
                 <p style={{ marginBottom: '30px' }}>{seo.historyDesc}</p>
+
+                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                    {seo.privacyTitle}
+                </h2>
+                <p style={{ marginBottom: '30px' }}>{seo.privacyDesc}</p>
             </section>
         </>
     );

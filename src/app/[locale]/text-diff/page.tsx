@@ -73,6 +73,10 @@ function generateFaqSchema(locale: string) {
         {
             question: "비교할 수 있는 텍스트 양에 제한이 있나요?",
             answer: "특별한 제한은 없지만, 매우 큰 텍스트(수만 줄 이상)의 경우 브라우저 성능에 따라 처리 속도가 느려질 수 있습니다."
+        },
+        {
+            question: "통합 뷰와 나란히 뷰의 차이는 무엇인가요?",
+            answer: "통합 뷰(Unified)는 변경사항을 하나의 흐름으로 보여주어 전체 맥락을 파악하기 좋습니다. 나란히 뷰(Side-by-Side)는 원본과 수정본을 좌우로 나란히 표시하여 직관적으로 비교할 수 있습니다."
         }
     ] : [
         {
@@ -86,6 +90,10 @@ function generateFaqSchema(locale: string) {
         {
             question: "Are there any limits on text size?",
             answer: "There are no specific limits, but very large texts (tens of thousands of lines) may process slower depending on your browser's performance."
+        },
+        {
+            question: "What is the difference between Unified and Side-by-Side view?",
+            answer: "Unified view shows changes in a single flow, making it easier to understand the overall context. Side-by-Side view displays the original and modified text next to each other for intuitive comparison."
         }
     ];
 
@@ -204,10 +212,16 @@ function generateWebAppSchema(locale: string) {
 export default async function TextDiffPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const t = await getTranslations({ locale, namespace: 'TextDiff' });
 
     const faqSchema = generateFaqSchema(locale);
     const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
+
+    const featureKeys = ["feat1", "feat2", "feat3", "feat4"] as const;
+    const howtoKeys = ["step1", "step2", "step3", "step4"] as const;
+    const usecaseKeys = ["uc1", "uc2", "uc3", "uc4"] as const;
+    const faqKeys = ["what", "privacy", "limits", "viewModes"] as const;
 
     return (
         <>
@@ -226,6 +240,63 @@ export default async function TextDiffPage(props: { params: Promise<{ locale: st
             />
 
             <TextDiffClient />
+
+            <article style={{ maxWidth: 700, margin: "0 auto", padding: "40px 20px" }}>
+                {/* 1. Description */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.description.title")}</h2>
+                    <p style={{ lineHeight: 1.8, marginBottom: 12 }}>{t("seo.description.p1")}</p>
+                    <p style={{ lineHeight: 1.8 }}>{t("seo.description.p2")}</p>
+                </section>
+                {/* 2. Features */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.features.title")}</h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                        {featureKeys.map((key) => (
+                            <div key={key} style={{ padding: 20, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: 8 }}>{t(`seo.features.list.${key}.title`)}</h3>
+                                <p style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{t(`seo.features.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* 3. How to Use */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.howto.title")}</h2>
+                    <ol style={{ paddingLeft: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+                        {howtoKeys.map((key) => (
+                            <li key={key} style={{ lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
+                        ))}
+                    </ol>
+                </section>
+                {/* 4. Use Cases */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.usecases.title")}</h2>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                        {usecaseKeys.map((key) => (
+                            <div key={key} style={{ padding: 20, borderRadius: 12, border: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: 600, marginBottom: 8 }}>{t(`seo.usecases.list.${key}.title`)}</h3>
+                                <p style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>{t(`seo.usecases.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+                {/* 5. FAQ */}
+                <section style={{ marginBottom: 40 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("faq.title")}</h2>
+                    {faqKeys.map((key) => (
+                        <details key={key} style={{ marginBottom: 8, padding: "12px 16px", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+                            <summary style={{ fontWeight: 600, cursor: "pointer" }}>{t(`faq.${key}.q`)}</summary>
+                            <p style={{ marginTop: 8, lineHeight: 1.7 }}>{t(`faq.${key}.a`)}</p>
+                        </details>
+                    ))}
+                </section>
+                {/* 6. Privacy */}
+                <section style={{ marginBottom: 20 }}>
+                    <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 16 }}>{t("seo.privacy.title")}</h2>
+                    <p style={{ lineHeight: 1.8 }}>{t("seo.privacy.text")}</p>
+                </section>
+            </article>
         </>
     );
 }

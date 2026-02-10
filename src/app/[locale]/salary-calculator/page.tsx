@@ -94,6 +94,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "What are the 4 major insurances?",
             answer: "The 4 major insurances are National Pension (4.5%), Health Insurance (3.545%), Long-term Care Insurance (12.27% of Health Insurance), and Employment Insurance (0.9%). Both employees and employers share the contribution."
+        },
+        {
+            question: "What is the net pay for a 30M KRW annual salary?",
+            answer: "With a 30 million KRW annual salary, after deducting 4 major insurances and taxes, the estimated monthly net pay is approximately 2.2 million KRW. The exact amount may vary depending on the number of dependents and non-taxable items."
+        },
+        {
+            question: "What is the net pay for a 40M KRW annual salary?",
+            answer: "With a 40 million KRW annual salary, after deducting 4 major insurances and taxes, the estimated monthly net pay is approximately 2.85 million KRW. The exact amount depends on individual circumstances."
         }
     ];
 
@@ -233,77 +241,14 @@ function generateSalaryTableSchema(locale: string) {
     };
 }
 
-// SEO 콘텐츠
-const seoContent = {
-    ko: {
-        ariaLabel: "페이지 설명",
-        section1Title: "연봉 실수령액이란?",
-        section1Desc: "연봉 실수령액은 회사에서 지급하는 세전 연봉에서 국민연금, 건강보험, 장기요양보험, 고용보험(4대보험)과 소득세, 지방소득세를 공제한 후 실제로 통장에 들어오는 금액입니다. 같은 연봉이라도 부양가족 수, 비과세 항목에 따라 실수령액이 달라질 수 있습니다.",
-        section2Title: "2026년 4대보험 요율",
-        section2Desc: "2026년 기준 근로자가 부담하는 4대보험 요율입니다. 국민연금 4.5%, 건강보험 3.545%, 장기요양보험은 건강보험료의 12.27%, 고용보험 0.9%가 적용됩니다. 회사도 동일한 비율(고용보험 제외)을 부담하므로 실제 납부 총액은 이의 2배입니다.",
-        featuresTitle: "계산기 사용 방법",
-        featureItems: [
-            "세전 연봉을 입력합니다 (예: 3,600만원)",
-            "퇴직금이 연봉에 포함되어 있는지 선택합니다",
-            "식대 등 비과세 금액을 입력합니다 (월 20만원까지 가능)",
-            "본인 포함 부양가족 수를 선택합니다",
-            "8세 이상 20세 이하 자녀가 있다면 추가 입력합니다",
-            "계산하기 버튼을 눌러 월 실수령액을 확인합니다"
-        ],
-        tipsTitle: "실수령액 높이는 팁",
-        tipsDesc: "비과세 항목을 최대한 활용하면 실수령액을 높일 수 있습니다. 식대(월 20만원), 자가운전보조금(월 20만원) 등을 급여 항목에 포함시켜 달라고 회사에 요청해보세요. 또한 연말정산 시 소득공제와 세액공제 항목을 꼼꼼히 챙기면 환급을 받을 수 있습니다.",
-        salaryTableTitle: "2026년 연봉별 실수령액표 (참고용)",
-        salaryTableDesc: "부양가족 1인, 비과세 20만원 기준의 예상 월 실수령액입니다. 실제 금액은 개인 상황에 따라 다를 수 있습니다.",
-        salaryTable: [
-            { annual: "2,400만원", monthly: "약 185만원" },
-            { annual: "3,000만원", monthly: "약 220만원" },
-            { annual: "3,600만원", monthly: "약 260만원" },
-            { annual: "4,000만원", monthly: "약 285만원" },
-            { annual: "4,500만원", monthly: "약 315만원" },
-            { annual: "5,000만원", monthly: "약 345만원" },
-            { annual: "6,000만원", monthly: "약 400만원" },
-            { annual: "7,000만원", monthly: "약 455만원" },
-            { annual: "8,000만원", monthly: "약 510만원" },
-            { annual: "1억원", monthly: "약 620만원" }
-        ]
-    },
-    en: {
-        ariaLabel: "Page description",
-        section1Title: "What is Net Salary?",
-        section1Desc: "Net salary (take-home pay) is the amount you actually receive after deducting 4 major insurances (National Pension, Health Insurance, Long-term Care Insurance, Employment Insurance) and income taxes from your gross annual salary. The actual amount may vary depending on the number of dependents and non-taxable items.",
-        section2Title: "2026 Insurance Rates",
-        section2Desc: "Employee contribution rates for 2026: National Pension 4.5%, Health Insurance 3.545%, Long-term Care Insurance 12.27% of Health Insurance, Employment Insurance 0.9%. The employer also contributes the same rates (except for employment insurance), so the total contribution is doubled.",
-        featuresTitle: "How to Use",
-        featureItems: [
-            "Enter your gross annual salary (e.g., 36,000,000 KRW)",
-            "Select whether severance pay is included in your salary",
-            "Enter non-taxable amount like meal allowance (up to 200,000 KRW/month)",
-            "Select the number of dependents including yourself",
-            "Add children aged 8-20 if applicable",
-            "Click calculate to see your monthly net salary"
-        ],
-        tipsTitle: "Tips to Maximize Net Pay",
-        tipsDesc: "Maximize non-taxable items to increase your take-home pay. Ask your company to include meal allowance (200,000 KRW/month) and car allowance (200,000 KRW/month) in your salary breakdown. Also, make sure to claim all deductions during year-end tax settlement for potential refunds.",
-        salaryTableTitle: "2026 Salary Reference Table",
-        salaryTableDesc: "Estimated monthly net pay based on 1 dependent and 200,000 KRW non-taxable amount. Actual amounts may vary.",
-        salaryTable: [
-            { annual: "24M KRW", monthly: "~1.85M KRW" },
-            { annual: "30M KRW", monthly: "~2.20M KRW" },
-            { annual: "36M KRW", monthly: "~2.60M KRW" },
-            { annual: "40M KRW", monthly: "~2.85M KRW" },
-            { annual: "50M KRW", monthly: "~3.45M KRW" },
-            { annual: "60M KRW", monthly: "~4.00M KRW" },
-            { annual: "80M KRW", monthly: "~5.10M KRW" },
-            { annual: "100M KRW", monthly: "~6.20M KRW" }
-        ]
-    }
-};
+const salaryTableRowKeys = ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10'] as const;
+const howToStepKeys = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6'] as const;
 
 export default async function SalaryCalculatorPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const t = await getTranslations({ locale, namespace: 'PayCal' });
 
-    const seo = seoContent[locale as 'ko' | 'en'] || seoContent.ko;
     const faqSchema = generateFaqSchema(locale);
     const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
@@ -332,35 +277,35 @@ export default async function SalaryCalculatorPage(props: { params: Promise<{ lo
             <PayCalClient />
 
             {/* SEO Content Section (SSR) */}
-            <article className="calc-article" aria-label={seo.ariaLabel}>
+            <article className="calc-article" aria-label={t('seo.ariaLabel')}>
                 <section className="calc-section">
-                    <h2 className="calc-section-title">{seo.section1Title}</h2>
-                    <p className="calc-section-desc">{seo.section1Desc}</p>
+                    <h2 className="calc-section-title">{t('seo.description.title')}</h2>
+                    <p className="calc-section-desc">{t('seo.description.p1')}</p>
                 </section>
 
                 <section className="calc-section">
-                    <h2 className="calc-section-title">{seo.section2Title}</h2>
-                    <p className="calc-section-desc">{seo.section2Desc}</p>
+                    <h2 className="calc-section-title">{t('seo.insurance.title')}</h2>
+                    <p className="calc-section-desc">{t('seo.insurance.p1')}</p>
                 </section>
 
                 <section className="calc-section">
-                    <h2 className="calc-section-title">{seo.featuresTitle}</h2>
+                    <h2 className="calc-section-title">{t('seo.howto.title')}</h2>
                     <ol className="calc-instruction-list">
-                        {seo.featureItems.map((item: string, index: number) => (
-                            <li key={index}>{item}</li>
+                        {howToStepKeys.map((key) => (
+                            <li key={key}>{t(`seo.howto.steps.${key}`)}</li>
                         ))}
                     </ol>
                 </section>
 
                 <section className="calc-section">
-                    <h2 className="calc-section-title">{seo.tipsTitle}</h2>
-                    <p className="calc-section-desc">{seo.tipsDesc}</p>
+                    <h2 className="calc-section-title">{t('seo.tips.title')}</h2>
+                    <p className="calc-section-desc">{t('seo.tips.p1')}</p>
                 </section>
 
                 {/* 연봉별 실수령액표 */}
                 <section className="calc-section">
-                    <h2 className="calc-section-title">{seo.salaryTableTitle}</h2>
-                    <p className="calc-section-desc" style={{ fontSize: '0.9rem' }}>{seo.salaryTableDesc}</p>
+                    <h2 className="calc-section-title">{t('seo.salaryTable.title')}</h2>
+                    <p className="calc-section-desc" style={{ fontSize: '0.9rem' }}>{t('seo.salaryTable.desc')}</p>
                     <div className="paycal-salary-table" style={{ overflowX: 'auto', marginTop: '16px' }}>
                         <table style={{
                             width: '100%',
@@ -371,23 +316,29 @@ export default async function SalaryCalculatorPage(props: { params: Promise<{ lo
                             <thead>
                                 <tr className="paycal-table-head">
                                     <th style={{ padding: '12px 15px', textAlign: 'left', fontWeight: 600 }}>
-                                        {locale === 'ko' ? '연봉' : 'Annual Salary'}
+                                        {t('seo.salaryTable.colAnnual')}
                                     </th>
                                     <th style={{ padding: '12px 15px', textAlign: 'right', fontWeight: 600 }}>
-                                        {locale === 'ko' ? '월 실수령액' : 'Monthly Net'}
+                                        {t('seo.salaryTable.colMonthly')}
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {seo.salaryTable.map((row: { annual: string; monthly: string }, index: number) => (
-                                    <tr key={index} className={index % 2 === 0 ? 'paycal-table-row-even' : 'paycal-table-row-odd'}>
-                                        <td style={{ padding: '10px 15px' }}>{row.annual}</td>
-                                        <td className="paycal-table-highlight" style={{ padding: '10px 15px', textAlign: 'right', fontWeight: 500 }}>{row.monthly}</td>
+                                {salaryTableRowKeys.map((key, index) => (
+                                    <tr key={key} className={index % 2 === 0 ? 'paycal-table-row-even' : 'paycal-table-row-odd'}>
+                                        <td style={{ padding: '10px 15px' }}>{t(`seo.salaryTable.rows.${key}.annual`)}</td>
+                                        <td className="paycal-table-highlight" style={{ padding: '10px 15px', textAlign: 'right', fontWeight: 500 }}>{t(`seo.salaryTable.rows.${key}.monthly`)}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
+                </section>
+
+                {/* 개인정보 안내 */}
+                <section className="calc-section">
+                    <h2 className="calc-section-title">{t('seo.privacy.title')}</h2>
+                    <p className="calc-section-desc">{t('seo.privacy.text')}</p>
                 </section>
             </article>
         </>

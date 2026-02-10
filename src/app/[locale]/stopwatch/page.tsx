@@ -201,92 +201,15 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
     const { locale } = await params;
     setRequestLocale(locale);
     const t = await getTranslations({ locale, namespace: 'Clock.Stopwatch' });
-    const isKo = locale === 'ko';
 
     const faqSchema = generateFaqSchema(locale);
     const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
 
-    const content = {
-        ko: {
-            description: "밀리초 단위까지 정확하게 측정하는 무료 온라인 스톱워치입니다.",
-            // 스톱워치란?
-            whatIsTitle: "스톱워치란?",
-            whatIsContent: "스톱워치(Stopwatch)는 경과 시간을 정밀하게 측정하는 시간 측정 도구입니다. 시작 버튼을 누른 순간부터 정지할 때까지의 시간을 밀리초(1/100초) 단위로 측정할 수 있습니다. 타이머가 설정한 시간에서 0까지 카운트다운하는 것과 달리, 스톱워치는 0에서 시작하여 무한히 시간을 측정합니다.",
-            whatIsFeatures: [
-                "시작(Start): 시간 측정을 시작합니다",
-                "일시정지(Pause): 측정을 일시적으로 멈춥니다",
-                "계속(Resume): 일시정지된 지점부터 다시 측정합니다",
-                "초기화(Reset): 시간을 0으로 되돌립니다",
-                "랩(Lap): 현재 시간을 기록하고 계속 측정합니다",
-            ],
-            // 사용법
-            howToTitle: "스톱워치 사용법",
-            howToSteps: [
-                { step: "1", title: "시작하기", desc: "녹색 '시작' 버튼을 클릭하면 스톱워치가 작동을 시작합니다. 시간은 분:초.밀리초 형식으로 표시됩니다." },
-                { step: "2", title: "랩 기록하기", desc: "실행 중 '랩' 버튼을 누르면 현재 시점의 구간 시간이 기록됩니다. 여러 구간의 시간을 비교할 때 유용합니다." },
-                { step: "3", title: "일시정지 & 계속", desc: "'일시정지' 버튼으로 측정을 멈추고, '계속' 버튼으로 이어서 측정할 수 있습니다." },
-                { step: "4", title: "기록 관리", desc: "랩 기록은 자동 저장되며, 엑셀로 내보내거나 개별 삭제할 수 있습니다." },
-            ],
-            // 활용 사례
-            useCasesTitle: "스톱워치 활용 사례",
-            useCases: [
-                { icon: "📚", title: "공부 & 집중력 관리", desc: "뽀모도로 기법(25분 집중 + 5분 휴식)이나 하루 총 공부 시간을 측정하세요. 자신의 집중 패턴을 파악할 수 있습니다." },
-                { icon: "🏃", title: "운동 & 피트니스", desc: "달리기, 수영, 사이클링 등 운동 시간과 랩 타임을 기록하세요. 인터벌 트레이닝에도 활용할 수 있습니다." },
-                { icon: "🎮", title: "게임 스피드런", desc: "게임 클리어 시간을 측정하고 구간별 기록을 비교하세요. 최고 기록 갱신에 도전해보세요." },
-                { icon: "🍳", title: "요리 타이밍", desc: "파스타 삶기, 스테이크 굽기 등 정확한 조리 시간이 필요한 요리에 활용하세요." },
-                { icon: "💼", title: "업무 생산성", desc: "작업별 소요 시간을 측정하여 업무 효율을 분석하고 개선점을 찾아보세요." },
-                { icon: "🎯", title: "시험 & 대회 준비", desc: "제한 시간 내 문제 풀이 연습이나 발표 시간 조절에 활용하세요." },
-            ],
-            // FAQ
-            faqTitle: "자주 묻는 질문",
-            faqs: [
-                { q: "스톱워치와 타이머의 차이점은 무엇인가요?", a: "스톱워치는 0에서 시작하여 경과 시간을 무한히 측정하는 반면, 타이머는 설정한 시간에서 0까지 카운트다운합니다. 스톱워치는 '얼마나 걸렸는지'를, 타이머는 '얼마나 남았는지'를 확인할 때 사용합니다." },
-                { q: "브라우저를 닫아도 기록이 유지되나요?", a: "랩 기록은 브라우저의 로컬 스토리지에 자동 저장됩니다. 같은 브라우저로 다시 접속하면 이전 기록을 확인할 수 있습니다. 단, 브라우저 데이터를 삭제하면 기록도 함께 삭제됩니다." },
-                { q: "모바일에서도 사용할 수 있나요?", a: "네, 반응형 디자인으로 스마트폰, 태블릿, PC 등 모든 기기에서 최적화된 화면으로 이용 가능합니다." },
-                { q: "최대 측정 시간은 얼마인가요?", a: "시간 제한 없이 무한히 측정할 수 있습니다. 시:분:초.밀리초 형식으로 1시간 이상도 정확하게 표시됩니다." },
-                { q: "랩 기록을 저장할 수 있나요?", a: "네, '엑셀 다운로드' 버튼을 클릭하면 모든 랩 기록을 CSV 파일로 다운로드할 수 있습니다. 엑셀이나 구글 스프레드시트에서 열어볼 수 있습니다." },
-            ]
-        },
-        en: {
-            description: "A free online stopwatch with millisecond precision timing.",
-            whatIsTitle: "What is a Stopwatch?",
-            whatIsContent: "A stopwatch is a time measurement tool that precisely measures elapsed time. It can measure time down to milliseconds (1/100th of a second) from the moment you press start until you stop. Unlike a timer that counts down from a set time to zero, a stopwatch starts from zero and measures time indefinitely.",
-            whatIsFeatures: [
-                "Start: Begin time measurement",
-                "Pause: Temporarily stop measurement",
-                "Resume: Continue from where you paused",
-                "Reset: Return time to zero",
-                "Lap: Record current time while continuing",
-            ],
-            howToTitle: "How to Use the Stopwatch",
-            howToSteps: [
-                { step: "1", title: "Getting Started", desc: "Click the green 'Start' button to begin. Time is displayed in minutes:seconds.milliseconds format." },
-                { step: "2", title: "Recording Laps", desc: "Press 'Lap' while running to record split times. Useful for comparing different segments." },
-                { step: "3", title: "Pause & Resume", desc: "Use 'Pause' to stop and 'Resume' to continue measuring from where you left off." },
-                { step: "4", title: "Managing Records", desc: "Lap records are auto-saved. Export to Excel or delete individual entries." },
-            ],
-            useCasesTitle: "Stopwatch Use Cases",
-            useCases: [
-                { icon: "📚", title: "Study & Focus", desc: "Track study time with Pomodoro technique (25 min work + 5 min break) or measure total daily study hours." },
-                { icon: "🏃", title: "Sports & Fitness", desc: "Record workout times and lap splits for running, swimming, cycling. Perfect for interval training." },
-                { icon: "🎮", title: "Game Speedruns", desc: "Measure game completion times and compare segment records. Challenge your personal best." },
-                { icon: "🍳", title: "Cooking Timing", desc: "Perfect for precise cooking times - boiling pasta, grilling steaks, and more." },
-                { icon: "💼", title: "Work Productivity", desc: "Measure time spent on tasks to analyze and improve work efficiency." },
-                { icon: "🎯", title: "Test & Competition Prep", desc: "Practice solving problems within time limits or rehearse presentations." },
-            ],
-            faqTitle: "Frequently Asked Questions",
-            faqs: [
-                { q: "What's the difference between a stopwatch and a timer?", a: "A stopwatch starts from zero and measures elapsed time indefinitely, while a timer counts down from a set time to zero. Use a stopwatch for 'how long did it take' and a timer for 'how much time is left'." },
-                { q: "Will my records be saved if I close the browser?", a: "Lap records are automatically saved in your browser's local storage. You can access previous records when returning with the same browser. However, clearing browser data will also delete records." },
-                { q: "Can I use it on mobile devices?", a: "Yes, with responsive design it works optimally on smartphones, tablets, and PCs." },
-                { q: "What's the maximum measurement time?", a: "There's no time limit - measure indefinitely. Times over 1 hour are displayed in hours:minutes:seconds.milliseconds format." },
-                { q: "Can I save lap records?", a: "Yes, click 'Export Excel' to download all lap records as a CSV file. Open it in Excel or Google Sheets." },
-            ]
-        }
-    };
-
-    const c = isKo ? content.ko : content.en;
+    const featureKeys = ['start', 'pause', 'resume', 'reset', 'lap'] as const;
+    const howToStepKeys = ['step1', 'step2', 'step3', 'step4'] as const;
+    const useCaseKeys = ['study', 'fitness', 'gaming', 'cooking', 'work', 'exam'] as const;
+    const faqKeys = ['diff', 'save', 'mobile', 'maxTime', 'export'] as const;
 
     return (
         <>
@@ -312,7 +235,7 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
 
                 {/* 설명 텍스트 - UI 아래로 이동 */}
                 <p className="sw-desc">
-                    {c.description}
+                    {t('seo.shortDesc')}
                 </p>
 
                 {/* SEO 콘텐츠 섹션 */}
@@ -320,15 +243,15 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
                     {/* 스톱워치란? */}
                     <section className="sw-section">
                         <h2 className="sw-section-heading sw-heading-cyan">
-                            {c.whatIsTitle}
+                            {t('seo.description.title')}
                         </h2>
                         <p className="sw-text">
-                            {c.whatIsContent}
+                            {t('seo.description.p1')}
                         </p>
                         <div className="sw-feature-box">
                             <ul className="sw-feature-list">
-                                {c.whatIsFeatures.map((feature, index) => (
-                                    <li key={index}>{feature}</li>
+                                {featureKeys.map((key) => (
+                                    <li key={key}>{t(`seo.features.list.${key}`)}</li>
                                 ))}
                             </ul>
                         </div>
@@ -337,16 +260,16 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
                     {/* 사용법 */}
                     <section className="sw-section">
                         <h2 className="sw-section-heading sw-heading-green">
-                            {c.howToTitle}
+                            {t('seo.howto.title')}
                         </h2>
                         <div className="sw-howto-grid">
-                            {c.howToSteps.map((item, index) => (
-                                <div key={index} className="sw-howto-card">
+                            {howToStepKeys.map((key) => (
+                                <div key={key} className="sw-howto-card">
                                     <div className="sw-howto-header">
-                                        <span className="sw-step-badge">{item.step}</span>
-                                        <h3 className="sw-howto-title">{item.title}</h3>
+                                        <span className="sw-step-badge">{t(`seo.howto.steps.${key}.num`)}</span>
+                                        <h3 className="sw-howto-title">{t(`seo.howto.steps.${key}.title`)}</h3>
                                     </div>
-                                    <p className="sw-howto-desc">{item.desc}</p>
+                                    <p className="sw-howto-desc">{t(`seo.howto.steps.${key}.desc`)}</p>
                                 </div>
                             ))}
                         </div>
@@ -355,16 +278,16 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
                     {/* 활용 사례 */}
                     <section className="sw-section">
                         <h2 className="sw-section-heading sw-heading-indigo">
-                            {c.useCasesTitle}
+                            {t('seo.usecases.title')}
                         </h2>
                         <div className="sw-usecase-grid">
-                            {c.useCases.map((item, index) => (
-                                <div key={index} className="sw-usecase-card">
+                            {useCaseKeys.map((key) => (
+                                <div key={key} className="sw-usecase-card">
                                     <div className="sw-usecase-header">
-                                        <span className="sw-usecase-icon">{item.icon}</span>
-                                        <h3 className="sw-usecase-title">{item.title}</h3>
+                                        <span className="sw-usecase-icon">{t(`seo.usecases.list.${key}.icon`)}</span>
+                                        <h3 className="sw-usecase-title">{t(`seo.usecases.list.${key}.title`)}</h3>
                                     </div>
-                                    <p className="sw-usecase-desc">{item.desc}</p>
+                                    <p className="sw-usecase-desc">{t(`seo.usecases.list.${key}.desc`)}</p>
                                 </div>
                             ))}
                         </div>
@@ -373,14 +296,24 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
                     {/* FAQ */}
                     <section className="sw-faq-section">
                         <h2 className="sw-faq-title">
-                            {c.faqTitle}
+                            {t('seo.faq.title')}
                         </h2>
-                        {c.faqs.map((faq, index) => (
-                            <details key={index} className="sw-faq-item">
-                                <summary className="sw-faq-question">{faq.q}</summary>
-                                <p className="sw-faq-answer">{faq.a}</p>
+                        {faqKeys.map((key) => (
+                            <details key={key} className="sw-faq-item">
+                                <summary className="sw-faq-question">{t(`seo.faq.list.${key}.q`)}</summary>
+                                <p className="sw-faq-answer">{t(`seo.faq.list.${key}.a`)}</p>
                             </details>
                         ))}
+                    </section>
+
+                    {/* 개인정보 안내 */}
+                    <section className="sw-section">
+                        <h2 className="sw-section-heading sw-heading-cyan">
+                            {t('seo.privacy.title')}
+                        </h2>
+                        <p className="sw-text">
+                            {t('seo.privacy.text')}
+                        </p>
                     </section>
                 </article>
             </div>

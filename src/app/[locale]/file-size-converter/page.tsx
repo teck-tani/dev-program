@@ -110,6 +110,29 @@ function generateFaqSchema(locale: string) {
     };
 }
 
+function generateHowToSchema(locale: string) {
+    const isKo = locale === 'ko';
+    return {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": isKo ? "파일 크기 변환기 사용 방법" : "How to Use File Size Converter",
+        "description": isKo
+            ? "파일 크기 단위를 실시간으로 변환하는 방법"
+            : "How to convert file size units in real-time",
+        "step": isKo ? [
+            { "@type": "HowToStep", "name": "단위 선택", "text": "변환할 파일 크기의 단위를 Bit, Byte, KB, MB, GB, TB, PB 중에서 선택하세요." },
+            { "@type": "HowToStep", "name": "값 입력", "text": "변환하려는 숫자 값을 입력하세요. 빠른 선택 버튼으로 자주 쓰는 값을 바로 입력할 수도 있습니다." },
+            { "@type": "HowToStep", "name": "결과 확인", "text": "모든 단위로 자동 변환된 결과를 확인하세요. 원하는 단위를 클릭하면 기준이 변경됩니다." },
+            { "@type": "HowToStep", "name": "이진/십진 전환", "text": "이진법(1024 기준)과 십진법(1000 기준)을 토글하여 OS별 차이를 비교하세요." }
+        ] : [
+            { "@type": "HowToStep", "name": "Select Unit", "text": "Choose the file size unit from Bit, Byte, KB, MB, GB, TB, or PB." },
+            { "@type": "HowToStep", "name": "Enter Value", "text": "Type the number you want to convert. Use quick select buttons for common values." },
+            { "@type": "HowToStep", "name": "View Results", "text": "See automatic conversions to all units. Click any unit to change the base." },
+            { "@type": "HowToStep", "name": "Toggle Binary/Decimal", "text": "Switch between binary (1024-based) and decimal (1000-based) to compare OS differences." }
+        ]
+    };
+}
+
 function generateWebAppSchema(locale: string) {
     const isKo = locale === 'ko';
 
@@ -142,7 +165,11 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
     const t = await getTranslations({ locale, namespace: 'FileSizeConverter' });
 
     const faqSchema = generateFaqSchema(locale);
+    const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
+
+    const howtoKeys = ['s1', 's2', 's3', 's4'];
+    const usecaseKeys = ['cloud', 'transfer', 'web', 'server'];
 
     return (
         <>
@@ -152,84 +179,89 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
             />
             <script
                 type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+            />
+            <script
+                type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
             <div className="container" style={{ maxWidth: '900px', padding: '20px' }}>
                 <FileSizeConverterClient />
 
-                <article style={{ maxWidth: '800px', margin: '60px auto 0', lineHeight: '1.7' }}>
-                    <section style={{ marginBottom: '50px' }}>
-                        <h2 style={{ fontSize: '1.8rem', color: '#333', marginBottom: '20px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                <article style={{ maxWidth: 700, margin: '60px auto 0', padding: '0 20px' }}>
+                    {/* 1. Description (existing info table) */}
+                    <section style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>
                             {t('info.title')}
                         </h2>
-                        <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '10px', marginBottom: '20px' }}>
+                        <div style={{ background: '#f8fafc', padding: 20, borderRadius: 12, marginBottom: 16, overflowX: 'auto' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
-                                    <tr style={{ borderBottom: '2px solid #dee2e6' }}>
-                                        <th style={{ padding: '12px', textAlign: 'left', color: '#495057' }}>{t('info.table.unit')}</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', color: '#495057' }}>{t('info.table.bytes')}</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', color: '#495057' }}>{t('info.table.description')}</th>
+                                    <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
+                                        <th style={{ padding: 12, textAlign: 'left' }}>{t('info.table.unit')}</th>
+                                        <th style={{ padding: 12, textAlign: 'left' }}>{t('info.table.bytes')}</th>
+                                        <th style={{ padding: 12, textAlign: 'left' }}>{t('info.table.description')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr style={{ borderBottom: '1px solid #dee2e6' }}>
-                                        <td style={{ padding: '12px', fontWeight: 600 }}>1 KB</td>
-                                        <td style={{ padding: '12px' }}>1,024 B</td>
-                                        <td style={{ padding: '12px', color: '#666' }}>{t('info.table.kb')}</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid #dee2e6' }}>
-                                        <td style={{ padding: '12px', fontWeight: 600 }}>1 MB</td>
-                                        <td style={{ padding: '12px' }}>1,048,576 B</td>
-                                        <td style={{ padding: '12px', color: '#666' }}>{t('info.table.mb')}</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid #dee2e6' }}>
-                                        <td style={{ padding: '12px', fontWeight: 600 }}>1 GB</td>
-                                        <td style={{ padding: '12px' }}>1,073,741,824 B</td>
-                                        <td style={{ padding: '12px', color: '#666' }}>{t('info.table.gb')}</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid #dee2e6' }}>
-                                        <td style={{ padding: '12px', fontWeight: 600 }}>1 TB</td>
-                                        <td style={{ padding: '12px' }}>1,099,511,627,776 B</td>
-                                        <td style={{ padding: '12px', color: '#666' }}>{t('info.table.tb')}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{ padding: '12px', fontWeight: 600 }}>1 PB</td>
-                                        <td style={{ padding: '12px' }}>1,125,899,906,842,624 B</td>
-                                        <td style={{ padding: '12px', color: '#666' }}>{t('info.table.pb')}</td>
-                                    </tr>
+                                    {[
+                                        { unit: '1 KB', bytes: '1,024 B', key: 'kb' },
+                                        { unit: '1 MB', bytes: '1,048,576 B', key: 'mb' },
+                                        { unit: '1 GB', bytes: '1,073,741,824 B', key: 'gb' },
+                                        { unit: '1 TB', bytes: '1,099,511,627,776 B', key: 'tb' },
+                                        { unit: '1 PB', bytes: '1,125,899,906,842,624 B', key: 'pb' },
+                                    ].map((row, i, arr) => (
+                                        <tr key={row.key} style={i < arr.length - 1 ? { borderBottom: '1px solid #e2e8f0' } : {}}>
+                                            <td style={{ padding: 12, fontWeight: 600 }}>{row.unit}</td>
+                                            <td style={{ padding: 12 }}>{row.bytes}</td>
+                                            <td style={{ padding: 12, color: '#666' }}>{t(`info.table.${row.key}`)}</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
-                        <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                            {t('info.note')}
-                        </p>
+                        <p style={{ fontSize: '0.9rem', color: '#666' }}>{t('info.note')}</p>
                     </section>
 
-                    <section className="faq-section" style={{ background: '#fff', padding: '30px', borderRadius: '15px', border: '1px solid #eee' }}>
-                        <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '20px', textAlign: 'center' }}>
-                            {t('faq.title')}
-                        </h2>
+                    {/* 2. How to Use */}
+                    <section style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.howto.title')}</h2>
+                        <ol style={{ paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            {howtoKeys.map((key) => (
+                                <li key={key} style={{ lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
+                            ))}
+                        </ol>
+                    </section>
 
-                        <details style={{ marginBottom: '15px', padding: '10px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{t('faq.q1')}</summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '10px' }}>{t('faq.a1')}</p>
-                        </details>
+                    {/* 3. Use Cases */}
+                    <section style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.usecases.title')}</h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+                            {usecaseKeys.map((key) => (
+                                <div key={key} style={{ padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
+                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 8 }}>{t(`seo.usecases.list.${key}.title`)}</h3>
+                                    <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>{t(`seo.usecases.list.${key}.desc`)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                        <details style={{ marginBottom: '15px', padding: '10px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{t('faq.q2')}</summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '10px' }}>{t('faq.a2')}</p>
-                        </details>
+                    {/* 4. FAQ */}
+                    <section style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('faq.title')}</h2>
+                        {[1, 2, 3, 4].map((i) => (
+                            <details key={i} style={{ marginBottom: 8, padding: '12px 16px', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                                <summary style={{ fontWeight: 600, cursor: 'pointer' }}>{t(`faq.q${i}`)}</summary>
+                                <p style={{ marginTop: 8, lineHeight: 1.7 }}>{t(`faq.a${i}`)}</p>
+                            </details>
+                        ))}
+                    </section>
 
-                        <details style={{ marginBottom: '15px', padding: '10px', borderBottom: '1px solid #eee' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{t('faq.q3')}</summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '10px' }}>{t('faq.a3')}</p>
-                        </details>
-
-                        <details style={{ padding: '10px' }}>
-                            <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#2c3e50' }}>{t('faq.q4')}</summary>
-                            <p style={{ marginTop: '10px', color: '#555', paddingLeft: '10px' }}>{t('faq.a4')}</p>
-                        </details>
+                    {/* 5. Privacy */}
+                    <section style={{ marginBottom: 20 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.privacy.title')}</h2>
+                        <p style={{ lineHeight: 1.8 }}>{t('seo.privacy.text')}</p>
                     </section>
                 </article>
             </div>

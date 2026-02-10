@@ -13,25 +13,16 @@ export const revalidate = false;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const t = await getTranslations({ locale, namespace: 'QRGenerator.meta' });
     const isKo = locale === 'ko';
-
-    const title = isKo
-        ? "QR코드 생성기 - 무료 온라인 QR코드 만들기 (로고, 색상 지원)"
-        : "QR Code Generator - Free Online QR Code Maker (Custom Colors)";
-
-    const description = isKo
-        ? "무료 온라인 QR코드 생성기입니다. URL, 텍스트, 연락처 정보를 QR코드로 변환하세요. 색상 커스터마이징, 고해상도 다운로드, 엑셀 대량 생성까지 모두 무료로 지원합니다."
-        : "Free online QR code generator. Convert URLs, text, and contact info to QR codes. Customize colors, download in high resolution, and bulk generate from Excel - all for free.";
 
     const baseUrl = 'https://teck-tani.com';
     const url = `${baseUrl}/${locale}/qr-generator`;
 
     return {
-        title,
-        description,
-        keywords: isKo
-            ? "QR코드 생성기, QR코드 만들기, 무료 QR코드, 온라인 QR코드, QR코드 변환, QR코드 다운로드, 커스텀 QR코드, 컬러 QR코드"
-            : "QR code generator, QR code maker, free QR code, online QR code, QR code converter, QR code download, custom QR code, color QR code",
+        title: t('title'),
+        description: t('description'),
+        keywords: t('keywords'),
         alternates: {
             canonical: url,
             languages: {
@@ -41,18 +32,18 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
             }
         },
         openGraph: {
-            title,
-            description,
+            title: t('ogTitle'),
+            description: t('ogDescription'),
             url,
             siteName: 'Teck-Tani 웹도구',
-            locale: locale === 'ko' ? 'ko_KR' : 'en_US',
-            alternateLocale: locale === 'ko' ? 'en_US' : 'ko_KR',
+            locale: isKo ? 'ko_KR' : 'en_US',
+            alternateLocale: isKo ? 'en_US' : 'ko_KR',
             type: 'website',
         },
         twitter: {
             card: 'summary_large_image',
-            title,
-            description,
+            title: t('ogTitle'),
+            description: t('ogDescription'),
         },
         robots: {
             index: true,
@@ -256,18 +247,40 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
 
                 {/* 하단 설명글 섹션 */}
                 <article className={styles.articleSection}>
-                    <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.6rem', color: '#1e293b', marginBottom: '16px', borderBottom: '2px solid #e2e8f0', paddingBottom: '10px' }}>
-                            {t('whyUse.title')}
-                        </h2>
-                        <p style={{ lineHeight: '1.7', color: '#475569' }}>{t.rich('whyUse.desc', { strong: (chunks) => <strong>{chunks}</strong> })}</p>
+                    {/* 1. Description */}
+                    <section style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.description.title')}</h2>
+                        <p style={{ lineHeight: 1.8, marginBottom: 12 }}>{t('seo.description.p1')}</p>
+                        <p style={{ lineHeight: 1.8 }}>{t('seo.description.p2')}</p>
                     </section>
 
-                    <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.4rem', color: '#1e293b', marginBottom: '16px' }}>
+                    {/* 2. Features */}
+                    <section style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.features.title')}</h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+                            {['wifi', 'vcard', 'logo', 'svg', 'color', 'bulk'].map((key) => (
+                                <div key={key} style={{ padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
+                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 8 }}>{t(`seo.features.list.${key}.title`)}</h3>
+                                    <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>{t(`seo.features.list.${key}.desc`)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* 3. Why Use (existing) */}
+                    <section style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>
+                            {t('whyUse.title')}
+                        </h2>
+                        <p style={{ lineHeight: 1.8 }}>{t.rich('whyUse.desc', { strong: (chunks) => <strong>{chunks}</strong> })}</p>
+                    </section>
+
+                    {/* 4. Use Cases (existing) */}
+                    <section style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>
                             {t('useCases.title')}
                         </h2>
-                        <ul style={{ lineHeight: '1.8', color: '#475569', paddingLeft: '20px' }}>
+                        <ul style={{ lineHeight: 1.8, paddingLeft: 20 }}>
                             <li>{t('useCases.url')}</li>
                             <li>{t('useCases.contact')}</li>
                             <li>{t('useCases.wifi')}</li>
@@ -276,14 +289,21 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
                         </ul>
                     </section>
 
-                    <section className={styles.faqSection}>
-                        <h2 style={{ fontSize: '1.4rem', color: '#1e293b', marginBottom: '16px', textAlign: 'center' }}>{t('faq.title')}</h2>
+                    {/* 5. FAQ */}
+                    <section className={styles.faqSection} style={{ marginBottom: 40 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16, textAlign: 'center' }}>{t('faq.title')}</h2>
                         {['free', 'expiry', 'korean', 'color', 'bulk'].map((key) => (
                             <details key={key}>
                                 <summary>{t(`faq.${key}.q`)}</summary>
                                 <p>{t(`faq.${key}.a`)}</p>
                             </details>
                         ))}
+                    </section>
+
+                    {/* 6. Privacy */}
+                    <section style={{ marginBottom: 20 }}>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.privacy.title')}</h2>
+                        <p style={{ lineHeight: 1.8 }}>{t('seo.privacy.text')}</p>
                     </section>
                 </article>
             </div>

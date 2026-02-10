@@ -138,6 +138,63 @@
         "a": "Drag and copy (Ctrl+C) the cells you want to convert in Excel, then paste (Ctrl+V) them into the input box on this site. It automatically recognizes line-separated data and generates multiple barcodes at once."
       }
     },
+    "seo": {
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "formats": {
+            "title": "16 Barcode Formats",
+            "desc": "Supports 16 standard barcode formats including CODE128, EAN-13, ITF, UPC, Codabar, and Pharmacode."
+          },
+          "customize": {
+            "title": "Size & Design Controls",
+            "desc": "Freely adjust bar width, height, and text display to create barcodes with your desired design."
+          },
+          "validation": {
+            "title": "Format-Specific Validation",
+            "desc": "Automatically validates input according to each format's rules - EAN-13 requires 12-13 digits, ITF requires even-length numbers, etc."
+          },
+          "download": {
+            "title": "PNG/SVG/ZIP Download",
+            "desc": "Download individual barcodes as PNG or SVG, or batch download multiple barcodes as a ZIP file."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Generate Barcodes",
+        "steps": {
+          "s1": "<strong>Select Format</strong> — Choose the barcode format that suits your purpose. CODE128 is recommended for general use.",
+          "s2": "<strong>Enter Data</strong> — Input barcode values individually or paste Excel data for bulk generation.",
+          "s3": "<strong>Adjust Options</strong> — Customize bar width, height, and text display settings as needed.",
+          "s4": "<strong>Download</strong> — Save generated barcodes as PNG/SVG images or batch download as ZIP."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "inventory": {
+            "title": "Inventory & Logistics",
+            "desc": "Attach barcodes to products, materials, and shipping boxes for efficient stock management and tracking."
+          },
+          "library": {
+            "title": "Library & Asset Management",
+            "desc": "Apply barcodes to books, equipment, and documents to build checkout/return and asset tracking systems."
+          },
+          "marketing": {
+            "title": "Marketing & Promotions",
+            "desc": "Use barcodes on coupons, event tickets, and membership cards to manage marketing campaigns."
+          },
+          "event": {
+            "title": "Events & Access Control",
+            "desc": "Apply barcodes to admission tickets and ID badges for quick check-in and access management."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This barcode generator processes all data entirely within your browser. Your barcode data is never sent to any server, and no information is stored or collected. Use with complete confidence."
+      }
+    },
     "generator": {
       "labelType": "Barcode Type:",
       "labelValue": "Barcode Value:",
@@ -178,6 +235,13 @@
     }
   },
   "QRGenerator": {
+    "meta": {
+      "title": "QR Code Generator - Free Online QR Code Maker (Custom Colors)",
+      "description": "Free online QR code generator. Convert URLs, text, and contact info to QR codes. Customize colors, download in high resolution, and bulk generate from Excel - all for free.",
+      "keywords": "QR code generator, QR code maker, free QR code, online QR code, QR code converter, QR code download, custom QR code, color QR code",
+      "ogTitle": "QR Code Generator | Free Online QR Code Maker",
+      "ogDescription": "Convert URLs, text, and contacts to QR codes. Color customization, logo insertion, and bulk generation - all free!"
+    },
     "title": "QR Code Generator - Free Online QR Code Maker",
     "mobileTitle": "QR Code Generator",
     "subtitle": "Convert URLs, text, and contact info to QR codes.\nCustomize colors and download in high resolution - all for free.",
@@ -268,6 +332,46 @@
       "bulk": {
         "q": "Q. Can I create multiple QR codes at once?",
         "a": "Yes, on PC you can paste Excel data to generate multiple QR codes at once."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is a QR Code?",
+        "p1": "A QR code (Quick Response Code) is a two-dimensional matrix barcode that stores information. Compared to traditional 1D barcodes, QR codes can hold much more data and can be easily scanned with a smartphone camera, making them widely used for URLs, contacts, Wi-Fi info, and more.",
+        "p2": "This tool is a free online QR code generator that works directly in your web browser. It supports various formats including text/URL, Wi-Fi connection info, and vCard contacts. Customize colors and insert logos to create your own unique QR codes."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "wifi": {
+            "title": "Wi-Fi QR Code",
+            "desc": "Enter network name, password, and encryption type to generate a QR code that connects to Wi-Fi with a single scan."
+          },
+          "vcard": {
+            "title": "vCard Contact",
+            "desc": "Create digital business card QR codes with name, phone, email, company, and job title."
+          },
+          "logo": {
+            "title": "Logo Insertion",
+            "desc": "Insert your brand logo or image in the center of the QR code. Error correction level adjusts automatically."
+          },
+          "svg": {
+            "title": "SVG/PNG Download",
+            "desc": "Download as PNG image or SVG vector format that stays crisp at any size."
+          },
+          "color": {
+            "title": "Color Customization",
+            "desc": "Freely change QR code and background colors to match your brand identity."
+          },
+          "bulk": {
+            "title": "Excel Bulk Generation",
+            "desc": "Paste Excel data to generate multiple QR codes at once and download them in bulk."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This QR code generator processes all data entirely within your browser. URLs, text, contact information, and any other data you enter are never sent to any server. No information is stored or collected. Use with complete confidence."
       }
     }
   },
@@ -444,7 +548,68 @@
       "title": "Online Clock",
       "seo": {
         "title": "Online Clock - Accurate Server Time to the Second",
-        "desc": "Need accurate time down to the second for ticketing or exams? This online clock displays server time precisely to the millisecond and allows you to check multiple world city times simultaneously. Optimized for concert ticketing, exam practice, and time management."
+        "desc": "Need accurate time down to the second for ticketing or exams? This online clock displays server time precisely to the millisecond and allows you to check multiple world city times simultaneously. Optimized for concert ticketing, exam practice, and time management.",
+        "ariaLabel": "Page description",
+        "description": {
+          "title": "When You Need Precise Time",
+          "p1": "There are moments when you need time accurate to the second - ticketing, exams, important deadlines. This online clock displays server time precisely to the millisecond. With its elegant digital segment design, you can check the time at a glance and compare times across 70+ major cities worldwide simultaneously."
+        },
+        "worldTime": {
+          "title": "World Time at a Glance",
+          "p1": "Check the current time in major financial hubs and IT centers worldwide including Seoul, Tokyo, Beijing, New York, London, and Paris. Useful for business trips, international meetings, and calculating time differences for overseas transactions. Drag and drop to arrange your frequently checked cities in your preferred order."
+        },
+        "features": {
+          "title": "Key Features",
+          "list": {
+            "serverTime": "Second-accurate server time - for precise timing during ticketing",
+            "exam": "Ideal for important exams like SAT, civil service tests",
+            "worldCities": "View current time in 70+ major cities worldwide",
+            "timeDiff": "Automatically calculates and displays time differences between cities",
+            "theme": "Dark/Light mode toggle to reduce eye strain",
+            "dragDrop": "Freely reorder clocks with drag and drop",
+            "fontSize": "Adjust font size for better readability",
+            "fullscreen": "Fullscreen mode for better focus"
+          }
+        },
+        "webappFeatures": {
+          "serverTime": "Precise server time to the second",
+          "ticketing": "Clock for ticketing/exams",
+          "worldCities": "Display world city times",
+          "theme": "Dark/Light theme support",
+          "dragDrop": "Drag and drop to reorder clocks",
+          "citySearch": "City search and add",
+          "responsive": "Responsive design",
+          "fullscreen": "Fullscreen mode"
+        },
+        "tips": {
+          "title": "Usage Tips",
+          "p1": "Use for precise timing during concert ticketing, or simulate exam conditions when preparing for tests. Also useful for checking stock exchange opening/closing times for international trading. Your settings are automatically saved in your browser, so you can continue with the same setup on your next visit."
+        },
+        "faq": {
+          "title": "Frequently Asked Questions (FAQ)",
+          "list": {
+            "ticketing": {
+              "q": "Can I use this clock for ticketing?",
+              "a": "Yes, this online clock displays server time accurately to the millisecond. You can start booking at the exact time for concerts, musicals, sports events, and more."
+            },
+            "cityCount": {
+              "q": "How many world cities can I add?",
+              "a": "We support over 70 major cities, and you can add as many as you want and reorder them with drag and drop. Place your frequently checked cities at the top."
+            },
+            "settings": {
+              "q": "Are my settings saved?",
+              "a": "Yes, all settings including theme, added cities, and city order are automatically saved in your browser. You can use the same setup on your next visit."
+            },
+            "mobile": {
+              "q": "Can I use it on mobile?",
+              "a": "Yes, with responsive design, it works optimally on all devices including PCs, tablets, and smartphones. Fullscreen mode is also supported."
+            }
+          }
+        },
+        "privacy": {
+          "title": "Privacy Notice",
+          "text": "World clock data is processed in your browser and is not transmitted to any server. All user settings including added cities and theme preferences are stored only in the browser's local storage."
+        }
       }
     },
     "Stopwatch": {
@@ -478,7 +643,56 @@
       },
       "seo": {
         "title": "Online Stopwatch - Study & Workout Time Measurement",
-        "desc": "This stopwatch measures up to milliseconds accuracy and can be used for study time tracking, workout lap time measurement, and work time management. Supports fullscreen mode for better focus. Works perfectly on both PC and mobile."
+        "desc": "This stopwatch measures up to milliseconds accuracy and can be used for study time tracking, workout lap time measurement, and work time management. Supports fullscreen mode for better focus. Works perfectly on both PC and mobile.",
+        "shortDesc": "A free online stopwatch with millisecond precision timing.",
+        "description": {
+          "title": "What is a Stopwatch?",
+          "p1": "A stopwatch is a time measurement tool that precisely measures elapsed time. It can measure time down to milliseconds (1/100th of a second) from the moment you press start until you stop. Unlike a timer that counts down from a set time to zero, a stopwatch starts from zero and measures time indefinitely."
+        },
+        "features": {
+          "title": "Key Features",
+          "list": {
+            "start": "Start: Begin time measurement",
+            "pause": "Pause: Temporarily stop measurement",
+            "resume": "Resume: Continue from where you paused",
+            "reset": "Reset: Return time to zero",
+            "lap": "Lap: Record current time while continuing"
+          }
+        },
+        "howto": {
+          "title": "How to Use the Stopwatch",
+          "steps": {
+            "step1": { "num": "1", "title": "Getting Started", "desc": "Click the green 'Start' button to begin. Time is displayed in minutes:seconds.milliseconds format." },
+            "step2": { "num": "2", "title": "Recording Laps", "desc": "Press 'Lap' while running to record split times. Useful for comparing different segments." },
+            "step3": { "num": "3", "title": "Pause & Resume", "desc": "Use 'Pause' to stop and 'Resume' to continue measuring from where you left off." },
+            "step4": { "num": "4", "title": "Managing Records", "desc": "Lap records are auto-saved. Export to Excel or delete individual entries." }
+          }
+        },
+        "usecases": {
+          "title": "Stopwatch Use Cases",
+          "list": {
+            "study": { "icon": "📚", "title": "Study & Focus", "desc": "Track study time with Pomodoro technique (25 min work + 5 min break) or measure total daily study hours." },
+            "fitness": { "icon": "🏃", "title": "Sports & Fitness", "desc": "Record workout times and lap splits for running, swimming, cycling. Perfect for interval training." },
+            "gaming": { "icon": "🎮", "title": "Game Speedruns", "desc": "Measure game completion times and compare segment records. Challenge your personal best." },
+            "cooking": { "icon": "🍳", "title": "Cooking Timing", "desc": "Perfect for precise cooking times - boiling pasta, grilling steaks, and more." },
+            "work": { "icon": "💼", "title": "Work Productivity", "desc": "Measure time spent on tasks to analyze and improve work efficiency." },
+            "exam": { "icon": "🎯", "title": "Test & Competition Prep", "desc": "Practice solving problems within time limits or rehearse presentations." }
+          }
+        },
+        "faq": {
+          "title": "Frequently Asked Questions",
+          "list": {
+            "diff": { "q": "What's the difference between a stopwatch and a timer?", "a": "A stopwatch starts from zero and measures elapsed time indefinitely, while a timer counts down from a set time to zero. Use a stopwatch for 'how long did it take' and a timer for 'how much time is left'." },
+            "save": { "q": "Will my records be saved if I close the browser?", "a": "Lap records are automatically saved in your browser's local storage. You can access previous records when returning with the same browser. However, clearing browser data will also delete records." },
+            "mobile": { "q": "Can I use it on mobile devices?", "a": "Yes, with responsive design it works optimally on smartphones, tablets, and PCs." },
+            "maxTime": { "q": "What's the maximum measurement time?", "a": "There's no time limit - measure indefinitely. Times over 1 hour are displayed in hours:minutes:seconds.milliseconds format." },
+            "export": { "q": "Can I save lap records?", "a": "Yes, click 'Export Excel' to download all lap records as a CSV file. Open it in Excel or Google Sheets." }
+          }
+        },
+        "privacy": {
+          "title": "Privacy Notice",
+          "text": "Stopwatch records are processed only in your browser and are not transmitted to any server. Lap records and settings are stored only in the browser's local storage, so there is no risk of your personal data being leaked."
+        }
       }
     },
     "Timer": {
@@ -530,7 +744,56 @@
       },
       "seo": {
         "title": "Online Timer & Pomodoro - Workout & Cooking Alarm",
-        "desc": "Use the Pomodoro technique with 25-min focus / 5-min break cycles, or set Tabata workout and kitchen timers. Features 5 alarm sounds (Classic/Digital/Chime/Bird/School Bell) and vibration alerts."
+        "desc": "Use the Pomodoro technique with 25-min focus / 5-min break cycles, or set Tabata workout and kitchen timers. Features 5 alarm sounds (Classic/Digital/Chime/Bird/School Bell) and vibration alerts.",
+        "ariaLabel": "Page description",
+        "description": {
+          "title": "Online Timer for Various Situations",
+          "p1": "An online timer that counts down from your set time and alerts you with an alarm when complete. Useful for Tabata workouts, interval training, cooking, break time management, and many everyday situations."
+        },
+        "features": {
+          "title": "Key Features",
+          "list": {
+            "presets": { "title": "Quick Presets", "desc": "Set frequently used times with a single click." },
+            "progress": { "title": "Progress Bar", "desc": "Visual progress bar shows remaining time at a glance." },
+            "pomodoro": { "title": "Pomodoro Mode", "desc": "Supports the Pomodoro technique with automatic 25-min focus + 5-min break cycles." },
+            "sounds": { "title": "5 Alarm Sounds", "desc": "Choose from Classic, Digital, Chime, Bird, and School Bell alarm sounds." },
+            "vibration": { "title": "Vibration Alert", "desc": "Vibration notification along with sound when timer completes. (Mobile supported)" },
+            "tabTitle": { "title": "Tab Title Countdown", "desc": "Remaining time is shown in the browser tab so you can check while doing other tasks." }
+          }
+        },
+        "howto": {
+          "title": "How to Use",
+          "steps": {
+            "step1": "<strong>Step 1:</strong> Enter your desired time in the Hour, Min, and Sec input fields.",
+            "step2": "<strong>Step 2:</strong> Click the Start button to begin the countdown.",
+            "step3": "<strong>Step 3:</strong> Use the Stop button to pause and Resume to continue.",
+            "step4": "<strong>Step 4:</strong> When the timer reaches 0, an alarm sounds and a popup appears."
+          }
+        },
+        "usecases": {
+          "title": "Use Cases",
+          "list": {
+            "tabata": { "title": "Tabata Workout", "desc": "20-second exercise + 10-second rest intervals" },
+            "interval": { "title": "Interval Training", "desc": "High-intensity workout and rest management" },
+            "noodle": { "title": "Noodle Timer", "desc": "Precise 3-minute, 4-minute cooking time" },
+            "cooking": { "title": "Cooking/Baking", "desc": "Check precise cooking times" },
+            "pomodoro": { "title": "Pomodoro Technique", "desc": "25-minute focus + 5-minute break" },
+            "break": { "title": "Break Reminder", "desc": "Take breaks at regular intervals" }
+          }
+        },
+        "faq": {
+          "title": "Frequently Asked Questions",
+          "list": {
+            "noSound": { "q": "I can't hear the timer alarm", "a": "Please check your browser's volume settings. Some browsers may restrict audio playback before user interaction (like clicking). The alarm will work normally after you click the Start button." },
+            "tabata": { "q": "What's the best timer setting for Tabata workout?", "a": "Tabata is a high-intensity interval training with 20 seconds of exercise + 10 seconds of rest, repeated for 8 sets. You can use this timer to set 20 or 10 seconds for each interval." },
+            "noodle": { "q": "How many minutes should I set for cooking noodles?", "a": "Standard instant noodles typically require 3 minutes. Some products may need 4-5 minutes. Enter the desired time in the Minutes field and press Start." },
+            "complete": { "q": "How does the timer notify me when it reaches zero?", "a": "When the timer completes, an alarm sound plays and a popup appears on screen. Click the OK button to stop the alarm and set a new timer." }
+          }
+        },
+        "privacy": {
+          "title": "Privacy Notice",
+          "text": "Timer settings and records are processed only in your browser and are not transmitted to any server. Pomodoro session records and alarm settings are stored only in the browser's local storage, so there is no risk of your personal data being leaked."
+        }
       }
     }
   },
@@ -688,6 +951,10 @@
         }
       }
     },
+    "privacy": {
+      "title": "Privacy Notice",
+      "text": "All amounts and currency selections you enter are processed entirely in your browser and are never sent to or stored on any external server. Exchange rate data is retrieved from the public Korea Exim Bank API. We do not collect or store any personal information."
+    },
     "disqus": {
       "title": "Exchange Rate Calculator"
     },
@@ -736,7 +1003,18 @@
       "faq6q": "How can I get preferential exchange rates?",
       "faq6a": "Use bank mobile app exchanges, primary bank benefits, large-volume exchanges, and exchange rate alert services for better rates.",
       "noticeTitle": "Notice",
-      "noticeText": "Exchange rate information is based on the standard rates from the Export-Import Bank of Korea and may differ from actual exchange rates. Please verify with financial institutions directly for investment decisions or large transactions."
+      "noticeText": "Exchange rate information is based on the standard rates from the Export-Import Bank of Korea and may differ from actual exchange rates. Please verify with financial institutions directly for investment decisions or large transactions.",
+      "featuresTitle": "Key Features",
+      "featureRealTime": "Real-time Rates",
+      "featureRealTimeDesc": "Provides the latest exchange rates every business day based on the official Korea Exim Bank standard rates.",
+      "featureAccuracy": "Official Data",
+      "featureAccuracyDesc": "Uses certified standard rates from the Export-Import Bank of Korea for reliable exchange rate information.",
+      "featureEasyCalc": "Easy Calculation",
+      "featureEasyCalcDesc": "Enter an amount to instantly see the converted result, and copy it to your clipboard with one click.",
+      "featureMultiPlatform": "Mobile Optimized",
+      "featureMultiPlatformDesc": "Check exchange rates conveniently on any device with an optimized interface for both PC and mobile.",
+      "privacyTitle": "Privacy Notice",
+      "privacyText": "All amounts and currency selections you enter are processed entirely in your browser and are never sent to or stored on any external server. Exchange rate data is retrieved from the public Korea Exim Bank API. We do not collect or store any personal information."
     }
   },
   "PayCal": {
@@ -817,6 +1095,54 @@
     },
     "disqus": {
       "title": "Net Salary Calculator"
+    },
+    "seo": {
+      "ariaLabel": "Page description",
+      "description": {
+        "title": "What is Net Salary?",
+        "p1": "Net salary (take-home pay) is the amount you actually receive after deducting 4 major insurances (National Pension, Health Insurance, Long-term Care Insurance, Employment Insurance) and income taxes from your gross annual salary. The actual amount may vary depending on the number of dependents and non-taxable items."
+      },
+      "insurance": {
+        "title": "2026 Insurance Rates",
+        "p1": "Employee contribution rates for 2026: National Pension 4.5%, Health Insurance 3.545%, Long-term Care Insurance 12.27% of Health Insurance, Employment Insurance 0.9%. The employer also contributes the same rates (except for employment insurance), so the total contribution is doubled."
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "Enter your gross annual salary (e.g., 36,000,000 KRW)",
+          "step2": "Select whether severance pay is included in your salary",
+          "step3": "Enter non-taxable amount like meal allowance (up to 200,000 KRW/month)",
+          "step4": "Select the number of dependents including yourself",
+          "step5": "Add children aged 8-20 if applicable",
+          "step6": "Click calculate to see your monthly net salary"
+        }
+      },
+      "tips": {
+        "title": "Tips to Maximize Net Pay",
+        "p1": "Maximize non-taxable items to increase your take-home pay. Ask your company to include meal allowance (200,000 KRW/month) and car allowance (200,000 KRW/month) in your salary breakdown. Also, make sure to claim all deductions during year-end tax settlement for potential refunds."
+      },
+      "salaryTable": {
+        "title": "2026 Salary Reference Table",
+        "desc": "Estimated monthly net pay based on 1 dependent and 200,000 KRW non-taxable amount. Actual amounts may vary.",
+        "colAnnual": "Annual Salary",
+        "colMonthly": "Monthly Net",
+        "rows": {
+          "r1": { "annual": "24M KRW", "monthly": "~1.85M KRW" },
+          "r2": { "annual": "30M KRW", "monthly": "~2.20M KRW" },
+          "r3": { "annual": "36M KRW", "monthly": "~2.60M KRW" },
+          "r4": { "annual": "40M KRW", "monthly": "~2.85M KRW" },
+          "r5": { "annual": "45M KRW", "monthly": "~3.15M KRW" },
+          "r6": { "annual": "50M KRW", "monthly": "~3.45M KRW" },
+          "r7": { "annual": "60M KRW", "monthly": "~4.00M KRW" },
+          "r8": { "annual": "70M KRW", "monthly": "~4.55M KRW" },
+          "r9": { "annual": "80M KRW", "monthly": "~5.10M KRW" },
+          "r10": { "annual": "100M KRW", "monthly": "~6.20M KRW" }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "Your salary information and calculation results are processed only in your browser and are not transmitted to any server. All calculations are performed client-side, so there is no risk of your personal salary information being leaked."
+      }
     }
   },
   "InterestCalculator": {
@@ -1152,6 +1478,99 @@
       "title": "Important Notice",
       "content": "This calculator provides estimates only. Actual severance pay may vary depending on company policies and collective agreements. For accurate calculation, please contact your HR department or the Ministry of Employment and Labor (1350)."
     },
+    "seo": {
+      "description": {
+        "title": "What is the Severance Pay Calculator?",
+        "p1": "Severance pay is a statutory benefit under Korea's Employee Retirement Benefit Security Act that workers who have been continuously employed for 1 year or more receive upon resignation. It is calculated as: Average Daily Wage x 30 days x (Service days / 365). All employment types (full-time, contract, part-time) are eligible if requirements are met.",
+        "p2": "This severance pay calculator computes gross severance pay, retirement income tax (2026 rates), and net after-tax amount all at once by simply entering your join date, resignation date, and 3-month salary. It also provides DB/DC pension comparison and a 5-step detailed calculation breakdown for comprehensive retirement planning."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Accurate Severance Calculation",
+            "desc": "Calculates severance pay based on average daily wage. Includes bonuses (3/12 of annual) and annual leave allowance (3/12) for precise average wage computation."
+          },
+          "feat2": {
+            "title": "Automatic Retirement Tax Calculation",
+            "desc": "Automatically calculates retirement income tax and local tax based on 2026 rates, applying service years deduction, converted income, and tax brackets."
+          },
+          "feat3": {
+            "title": "DB/DC Pension Comparison",
+            "desc": "Compares estimated payouts between Defined Benefit (DB) and Defined Contribution (DC) pension plans. Input your expected DC return rate for simulation."
+          },
+          "feat4": {
+            "title": "5-Step Detailed Breakdown",
+            "desc": "Transparently shows the entire calculation process: service period, average wage, gross severance, retirement tax, and net after-tax amount in 5 steps."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Join Date</strong> — Choose your company join date in the Work Period section. Use the start date on your employment contract.",
+          "step2": "<strong>Select Resignation Date</strong> — Choose your planned resignation date. This means the day after your last working day.",
+          "step3": "<strong>Enter 3-Month Salary</strong> — Enter your total pre-tax salary for the last 3 months (base salary + fixed allowances).",
+          "step4": "<strong>Enter Bonus/Leave Pay</strong> — Enter your total annual bonus and annual leave allowance if applicable. Optional fields.",
+          "step5": "<strong>Click Calculate</strong> — Click the Calculate Severance Pay button to see gross amount, retirement tax, and net after-tax amount.",
+          "step6": "<strong>View Results</strong> — Check the step-by-step calculation breakdown and DB/DC pension comparison in the detailed results section."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Retirement & Financial Planning",
+            "desc": "Estimate your severance pay before resignation to plan for living expenses and job search period funds. Enter your exact 3-month salary for more precise results."
+          },
+          "uc2": {
+            "title": "Job Change Compensation Comparison",
+            "desc": "Calculate your current company's severance pay and unused leave allowance, then compare with a new employer's offer for informed decision-making."
+          },
+          "uc3": {
+            "title": "Pension Plan Selection (DB/DC)",
+            "desc": "Compare expected payouts between DB and DC pension plans to choose the type that best suits your situation and career plans."
+          },
+          "uc4": {
+            "title": "Pre-check Retirement Income Tax",
+            "desc": "Calculate retirement income tax on your severance pay in advance to understand the actual amount you'll receive. Check service-year-based deduction benefits."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "Q. How is severance pay calculated?",
+            "a": "Severance Pay = Average Daily Wage x 30 days x (Service days / 365). The average daily wage is the total wages for 3 months before resignation divided by the total days (approximately 91 days)."
+          },
+          "q2": {
+            "q": "Q. Can part-time or contract workers receive severance?",
+            "a": "Yes. Regardless of employment type, workers who have been continuously employed for 1+ year and worked 15+ hours per week are eligible for severance pay."
+          },
+          "q3": {
+            "q": "Q. Are bonuses and leave pay included in the calculation?",
+            "a": "Yes. 3/12 (three months' worth) of annual bonuses and annual leave allowance are factored into the average wage calculation."
+          },
+          "q4": {
+            "q": "Q. What is the deadline for severance payment?",
+            "a": "Employers must pay severance within 14 days of the employee's resignation date. Late payment incurs penalty interest at 20% per annum."
+          },
+          "q5": {
+            "q": "Q. Is severance pay taxed?",
+            "a": "Yes, retirement income tax is levied on severance pay. Longer service periods receive greater deductions. This calculator shows both pre-tax and after-tax amounts."
+          },
+          "q6": {
+            "q": "Q. Can I get an interim settlement?",
+            "a": "In principle, interim settlement is prohibited. Exceptions are allowed only for legally specified reasons such as purchasing a home, paying rent deposits, or medical care lasting 6+ months."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This severance pay calculator processes all data within your browser. Your sensitive financial information including salary details, employment dates, and bonus amounts are never sent to any server. No information is stored or collected. You can safely enter your personal financial data."
+      }
+    },
     "disqus": {
       "title": "Severance Pay Calculator"
     }
@@ -1275,6 +1694,68 @@
         }
       }
     },
+    "seo": {
+      "description": {
+        "title": "What is the Korean Age Calculator?",
+        "p1": "The Korean Age Calculator is an online tool that calculates International Age (global standard), Korean Age (traditional counting), and Year Age (used in certain laws) all at once from your birthdate. It helps you navigate the often confusing age calculations, especially since Korea's 2023 Age Unification Law.",
+        "p2": "Beyond age calculation, it provides a birthday D-Day counter, zodiac animal, zodiac sign (constellation), generation classification (Millennial, Gen Z, etc.), and age milestones (Hwangap at 60, Gohui at 70, etc.)."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "3 Age Systems",
+            "desc": "Compare International Age (legal standard), Korean Age (traditional), and Year Age (military/youth protection laws) at a glance."
+          },
+          "feat2": {
+            "title": "D-Day & Detailed Age",
+            "desc": "Shows days until your next birthday along with detailed age in years, months, and days."
+          },
+          "feat3": {
+            "title": "Zodiac & Constellation",
+            "desc": "Automatically calculates your Chinese zodiac animal and Western zodiac sign based on birthdate."
+          },
+          "feat4": {
+            "title": "Generation & Milestones",
+            "desc": "Identifies your generation (Gen X, Millennial, Gen Z, etc.) and shows traditional age milestones."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Birth Date</strong> — Select your date of birth.",
+          "step2": "<strong>Set Reference Date</strong> — Change the reference date if you want to calculate age for a specific date. Default is today.",
+          "step3": "<strong>Calculate</strong> — Click the 'Calculate Age' button.",
+          "step4": "<strong>View Results</strong> — See your International Age, Korean Age, Year Age along with zodiac, constellation, and birthday D-Day."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Age Unification Law",
+            "desc": "Verify your legal age under Korea's 2023 Age Unification Law that standardized age to International Age."
+          },
+          "uc2": {
+            "title": "School Enrollment Age",
+            "desc": "Check your child's enrollment eligibility by comparing International Age and Year Age."
+          },
+          "uc3": {
+            "title": "Military Service Timing",
+            "desc": "Determine conscription eligibility based on Year Age as used in the Military Service Act."
+          },
+          "uc4": {
+            "title": "Insurance & Contracts",
+            "desc": "Verify your exact International Age for insurance applications, loan assessments, and other contracts."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "Your birthdate is processed entirely in the browser and is never sent to or stored on any server. All data is deleted when you close the page. You can use this tool with complete confidence."
+      }
+    },
     "disqus": {
       "title": "International Age Calculator"
     }
@@ -1333,6 +1814,89 @@
       "a3": "On <strong>Windows</strong>, press <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">Windows key + .(Period)</code>. On <strong>Mac</strong>, press <code style=\"background: #eee; padding: 2px 5px; border-radius: 3px\">Control + Command + Space</code> to open the emoji picker.",
       "q4": "Q. The same emoji looks different on different devices.",
       "a4": "While emojis follow Unicode standards, the actual designs vary by platform (Apple, Google, Samsung, etc.). The same emoji code may look different depending on your device."
+    },
+    "seo": {
+      "description": {
+        "title": "What is the Special Characters Collection?",
+        "p1": "The Special Characters Collection is a free online tool that organizes over 160 special characters and thousands of emojis by category, letting you copy any character with a single click. Includes math symbols, arrows, currency signs, technical symbols, and more.",
+        "p2": "Displays Unicode code points (U+xxxx) and HTML entity codes alongside each character, making it useful for developers too. Features like favorites, bulk copy, and emoji skin tone variants make it a practical tool for everyday use. Optimized for Instagram, Facebook, YouTube, and other social media platforms."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "14 Organized Categories",
+            "desc": "Systematically organized into 14 categories including faces, hearts, hands, animals, food, sports, math symbols, and arrows for quick character discovery."
+          },
+          "feat2": {
+            "title": "Unicode & HTML Entity Info",
+            "desc": "Displays each character's Unicode code point (U+xxxx) and HTML entity code for immediate use in web development."
+          },
+          "feat3": {
+            "title": "Favorites & Bulk Copy",
+            "desc": "Save frequently used characters to favorites and use bulk selection mode to copy multiple characters at once."
+          },
+          "feat4": {
+            "title": "Emoji Skin Tone Variants",
+            "desc": "Supports multiple skin tone variants for hand gesture and people emojis, letting you choose the style that suits you."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select a Category</strong> — Choose the type you want (faces, hearts, math symbols, etc.) from the category tabs at the top.",
+          "step2": "<strong>Click to Copy</strong> — Click any emoji or special character to automatically copy it to your clipboard.",
+          "step3": "<strong>Bulk Select & Copy</strong> — Enable bulk selection mode, select multiple characters, then click 'Copy All' to copy them all at once.",
+          "step4": "<strong>Save Favorites</strong> — Add frequently used characters to favorites for quick access on your next visit."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Social Media & Blog Posts",
+            "desc": "Enhance your Instagram, Facebook, YouTube, and blog posts with emojis and special characters to catch attention."
+          },
+          "uc2": {
+            "title": "Documents & Presentations",
+            "desc": "Insert special characters and symbols into reports, emails, and PPTs to create professional, polished documents."
+          },
+          "uc3": {
+            "title": "Programming & Web Development",
+            "desc": "Reference Unicode code points and HTML entity codes to accurately insert special characters into web pages and source code."
+          },
+          "uc4": {
+            "title": "Messaging & Chat",
+            "desc": "Use emojis in KakaoTalk, Discord, Slack, and other messengers to effectively convey emotions and nuances."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "Q. Emojis show as squares.",
+            "a": "Old devices or browsers may not support the latest emojis and display them as boxes. Try updating your OS or browser to the latest version."
+          },
+          "q2": {
+            "q": "Q. Can I use them commercially?",
+            "a": "Emojis are Unicode standard characters and can be used freely like text. However, using the emoji design (font) itself as a logo may require checking the copyright policy of the platform (Apple, Google, etc.)."
+          },
+          "q3": {
+            "q": "Q. How can I type emojis on PC?",
+            "a": "On Windows, press Windows key + Period (.). On Mac, press Control + Command + Space to open the emoji picker."
+          },
+          "q4": {
+            "q": "Q. The same emoji looks different on different devices.",
+            "a": "While emojis follow Unicode standards, the actual designs vary by platform (Apple, Google, Samsung, etc.). The same emoji code may look different depending on your device."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "Favorites and recent usage history are stored only in your browser's localStorage and are never sent to external servers. All copy and search operations are performed directly in your browser."
+      }
     },
     "disqus": {
       "title": "Emoji Collection"
@@ -1469,6 +2033,68 @@
     },
     "disqus": {
       "title": "Unit Converter"
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Unit Converter?",
+        "p1": "The Unit Converter is a free online tool that converts various units across 12 categories in real-time, including length, weight, temperature, speed, area, volume, data, time, pressure, energy, power, and cooking. It supports both metric and imperial systems, as well as traditional Korean units like Ri, Geun, and Pyeong.",
+        "p2": "Whether you need miles-to-kilometers conversion for travel, cups-to-milliliters for cooking, or pascal-to-atmosphere for engineering, this tool handles all unit conversions in one place. Adjustable decimal precision and one-click copy make it easy to use."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "key1": {
+            "title": "12 Categories Supported",
+            "desc": "Convert units across length, weight, temperature, speed, area, volume, data, time, pressure, energy, power, and cooking."
+          },
+          "key2": {
+            "title": "Traditional Korean Units",
+            "desc": "Includes Korean traditional units like Ri, Geun, and Pyeong that are commonly used in Korea."
+          },
+          "key3": {
+            "title": "Adjustable Decimal Precision",
+            "desc": "Set decimal places from 2 to 8 digits for precise conversions suited to your needs."
+          },
+          "key4": {
+            "title": "Real-time Conversion & One-click Copy",
+            "desc": "Results appear instantly as you type, and the copy button lets you quickly copy conversion results to your clipboard."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Category</strong> — Choose the unit category (length, weight, temperature, etc.) from the tabs.",
+          "step2": "<strong>Enter Value</strong> — Type the number you want to convert in the input field.",
+          "step3": "<strong>Select Units</strong> — Choose the source and target units from the dropdowns. Use the swap button to reverse direction.",
+          "step4": "<strong>Check Result</strong> — View the real-time conversion result and use the copy button to copy to clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "case1": {
+            "title": "Engineering & Construction",
+            "desc": "Convert pressure (Pa/bar/atm), energy (J/cal/kWh), and power (W/kW/hp) units for design and simulations."
+          },
+          "case2": {
+            "title": "Cooking & Baking",
+            "desc": "Accurately convert measuring cups, tablespoons, teaspoons, and cc to follow recipes from any region."
+          },
+          "case3": {
+            "title": "Science & Research",
+            "desc": "Support precise conversions like Kelvin-Celsius temperature and energy unit calculations for experiments and papers."
+          },
+          "case4": {
+            "title": "Health & Fitness",
+            "desc": "Convert weight (kg/lb), distance (km/mi), and calories (cal/kcal) for exercise and diet management."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "All calculations in the Unit Converter are processed entirely in your browser. No input values or conversion results are ever sent to any server. Use it with confidence."
+      }
     }
   },
   "FileSizeConverter": {
@@ -1543,6 +2169,42 @@
       "q4": "Q. What's the difference between KB and KiB?",
       "a4": "KB (kilobyte) is 1,000 bytes, while KiB (kibibyte) is 1,024 bytes. This tool uses the 1,024-based calculation commonly used in computing."
     },
+    "seo": {
+      "howto": {
+        "title": "How to Use File Size Converter",
+        "steps": {
+          "s1": "<strong>Select Unit</strong> — Choose the file size unit from Bit, Byte, KB, MB, GB, TB, or PB.",
+          "s2": "<strong>Enter Value</strong> — Type the number you want to convert. Use quick select buttons for common values.",
+          "s3": "<strong>View Results</strong> — See automatic conversions to all units. Click any unit to change the base.",
+          "s4": "<strong>Toggle Binary/Decimal</strong> — Switch between binary (1024-based) and decimal (1000-based) to compare OS differences."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "cloud": {
+            "title": "Cloud Storage Planning",
+            "desc": "Calculate storage capacity for Google Drive, iCloud, Dropbox, and other cloud services to track remaining space."
+          },
+          "transfer": {
+            "title": "File Transfer Time",
+            "desc": "Estimate download/upload time based on file size and internet speed."
+          },
+          "web": {
+            "title": "Web Optimization",
+            "desc": "Analyze image and script file sizes for web pages to optimize loading speed."
+          },
+          "server": {
+            "title": "Server & Storage Management",
+            "desc": "Perform unit conversions for server disk planning, NAS storage configuration, and backup capacity estimation."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This file size converter performs all calculations entirely within your browser. No data is sent to any server, and no information is stored or collected. Use with complete confidence."
+      }
+    },
     "disqus": {
       "title": "File Size Converter"
     }
@@ -1616,6 +2278,73 @@
       "q3": {
         "q": "Q. Why does Base64 encoding increase size?",
         "a": "Base64 converts 6 bits into 8-bit ASCII characters, so the encoded data size increases by approximately 33%. (3 bytes → 4 characters)"
+      },
+      "q4": {
+        "q": "Q. What is the difference between URL-Safe and standard Base64?",
+        "a": "Standard Base64 uses +, /, and = characters, which have special meanings in URLs. URL-Safe Base64 replaces + with -, / with _, and removes padding (=), making it safe to use in URLs and filenames."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is Base64 Encoding?",
+        "p1": "Base64 encoding converts binary data into 64 printable ASCII characters (A-Z, a-z, 0-9, +, /). It was developed to safely transmit binary data in text-only environments such as email, web API communication, and image embedding. It is defined by the RFC 4648 standard.",
+        "p2": "This tool is a free online Base64 encoder/decoder that converts text and files in real-time. It supports URL-Safe mode, file upload, image preview, and drag-and-drop. All processing happens in your browser, so no data is sent externally."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-time Encoding/Decoding",
+            "desc": "Enter text to instantly convert to Base64, or paste a Base64 string to restore the original text. Fully supports UTF-8 encoding."
+          },
+          "feat2": {
+            "title": "URL-Safe Mode",
+            "desc": "Supports URL-Safe Base64 conversion using -, _ instead of +, /, =. Safe to use in URL parameters and filenames."
+          },
+          "feat3": {
+            "title": "File Upload & Image Preview",
+            "desc": "Upload files to automatically convert to Base64. Image files get a Data URI format preview."
+          },
+          "feat4": {
+            "title": "Drag & Drop",
+            "desc": "Drag files into the input area for instant Base64 conversion. Fast and intuitive file processing."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Mode</strong> — Choose encode (text to Base64) or decode (Base64 to text) mode at the top.",
+          "step2": "<strong>Enter Text or Upload File</strong> — Type or paste text to convert, or add files via the upload button or drag and drop.",
+          "step3": "<strong>Set Options</strong> — Enable URL-Safe mode if you need to use the result in URL parameters.",
+          "step4": "<strong>Convert</strong> — Click the convert button and the result appears instantly.",
+          "step5": "<strong>Copy Result</strong> — Click the copy button to copy the conversion result to your clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "API Development (Basic Auth)",
+            "desc": "In HTTP Basic Authentication, username:password is Base64 encoded and sent via the Authorization header. An essential encoding method for API testing."
+          },
+          "uc2": {
+            "title": "Email Attachments",
+            "desc": "The MIME protocol uses Base64 to convert binary attachments into text format. It is the standard encoding method for email systems."
+          },
+          "uc3": {
+            "title": "Data URI Image Embedding",
+            "desc": "Convert images to Base64 and embed them directly in HTML/CSS to display images without additional HTTP requests. Effective for small icons and logos."
+          },
+          "uc4": {
+            "title": "Data Transfer & Storage",
+            "desc": "Use Base64 encoding when you need to include binary data in text-based formats like JSON or XML. Used in JWT tokens, configuration files, and more."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This Base64 encoder/decoder processes all data within your browser. The text you enter or files you upload are never sent to any server. No information is stored or collected. You can safely convert even sensitive data."
       }
     },
     "disqus": {
@@ -1687,13 +2416,89 @@
       }
     },
     "faq": {
-      "title": "FAQ",
-      "q1": "Q. Will compression reduce image quality?",
-      "a1": "With 80%+ quality setting, the difference is barely noticeable. You get much smaller files while maintaining clean images.",
-      "q2": "Q. What format are compressed images saved in?",
-      "a2": "Compressed images are saved as JPEG format, which provides the most efficient compression for photos.",
-      "q3": "Q. Can I compress transparent PNG images?",
-      "a3": "PNG transparency is replaced with white background when converting to JPEG. Keep the original PNG if transparency is needed."
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "Q. Will compression reduce image quality?",
+        "a": "With 80%+ quality setting, the difference is barely noticeable. You get much smaller files while maintaining clean images."
+      },
+      "q2": {
+        "q": "Q. Which format should I choose: JPEG, WebP, or PNG?",
+        "a": "JPEG is most efficient for photos, WebP offers the smallest file sizes, and PNG is best for logos or icons that need transparency."
+      },
+      "q3": {
+        "q": "Q. Can I compress transparent PNG images?",
+        "a": "PNG and WebP preserve transparency. Converting to JPEG replaces transparent areas with white background, and a warning is displayed."
+      },
+      "q4": {
+        "q": "Q. Are images uploaded to any server?",
+        "a": "No, all compression is performed locally using the browser's Canvas API. Images are never transmitted to or stored on any external server."
+      },
+      "q5": {
+        "q": "Q. Can I compress multiple images at once?",
+        "a": "Yes, you can upload and compress multiple images simultaneously. After compression, use the 'Download All' button to save them all at once."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is Image Compression?",
+        "p1": "Image compression reduces file size while maintaining visual quality as much as possible. Image file sizes matter for everyday tasks like website speed optimization, email attachments, and social media uploads.",
+        "p2": "This online image compressor supports 3 output formats: JPEG, WebP, and PNG, with a quality slider for precise compression control. All processing happens in your browser, so images are never sent to any server."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "3 Output Formats",
+            "desc": "Choose between JPEG (best for photos), WebP (smallest size), or PNG (preserves transparency) based on your needs."
+          },
+          "feat2": {
+            "title": "Before/After Comparison Slider",
+            "desc": "Directly compare original and compressed images with a slider to visually verify quality differences."
+          },
+          "feat3": {
+            "title": "Transparency Warning System",
+            "desc": "Automatically warns when converting transparent PNGs to JPEG to prevent unintended data loss."
+          },
+          "feat4": {
+            "title": "Drag & Drop with Batch Processing",
+            "desc": "Simply drag images to upload and compress multiple images at once."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Upload Images</strong> — Drag and drop or click to upload images. Multiple images can be uploaded at once.",
+          "step2": "<strong>Select Output Format</strong> — Choose your preferred output format: JPEG, WebP, or PNG.",
+          "step3": "<strong>Adjust Quality</strong> — Use the slider to adjust compression quality (1-100%). 80%+ maintains nearly lossless quality.",
+          "step4": "<strong>Download</strong> — Once compression is complete, save images using individual or batch download buttons."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Website Optimization",
+            "desc": "Reduce image sizes for blogs, online stores, and portfolios to improve page loading speed."
+          },
+          "uc2": {
+            "title": "Email Attachments",
+            "desc": "Compress images to meet email attachment size limits (typically 25MB) before sending."
+          },
+          "uc3": {
+            "title": "Social Media Upload",
+            "desc": "Compress images for faster uploads and optimal quality on Instagram, Facebook, Twitter, and more."
+          },
+          "uc4": {
+            "title": "Storage Space Saving",
+            "desc": "Batch compress large photo collections to save cloud storage or local disk space."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "All uploaded images are processed locally using the browser's Canvas API. Images are never transmitted to or stored on any external server, and all data is deleted when you close the page. Feel free to compress personal photos or work images with confidence."
+      }
     }
   },
   "ColorConverter": {
@@ -1774,6 +2579,89 @@
       "a3": "CSS supports HEX, RGB, and HSL. HEX is compact and commonly used, RGB is great with alpha transparency, and HSL is useful when you need to adjust colors programmatically.",
       "q4": "Q. How do I copy color codes?",
       "a4": "Click the copy button next to any color format (HEX, RGB, HSL) to copy it to your clipboard. You can then paste it directly into CSS or design tools."
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Color Converter?",
+        "p1": "The Color Converter is a free online tool that converts between HEX, RGB, HSL, RGBA, and CMYK color code formats in real-time. Quickly convert and copy color codes needed for web design, app development, and graphic work.",
+        "p2": "Intuitively select colors with the color picker, check web accessibility with the WCAG contrast checker, and explore color harmony recommendations and tint/shade palette generation — all the features designers need in one place."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "5 Color Format Conversion",
+            "desc": "Convert between HEX, RGB, HSL, RGBA (with opacity), and CMYK formats in real-time. One-click copy for immediate use."
+          },
+          "feat2": {
+            "title": "WCAG Contrast Checker",
+            "desc": "Calculate the contrast ratio between foreground and background colors and automatically verify WCAG 2.1 accessibility compliance (AA/AAA)."
+          },
+          "feat3": {
+            "title": "Color Harmony Recommendations",
+            "desc": "Automatically suggest complementary, analogous, triadic, and split-complementary color combinations based on the color wheel."
+          },
+          "feat4": {
+            "title": "Tint & Shade Palette",
+            "desc": "Generate lighter tints and darker shades based on your selected color. Click any swatch to apply it instantly."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select a Color</strong> — Click the color picker to choose a color, or click one of the preset colors.",
+          "step2": "<strong>Enter Values</strong> — You can also directly enter values in HEX, RGB, or HSL format. Other formats are converted automatically.",
+          "step3": "<strong>Copy Code</strong> — Click the copy button next to the converted color code to copy it to your clipboard.",
+          "step4": "<strong>Check Accessibility & Harmony</strong> — Use the WCAG contrast checker to verify accessibility, and explore color harmony suggestions for matching colors."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Web Design & CSS Development",
+            "desc": "Quickly convert HEX/RGB/HSL codes for CSS and choose color combinations that meet WCAG accessibility standards."
+          },
+          "uc2": {
+            "title": "App & UI Design",
+            "desc": "Get RGBA codes for iOS/Android app development and design consistent color palettes for your applications."
+          },
+          "uc3": {
+            "title": "Graphic Design & Print",
+            "desc": "Convert digital colors (RGB) to print-ready CMYK for reference when creating printed materials."
+          },
+          "uc4": {
+            "title": "Accessibility Testing",
+            "desc": "Check text-to-background contrast ratios on your website to find color combinations that are readable for visually impaired users."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "Q. What is a HEX color code?",
+            "a": "HEX (hexadecimal) represents colors using base-16 numbers in #RRGGBB format. Each pair represents Red, Green, Blue from 00-FF (0-255). Example: #FF0000 is pure red."
+          },
+          "q2": {
+            "q": "Q. What's the difference between RGB and HSL?",
+            "a": "RGB defines colors by mixing Red, Green, and Blue values. HSL uses Hue (color type), Saturation (intensity), and Lightness (brightness), making it more intuitive for color adjustments."
+          },
+          "q3": {
+            "q": "Q. Which color format should I use for web?",
+            "a": "CSS supports HEX, RGB, and HSL. HEX is compact and commonly used, RGB is great with alpha transparency, and HSL is useful when you need to adjust colors programmatically."
+          },
+          "q4": {
+            "q": "Q. How do I copy color codes?",
+            "a": "Click the copy button next to any color format (HEX, RGB, HSL) to copy it to your clipboard. You can then paste it directly into CSS or design tools."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "Color data is processed entirely in your browser. No color information is sent to external servers, and all conversions and calculations are performed directly on your device."
+      }
     },
     "disqus": {
       "title": "Color Code Converter"
@@ -1881,6 +2769,73 @@
       "q4": {
         "q": "Q. Is it a problem if URLs become long with %XX encoding?",
         "a": "Long encoded URLs work fine functionally. Browsers display them decoded in the address bar for readability. However, some older systems may have URL length limits."
+      },
+      "q5": {
+        "q": "Q. What is double encoding?",
+        "a": "Double encoding occurs when an already encoded string is encoded again. For example, %20 (space) becomes %2520. If the server decodes only once, it gets the encoded string instead of the original value. This tool automatically detects double encoding and warns you."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is URL Encoding?",
+        "p1": "URL encoding (percent encoding) is a standard method for converting characters that cannot be used in URLs into safe ASCII format using %XX notation. It is essential for including non-ASCII characters, spaces, and special characters in URLs, ensuring browsers and servers can exchange data accurately.",
+        "p2": "This tool performs real-time URL encoding/decoding for free online. It supports both encodeURIComponent and encodeURI methods, plus advanced features for developers including HTML entity encoding, URL structure parser, query parameter editor, and double encoding detection."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-time Encode/Decode",
+            "desc": "Enter text to instantly see URL encoding/decoding results. Supports both encodeURIComponent (for parameters) and encodeURI (for full URLs)."
+          },
+          "feat2": {
+            "title": "HTML Entity Mode",
+            "desc": "Supports HTML entity encoding (&amp;, &lt;, &gt;, etc.) in addition to URL encoding. Useful for safely displaying special characters in web pages."
+          },
+          "feat3": {
+            "title": "URL Parser & Query Editor",
+            "desc": "Enter a URL to automatically parse protocol, domain, path, and query parameters. Edit query parameters directly and generate new URLs."
+          },
+          "feat4": {
+            "title": "Double Encoding Detection",
+            "desc": "Automatically detects and warns when trying to encode an already encoded string. Prevents common development mistakes."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Mode</strong> — Choose encode or decode mode at the top.",
+          "step2": "<strong>Select Encoding Type</strong> — Choose Component (for parameter values, recommended) or URI (for complete URLs).",
+          "step3": "<strong>Enter Text</strong> — Paste the URL or text you want to convert in the input field.",
+          "step4": "<strong>Convert</strong> — Click the convert button to see the result.",
+          "step5": "<strong>Copy Result</strong> — Click the copy button to copy the result to your clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Web Development (API Parameters)",
+            "desc": "URL encoding is essential when sending search terms or data with special characters to REST APIs. Ensures safe transmission of query parameter values."
+          },
+          "uc2": {
+            "title": "SEO (Clean URL Management)",
+            "desc": "Fix issues where non-ASCII characters appear broken in search engine URLs. Decode encoded URLs to verify their readable form."
+          },
+          "uc3": {
+            "title": "Data Transmission & Form Handling",
+            "desc": "When HTML forms submit via GET method, browsers automatically URL-encode the data. Servers decode it to restore the original values."
+          },
+          "uc4": {
+            "title": "Debugging Encoded URLs",
+            "desc": "Decode %XX formatted URLs from server logs or network monitors to quickly understand the actual request content."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This URL encoder/decoder processes all data within your browser. The URLs or text you enter are never sent to any server. No information is stored or collected. You can safely convert URLs containing API keys or authentication credentials."
       }
     },
     "doubleEncodingWarning": "Double encoding detected! Re-encoding already encoded text may cause issues.",
@@ -1962,12 +2917,88 @@
     },
     "faq": {
       "title": "FAQ",
-      "q1": "Q. How many bytes is one Korean character?",
-      "a1": "In UTF-8 encoding, one Korean character is 3 bytes. English letters, numbers, and basic special characters are 1 byte each.",
-      "q2": "Q. How are character limits calculated for applications?",
-      "a2": "Most applications use \"characters with spaces\" as the standard. However, some may use \"without spaces\", so check the requirements.",
-      "q3": "Q. How is the word count calculated?",
-      "a3": "Words are counted as units separated by spaces. Useful for checking word count in English essays."
+      "q1": {
+        "q": "Q. How many bytes is one Korean character?",
+        "a": "In UTF-8 encoding, one composed Korean character (Hangul syllable) is 3 bytes. English letters, numbers, and basic special characters are 1 byte each. In EUC-KR encoding, Korean characters are 2 bytes."
+      },
+      "q2": {
+        "q": "Q. How are character limits calculated for applications?",
+        "a": "Most applications use \"characters with spaces\" as the standard. However, some may use \"without spaces\", so always check the specific requirements in the job posting."
+      },
+      "q3": {
+        "q": "Q. How is the word count calculated?",
+        "a": "Words are counted as units separated by spaces. Korean uses spacing rules, while English uses spaces to separate words. Useful for checking word count in English essays."
+      },
+      "q4": {
+        "q": "Q. How is reading time calculated?",
+        "a": "Reading time is estimated based on approximately 500 characters per minute for Korean and 200-250 words per minute for English. Actual reading speed may vary depending on content difficulty."
+      },
+      "q5": {
+        "q": "Q. What are the character limits for different SNS platforms?",
+        "a": "Twitter (X) allows 280 characters, Instagram captions 2,200 characters, Facebook 63,206 characters, and YouTube titles 100 characters. This tool shows real-time comparison against each platform's limit."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Character Counter?",
+        "p1": "Character Counter is an online tool that analyzes your text in real-time, counting characters (with/without spaces), words, bytes, lines, and more. It's useful for various situations with character limits such as blog posts, SNS content, resumes, and essays.",
+        "p2": "Beyond basic counting, it provides character type ratio analysis (Korean, English, numbers, special characters), estimated reading time, keyword frequency analysis, and SNS character limit guides. All analysis is processed in real-time within your browser for speed and security."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-time Character & Word Count",
+            "desc": "Instantly calculates characters (with/without spaces), words, bytes, lines, and paragraphs as you type."
+          },
+          "feat2": {
+            "title": "Estimated Reading Time",
+            "desc": "Displays estimated reading time in minutes and seconds based on your text length. Great for checking blog post or presentation script length."
+          },
+          "feat3": {
+            "title": "SNS Character Limit Guide",
+            "desc": "Shows real-time comparison against character limits for Twitter (280), Instagram (2,200), Facebook, YouTube, and other major platforms."
+          },
+          "feat4": {
+            "title": "Keyword Analysis & Text Transform",
+            "desc": "Analyzes top 10 keyword frequencies and provides text transformation tools including uppercase/lowercase conversion and space removal."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Text</strong> — Type or paste the text you want to analyze into the input area.",
+          "step2": "<strong>View Real-time Analysis</strong> — Character count (with/without spaces), bytes, words, and reading time are displayed automatically.",
+          "step3": "<strong>Check SNS Limits</strong> — Compare your current character count against Twitter, Instagram, and other SNS platform limits.",
+          "step4": "<strong>Use Text Transforms</strong> — Apply uppercase/lowercase conversion, space removal, and other text transformation tools as needed."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Blog & Content Writing",
+            "desc": "Check SEO-optimized character counts and adjust content length using estimated reading time."
+          },
+          "uc2": {
+            "title": "SNS Posting",
+            "desc": "Write posts while checking real-time character limits for Twitter (280 chars), Instagram (2,200 chars), and other platforms."
+          },
+          "uc3": {
+            "title": "Resumes & Cover Letters",
+            "desc": "Verify exact character counts (with/without spaces) when writing cover letters with character limits from job postings."
+          },
+          "uc4": {
+            "title": "Academic Papers & Reports",
+            "desc": "Ensure your abstract meets word count limits or your report meets page requirements for academic submissions."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "Your text is processed entirely in your browser and is never sent to any server. All analysis happens in real-time on your device, so you can safely enter sensitive content. All input data is completely deleted when you close the page."
+      }
     }
   },
   "JsonFormatter": {
@@ -2043,7 +3074,47 @@
       "q2": "Q. What is a JSON formatter used for?",
       "a2": "It's used to prettify compressed JSON for readability or to find and fix JSON syntax errors. Useful for API response analysis, config file editing, and data validation.",
       "q3": "Q. What's the difference between JSON and JavaScript objects?",
-      "a3": "JSON is a string-based data format, while JavaScript objects are a programming language data type. In JSON, keys must be wrapped in double quotes, and functions or undefined cannot be values."
+      "a3": "JSON is a string-based data format, while JavaScript objects are a programming language data type. In JSON, keys must be wrapped in double quotes, and functions or undefined cannot be values.",
+      "q4": "Q. Is there a maximum file size for JSON?",
+      "a4": "JSON itself has no size limit, but this tool runs in the browser, so it works best with data within a few MB. For very large files, consider using a dedicated editor.",
+      "q5": "Q. Why use Minify?",
+      "a5": "Minify removes unnecessary whitespace and line breaks from JSON files to reduce file size. This improves transfer speed and saves storage when deploying API responses or configuration files."
+    },
+    "seo": {
+      "howto": {
+        "title": "How to Use JSON Formatter",
+        "steps": {
+          "s1": "<strong>Paste JSON</strong> — Paste the JSON data you want to format into the input field.",
+          "s2": "<strong>Click Format</strong> — Press the button to convert it to cleanly indented JSON.",
+          "s3": "<strong>View as Tree</strong> — Switch between text/tree view modes to visually explore the data structure.",
+          "s4": "<strong>Copy Result</strong> — Click the copy button to save the formatted JSON to your clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "api": {
+            "title": "API Development & Testing",
+            "desc": "Prettify REST API responses to quickly understand data structures and debug issues."
+          },
+          "debug": {
+            "title": "Debugging & Validation",
+            "desc": "Instantly detect JSON syntax errors and pinpoint the exact location of issues."
+          },
+          "config": {
+            "title": "Config File Editing",
+            "desc": "Neatly organize and edit configuration files like package.json and tsconfig.json."
+          },
+          "learning": {
+            "title": "Learning & Data Analysis",
+            "desc": "Visualize complex JSON structures in tree view to understand data models."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This JSON formatter processes all data entirely within your browser. Your JSON data is never sent to any server, and no information is stored or collected. You can safely process sensitive data with complete confidence."
+      }
     },
     "disqus": {
       "title": "JSON Formatter"
@@ -2158,12 +3229,88 @@
     },
     "faq": {
       "title": "Frequently Asked Questions",
-      "q1": "Q. Is there a file size limit?",
-      "a1": "Since processing happens in your browser, limits depend on your device's memory. Generally, files under 50MB are recommended.",
-      "q2": "Q. Does merging reduce PDF quality?",
-      "a2": "No, the original quality is preserved. Images and text are merged without any loss in quality.",
-      "q3": "Q. Where are split PDF files saved?",
-      "a3": "Files are automatically saved to your browser's download folder. Each page is downloaded as a separate PDF file."
+      "q1": {
+        "q": "Q. Is there a file size limit?",
+        "a": "Since processing happens in your browser, limits depend on your device's memory. Generally, files under 50MB are recommended, but higher-end devices can handle larger files."
+      },
+      "q2": {
+        "q": "Q. Does merging reduce PDF quality?",
+        "a": "No, the original quality is fully preserved. Images, text, and vector graphics are all processed without any loss in quality."
+      },
+      "q3": {
+        "q": "Q. Can I merge multiple PDFs at once?",
+        "a": "Yes, you can upload multiple files at once and reorder them with drag and drop before merging. There is no limit on the number of files."
+      },
+      "q4": {
+        "q": "Q. Are PDF files uploaded to a server?",
+        "a": "No, all processing happens entirely in your browser. Files are never sent to any server, so you can safely work with confidential documents."
+      },
+      "q5": {
+        "q": "Q. What watermark options are available?",
+        "a": "You can add text watermarks with diagonal or center positioning, and freely adjust font size and opacity to suit your needs."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is the PDF Manager?",
+        "p1": "PDF Manager is an all-in-one online PDF editing tool that lets you merge multiple PDFs into one, split a PDF into individual pages, rotate/delete/reorder pages, and add watermarks.",
+        "p2": "No software installation required -- it works directly in your browser, with all file processing happening on your device to keep your private and confidential documents secure. Handle contracts, reports, academic papers, and more for free."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "PDF Merge",
+            "desc": "Combine multiple PDF files into one. Freely reorder files with drag and drop before merging."
+          },
+          "feat2": {
+            "title": "PDF Split & Page Extraction",
+            "desc": "Split a PDF into individual pages or extract specific page ranges. Preview page contents with thumbnails."
+          },
+          "feat3": {
+            "title": "Page Rotation & Deletion",
+            "desc": "Rotate individual pages clockwise or counter-clockwise, and delete unnecessary pages."
+          },
+          "feat4": {
+            "title": "Watermark",
+            "desc": "Add text watermarks with customizable position (diagonal/center), font size, and opacity settings."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Upload PDF</strong> — Drag or click to upload the PDF file(s) you want to edit. Multiple file selection is available for merging.",
+          "step2": "<strong>Select Operation</strong> — Choose from Merge, Split, or Watermark tabs for the desired operation.",
+          "step3": "<strong>Configure Settings</strong> — Adjust page order, specify ranges, rotate/delete pages, or set watermark options.",
+          "step4": "<strong>Download Result</strong> — Download the processed PDF file after the operation is complete."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Contract & Document Management",
+            "desc": "Merge multiple contracts or documents into a single PDF, or add confidential watermarks to protect your documents."
+          },
+          "uc2": {
+            "title": "Report Compilation",
+            "desc": "Combine reports from multiple departments into one file, or extract only the necessary pages for executive summaries."
+          },
+          "uc3": {
+            "title": "Academic Materials",
+            "desc": "Consolidate papers and reference materials into a single PDF, or separate specific chapters for focused study."
+          },
+          "uc4": {
+            "title": "Event & Certification Materials",
+            "desc": "Add watermarks to event materials, certificates, or credentials, and consolidate multiple documents into a single file."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "Uploaded PDF files are processed entirely in your browser and are never sent to any server. You can safely work with sensitive documents such as contracts, resumes, and financial records. All file data is completely deleted when you close the page."
+      }
     }
   },
   "TextDiff": {
@@ -2245,6 +3392,72 @@
       "limits": {
         "q": "Q. Are there any limits on text size?",
         "a": "There are no specific limits, but very large texts (tens of thousands of lines) may process slower depending on your browser's performance."
+      },
+      "viewModes": {
+        "q": "Q. What is the difference between Unified and Side-by-Side view?",
+        "a": "Unified view shows changes in a single flow, making it easier to understand the overall context. Side-by-Side view displays the original and modified text next to each other for intuitive comparison."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Text Diff Tool?",
+        "p1": "A text diff tool compares two texts line by line or character by character, visually highlighting added, removed, and changed sections. It is essential for developers reviewing code changes and for writers or editors comparing previous and current versions of documents.",
+        "p2": "This tool uses the LCS (Longest Common Subsequence) algorithm for precise character-level difference detection, supporting both unified and side-by-side views. Flexible options like ignore whitespace and ignore case allow purpose-specific comparisons."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Unified / Side-by-Side Toggle",
+            "desc": "Freely switch between Unified and Side-by-Side views to compare text in your preferred layout."
+          },
+          "feat2": {
+            "title": "Character-Level LCS Diff",
+            "desc": "Uses the LCS algorithm for character-level comparison to highlight exact change points."
+          },
+          "feat3": {
+            "title": "Scroll Synchronization",
+            "desc": "In side-by-side mode, both panels scroll together so you can easily compare the same position."
+          },
+          "feat4": {
+            "title": "Copy Results & Flexible Options",
+            "desc": "Copy comparison results to clipboard and use ignore whitespace/case options as needed."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Original Text</strong> — Paste the original text in the left input area.",
+          "step2": "<strong>Enter Text to Compare</strong> — Paste the text to compare in the right input area.",
+          "step3": "<strong>Set Options</strong> — If needed, select ignore whitespace or ignore case options.",
+          "step4": "<strong>View Results</strong> — Check the automatically generated comparison results showing added (green) and removed (red) lines."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Code Review",
+            "desc": "Compare code before and after a pull request to quickly identify changed logic, new functions, and deleted code."
+          },
+          "uc2": {
+            "title": "Document Version Comparison",
+            "desc": "Compare previous and current versions of contracts, reports, or proposals to accurately identify changes."
+          },
+          "uc3": {
+            "title": "Translation Verification",
+            "desc": "Compare original and translated text side by side, or compare translation revisions to catch omissions or errors."
+          },
+          "uc4": {
+            "title": "Config File Change Tracking",
+            "desc": "Compare before and after changes in server configs or environment files to detect unintended modifications."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "All text you enter is processed entirely in your browser and is never sent to any server. Data is completely deleted when you close the page. Feel free to compare sensitive code or documents with confidence."
       }
     }
   },
@@ -2364,6 +3577,89 @@
         }
       }
     },
+    "seo": {
+      "description": {
+        "title": "What is an Ovulation Calculator?",
+        "p1": "The Ovulation Calculator is a free online tool that automatically calculates your estimated ovulation date, fertile window, and safe periods based on your last period start date and cycle length. It provides useful reference information for those planning pregnancy or practicing natural family planning.",
+        "p2": "View up to 6 months of ovulation and fertile windows on a multi-cycle calendar, with daily pregnancy probability estimates based on the Wilcox study, irregular cycle warnings, and cycle history tracking."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Multi-Cycle Calendar",
+            "desc": "Displays ovulation days, fertile windows, and safe periods color-coded on a calendar for up to 6 months. Ideal for long-term pregnancy planning."
+          },
+          "feat2": {
+            "title": "Daily Pregnancy Probability",
+            "desc": "Shows estimated pregnancy probability as a percentage for each day around ovulation, based on Wilcox research data."
+          },
+          "feat3": {
+            "title": "Period Duration & Cycle Settings",
+            "desc": "Customize period duration (3-7 days) and cycle length (21-45 days) for more accurate results tailored to your body."
+          },
+          "feat4": {
+            "title": "Irregular Cycle Warning & History",
+            "desc": "Displays a warning when cycle length is outside the normal range (21-35 days) and automatically saves your calculation history."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Last Period Date</strong> — Select the start date of your most recent menstrual period from the calendar.",
+          "step2": "<strong>Set Cycle Length & Duration</strong> — Enter your average cycle length (in days) and period duration. The average cycle is 28 days.",
+          "step3": "<strong>Click Calculate</strong> — Press the Calculate button to automatically compute your ovulation date, fertile window, and safe periods.",
+          "step4": "<strong>Check the Calendar</strong> — View ovulation day (pink), fertile days (orange), safe days (blue), and period days (red) color-coded on the calendar."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Pregnancy Planning",
+            "desc": "Identify your fertile window to time conception attempts during the period with the highest pregnancy probability."
+          },
+          "uc2": {
+            "title": "Natural Family Planning Reference",
+            "desc": "Check safe periods and fertile windows as a reference for natural contraception methods. Note that this is not 100% accurate."
+          },
+          "uc3": {
+            "title": "Health Management & Period Tracking",
+            "desc": "Record your menstrual cycles and identify patterns to support women's health management."
+          },
+          "uc4": {
+            "title": "Doctor Consultation Prep",
+            "desc": "Use your cycle records and ovulation estimates as reference material when consulting with a gynecologist."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "Q. How is the ovulation date calculated?",
+            "a": "Ovulation typically occurs 14 days before the next expected period. For example, with a 28-day cycle, ovulation is expected around day 14 from the last period start date."
+          },
+          "q2": {
+            "q": "Q. When is the fertile window?",
+            "a": "The fertile window spans from 5 days before ovulation to 1 day after, approximately 6-7 days total. Sperm can survive up to 5 days in the body, and an egg survives about 24 hours after ovulation."
+          },
+          "q3": {
+            "q": "Q. Can I use this with irregular cycles?",
+            "a": "This calculator is based on regular menstrual cycles. For irregular cycles, use it as a reference only and consider ovulation test kits or consulting a gynecologist for accurate tracking."
+          },
+          "q4": {
+            "q": "Q. Is the safe period really safe?",
+            "a": "The safe period has a relatively lower chance of pregnancy, but it is not 100% safe. Ovulation can vary from predictions, so relying solely on this for contraception is not recommended."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "Sensitive health information (menstrual cycle, ovulation dates, etc.) is stored only in your browser's localStorage and is never sent to external servers. All calculations are performed directly in your browser, ensuring your privacy is protected."
+      }
+    },
     "disqus": {
       "title": "Ovulation Calculator"
     }
@@ -2446,6 +3742,76 @@
           "a": "Dutch Pay means splitting the bill equally among all participants at a meal or gathering. It's also commonly called 'splitting the bill' or 'going Dutch'."
         }
       }
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Bill Splitting Calculator?",
+        "p1": "The Bill Splitting Calculator is a free online tool that helps you fairly divide expenses among group members at dinners, trips, and gatherings. It supports equal splitting, unequal splitting, and item-based settlement for flexible cost sharing.",
+        "p2": "Even complex settlements are automatically calculated with the minimum number of transactions needed. Features include tip/service charge calculation, settlement history storage, and easy sharing via link, making it convenient for any group occasion."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "key1": {
+            "title": "Equal Split",
+            "desc": "Enter the total amount and it automatically divides by the number of participants. The simplest 1/N settlement method."
+          },
+          "key2": {
+            "title": "Unequal Split & Custom Input",
+            "desc": "Enter the actual amount each person paid to automatically settle the differences. See at a glance who paid more."
+          },
+          "key3": {
+            "title": "Item-based Settlement",
+            "desc": "Assign specific menu items to the people who consumed them for fair billing. Great for separating alcohol or special dietary items."
+          },
+          "key4": {
+            "title": "History & Sharing",
+            "desc": "Settlement records are automatically saved for future reference, and results can be easily shared via link."
+          },
+          "key5": {
+            "title": "Tip / Service Charge",
+            "desc": "Add tip or service charge at 10%, 15%, 20%, or a custom amount to be included in the final calculation."
+          },
+          "key6": {
+            "title": "Minimum Transaction Algorithm",
+            "desc": "Optimizes settlement results among multiple people to minimize the number of transactions needed."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Choose Split Mode</strong> — Select from Equal Split, Custom Input, or Item-based settlement.",
+          "step2": "<strong>Enter Participant Info</strong> — Enter participant names and payment amounts. Use the Add button to include more people.",
+          "step3": "<strong>Calculate</strong> — Click Calculate to see per-person costs and settlement details automatically.",
+          "step4": "<strong>View Results & Share</strong> — See who owes whom, then use the Copy or Share button to send the results."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "case1": {
+            "title": "Team Dinners",
+            "desc": "Split team dinner costs fairly. Use item-based settlement to separate non-drinkers from alcohol expenses."
+          },
+          "case2": {
+            "title": "Travel Expenses",
+            "desc": "Settle various travel costs including accommodation, meals, and transportation all at once."
+          },
+          "case3": {
+            "title": "Gatherings & Parties",
+            "desc": "Easily calculate each person's share for birthday parties, reunions, and club meetups."
+          },
+          "case4": {
+            "title": "Group Purchases",
+            "desc": "Accurately calculate each participant's share when making bulk purchases together."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "All calculations in the Bill Splitting Calculator are processed entirely in your browser. Participant names, amounts, and other input data are never sent to any server. History is stored only in your browser's localStorage."
+      }
     }
   },
   "SqlFormatter": {
@@ -2505,6 +3871,68 @@
           "q": "What does uppercase keywords mean?",
           "a": "It automatically converts SQL keywords (SELECT, FROM, WHERE, etc.) to uppercase. This is a common convention to improve SQL readability."
         }
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is a SQL Formatter?",
+        "p1": "The SQL Formatter is a free online tool that beautifies messy, single-line SQL queries into clean, readable format. It applies keyword line breaks, auto-indentation, and syntax highlighting so you can understand even complex queries at a glance.",
+        "p2": "It supports 6 SQL dialects including MySQL, PostgreSQL, Oracle (PL/SQL), SQL Server (T-SQL), SQLite, and Standard SQL. Features include keyword case conversion, adjustable indentation, SQL minification, and .sql file upload/download."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "key1": {
+            "title": "6 SQL Dialects",
+            "desc": "Select MySQL, PostgreSQL, Oracle, SQL Server, SQLite, or Standard SQL to apply dialect-specific formatting rules."
+          },
+          "key2": {
+            "title": "Syntax Highlighting",
+            "desc": "Keywords are highlighted in blue, strings in green, numbers in orange, and comments in gray for improved code readability."
+          },
+          "key3": {
+            "title": "Keyword Case & Indentation",
+            "desc": "Automatically convert SQL keywords like SELECT, FROM to uppercase, and freely adjust indentation size (2/4/8 spaces)."
+          },
+          "key4": {
+            "title": "Minify & File Management",
+            "desc": "Compress formatted SQL into a single line (Minify), or upload/download .sql files for convenient management."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter SQL Query</strong> — Paste the SQL query you want to format in the left input area, or upload a .sql file.",
+          "step2": "<strong>Configure Options</strong> — Set the SQL Dialect, indent size (2/4/8 spaces), and keyword uppercase conversion.",
+          "step3": "<strong>Click Format</strong> — Click 'Format' to see the syntax-highlighted, formatted result on the right.",
+          "step4": "<strong>Copy / Save Result</strong> — Use 'Copy' to copy to clipboard, or download as a .sql file."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "case1": {
+            "title": "Code Review",
+            "desc": "Format SQL queries in pull requests so team members can easily understand and review them."
+          },
+          "case2": {
+            "title": "Debugging & Log Analysis",
+            "desc": "Beautify single-line SQL from logs to quickly identify the root cause of issues."
+          },
+          "case3": {
+            "title": "Learning & Education",
+            "desc": "Help students and junior developers understand query structure by formatting SQL into readable blocks."
+          },
+          "case4": {
+            "title": "Documentation",
+            "desc": "Clean up SQL for inclusion in technical documents, database design specs, and reports."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "All processing in the SQL Formatter happens entirely in your browser. Your SQL queries are never sent to any server. Feel free to use it with work queries or SQL containing sensitive data."
       }
     }
   },
@@ -2645,6 +4073,68 @@
           "a": "No. All processing happens in your browser. No data is transmitted to any server."
         }
       }
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Cron Expression?",
+        "p1": "A Cron expression is a time-based scheduling format used in Linux/Unix systems to automate recurring tasks. It consists of 5 fields (minute, hour, day of month, month, day of week) that use numbers and special characters (*, /, -, ,) to precisely define execution timing.",
+        "p2": "This Cron Expression Generator lets you create schedules with simple UI clicks, without memorizing complex syntax. With commonly used presets, real-time execution time preview, and human-readable descriptions, even beginners can generate accurate Cron expressions."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "key1": {
+            "title": "Visual Builder",
+            "desc": "Configure each field (minute, hour, day, month, weekday) intuitively with dropdowns and checkboxes. Complete Cron expressions with clicks, no coding required."
+          },
+          "key2": {
+            "title": "Preset Templates",
+            "desc": "Apply 10 commonly used presets with one click: every minute, every 5 minutes, hourly, daily at midnight, weekdays at 9 AM, and more."
+          },
+          "key3": {
+            "title": "Execution Time Preview",
+            "desc": "View upcoming execution times in real-time to verify your schedule is configured correctly before deploying."
+          },
+          "key4": {
+            "title": "Human-readable Description & Copy",
+            "desc": "Translates Cron expressions into easy-to-understand descriptions and provides one-click copy to clipboard."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Preset or Configure Manually</strong> — Choose a common preset or set each field (minute/hour/day/month/weekday) manually.",
+          "step2": "<strong>Set Field Values</strong> — For each field, choose between Every (*), Specific values, Range (1-5), or Interval (*/5).",
+          "step3": "<strong>Check Result</strong> — View the real-time generated Cron expression, human-readable description, and next execution times at the top.",
+          "step4": "<strong>Copy and Use</strong> — Click 'Copy' to copy the generated Cron expression to clipboard and paste it into your crontab or CI/CD config."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "case1": {
+            "title": "Server Backup Scheduling",
+            "desc": "Set up automated schedules like database backups at 3 AM daily or full system backups every Sunday."
+          },
+          "case2": {
+            "title": "Batch Job Automation",
+            "desc": "Configure execution cycles for periodic batch tasks like hourly log cleanup or monthly report generation."
+          },
+          "case3": {
+            "title": "CI/CD Pipelines",
+            "desc": "Generate accurate Cron expressions for build/deploy schedules in GitHub Actions, Jenkins, and other CI/CD tools."
+          },
+          "case4": {
+            "title": "Monitoring & Alerts",
+            "desc": "Set up periodic monitoring schedules for server health checks, disk usage, and certificate expiration."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "All processing in the Cron Expression Generator happens entirely in your browser. No configuration data is ever sent to any server. Use it with confidence."
+      }
     }
   },
   "YoutubeThumbnail": {
@@ -2713,6 +4203,67 @@
       "q4": {
         "q": "Q. Is any data stored on the server?",
         "a": "No, all processing happens in your browser. URLs you enter and images you download are never sent to or stored on any server."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is YouTube Thumbnail Download?",
+        "p1": "The YouTube Thumbnail Extractor is a free online tool that lets you download video preview images (thumbnails) in various resolutions just by entering a YouTube video URL. No software installation or account registration required.",
+        "p2": "It supports 5 resolutions from Max Quality (1280x720) to Default (120x90), and also displays video metadata like title, view count, and upload date. Batch download all resolutions at once and preview thumbnails in a lightbox."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "5 Resolution Options",
+            "desc": "Choose from Max Resolution (1280x720), SD (640x480), HQ (480x360), MQ (320x180), or Default (120x90)."
+          },
+          "feat2": {
+            "title": "One-Click Download",
+            "desc": "Click the download button on your preferred quality to save instantly. Batch download all resolutions is also available."
+          },
+          "feat3": {
+            "title": "Video Metadata Display",
+            "desc": "View video title, view count, upload date and other metadata alongside thumbnails."
+          },
+          "feat4": {
+            "title": "Lightbox Preview",
+            "desc": "Click any thumbnail to view it at full size in a lightbox overlay."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Copy URL</strong> — Copy the URL of the YouTube video you want. (From address bar or share button)",
+          "step2": "<strong>Paste URL</strong> — Paste the URL in the input field and click 'Extract'.",
+          "step3": "<strong>Download</strong> — Click 'Download' on your preferred quality to save the thumbnail image."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Branding & Marketing",
+            "desc": "Study competitor and popular video thumbnails to create more attractive designs for your channel."
+          },
+          "uc2": {
+            "title": "Content Analysis",
+            "desc": "Analyze thumbnail strategies of top YouTubers to identify design patterns that drive more views."
+          },
+          "uc3": {
+            "title": "Presentations",
+            "desc": "Use high-quality thumbnails when introducing YouTube videos in presentations or blog posts."
+          },
+          "uc4": {
+            "title": "Reference Collection",
+            "desc": "Collect thumbnail designs for reference when creating your own video content as a swipe file."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "The URL you enter is only used to fetch thumbnails through YouTube's public image API. No URLs or images are sent to or stored on our servers. All processing happens entirely in your browser."
       }
     }
   },
@@ -2807,6 +4358,89 @@
           "q": "What is the difference between IPv4 and IPv6?",
           "a": "IPv4 uses 32-bit addresses (e.g., 192.168.0.1) providing about 4.3 billion addresses. IPv6 uses 128-bit addresses (e.g., 2001:0db8::1) providing virtually unlimited addresses."
         }
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is an IP Address Lookup?",
+        "p1": "The IP Address Lookup tool is a free online utility that instantly identifies your public IP address, geolocation (country/region/city), and ISP (Internet Service Provider) information. It auto-detects upon page load — no input required.",
+        "p2": "It also supports custom IP/domain lookups, IPv6 detection, VPN/proxy detection, and reverse DNS lookups for advanced network diagnostics. Your approximate location is displayed visually on a map for quick reference."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Auto IP Detection & Copy",
+            "desc": "Automatically detects your public IP address when you visit the page and lets you copy it to your clipboard with one click."
+          },
+          "feat2": {
+            "title": "Geolocation & Map Display",
+            "desc": "Identifies your country, region, city, and coordinates based on IP and displays your approximate location visually on a map."
+          },
+          "feat3": {
+            "title": "VPN/Proxy & IPv6 Detection",
+            "desc": "Automatically detects VPN or proxy usage and also checks for IPv6 address availability alongside your IPv4 address."
+          },
+          "feat4": {
+            "title": "Custom IP/Domain Lookup",
+            "desc": "Look up any IP address or domain name to retrieve its geolocation, ISP, and network information beyond just your own IP."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Visit the Page</strong> — Your public IP address and location information are automatically detected when you load the page.",
+          "step2": "<strong>Check IP Address</strong> — Your current public IP address is displayed prominently at the top. Click the copy button to copy it.",
+          "step3": "<strong>View Location & Network Info</strong> — Check your approximate location (country, region, city) along with ISP and VPN detection results.",
+          "step4": "<strong>Custom IP/Domain Lookup</strong> — Enter a different IP address or domain to look up its information separately."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Security Check",
+            "desc": "Verify your current IP to ensure you're not connecting from an unintended location or network."
+          },
+          "uc2": {
+            "title": "VPN Verification",
+            "desc": "Confirm that your VPN is working correctly by checking whether your IP address and location have actually changed after connecting."
+          },
+          "uc3": {
+            "title": "Network Diagnostics",
+            "desc": "Check ISP information, AS numbers, and reverse DNS to help diagnose network issues and connectivity problems."
+          },
+          "uc4": {
+            "title": "Server & Remote Management",
+            "desc": "Quickly identify your current IP address to add it to server firewall allowlists or remote access configurations."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "What is my IP address?",
+            "a": "An IP address (Internet Protocol Address) is a unique numerical address assigned to every device connected to the internet. It enables data to be sent and received across the network."
+          },
+          "q2": {
+            "q": "Is the location shown accurate?",
+            "a": "IP-based geolocation can determine your approximate location (city level). It may differ from your exact street address or GPS coordinates, and may show your ISP's server location instead."
+          },
+          "q3": {
+            "q": "Does using a VPN change my IP?",
+            "a": "Yes, when using a VPN, the VPN server's IP address is displayed instead of your real one. This hides your actual IP and location."
+          },
+          "q4": {
+            "q": "What is the difference between IPv4 and IPv6?",
+            "a": "IPv4 uses 32-bit addresses (e.g., 192.168.0.1) providing about 4.3 billion addresses. IPv6 uses 128-bit addresses (e.g., 2001:0db8::1) providing virtually unlimited addresses."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "While external APIs (ip-api.com, ipify.org) are called to look up IP information, the results are only displayed in your browser and are not stored on any server. All lookup data disappears when you close the page."
       }
     }
   },
