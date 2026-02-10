@@ -161,7 +161,20 @@
       "default": "기본값",
       "qr": "QR코드",
       "barcodeLabel": "바코드: {value}",
-      "download": "다운로드"
+      "download": "다운로드",
+      "downloadPNG": "PNG",
+      "downloadSVG": "SVG",
+      "downloadZip": "ZIP 일괄 다운로드",
+      "zipping": "ZIP 생성 중...",
+      "labelWidth": "바 너비",
+      "labelHeight": "바 높이",
+      "labelShowText": "하단 텍스트 표시",
+      "errorCode128C": "CODE128C는 짝수 자릿수의 숫자만 지원합니다",
+      "errorItf14": "ITF14는 13~14자리 숫자여야 합니다",
+      "errorItf": "ITF는 짝수 자릿수의 숫자만 지원합니다",
+      "errorPharmaNum": "Pharmacode는 숫자만 지원합니다",
+      "errorPharmaRange": "Pharmacode는 3~131070 범위의 숫자여야 합니다",
+      "errorCodabar": "Codabar는 A-D로 시작/끝나며 숫자와 -$:/.+ 포함"
     }
   },
   "QRGenerator": {
@@ -1170,7 +1183,61 @@
       "extraInfo": "추가 정보",
       "zodiac": "띠",
       "dDay": "다음 생일 D-Day",
-      "birthDate": "생년월일"
+      "birthDate": "생년월일",
+      "detailedAge": "상세 나이",
+      "yearsUnit": "년 ",
+      "monthsUnit": "개월 ",
+      "daysUnit": "일",
+      "totalDays": "총 일수",
+      "generation": "세대",
+      "zodiacSign": "별자리",
+      "milestones": "나이 마일스톤",
+      "past": "지남"
+    },
+    "generations": {
+      "silent": "침묵 세대",
+      "babyBoomer": "베이비붐 세대",
+      "genX": "X세대",
+      "millennial": "밀레니얼 세대",
+      "genZ": "Z세대",
+      "alpha": "알파 세대",
+      "silentDesc": "전쟁과 대공황 시대를 경험한 세대 (~1945)",
+      "babyBoomerDesc": "전후 경제성장과 민주화를 이끈 세대 (1946~1964)",
+      "genXDesc": "아날로그에서 디지털로의 전환을 경험한 세대 (1965~1980)",
+      "millennialDesc": "인터넷과 함께 성장한 디지털 1세대 (1981~1996)",
+      "genZDesc": "스마트폰과 SNS가 일상인 디지털 네이티브 (1997~2012)",
+      "alphaDesc": "AI와 함께 성장하는 최초의 세대 (2013~)"
+    },
+    "zodiacSigns": {
+      "aries": "양자리",
+      "taurus": "황소자리",
+      "gemini": "쌍둥이자리",
+      "cancer": "게자리",
+      "leo": "사자자리",
+      "virgo": "처녀자리",
+      "libra": "천칭자리",
+      "scorpio": "전갈자리",
+      "sagittarius": "사수자리",
+      "capricorn": "염소자리",
+      "aquarius": "물병자리",
+      "pisces": "물고기자리"
+    },
+    "milestoneNames": {
+      "hwangap": "환갑 (還甲)",
+      "gohui": "고희 (古稀)",
+      "huisu": "희수 (喜壽)",
+      "sansu": "산수 (傘壽)",
+      "misu": "미수 (米壽)",
+      "jolsu": "졸수 (卒壽)",
+      "baeksu": "백수 (白壽)",
+      "sangsu": "상수 (上壽)"
+    },
+    "lawInfo": {
+      "title": "만나이 통일법 안내",
+      "desc": "2023년 6월 28일부터 시행된 '만나이 통일법'에 따라, 법적·행정적 나이 기준이 모두 '만 나이'로 통일되었습니다.",
+      "point1": "📋 계약서, 공문서, 법률 적용 시 만나이가 기준이 됩니다.",
+      "point2": "⚖️ 병역법·청소년보호법 등 일부 법령은 연 나이를 적용합니다.",
+      "point3": "🗓️ 일상 대화에서는 여전히 세는 나이를 사용하기도 합니다."
     },
     "info": {
       "title": "나이 계산법 총정리",
@@ -1240,6 +1307,13 @@
     },
     "searchPlaceholder": "문자 검색...",
     "copied": "복사되었습니다!",
+    "bulkMode": "대량 선택",
+    "bulkCount": "{count}개 선택됨",
+    "bulkCopy": "모두 복사",
+    "bulkClear": "선택 해제",
+    "favorite": "즐겨찾기 추가",
+    "unfavorite": "즐겨찾기 해제",
+    "favoritesTitle": "즐겨찾기",
     "tips": {
       "title": "이모지(Emoji) 사용 꿀팁",
       "desc": "이모지는 텍스트만으로는 전달하기 어려운 감정과 뉘앙스를 효과적으로 표현해줍니다. 특히 모바일 환경에서 가독성을 높이고 친근감을 주는 데 큰 역할을 합니다.",
@@ -1500,6 +1574,26 @@
     "result": {
       "title": "변환 결과 (클릭하여 기준 변경)",
       "summary": "바이트 기준 변환 결과"
+    },
+    "toggle": {
+      "binary": "이진법",
+      "decimal": "십진법",
+      "base": "기준"
+    },
+    "transfer": {
+      "title": "전송 시간 계산",
+      "sec": "초",
+      "min": "분",
+      "hour": "시간"
+    },
+    "storage": {
+      "title": "저장 가능 콘텐츠",
+      "mp3": "MP3 곡 (4MB)",
+      "photo": "고화질 사진 (5MB)",
+      "movie1080": "FHD 영화 (4.5GB)",
+      "movie4k": "4K 영화 (20GB)",
+      "game": "AAA 게임 (50GB)",
+      "doc": "문서 파일 (50KB)"
     },
     "info": {
       "title": "파일 크기 단위 이해하기",
@@ -1862,6 +1956,15 @@
         "a": "인코딩된 URL이 길어 보여도 기능상 문제는 없습니다. 브라우저 주소창에서는 보기 좋게 디코딩되어 표시됩니다. 단, 일부 오래된 시스템에서는 URL 길이 제한이 있을 수 있습니다."
       }
     },
+    "doubleEncodingWarning": "이중 인코딩이 감지되었습니다! 이미 인코딩된 텍스트를 다시 인코딩하면 문제가 발생할 수 있습니다.",
+    "parser": {
+      "title": "URL 구조 분석 & 쿼리 편집기",
+      "placeholder": "분석할 URL을 입력하세요 (예: https://example.com/path?key=value)",
+      "parse": "분석",
+      "queryEditor": "쿼리 파라미터 편집",
+      "addParam": "파라미터 추가",
+      "copyUrl": "URL 복사"
+    },
     "disqus": {
       "title": "URL 인코더/디코더"
     }
@@ -1880,7 +1983,10 @@
       "charWithSpace": "공백 포함",
       "charWithoutSpace": "공백 제외",
       "bytes": "바이트",
-      "words": "단어 수"
+      "words": "단어 수",
+      "readTime": "읽기 시간",
+      "min": "분",
+      "sec": "초"
     },
     "input": {
       "title": "텍스트 입력",
@@ -1897,6 +2003,20 @@
       "english": "영문",
       "numbers": "숫자",
       "special": "특수문자"
+    },
+    "transform": {
+      "title": "텍스트 변환",
+      "uppercase": "대문자",
+      "lowercase": "소문자",
+      "capitalize": "첫글자 대문자",
+      "removeSpaces": "공백 제거",
+      "trimLines": "줄 앞뒤 공백 제거"
+    },
+    "sns": {
+      "title": "SNS 글자수 가이드"
+    },
+    "keyword": {
+      "title": "키워드 빈도 분석 (상위 10개)"
     },
     "info": {
       "title": "글자수 세기 활용법",
@@ -2159,6 +2279,10 @@
       "cycleLength": "생리 주기",
       "days": "일",
       "cycleDesc": "* 일반적으로 21~35일이며, 평균은 28일입니다.",
+      "periodDuration": "생리 기간",
+      "multiCycle": "표시 주기 수",
+      "cycleUnit": "주기",
+      "irregularWarning": "입력하신 주기가 정상 범위(21~35일)를 벗어납니다. 불규칙한 주기의 경우 계산 결과가 부정확할 수 있으니 참고용으로만 사용하세요.",
       "calculate": "계산하기",
       "alertDate": "마지막 생리 시작일을 입력해주세요.",
       "alertCycle": "생리 주기는 20~45일 사이로 입력해주세요."
@@ -2170,14 +2294,29 @@
       "detailTitle": "상세 결과",
       "lastPeriod": "마지막 생리 시작일",
       "safePeriodEarly": "안전기간 (전반)",
-      "safePeriodLate": "안전기간 (후반)"
+      "safePeriodLate": "안전기간 (후반)",
+      "periodDays": "생리 기간",
+      "probabilityTitle": "일별 임신 확률",
+      "probabilityNote": "* Wilcox 연구 기반 추정치이며, 개인차가 있을 수 있습니다.",
+      "probabilityLabel": "임신 확률",
+      "multiCycleTitle": "다중 주기 요약",
+      "periodLabel": "생리",
+      "ovulationLabel": "배란",
+      "fertileLabel": "가임기"
     },
     "calendar": {
       "title": "배란 달력",
       "legendOvulation": "배란일",
       "legendFertile": "가임기",
       "legendSafe": "안전기간",
-      "legendPeriod": "생리일"
+      "legendPeriod": "생리일",
+      "noInfo": "계산 범위 밖의 날짜입니다."
+    },
+    "history": {
+      "title": "주기 기록",
+      "clear": "전체 삭제",
+      "cycle": "주기",
+      "period": "생리"
     },
     "info": {
       "title": "배란일 계산 원리",
@@ -2236,6 +2375,7 @@
     "modeLabel": "정산 방식",
     "modeEqual": "균등 분할",
     "modeCustom": "직접 입력",
+    "modeItem": "항목별 정산",
     "totalAmountLabel": "총 금액",
     "totalAmountPlaceholder": "총 금액을 입력하세요",
     "currency": "원",
@@ -2259,6 +2399,18 @@
     "copyResult": "복사",
     "copied": "복사됨!",
     "shareResult": "공유",
+    "tipLabel": "팁 / 서비스료",
+    "noTip": "없음",
+    "customTipPlaceholder": "직접 입력",
+    "tipSummary": "팁: {amount}원이 추가됩니다",
+    "itemsLabel": "메뉴 항목",
+    "addItem": "항목 추가",
+    "itemName": "항목명",
+    "itemPrice": "금액",
+    "sharedBy": "공유",
+    "itemTotalSummary": "항목 합계: {total}원",
+    "historyTitle": "최근 정산 내역",
+    "clearHistory": "삭제",
     "guideTitle": "사용 가이드",
     "guideStep1Title": "정산 방식 선택",
     "guideStep1Desc": "균등 분할: 총 금액을 입력하면 인원수로 나눠 계산합니다. 직접 입력: 각자 실제로 낸 금액을 입력합니다.",
@@ -2504,6 +2656,9 @@
     "extractBtn": "추출하기",
     "resultTitle": "썸네일 미리보기",
     "downloadBtn": "다운로드",
+    "downloadAll": "전체 다운로드",
+    "preview": "확대 보기",
+    "available": "사용 가능",
     "loading": "이미지 로딩 중...",
     "errorEmpty": "유튜브 URL을 입력해주세요.",
     "errorInvalid": "올바른 유튜브 URL을 입력해주세요.",

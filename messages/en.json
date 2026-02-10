@@ -161,7 +161,20 @@
       "default": "Default",
       "qr": "QR Code",
       "barcodeLabel": "Barcode: {value}",
-      "download": "Download"
+      "download": "Download",
+      "downloadPNG": "PNG",
+      "downloadSVG": "SVG",
+      "downloadZip": "Download All (ZIP)",
+      "zipping": "Creating ZIP...",
+      "labelWidth": "Bar Width",
+      "labelHeight": "Bar Height",
+      "labelShowText": "Show Text Below",
+      "errorCode128C": "CODE128C requires even-length numeric values only",
+      "errorItf14": "ITF14 must be 13 or 14 digits",
+      "errorItf": "ITF requires even-length numeric values only",
+      "errorPharmaNum": "Pharmacode supports numbers only",
+      "errorPharmaRange": "Pharmacode value must be between 3 and 131070",
+      "errorCodabar": "Codabar must start/end with A-D and contain digits, -$:/.+"
     }
   },
   "QRGenerator": {
@@ -1170,7 +1183,61 @@
       "extraInfo": "Additional Info",
       "zodiac": "Zodiac",
       "dDay": "Next Birthday D-Day",
-      "birthDate": "Birth Date"
+      "birthDate": "Birth Date",
+      "detailedAge": "Detailed Age",
+      "yearsUnit": "y ",
+      "monthsUnit": "m ",
+      "daysUnit": "d",
+      "totalDays": "Total Days",
+      "generation": "Generation",
+      "zodiacSign": "Zodiac Sign",
+      "milestones": "Age Milestones",
+      "past": "Past"
+    },
+    "generations": {
+      "silent": "Silent Generation",
+      "babyBoomer": "Baby Boomers",
+      "genX": "Generation X",
+      "millennial": "Millennials",
+      "genZ": "Generation Z",
+      "alpha": "Generation Alpha",
+      "silentDesc": "Generation that experienced war and the Great Depression (~1945)",
+      "babyBoomerDesc": "Generation that led post-war economic growth (1946~1964)",
+      "genXDesc": "Generation that experienced the analog-to-digital transition (1965~1980)",
+      "millennialDesc": "First digital generation that grew up with the internet (1981~1996)",
+      "genZDesc": "Digital natives with smartphones and social media (1997~2012)",
+      "alphaDesc": "First generation growing up with AI (2013~)"
+    },
+    "zodiacSigns": {
+      "aries": "Aries",
+      "taurus": "Taurus",
+      "gemini": "Gemini",
+      "cancer": "Cancer",
+      "leo": "Leo",
+      "virgo": "Virgo",
+      "libra": "Libra",
+      "scorpio": "Scorpio",
+      "sagittarius": "Sagittarius",
+      "capricorn": "Capricorn",
+      "aquarius": "Aquarius",
+      "pisces": "Pisces"
+    },
+    "milestoneNames": {
+      "hwangap": "Hwangap (60th)",
+      "gohui": "Gohui (70th)",
+      "huisu": "Huisu (77th)",
+      "sansu": "Sansu (80th)",
+      "misu": "Misu (88th)",
+      "jolsu": "Jolsu (90th)",
+      "baeksu": "Baeksu (99th)",
+      "sangsu": "Sangsu (100th)"
+    },
+    "lawInfo": {
+      "title": "Korea's Age Unification Law",
+      "desc": "Since June 28, 2023, Korea unified all legal and administrative age standards to 'International Age' (Man-nai).",
+      "point1": "📋 Contracts, official documents, and legal applications now use International Age.",
+      "point2": "⚖️ Some laws like Military Service Act still use Year Age.",
+      "point3": "🗓️ Korean Age is still commonly used in daily conversations."
     },
     "info": {
       "title": "Age Calculation Methods Explained",
@@ -1240,6 +1307,13 @@
     },
     "searchPlaceholder": "Search characters...",
     "copied": "Copied!",
+    "bulkMode": "Bulk Select",
+    "bulkCount": "{count} selected",
+    "bulkCopy": "Copy All",
+    "bulkClear": "Clear Selection",
+    "favorite": "Add to Favorites",
+    "unfavorite": "Remove from Favorites",
+    "favoritesTitle": "Favorites",
     "tips": {
       "title": "Emoji Tips",
       "desc": "Emojis effectively express emotions and nuances that text alone cannot. They play a big role in improving readability and friendliness, especially in mobile environments.",
@@ -1423,6 +1497,26 @@
     "result": {
       "title": "Conversion Results (click to change base)",
       "summary": "Conversion in Bytes"
+    },
+    "toggle": {
+      "binary": "Binary",
+      "decimal": "Decimal",
+      "base": "base"
+    },
+    "transfer": {
+      "title": "Transfer Time Estimate",
+      "sec": "s",
+      "min": "m",
+      "hour": "h"
+    },
+    "storage": {
+      "title": "Storage Capacity",
+      "mp3": "MP3 Songs (4MB)",
+      "photo": "HD Photos (5MB)",
+      "movie1080": "FHD Movies (4.5GB)",
+      "movie4k": "4K Movies (20GB)",
+      "game": "AAA Games (50GB)",
+      "doc": "Documents (50KB)"
     },
     "info": {
       "title": "Understanding File Size Units",
@@ -1789,6 +1883,15 @@
         "a": "Long encoded URLs work fine functionally. Browsers display them decoded in the address bar for readability. However, some older systems may have URL length limits."
       }
     },
+    "doubleEncodingWarning": "Double encoding detected! Re-encoding already encoded text may cause issues.",
+    "parser": {
+      "title": "URL Parser & Query Editor",
+      "placeholder": "Enter a URL to parse (e.g., https://example.com/path?key=value)",
+      "parse": "Parse",
+      "queryEditor": "Query Parameter Editor",
+      "addParam": "Add Parameter",
+      "copyUrl": "Copy URL"
+    },
     "disqus": {
       "title": "URL Encoder/Decoder"
     }
@@ -1807,7 +1910,10 @@
       "charWithSpace": "With Spaces",
       "charWithoutSpace": "Without Spaces",
       "bytes": "Bytes",
-      "words": "Words"
+      "words": "Words",
+      "readTime": "Read Time",
+      "min": "min",
+      "sec": "sec"
     },
     "input": {
       "title": "Text Input",
@@ -1824,6 +1930,20 @@
       "english": "English",
       "numbers": "Numbers",
       "special": "Special"
+    },
+    "transform": {
+      "title": "Text Transform",
+      "uppercase": "UPPERCASE",
+      "lowercase": "lowercase",
+      "capitalize": "Capitalize",
+      "removeSpaces": "Remove Spaces",
+      "trimLines": "Trim Lines"
+    },
+    "sns": {
+      "title": "SNS Character Limits"
+    },
+    "keyword": {
+      "title": "Keyword Frequency (Top 10)"
     },
     "info": {
       "title": "How to Use",
@@ -2165,6 +2285,10 @@
       "cycleLength": "Cycle Length",
       "days": "days",
       "cycleDesc": "* Typically 21-35 days, with an average of 28 days.",
+      "periodDuration": "Period Duration",
+      "multiCycle": "Cycles to Display",
+      "cycleUnit": " cycles",
+      "irregularWarning": "Your cycle length is outside the normal range (21-35 days). Results may be less accurate for irregular cycles. Use as reference only.",
       "calculate": "Calculate",
       "alertDate": "Please enter your last period start date.",
       "alertCycle": "Please enter a cycle length between 20 and 45 days."
@@ -2176,14 +2300,29 @@
       "detailTitle": "Detailed Results",
       "lastPeriod": "Last Period Start Date",
       "safePeriodEarly": "Safe Period (Early)",
-      "safePeriodLate": "Safe Period (Late)"
+      "safePeriodLate": "Safe Period (Late)",
+      "periodDays": "Period Days",
+      "probabilityTitle": "Daily Pregnancy Probability",
+      "probabilityNote": "* Estimates based on Wilcox study. Individual results may vary.",
+      "probabilityLabel": "Probability",
+      "multiCycleTitle": "Multi-Cycle Summary",
+      "periodLabel": "Period",
+      "ovulationLabel": "Ovulation",
+      "fertileLabel": "Fertile"
     },
     "calendar": {
       "title": "Ovulation Calendar",
       "legendOvulation": "Ovulation Day",
       "legendFertile": "Fertile Window",
       "legendSafe": "Safe Period",
-      "legendPeriod": "Period Day"
+      "legendPeriod": "Period Day",
+      "noInfo": "Outside calculation range."
+    },
+    "history": {
+      "title": "Cycle History",
+      "clear": "Clear All",
+      "cycle": "Cycle",
+      "period": "Period"
     },
     "info": {
       "title": "How Ovulation Calculation Works",
@@ -2242,6 +2381,7 @@
     "modeLabel": "Split Mode",
     "modeEqual": "Equal Split",
     "modeCustom": "Custom Input",
+    "modeItem": "Item-based",
     "totalAmountLabel": "Total Amount",
     "totalAmountPlaceholder": "Enter total amount",
     "currency": "",
@@ -2265,6 +2405,18 @@
     "copyResult": "Copy",
     "copied": "Copied!",
     "shareResult": "Share",
+    "tipLabel": "Tip / Service Charge",
+    "noTip": "None",
+    "customTipPlaceholder": "Custom",
+    "tipSummary": "Tip: {amount} will be added",
+    "itemsLabel": "Menu Items",
+    "addItem": "Add Item",
+    "itemName": "Item",
+    "itemPrice": "Price",
+    "sharedBy": "Shared by",
+    "itemTotalSummary": "Item total: {total}",
+    "historyTitle": "Recent History",
+    "clearHistory": "Clear",
     "guideTitle": "How to Use",
     "guideStep1Title": "Choose Split Mode",
     "guideStep1Desc": "Equal Split: Enter the total and it will be divided equally. Custom Input: Enter the actual amount each person paid.",
@@ -2510,6 +2662,9 @@
     "extractBtn": "Extract",
     "resultTitle": "Thumbnail Preview",
     "downloadBtn": "Download",
+    "downloadAll": "Download All",
+    "preview": "Preview",
+    "available": "Available",
     "loading": "Loading image...",
     "errorEmpty": "Please enter a YouTube URL.",
     "errorInvalid": "Please enter a valid YouTube URL.",
