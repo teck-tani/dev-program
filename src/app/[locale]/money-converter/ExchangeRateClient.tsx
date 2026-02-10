@@ -60,6 +60,8 @@ const getFlagUrl = (cur_unit: string) => {
 };
 
 const STORAGE_KEY = 'exchangeRateSettings';
+const AMOUNT_STORAGE_KEY = 'exchangeRateAmount';
+const DEFAULT_CURRENCIES = ["USD", "KRW", "JPY(100)", "EUR", "CNH"];
 
 // English currency names mapping
 const currencyNamesEn: Record<string, string> = {
@@ -139,7 +141,7 @@ export default function ExchangeRateClient() {
         fetchRates();
     }, []);
 
-    // Load saved currency settings from localStorage (after mount to avoid hydration mismatch)
+    // Load saved settings from localStorage (after mount to avoid hydration mismatch)
     useEffect(() => {
         if (!mounted) return;
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -151,6 +153,21 @@ export default function ExchangeRateClient() {
                 }
             } catch (e) {
                 console.error('Failed to parse saved settings:', e);
+            }
+        }
+        const savedAmount = localStorage.getItem(AMOUNT_STORAGE_KEY);
+        if (savedAmount) {
+            try {
+                const parsed = JSON.parse(savedAmount);
+                if (parsed.baseKrwValue !== undefined && parsed.baseKrwValue !== null) {
+                    setBaseKrwValue(parsed.baseKrwValue);
+                    setHasUserInput(true);
+                    if (parsed.lastInputIndex !== undefined) {
+                        setLastInputIndex(parsed.lastInputIndex);
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to parse saved amount:', e);
             }
         }
     }, [mounted]);
@@ -377,6 +394,15 @@ export default function ExchangeRateClient() {
         setBaseKrwValue(krwValue);
     };
 
+    // Save amount to localStorage when it changes
+    useEffect(() => {
+        if (!mounted || !hasUserInput) return;
+        localStorage.setItem(AMOUNT_STORAGE_KEY, JSON.stringify({
+            baseKrwValue,
+            lastInputIndex
+        }));
+    }, [baseKrwValue, lastInputIndex, mounted, hasUserInput]);
+
     const handleCurrencyChange = (index: number, newCode: string) => {
         const newRows = [...rowCurrencies];
         newRows[index] = newCode;
@@ -437,6 +463,25 @@ export default function ExchangeRateClient() {
             // fallback silently
         }
     }, [rowCurrencies, baseKrwValue, rates]);
+
+    // Reset handler
+    const handleReset = useCallback(() => {
+        setRowCurrencies(DEFAULT_CURRENCIES);
+        setHasUserInput(false);
+        setLastInputIndex(0);
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(AMOUNT_STORAGE_KEY);
+        // Set default to 1 USD
+        const usdItem = rates.find(r => r.cur_unit === "USD");
+        if (usdItem) {
+            const rate = parseFloat(usdItem.deal_bas_r.replace(/,/g, ""));
+            if (rate > 0) {
+                setBaseKrwValue(rate);
+                return;
+            }
+        }
+        setBaseKrwValue(null);
+    }, [rates]);
 
     // Quick amount handler
     const handleQuickAmount = useCallback((amount: number) => {
@@ -583,7 +628,7 @@ export default function ExchangeRateClient() {
                 )}
 
                 {/* Quick amount buttons */}
-                <div className="quick-amount-wrap" style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+                <div className="quick-amount-wrap" style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap", alignItems: "center" }}>
                     <span style={{ fontSize: "0.8rem", color: dark ? "#94a3b8" : "#6b7280", alignSelf: "center", marginRight: "4px" }}>
                         {t('quickAmount')}
                     </span>
@@ -612,6 +657,37 @@ export default function ExchangeRateClient() {
                             {amount.toLocaleString()}
                         </button>
                     ))}
+                    <button
+                        onClick={handleReset}
+                        style={{
+                            marginLeft: "auto",
+                            padding: "4px 12px",
+                            borderRadius: "6px",
+                            border: dark ? "1px solid #475569" : "1px solid #d1d5db",
+                            background: "transparent",
+                            color: dark ? "#94a3b8" : "#9ca3af",
+                            fontSize: "0.8rem",
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px"
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = dark ? "#334155" : "#f3f4f6";
+                            e.currentTarget.style.color = dark ? "#e2e8f0" : "#374151";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "transparent";
+                            e.currentTarget.style.color = dark ? "#94a3b8" : "#9ca3af";
+                        }}
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                        </svg>
+                        {t('reset')}
+                    </button>
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>

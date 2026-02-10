@@ -4,6 +4,59 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 
+// 퇴직소득세 계산을 위한 인터페이스
+interface SeveranceResult {
+    severancePay: number;
+    totalWages3Months: number;
+    baseSalaryAmount: number;
+    bonusContribution: number;
+    leaveContribution: number;
+    averageDailyWage: number;
+    workingDays: number;
+    serviceYears: number;
+    serviceMonths: number;
+    taxServiceYears: number;
+    // 퇴직소득세
+    serviceDeduction: number;
+    convertedSalary: number;
+    convertedDeduction: number;
+    taxBase: number;
+    retirementTax: number;
+    localTax: number;
+    totalTax: number;
+    netSeverancePay: number;
+}
+
+// 근속연수공제
+function getServiceYearsDeduction(years: number): number {
+    if (years <= 5) return 1_000_000 * years;
+    if (years <= 10) return 5_000_000 + 2_000_000 * (years - 5);
+    if (years <= 20) return 15_000_000 + 2_500_000 * (years - 10);
+    return 40_000_000 + 3_000_000 * (years - 20);
+}
+
+// 환산급여공제
+function getConvertedSalaryDeduction(salary: number): number {
+    if (salary <= 8_000_000) return salary;
+    if (salary <= 70_000_000) return 8_000_000 + (salary - 8_000_000) * 0.6;
+    if (salary <= 100_000_000) return 45_200_000 + (salary - 70_000_000) * 0.55;
+    if (salary <= 300_000_000) return 61_700_000 + (salary - 100_000_000) * 0.45;
+    return 151_700_000 + (salary - 300_000_000) * 0.35;
+}
+
+// 기본세율 (2023~ 적용)
+function calculateProgressiveTax(taxBase: number): number {
+    if (taxBase <= 0) return 0;
+    if (taxBase <= 14_000_000) return taxBase * 0.06;
+    if (taxBase <= 50_000_000) return taxBase * 0.15 - 1_260_000;
+    if (taxBase <= 88_000_000) return taxBase * 0.24 - 5_760_000;
+    if (taxBase <= 150_000_000) return taxBase * 0.35 - 15_440_000;
+    if (taxBase <= 300_000_000) return taxBase * 0.38 - 19_940_000;
+    if (taxBase <= 500_000_000) return taxBase * 0.40 - 25_940_000;
+    if (taxBase <= 1_000_000_000) return taxBase * 0.42 - 35_940_000;
+    return taxBase * 0.45 - 65_940_000;
+}
+
 export default function SeveranceCalculatorClient() {
     const t = useTranslations('SeveranceCalculator');
     const tInput = useTranslations('SeveranceCalculator.input');
@@ -13,6 +66,7 @@ export default function SeveranceCalculatorClient() {
     const tDef = useTranslations('SeveranceCalculator.definition');
     const tUse = useTranslations('SeveranceCalculator.useCases');
     const tNotice = useTranslations('SeveranceCalculator.notice');
+    const tBreakdown = useTranslations('SeveranceCalculator.breakdown');
 
     const { theme } = useTheme();
     const isDark = theme === 'dark';
@@ -22,10 +76,9 @@ export default function SeveranceCalculatorClient() {
     const [baseSalary, setBaseSalary] = useState("");
     const [annualBonus, setAnnualBonus] = useState("");
     const [annualLeaveAllowance, setAnnualLeaveAllowance] = useState("");
-    const [result, setResult] = useState<number | null>(null);
-    const [workingYears, setWorkingYears] = useState<number | null>(null);
-    const [workingMonths, setWorkingMonths] = useState<number | null>(null);
+    const [result, setResult] = useState<SeveranceResult | null>(null);
     const [isCalculating, setIsCalculating] = useState(false);
+    const [showBreakdown, setShowBreakdown] = useState(true);
 
     const calculateSeverance = () => {
         if (!joinDate || !leaveDate || !baseSalary) {
@@ -51,17 +104,53 @@ export default function SeveranceCalculatorClient() {
             const bonus = parseInt(annualBonus.replace(/,/g, "")) || 0;
             const leaveAllowance = parseInt(annualLeaveAllowance.replace(/,/g, "")) || 0;
 
-            const totalWages3Months = salary + (bonus * 3 / 12) + (leaveAllowance * 3 / 12);
+            const bonusContribution = bonus * 3 / 12;
+            const leaveContribution = leaveAllowance * 3 / 12;
+            const totalWages3Months = salary + bonusContribution + leaveContribution;
             const daysIn3Months = 91;
             const averageDailyWage = totalWages3Months / daysIn3Months;
-            const severancePay = averageDailyWage * 30 * (workingDays / 365);
+            const severancePay = Math.floor(averageDailyWage * 30 * (workingDays / 365));
 
             const years = Math.floor(workingDays / 365);
             const months = Math.floor((workingDays % 365) / 30);
 
-            setWorkingYears(years);
-            setWorkingMonths(months);
-            setResult(Math.floor(severancePay));
+            // 근속연수 (세금 계산용): 월 단위 올림
+            const totalMonths = years * 12 + months + (workingDays % 365 % 30 > 0 ? 1 : 0);
+            const taxServiceYears = Math.max(1, Math.ceil(totalMonths / 12));
+
+            // 퇴직소득세 계산 (연분연승법)
+            const retirementIncome = severancePay;
+            const serviceDeduction = getServiceYearsDeduction(taxServiceYears);
+            const afterDeduction = Math.max(retirementIncome - serviceDeduction, 0);
+            const convertedSalary = taxServiceYears > 0 ? (afterDeduction / taxServiceYears) * 12 : 0;
+            const convertedDeduction = getConvertedSalaryDeduction(convertedSalary);
+            const taxBase = Math.max(convertedSalary - convertedDeduction, 0);
+            const convertedTax = calculateProgressiveTax(taxBase);
+            const retirementTax = taxServiceYears > 0 ? Math.floor((convertedTax / 12) * taxServiceYears) : 0;
+            const localTax = Math.floor(retirementTax * 0.1);
+            const totalTax = retirementTax + localTax;
+            const netSeverancePay = severancePay - totalTax;
+
+            setResult({
+                severancePay,
+                totalWages3Months,
+                baseSalaryAmount: salary,
+                bonusContribution,
+                leaveContribution,
+                averageDailyWage,
+                workingDays,
+                serviceYears: years,
+                serviceMonths: months,
+                taxServiceYears,
+                serviceDeduction,
+                convertedSalary,
+                convertedDeduction,
+                taxBase,
+                retirementTax,
+                localTax,
+                totalTax,
+                netSeverancePay,
+            });
             setIsCalculating(false);
         }, 400);
     };
@@ -71,12 +160,7 @@ export default function SeveranceCalculatorClient() {
         return num ? parseInt(num).toLocaleString("ko-KR") : "";
     };
 
-    const formatDateInput = (value: string): string => {
-        const nums = value.replace(/[^\d]/g, "");
-        if (nums.length <= 4) return nums;
-        if (nums.length <= 6) return `${nums.slice(0, 4)}-${nums.slice(4)}`;
-        return `${nums.slice(0, 4)}-${nums.slice(4, 6)}-${nums.slice(6, 8)}`;
-    };
+    const fmt = (n: number) => n.toLocaleString("ko-KR");
 
     return (
         <div style={{ overflowX: 'hidden' }}>
@@ -133,6 +217,11 @@ export default function SeveranceCalculatorClient() {
                         padding: 10px 40px 10px 12px !important;
                         font-size: 0.95rem !important;
                     }
+                    .sev-date-input {
+                        padding: 10px 12px !important;
+                        font-size: 0.9rem !important;
+                        border-radius: 8px !important;
+                    }
                     .sev-hint {
                         display: none !important;
                     }
@@ -145,7 +234,7 @@ export default function SeveranceCalculatorClient() {
                         padding: 20px !important;
                         margin-bottom: 16px !important;
                     }
-                    .sev-result-grid {
+                    .sev-result-grid-3 {
                         grid-template-columns: 1fr !important;
                         gap: 12px !important;
                     }
@@ -156,18 +245,24 @@ export default function SeveranceCalculatorClient() {
                         border-top: 1px solid rgba(255,255,255,0.1) !important;
                     }
                     .sev-result-amount {
-                        font-size: 1.8rem !important;
+                        font-size: 1.6rem !important;
                     }
-                    .sev-result-period {
-                        font-size: 1.1rem !important;
+                    .sev-result-amount-sub {
+                        font-size: 1.2rem !important;
                     }
                     .sev-desktop-only {
                         display: none !important;
                     }
+                    .sev-breakdown-card {
+                        padding: 14px !important;
+                    }
+                    .sev-breakdown-row {
+                        font-size: 0.82rem !important;
+                    }
                 }
             `}</style>
 
-            {/* Calculator Card - 컴팩트 */}
+            {/* Calculator Card */}
             <div className="sev-calc-card" style={{
                 background: isDark ? "#1e293b" : "#f8f9fa",
                 padding: "24px",
@@ -199,13 +294,10 @@ export default function SeveranceCalculatorClient() {
                                 {tInput('joinDate')}
                             </label>
                             <input
-                                type="text"
-                                inputMode="numeric"
-                                className="sev-input"
+                                type="date"
+                                className="sev-input sev-date-input"
                                 value={joinDate}
-                                onChange={(e) => setJoinDate(formatDateInput(e.target.value))}
-                                placeholder="YYYY-MM-DD"
-                                maxLength={10}
+                                onChange={(e) => setJoinDate(e.target.value)}
                                 style={{
                                     width: "100%",
                                     padding: "12px 14px",
@@ -215,7 +307,8 @@ export default function SeveranceCalculatorClient() {
                                     background: isDark ? "#0f172a" : "white",
                                     color: isDark ? "#e2e8f0" : "#1f2937",
                                     outline: "none",
-                                    transition: "all 0.15s ease"
+                                    transition: "all 0.15s ease",
+                                    colorScheme: isDark ? "dark" : "light"
                                 }}
                             />
                         </div>
@@ -224,13 +317,11 @@ export default function SeveranceCalculatorClient() {
                                 {tInput('leaveDate')}
                             </label>
                             <input
-                                type="text"
-                                inputMode="numeric"
-                                className="sev-input"
+                                type="date"
+                                className="sev-input sev-date-input"
                                 value={leaveDate}
-                                onChange={(e) => setLeaveDate(formatDateInput(e.target.value))}
-                                placeholder="YYYY-MM-DD"
-                                maxLength={10}
+                                onChange={(e) => setLeaveDate(e.target.value)}
+                                min={joinDate || undefined}
                                 style={{
                                     width: "100%",
                                     padding: "12px 14px",
@@ -240,7 +331,8 @@ export default function SeveranceCalculatorClient() {
                                     background: isDark ? "#0f172a" : "white",
                                     color: isDark ? "#e2e8f0" : "#1f2937",
                                     outline: "none",
-                                    transition: "all 0.15s ease"
+                                    transition: "all 0.15s ease",
+                                    colorScheme: isDark ? "dark" : "light"
                                 }}
                             />
                         </div>
@@ -415,99 +507,396 @@ export default function SeveranceCalculatorClient() {
 
             {/* Result Section */}
             {result !== null && (
-                <div className="sev-result-card" style={{
-                    background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
-                    borderRadius: "16px",
-                    padding: "28px",
-                    marginBottom: "24px",
-                    animation: "popIn 0.4s ease-out",
-                    position: "relative",
-                    overflow: "hidden"
-                }}>
-                    <div style={{
-                        position: "absolute",
-                        top: "-40%",
-                        right: "-40%",
-                        width: "80%",
-                        height: "80%",
-                        background: "radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 60%)",
-                        pointerEvents: "none"
-                    }} />
-
-                    <div className="sev-result-grid" style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "20px",
+                <>
+                    {/* Main Result Card */}
+                    <div className="sev-result-card" style={{
+                        background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
+                        borderRadius: "16px",
+                        padding: "28px",
+                        marginBottom: "16px",
+                        animation: "popIn 0.4s ease-out",
                         position: "relative",
-                        zIndex: 1
+                        overflow: "hidden"
                     }}>
-                        <div style={{ textAlign: "center" }}>
-                            <div style={{
-                                fontSize: "0.75rem",
-                                fontWeight: "600",
-                                color: "rgba(255,255,255,0.6)",
-                                textTransform: "uppercase" as const,
-                                letterSpacing: "0.1em",
-                                marginBottom: "6px"
-                            }}>
-                                {tResult('title')}
+                        <div style={{
+                            position: "absolute",
+                            top: "-40%",
+                            right: "-40%",
+                            width: "80%",
+                            height: "80%",
+                            background: "radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 60%)",
+                            pointerEvents: "none"
+                        }} />
+
+                        <div className="sev-result-grid-3" style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr 1fr",
+                            gap: "16px",
+                            position: "relative",
+                            zIndex: 1
+                        }}>
+                            {/* 세전 퇴직금 */}
+                            <div style={{ textAlign: "center" }}>
+                                <div style={{
+                                    fontSize: "0.7rem",
+                                    fontWeight: "600",
+                                    color: "rgba(255,255,255,0.5)",
+                                    textTransform: "uppercase" as const,
+                                    letterSpacing: "0.1em",
+                                    marginBottom: "6px"
+                                }}>
+                                    {tResult('grossTitle')}
+                                </div>
+                                <div className="sev-result-amount-sub" style={{
+                                    fontSize: "1.4rem",
+                                    fontWeight: "700",
+                                    color: "rgba(255,255,255,0.8)"
+                                }}>
+                                    {fmt(result.severancePay)}
+                                    <span style={{ fontSize: "0.8rem", fontWeight: "500", marginLeft: "2px", opacity: 0.7 }}>{tResult('currency')}</span>
+                                </div>
                             </div>
-                            <div className="sev-result-amount" style={{
-                                fontSize: "2.2rem",
-                                fontWeight: "800",
-                                color: "#fff",
-                                textShadow: "0 2px 8px rgba(0,0,0,0.2)"
+
+                            {/* 퇴직소득세 */}
+                            <div className="sev-result-divider" style={{
+                                textAlign: "center",
+                                borderLeft: "1px solid rgba(255,255,255,0.1)",
+                                paddingLeft: "16px"
                             }}>
-                                {result.toLocaleString("ko-KR")}
-                                <span style={{ fontSize: "1rem", fontWeight: "600", marginLeft: "4px", opacity: 0.9 }}>{tResult('currency')}</span>
+                                <div style={{
+                                    fontSize: "0.7rem",
+                                    fontWeight: "600",
+                                    color: "rgba(255,255,255,0.5)",
+                                    textTransform: "uppercase" as const,
+                                    letterSpacing: "0.1em",
+                                    marginBottom: "6px"
+                                }}>
+                                    {tResult('taxTitle')}
+                                </div>
+                                <div className="sev-result-amount-sub" style={{
+                                    fontSize: "1.4rem",
+                                    fontWeight: "700",
+                                    color: "#f87171"
+                                }}>
+                                    -{fmt(result.totalTax)}
+                                    <span style={{ fontSize: "0.8rem", fontWeight: "500", marginLeft: "2px", opacity: 0.7 }}>{tResult('currency')}</span>
+                                </div>
+                                <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.4)", marginTop: "2px" }}>
+                                    {tResult('taxDetail')}
+                                </div>
+                            </div>
+
+                            {/* 세후 실수령액 */}
+                            <div className="sev-result-divider" style={{
+                                textAlign: "center",
+                                borderLeft: "1px solid rgba(255,255,255,0.1)",
+                                paddingLeft: "16px"
+                            }}>
+                                <div style={{
+                                    fontSize: "0.7rem",
+                                    fontWeight: "600",
+                                    color: "rgba(56, 189, 248, 0.8)",
+                                    textTransform: "uppercase" as const,
+                                    letterSpacing: "0.1em",
+                                    marginBottom: "6px"
+                                }}>
+                                    {tResult('netTitle')}
+                                </div>
+                                <div className="sev-result-amount" style={{
+                                    fontSize: "1.8rem",
+                                    fontWeight: "800",
+                                    color: "#38bdf8",
+                                    textShadow: "0 2px 8px rgba(56, 189, 248, 0.3)"
+                                }}>
+                                    {fmt(result.netSeverancePay)}
+                                    <span style={{ fontSize: "0.85rem", fontWeight: "600", marginLeft: "3px", opacity: 0.9 }}>{tResult('currency')}</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="sev-result-divider" style={{
+                        {/* 근속 기간 */}
+                        <div style={{
                             display: "flex",
-                            flexDirection: "column",
                             alignItems: "center",
                             justifyContent: "center",
-                            borderLeft: "1px solid rgba(255,255,255,0.1)",
-                            paddingLeft: "20px"
+                            gap: "6px",
+                            marginTop: "16px",
+                            position: "relative",
+                            zIndex: 1
                         }}>
-                            <div style={{
-                                fontSize: "0.75rem",
-                                fontWeight: "600",
-                                color: "rgba(255,255,255,0.6)",
-                                textTransform: "uppercase" as const,
-                                letterSpacing: "0.1em",
-                                marginBottom: "6px"
-                            }}>
-                                {tResult('servicePeriod')}
-                            </div>
-                            <div className="sev-result-period" style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                color: "#fff",
-                                fontSize: "1.3rem",
-                                fontWeight: "700"
-                            }}>
-                                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                {workingYears}{tResult('year')} {workingMonths}{tResult('months')}
-                            </div>
+                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.5)" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.5)" }}>
+                                {tResult('servicePeriod')}: {result.serviceYears}{tResult('year')} {result.serviceMonths}{tResult('months')}
+                            </span>
                         </div>
+
+                        <p style={{
+                            fontSize: "0.7rem",
+                            color: "rgba(255,255,255,0.4)",
+                            textAlign: "center",
+                            marginTop: "10px",
+                            position: "relative",
+                            zIndex: 1
+                        }}>
+                            {tResult('disclaimer')}
+                        </p>
                     </div>
 
-                    <p style={{
-                        fontSize: "0.75rem",
-                        color: "rgba(255,255,255,0.5)",
-                        textAlign: "center",
-                        marginTop: "16px",
-                        position: "relative",
-                        zIndex: 1
+                    {/* Calculation Breakdown */}
+                    <div className="sev-breakdown-card" style={{
+                        background: isDark ? "#1e293b" : "#f8f9fa",
+                        borderRadius: "16px",
+                        border: `1px solid ${isDark ? "#334155" : "#e9ecef"}`,
+                        padding: "20px",
+                        marginBottom: "24px",
+                        animation: "popIn 0.4s ease-out"
                     }}>
-                        {tResult('disclaimer')}
-                    </p>
-                </div>
+                        <button
+                            onClick={() => setShowBreakdown(!showBreakdown)}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                padding: 0,
+                                marginBottom: showBreakdown ? "16px" : 0
+                            }}
+                        >
+                            <span style={{
+                                fontSize: "0.95rem",
+                                fontWeight: "700",
+                                color: isDark ? "#e2e8f0" : "#1f2937",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px"
+                            }}>
+                                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                {tBreakdown('title')}
+                            </span>
+                            <svg
+                                width="20" height="20" fill="none" viewBox="0 0 24 24"
+                                stroke={isDark ? "#94a3b8" : "#6b7280"} strokeWidth={2}
+                                style={{ transform: showBreakdown ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }}
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        {showBreakdown && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                                {/* STEP 1: 3개월 임금 총액 */}
+                                <div style={{
+                                    background: isDark ? "#0f172a" : "white",
+                                    borderRadius: "12px",
+                                    padding: "16px",
+                                    border: `1px solid ${isDark ? "#1e293b" : "#e5e7eb"}`
+                                }}>
+                                    <div style={{
+                                        fontSize: "0.8rem",
+                                        fontWeight: "700",
+                                        color: isDark ? "#38bdf8" : "#3b82f6",
+                                        marginBottom: "12px"
+                                    }}>
+                                        {tBreakdown('step1Title')}
+                                    </div>
+                                    <div className="sev-breakdown-row" style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "0.88rem" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                            <span>{tBreakdown('baseSalary3m')}</span>
+                                            <span style={{ fontWeight: "600" }}>{fmt(result.baseSalaryAmount)}{tResult('currency')}</span>
+                                        </div>
+                                        {result.bonusContribution > 0 && (
+                                            <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                                <span>+ {tBreakdown('bonusContrib')}</span>
+                                                <span style={{ fontWeight: "600" }}>{fmt(Math.floor(result.bonusContribution))}{tResult('currency')}</span>
+                                            </div>
+                                        )}
+                                        {result.leaveContribution > 0 && (
+                                            <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                                <span>+ {tBreakdown('leaveContrib')}</span>
+                                                <span style={{ fontWeight: "600" }}>{fmt(Math.floor(result.leaveContribution))}{tResult('currency')}</span>
+                                            </div>
+                                        )}
+                                        <div style={{
+                                            display: "flex", justifyContent: "space-between",
+                                            paddingTop: "8px",
+                                            borderTop: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                            fontWeight: "700",
+                                            color: isDark ? "#e2e8f0" : "#1f2937"
+                                        }}>
+                                            <span>= {tBreakdown('total3m')}</span>
+                                            <span>{fmt(Math.floor(result.totalWages3Months))}{tResult('currency')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* STEP 2: 1일 평균임금 */}
+                                <div style={{
+                                    background: isDark ? "#0f172a" : "white",
+                                    borderRadius: "12px",
+                                    padding: "16px",
+                                    border: `1px solid ${isDark ? "#1e293b" : "#e5e7eb"}`
+                                }}>
+                                    <div style={{
+                                        fontSize: "0.8rem",
+                                        fontWeight: "700",
+                                        color: isDark ? "#38bdf8" : "#3b82f6",
+                                        marginBottom: "12px"
+                                    }}>
+                                        {tBreakdown('step2Title')}
+                                    </div>
+                                    <div className="sev-breakdown-row" style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "0.88rem" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                            <span>{fmt(Math.floor(result.totalWages3Months))} {tBreakdown('avgDailyCalc')}</span>
+                                            <span></span>
+                                        </div>
+                                        <div style={{
+                                            display: "flex", justifyContent: "space-between",
+                                            paddingTop: "8px",
+                                            borderTop: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                            fontWeight: "700",
+                                            color: isDark ? "#e2e8f0" : "#1f2937"
+                                        }}>
+                                            <span>= {tBreakdown('avgDailyWage')}</span>
+                                            <span>{fmt(Math.floor(result.averageDailyWage))}{tResult('currency')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* STEP 3: 퇴직금 산출 */}
+                                <div style={{
+                                    background: isDark ? "#0f172a" : "white",
+                                    borderRadius: "12px",
+                                    padding: "16px",
+                                    border: `1px solid ${isDark ? "#1e293b" : "#e5e7eb"}`
+                                }}>
+                                    <div style={{
+                                        fontSize: "0.8rem",
+                                        fontWeight: "700",
+                                        color: isDark ? "#38bdf8" : "#3b82f6",
+                                        marginBottom: "12px"
+                                    }}>
+                                        {tBreakdown('step3Title')}
+                                    </div>
+                                    <div className="sev-breakdown-row" style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "0.88rem" }}>
+                                        <div style={{ color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                            {fmt(Math.floor(result.averageDailyWage))} {tBreakdown('severanceCalc').replace('{days}', fmt(result.workingDays))}
+                                        </div>
+                                        <div style={{
+                                            display: "flex", justifyContent: "space-between",
+                                            paddingTop: "8px",
+                                            borderTop: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                            fontWeight: "700",
+                                            color: isDark ? "#e2e8f0" : "#1f2937"
+                                        }}>
+                                            <span>= {tBreakdown('grossSeverance')}</span>
+                                            <span>{fmt(result.severancePay)}{tResult('currency')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* STEP 4: 퇴직소득세 */}
+                                <div style={{
+                                    background: isDark ? "#0f172a" : "white",
+                                    borderRadius: "12px",
+                                    padding: "16px",
+                                    border: `1px solid ${isDark ? "#1e293b" : "#e5e7eb"}`
+                                }}>
+                                    <div style={{
+                                        fontSize: "0.8rem",
+                                        fontWeight: "700",
+                                        color: isDark ? "#38bdf8" : "#3b82f6",
+                                        marginBottom: "12px"
+                                    }}>
+                                        {tBreakdown('step4Title')}
+                                    </div>
+                                    <div className="sev-breakdown-row" style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "0.88rem" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                            <span>{tBreakdown('serviceYearsLabel')}</span>
+                                            <span style={{ fontWeight: "600" }}>{result.taxServiceYears}{tResult('year')}</span>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                            <span>{tBreakdown('serviceDeduction')}</span>
+                                            <span style={{ fontWeight: "600" }}>{fmt(Math.floor(result.serviceDeduction))}{tResult('currency')}</span>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                            <span>{tBreakdown('convertedSalary')}</span>
+                                            <span style={{ fontWeight: "600" }}>{fmt(Math.floor(result.convertedSalary))}{tResult('currency')}</span>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                            <span>{tBreakdown('convertedDeduction')}</span>
+                                            <span style={{ fontWeight: "600" }}>{fmt(Math.floor(result.convertedDeduction))}{tResult('currency')}</span>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#cbd5e1" : "#4b5563" }}>
+                                            <span>{tBreakdown('taxBase')}</span>
+                                            <span style={{ fontWeight: "600" }}>{fmt(Math.floor(result.taxBase))}{tResult('currency')}</span>
+                                        </div>
+                                        <div style={{
+                                            display: "flex", flexDirection: "column", gap: "4px",
+                                            paddingTop: "8px",
+                                            borderTop: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`
+                                        }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#fca5a5" : "#dc2626" }}>
+                                                <span>{tBreakdown('retirementTax')}</span>
+                                                <span style={{ fontWeight: "600" }}>{fmt(result.retirementTax)}{tResult('currency')}</span>
+                                            </div>
+                                            <div style={{ display: "flex", justifyContent: "space-between", color: isDark ? "#fca5a5" : "#dc2626" }}>
+                                                <span>{tBreakdown('localTax')}</span>
+                                                <span style={{ fontWeight: "600" }}>{fmt(result.localTax)}{tResult('currency')}</span>
+                                            </div>
+                                            <div style={{
+                                                display: "flex", justifyContent: "space-between",
+                                                paddingTop: "6px",
+                                                borderTop: `1px dashed ${isDark ? "#334155" : "#e5e7eb"}`,
+                                                fontWeight: "700",
+                                                color: isDark ? "#f87171" : "#b91c1c"
+                                            }}>
+                                                <span>{tBreakdown('totalTax')}</span>
+                                                <span>-{fmt(result.totalTax)}{tResult('currency')}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* STEP 5: 실수령 퇴직금 */}
+                                <div style={{
+                                    background: isDark ? "linear-gradient(135deg, #0c4a6e, #0f172a)" : "linear-gradient(135deg, #eff6ff, #dbeafe)",
+                                    borderRadius: "12px",
+                                    padding: "16px",
+                                    border: `1px solid ${isDark ? "#0c4a6e" : "#93c5fd"}`
+                                }}>
+                                    <div style={{
+                                        fontSize: "0.8rem",
+                                        fontWeight: "700",
+                                        color: isDark ? "#38bdf8" : "#2563eb",
+                                        marginBottom: "12px"
+                                    }}>
+                                        {tBreakdown('step5Title')}
+                                    </div>
+                                    <div className="sev-breakdown-row" style={{ fontSize: "0.88rem" }}>
+                                        <div style={{ color: isDark ? "#cbd5e1" : "#4b5563", marginBottom: "8px" }}>
+                                            {fmt(result.severancePay)} - {fmt(result.totalTax)} =
+                                        </div>
+                                        <div style={{
+                                            fontSize: "1.3rem",
+                                            fontWeight: "800",
+                                            color: isDark ? "#38bdf8" : "#1d4ed8",
+                                            textAlign: "right"
+                                        }}>
+                                            {fmt(result.netSeverancePay)}<span style={{ fontSize: "0.85rem", fontWeight: "600", marginLeft: "2px" }}>{tResult('currency')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </>
             )}
 
             {/* SEO Content Section */}

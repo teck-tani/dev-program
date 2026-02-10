@@ -170,7 +170,7 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "결과 확인",
-                "text": "예상 퇴직금 금액과 총 근속 기간이 결과 카드에 표시됩니다. 세전 예상 금액이며, 실제 수령액은 퇴직소득세 공제 후 달라질 수 있습니다."
+                "text": "세전 퇴직금, 퇴직소득세, 세후 실수령액이 결과 카드에 표시됩니다. 계산 과정 섹션에서 단계별 상세 계산 내역과 퇴직소득세 산출 과정을 확인할 수 있습니다."
             }
         ] : [
             {
@@ -201,7 +201,7 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "View Results",
-                "text": "The estimated severance pay amount and total service period will be displayed. This is a pre-tax estimate; actual amount may differ after retirement income tax deductions."
+                "text": "Gross severance pay, retirement income tax, and net amount after tax will be displayed. The Calculation Breakdown section shows step-by-step details including the tax computation process."
             }
         ]
     };
@@ -227,8 +227,8 @@ function generateWebAppSchema(locale: string) {
             "priceCurrency": "KRW"
         },
         "featureList": isKo
-            ? ["퇴직금 자동 계산", "평균임금 산정", "상여금/연차수당 포함", "1년 이상 근무 조건 확인", "실시간 계산"]
-            : ["Automatic severance calculation", "Average wage calculation", "Bonus/leave allowance included", "1+ year service verification", "Real-time calculation"],
+            ? ["퇴직금 자동 계산", "퇴직소득세 자동 계산", "세후 실수령액 표시", "단계별 계산 과정 표시", "평균임금 산정", "상여금/연차수당 포함"]
+            : ["Automatic severance calculation", "Retirement income tax calculation", "Net after-tax amount display", "Step-by-step calculation breakdown", "Average wage calculation", "Bonus/leave allowance included"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"
     };
