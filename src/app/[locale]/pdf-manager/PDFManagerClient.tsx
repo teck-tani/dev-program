@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaFilePdf, FaDownload, FaTrash, FaPlus, FaCut, FaLayerGroup, FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { PDFDocument } from "pdf-lib";
+import { FaFilePdf, FaDownload, FaTrash, FaPlus, FaCut, FaLayerGroup, FaArrowUp, FaArrowDown, FaUndo, FaRedo, FaCheckSquare, FaRegSquare, FaTint, FaGripVertical } from "react-icons/fa";
+import { PDFDocument, degrees, rgb, StandardFonts } from "pdf-lib";
 
 interface PDFFile {
     id: string;
@@ -12,9 +12,21 @@ interface PDFFile {
     name: string;
     pageCount: number;
     size: number;
+    thumbnail?: string;
 }
 
-type TabType = 'merge' | 'split';
+interface PageInfo {
+    index: number;
+    width: number;
+    height: number;
+    rotation: number;
+    selected: boolean;
+    thumbnail?: string;
+}
+
+type TabType = 'merge' | 'split' | 'watermark';
+
+type WatermarkPosition = 'center' | 'diagonal';
 
 export default function PDFManagerClient() {
     const t = useTranslations('PDFManager');
@@ -29,6 +41,21 @@ export default function PDFManagerClient() {
     const [error, setError] = useState<string | null>(null);
     const mergeInputRef = useRef<HTMLInputElement>(null);
     const splitInputRef = useRef<HTMLInputElement>(null);
+    const watermarkInputRef = useRef<HTMLInputElement>(null);
+
+    // Split page management
+    const [splitPages, setSplitPages] = useState<PageInfo[]>([]);
+
+    // Drag-and-drop merge reorder state
+    const [dragIndex, setDragIndex] = useState<number | null>(null);
+    const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+    // Watermark state
+    const [watermarkFile, setWatermarkFile] = useState<PDFFile | null>(null);
+    const [watermarkText, setWatermarkText] = useState('');
+    const [watermarkFontSize, setWatermarkFontSize] = useState(48);
+    const [watermarkOpacity, setWatermarkOpacity] = useState(0.3);
+    const [watermarkPosition, setWatermarkPosition] = useState<WatermarkPosition>('diagonal');
 
     const formatBytes = (bytes: number) => {
         if (bytes === 0) return '0 Bytes';
@@ -37,6 +64,47 @@ export default function PDFManagerClient() {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
+
+    // Generate a placeholder thumbnail for a page using canvas
+    const generateThumbnail = useCallback((pageWidth: number, pageHeight: number, pageNumber: number, rotation: number): string => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 120;
+        const isRotated = rotation === 90 || rotation === 270;
+        const effW = isRotated ? pageHeight : pageWidth;
+        const effH = isRotated ? pageWidth : pageHeight;
+        const scale = Math.min(maxDim / effW, maxDim / effH);
+        canvas.width = Math.round(effW * scale);
+        canvas.height = Math.round(effH * scale);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return '';
+
+        // Background - light page color
+        ctx.fillStyle = '#f8f0e8';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Border
+        ctx.strokeStyle = '#ccc';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+        // Faux text lines
+        ctx.fillStyle = '#ddd';
+        const lineH = 4;
+        const margin = 10;
+        for (let y = margin + 16; y < canvas.height - margin; y += lineH * 2.5) {
+            const lineW = margin + Math.random() * (canvas.width - 2 * margin - 10);
+            ctx.fillRect(margin, y, Math.min(lineW, canvas.width - 2 * margin), lineH);
+        }
+
+        // Page number overlay
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(pageNumber), canvas.width / 2, canvas.height / 2);
+
+        return canvas.toDataURL('image/png');
+    }, []);
 
     const loadPDFFile = async (file: File): Promise<PDFFile> => {
         const arrayBuffer = await file.arrayBuffer();
@@ -50,6 +118,53 @@ export default function PDFManagerClient() {
         };
     };
 
+    // Generate thumbnails for merge file (first page only)
+    const generateMergeThumbnail = useCallback(async (pdfFile: PDFFile): Promise<string> => {
+        try {
+            const arrayBuffer = await pdfFile.file.arrayBuffer();
+            const pdf = await PDFDocument.load(arrayBuffer);
+            const page = pdf.getPage(0);
+            const { width, height } = page.getSize();
+            return generateThumbnail(width, height, 1, 0);
+        } catch {
+            return '';
+        }
+    }, [generateThumbnail]);
+
+    // Load split pages info
+    const loadSplitPages = useCallback(async (pdfFile: PDFFile) => {
+        try {
+            const arrayBuffer = await pdfFile.file.arrayBuffer();
+            const pdf = await PDFDocument.load(arrayBuffer);
+            const pages: PageInfo[] = [];
+            for (let i = 0; i < pdf.getPageCount(); i++) {
+                const page = pdf.getPage(i);
+                const { width, height } = page.getSize();
+                const rot = page.getRotation().angle;
+                const thumb = generateThumbnail(width, height, i + 1, rot);
+                pages.push({
+                    index: i,
+                    width,
+                    height,
+                    rotation: rot,
+                    selected: false,
+                    thumbnail: thumb,
+                });
+            }
+            setSplitPages(pages);
+        } catch {
+            setSplitPages([]);
+        }
+    }, [generateThumbnail]);
+
+    useEffect(() => {
+        if (splitFile) {
+            loadSplitPages(splitFile);
+        } else {
+            setSplitPages([]);
+        }
+    }, [splitFile, loadSplitPages]);
+
     const handleMergeFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (!files) return;
@@ -61,7 +176,11 @@ export default function PDFManagerClient() {
             const pdfFiles = await Promise.all(
                 Array.from(files)
                     .filter(file => file.type === 'application/pdf')
-                    .map(loadPDFFile)
+                    .map(async (file) => {
+                        const pdfFile = await loadPDFFile(file);
+                        const thumb = await generateMergeThumbnail(pdfFile);
+                        return { ...pdfFile, thumbnail: thumb };
+                    })
             );
             setMergeFiles(prev => [...prev, ...pdfFiles]);
         } catch {
@@ -72,7 +191,7 @@ export default function PDFManagerClient() {
                 mergeInputRef.current.value = '';
             }
         }
-    }, [t]);
+    }, [t, generateMergeThumbnail]);
 
     const handleSplitFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
@@ -99,6 +218,31 @@ export default function PDFManagerClient() {
         }
     }, [t]);
 
+    const handleWatermarkFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        setError(null);
+        setIsProcessing(true);
+
+        try {
+            const file = files[0];
+            if (file.type !== 'application/pdf') {
+                setError(t('error.notPdf'));
+                return;
+            }
+            const pdfFile = await loadPDFFile(file);
+            setWatermarkFile(pdfFile);
+        } catch {
+            setError(t('error.loadFailed'));
+        } finally {
+            setIsProcessing(false);
+            if (watermarkInputRef.current) {
+                watermarkInputRef.current.value = '';
+            }
+        }
+    }, [t]);
+
     const moveFile = useCallback((index: number, direction: 'up' | 'down') => {
         setMergeFiles(prev => {
             const newFiles = [...prev];
@@ -109,6 +253,29 @@ export default function PDFManagerClient() {
         });
     }, []);
 
+    // Drag-and-drop handlers for merge file reorder
+    const handleDragStart = useCallback((index: number) => {
+        setDragIndex(index);
+    }, []);
+
+    const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
+        e.preventDefault();
+        setDragOverIndex(index);
+    }, []);
+
+    const handleDragEnd = useCallback(() => {
+        if (dragIndex !== null && dragOverIndex !== null && dragIndex !== dragOverIndex) {
+            setMergeFiles(prev => {
+                const newFiles = [...prev];
+                const [draggedItem] = newFiles.splice(dragIndex, 1);
+                newFiles.splice(dragOverIndex, 0, draggedItem);
+                return newFiles;
+            });
+        }
+        setDragIndex(null);
+        setDragOverIndex(null);
+    }, [dragIndex, dragOverIndex]);
+
     const removeMergeFile = useCallback((id: string) => {
         setMergeFiles(prev => prev.filter(f => f.id !== id));
     }, []);
@@ -116,6 +283,82 @@ export default function PDFManagerClient() {
     const clearMergeFiles = useCallback(() => {
         setMergeFiles([]);
     }, []);
+
+    // Page rotation
+    const rotatePage = useCallback((pageIndex: number, direction: 'cw' | 'ccw') => {
+        setSplitPages(prev => prev.map(p => {
+            if (p.index === pageIndex) {
+                const newRotation = direction === 'cw'
+                    ? (p.rotation + 90) % 360
+                    : (p.rotation - 90 + 360) % 360;
+                const thumb = generateThumbnail(p.width, p.height, p.index + 1, newRotation);
+                return { ...p, rotation: newRotation, thumbnail: thumb };
+            }
+            return p;
+        }));
+    }, [generateThumbnail]);
+
+    // Page selection for deletion
+    const togglePageSelection = useCallback((pageIndex: number) => {
+        setSplitPages(prev => prev.map(p =>
+            p.index === pageIndex ? { ...p, selected: !p.selected } : p
+        ));
+    }, []);
+
+    const selectAllPages = useCallback(() => {
+        setSplitPages(prev => prev.map(p => ({ ...p, selected: true })));
+    }, []);
+
+    const deselectAllPages = useCallback(() => {
+        setSplitPages(prev => prev.map(p => ({ ...p, selected: false })));
+    }, []);
+
+    const selectedCount = splitPages.filter(p => p.selected).length;
+
+    // Delete selected pages and download new PDF
+    const handleDeleteSelected = useCallback(async () => {
+        if (!splitFile || selectedCount === 0) return;
+        if (selectedCount === splitPages.length) {
+            setError(t('error.cannotDeleteAll'));
+            return;
+        }
+
+        setIsProcessing(true);
+        setError(null);
+
+        try {
+            const arrayBuffer = await splitFile.file.arrayBuffer();
+            const pdf = await PDFDocument.load(arrayBuffer);
+            const newPdf = await PDFDocument.create();
+
+            const pagesToKeep = splitPages.filter(p => !p.selected);
+            const indices = pagesToKeep.map(p => p.index);
+
+            const copiedPages = await newPdf.copyPages(pdf, indices);
+            for (let i = 0; i < copiedPages.length; i++) {
+                const page = copiedPages[i];
+                const rotation = pagesToKeep[i].rotation;
+                page.setRotation(degrees(rotation));
+                newPdf.addPage(page);
+            }
+
+            const pdfBytes = await newPdf.save();
+            const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            const baseName = splitFile.name.replace('.pdf', '');
+            link.download = `${baseName}_edited.pdf`;
+            link.click();
+
+            URL.revokeObjectURL(url);
+        } catch {
+            setError(t('error.deleteFailed'));
+        } finally {
+            setIsProcessing(false);
+        }
+    }, [splitFile, splitPages, selectedCount, t]);
 
     const handleMerge = useCallback(async () => {
         if (mergeFiles.length < 2) {
@@ -198,10 +441,15 @@ export default function PDFManagerClient() {
                 return;
             }
 
-            // Create individual PDFs for each page
+            // Create individual PDFs for each page (with rotation applied)
             for (const pageIndex of pagesToExtract) {
                 const newPdf = await PDFDocument.create();
                 const [copiedPage] = await newPdf.copyPages(pdf, [pageIndex]);
+                // Apply rotation from splitPages state
+                const pageInfo = splitPages.find(p => p.index === pageIndex);
+                if (pageInfo) {
+                    copiedPage.setRotation(degrees(pageInfo.rotation));
+                }
                 newPdf.addPage(copiedPage);
 
                 const pdfBytes = await newPdf.save();
@@ -224,10 +472,106 @@ export default function PDFManagerClient() {
         } finally {
             setIsProcessing(false);
         }
-    }, [splitFile, splitMode, splitRange, t]);
+    }, [splitFile, splitMode, splitRange, splitPages, t]);
+
+    // Watermark handler
+    const handleWatermark = useCallback(async () => {
+        if (!watermarkFile) {
+            setError(t('error.noFile'));
+            return;
+        }
+        if (!watermarkText.trim()) {
+            setError(t('error.noWatermarkText'));
+            return;
+        }
+
+        setIsProcessing(true);
+        setError(null);
+
+        try {
+            const arrayBuffer = await watermarkFile.file.arrayBuffer();
+            const pdf = await PDFDocument.load(arrayBuffer);
+            const font = await pdf.embedFont(StandardFonts.Helvetica);
+            const pageCount = pdf.getPageCount();
+
+            for (let i = 0; i < pageCount; i++) {
+                const page = pdf.getPage(i);
+                const { width, height } = page.getSize();
+
+                if (watermarkPosition === 'diagonal') {
+                    // Diagonal watermark
+                    const textWidth = font.widthOfTextAtSize(watermarkText, watermarkFontSize);
+                    const angle = Math.atan2(height, width) * (180 / Math.PI);
+                    page.drawText(watermarkText, {
+                        x: (width - textWidth * Math.cos(angle * Math.PI / 180)) / 2,
+                        y: height / 2 - watermarkFontSize / 2,
+                        size: watermarkFontSize,
+                        font,
+                        color: rgb(0.5, 0.5, 0.5),
+                        opacity: watermarkOpacity,
+                        rotate: degrees(angle),
+                    });
+                } else {
+                    // Center watermark
+                    const textWidth = font.widthOfTextAtSize(watermarkText, watermarkFontSize);
+                    page.drawText(watermarkText, {
+                        x: (width - textWidth) / 2,
+                        y: (height - watermarkFontSize) / 2,
+                        size: watermarkFontSize,
+                        font,
+                        color: rgb(0.5, 0.5, 0.5),
+                        opacity: watermarkOpacity,
+                    });
+                }
+            }
+
+            const pdfBytes = await pdf.save();
+            const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            const baseName = watermarkFile.name.replace('.pdf', '');
+            link.download = `${baseName}_watermarked.pdf`;
+            link.click();
+
+            URL.revokeObjectURL(url);
+        } catch {
+            setError(t('error.watermarkFailed'));
+        } finally {
+            setIsProcessing(false);
+        }
+    }, [watermarkFile, watermarkText, watermarkFontSize, watermarkOpacity, watermarkPosition, t]);
 
     const totalMergePages = mergeFiles.reduce((sum, f) => sum + f.pageCount, 0);
     const totalMergeSize = mergeFiles.reduce((sum, f) => sum + f.size, 0);
+
+    // Style helpers
+    const cardBg = isDark ? '#1e293b' : 'white';
+    const cardShadow = isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)';
+    const borderColor = isDark ? '#334155' : '#ddd';
+    const textPrimary = isDark ? '#f1f5f9' : '#333';
+    const textSecondary = isDark ? '#94a3b8' : '#666';
+    const textMuted = isDark ? '#64748b' : '#888';
+    const inputBg = isDark ? '#0f172a' : '#fff';
+    const subtleBg = isDark ? '#0f172a' : '#f8f9fa';
+
+    const redGradient = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+
+    const pillButton = (active: boolean) => ({
+        padding: '14px 24px',
+        background: active ? redGradient : subtleBg,
+        color: active ? 'white' : textSecondary,
+        border: active ? 'none' : `1px solid ${borderColor}`,
+        borderRadius: '25px',
+        fontSize: '1rem',
+        fontWeight: 600 as const,
+        cursor: 'pointer' as const,
+        display: 'flex' as const,
+        alignItems: 'center' as const,
+        justifyContent: 'center' as const,
+        gap: '8px',
+    });
 
     return (
         <div style={{ minHeight: '100vh', background: isDark ? '#0f172a' : 'linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%)' }}>
@@ -246,55 +590,40 @@ export default function PDFManagerClient() {
                     display: 'flex',
                     gap: '10px',
                     marginBottom: '20px',
-                    background: isDark ? '#1e293b' : 'white',
+                    background: cardBg,
                     padding: '8px',
                     borderRadius: '12px',
-                    boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)'
+                    boxShadow: cardShadow,
+                    flexWrap: 'wrap',
                 }}>
-                    <button
-                        onClick={() => setActiveTab('merge')}
-                        style={{
-                            flex: 1,
-                            padding: '14px 20px',
-                            background: activeTab === 'merge' ? 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)' : 'transparent',
-                            color: activeTab === 'merge' ? 'white' : (isDark ? '#94a3b8' : '#666'),
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s ease',
-                        }}
-                    >
-                        <FaLayerGroup />
-                        {t('tabs.merge')}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('split')}
-                        style={{
-                            flex: 1,
-                            padding: '14px 20px',
-                            background: activeTab === 'split' ? 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)' : 'transparent',
-                            color: activeTab === 'split' ? 'white' : (isDark ? '#94a3b8' : '#666'),
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s ease',
-                        }}
-                    >
-                        <FaCut />
-                        {t('tabs.split')}
-                    </button>
+                    {(['merge', 'split', 'watermark'] as TabType[]).map(tab => (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            style={{
+                                flex: 1,
+                                minWidth: '120px',
+                                padding: '14px 20px',
+                                background: activeTab === tab ? redGradient : 'transparent',
+                                color: activeTab === tab ? 'white' : textSecondary,
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                transition: 'all 0.2s ease',
+                            }}
+                        >
+                            {tab === 'merge' && <FaLayerGroup />}
+                            {tab === 'split' && <FaCut />}
+                            {tab === 'watermark' && <FaTint />}
+                            {t(`tabs.${tab}`)}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Error Message */}
@@ -311,14 +640,14 @@ export default function PDFManagerClient() {
                     </div>
                 )}
 
-                {/* Merge Tab */}
+                {/* ============ MERGE TAB ============ */}
                 {activeTab === 'merge' && (
                     <>
                         {/* Upload Area */}
                         <div
                             onClick={() => mergeInputRef.current?.click()}
                             style={{
-                                background: isDark ? '#1e293b' : 'white',
+                                background: cardBg,
                                 border: '2px dashed #e74c3c',
                                 borderRadius: '16px',
                                 padding: '40px 20px',
@@ -328,11 +657,11 @@ export default function PDFManagerClient() {
                                 transition: 'all 0.3s ease',
                             }}
                             onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.background = isDark ? '#2d1a1a' : '#fff5f5'; }}
-                            onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = isDark ? '#1e293b' : 'white'; }}
+                            onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = cardBg; }}
                             onDrop={(e) => {
                                 e.preventDefault();
                                 e.currentTarget.style.borderColor = '#e74c3c';
-                                e.currentTarget.style.background = isDark ? '#1e293b' : 'white';
+                                e.currentTarget.style.background = cardBg;
                                 const files = e.dataTransfer.files;
                                 if (files.length > 0) {
                                     const event = { target: { files } } as React.ChangeEvent<HTMLInputElement>;
@@ -341,10 +670,10 @@ export default function PDFManagerClient() {
                             }}
                         >
                             <FaFilePdf style={{ fontSize: '3rem', color: '#e74c3c', marginBottom: '15px' }} />
-                            <p style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
+                            <p style={{ color: textPrimary, fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
                                 {t('merge.upload.title')}
                             </p>
-                            <p style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.9rem' }}>
+                            <p style={{ color: textMuted, fontSize: '0.9rem' }}>
                                 {t('merge.upload.subtitle')}
                             </p>
                             <input
@@ -360,91 +689,121 @@ export default function PDFManagerClient() {
                         {/* File List */}
                         {mergeFiles.length > 0 && (
                             <>
+                                {/* Summary */}
                                 <div style={{
-                                    background: isDark ? '#1e293b' : 'white',
+                                    background: cardBg,
                                     borderRadius: '16px',
                                     padding: '20px',
                                     marginBottom: '20px',
-                                    boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
+                                    boxShadow: cardShadow,
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
                                     gap: '15px',
                                     textAlign: 'center',
                                 }}>
                                     <div>
-                                        <div style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.85rem' }}>{t('merge.summary.files')}</div>
-                                        <div style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.3rem', fontWeight: 700 }}>{mergeFiles.length}</div>
+                                        <div style={{ color: textMuted, fontSize: '0.85rem' }}>{t('merge.summary.files')}</div>
+                                        <div style={{ color: textPrimary, fontSize: '1.3rem', fontWeight: 700 }}>{mergeFiles.length}</div>
                                     </div>
                                     <div>
-                                        <div style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.85rem' }}>{t('merge.summary.pages')}</div>
-                                        <div style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.3rem', fontWeight: 700 }}>{totalMergePages}</div>
+                                        <div style={{ color: textMuted, fontSize: '0.85rem' }}>{t('merge.summary.pages')}</div>
+                                        <div style={{ color: textPrimary, fontSize: '1.3rem', fontWeight: 700 }}>{totalMergePages}</div>
                                     </div>
                                     <div>
-                                        <div style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.85rem' }}>{t('merge.summary.size')}</div>
-                                        <div style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.3rem', fontWeight: 700 }}>{formatBytes(totalMergeSize)}</div>
+                                        <div style={{ color: textMuted, fontSize: '0.85rem' }}>{t('merge.summary.size')}</div>
+                                        <div style={{ color: textPrimary, fontSize: '1.3rem', fontWeight: 700 }}>{formatBytes(totalMergeSize)}</div>
                                     </div>
                                 </div>
 
+                                {/* Drag hint */}
+                                <p style={{ color: textMuted, fontSize: '0.85rem', marginBottom: '10px', textAlign: 'center' }}>
+                                    {t('merge.dragHint')}
+                                </p>
+
+                                {/* Draggable File List */}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
                                     {mergeFiles.map((pdfFile, index) => (
                                         <div
                                             key={pdfFile.id}
+                                            draggable
+                                            onDragStart={() => handleDragStart(index)}
+                                            onDragOver={(e) => handleDragOver(e, index)}
+                                            onDragEnd={handleDragEnd}
                                             style={{
-                                                background: isDark ? '#1e293b' : 'white',
+                                                background: dragOverIndex === index ? (isDark ? '#2d1a1a' : '#fff5f5') : cardBg,
                                                 borderRadius: '12px',
                                                 padding: '15px',
-                                                boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
+                                                boxShadow: dragIndex === index ? '0 4px 20px rgba(231,76,60,0.3)' : cardShadow,
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '12px',
+                                                opacity: dragIndex === index ? 0.5 : 1,
+                                                transition: 'all 0.2s ease',
+                                                border: dragOverIndex === index ? '2px solid #e74c3c' : '2px solid transparent',
+                                                cursor: 'grab',
                                             }}
                                         >
+                                            {/* Drag handle */}
+                                            <FaGripVertical style={{ color: textMuted, flexShrink: 0, fontSize: '1.1rem' }} />
+
+                                            {/* Up/Down fallback buttons */}
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                 <button
-                                                    onClick={() => moveFile(index, 'up')}
+                                                    onClick={(e) => { e.stopPropagation(); moveFile(index, 'up'); }}
                                                     disabled={index === 0}
                                                     style={{
                                                         padding: '4px 8px',
-                                                        background: index === 0 ? (isDark ? '#334155' : '#eee') : (isDark ? '#0f172a' : '#f8f9fa'),
-                                                        border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                                        background: index === 0 ? (isDark ? '#334155' : '#eee') : subtleBg,
+                                                        border: `1px solid ${borderColor}`,
                                                         borderRadius: '4px',
                                                         cursor: index === 0 ? 'not-allowed' : 'pointer',
-                                                        color: index === 0 ? (isDark ? '#475569' : '#ccc') : (isDark ? '#94a3b8' : '#666'),
+                                                        color: index === 0 ? (isDark ? '#475569' : '#ccc') : textSecondary,
                                                     }}
                                                 >
                                                     <FaArrowUp size={12} />
                                                 </button>
                                                 <button
-                                                    onClick={() => moveFile(index, 'down')}
+                                                    onClick={(e) => { e.stopPropagation(); moveFile(index, 'down'); }}
                                                     disabled={index === mergeFiles.length - 1}
                                                     style={{
                                                         padding: '4px 8px',
-                                                        background: index === mergeFiles.length - 1 ? (isDark ? '#334155' : '#eee') : (isDark ? '#0f172a' : '#f8f9fa'),
-                                                        border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                                        background: index === mergeFiles.length - 1 ? (isDark ? '#334155' : '#eee') : subtleBg,
+                                                        border: `1px solid ${borderColor}`,
                                                         borderRadius: '4px',
                                                         cursor: index === mergeFiles.length - 1 ? 'not-allowed' : 'pointer',
-                                                        color: index === mergeFiles.length - 1 ? (isDark ? '#475569' : '#ccc') : (isDark ? '#94a3b8' : '#666'),
+                                                        color: index === mergeFiles.length - 1 ? (isDark ? '#475569' : '#ccc') : textSecondary,
                                                     }}
                                                 >
                                                     <FaArrowDown size={12} />
                                                 </button>
                                             </div>
-                                            <FaFilePdf style={{ fontSize: '2rem', color: '#e74c3c', flexShrink: 0 }} />
+
+                                            {/* Thumbnail */}
+                                            {pdfFile.thumbnail ? (
+                                                <img
+                                                    src={pdfFile.thumbnail}
+                                                    alt={`${pdfFile.name} thumbnail`}
+                                                    style={{ width: '50px', height: '65px', objectFit: 'cover', borderRadius: '4px', border: `1px solid ${borderColor}`, flexShrink: 0 }}
+                                                />
+                                            ) : (
+                                                <FaFilePdf style={{ fontSize: '2rem', color: '#e74c3c', flexShrink: 0 }} />
+                                            )}
+
                                             <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ fontWeight: 600, color: isDark ? '#f1f5f9' : '#333', marginBottom: '4px', wordBreak: 'break-all' }}>
+                                                <div style={{ fontWeight: 600, color: textPrimary, marginBottom: '4px', wordBreak: 'break-all' }}>
                                                     {pdfFile.name}
                                                 </div>
-                                                <div style={{ fontSize: '0.85rem', color: isDark ? '#64748b' : '#888' }}>
+                                                <div style={{ fontSize: '0.85rem', color: textMuted }}>
                                                     {t('merge.file.pages', { count: pdfFile.pageCount })} · {formatBytes(pdfFile.size)}
                                                 </div>
                                             </div>
                                             <button
-                                                onClick={() => removeMergeFile(pdfFile.id)}
+                                                onClick={(e) => { e.stopPropagation(); removeMergeFile(pdfFile.id); }}
                                                 style={{
                                                     padding: '8px',
-                                                    background: isDark ? '#0f172a' : '#f8f9fa',
-                                                    color: isDark ? '#94a3b8' : '#666',
-                                                    border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                                    background: subtleBg,
+                                                    color: textSecondary,
+                                                    border: `1px solid ${borderColor}`,
                                                     borderRadius: '50%',
                                                     cursor: 'pointer',
                                                     display: 'flex',
@@ -464,20 +823,11 @@ export default function PDFManagerClient() {
                                         onClick={handleMerge}
                                         disabled={isProcessing || mergeFiles.length < 2}
                                         style={{
+                                            ...pillButton(true),
                                             flex: 1,
                                             minWidth: '150px',
-                                            padding: '14px 24px',
-                                            background: isProcessing || mergeFiles.length < 2 ? '#ccc' : 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '25px',
-                                            fontSize: '1rem',
-                                            fontWeight: 600,
+                                            background: isProcessing || mergeFiles.length < 2 ? '#ccc' : redGradient,
                                             cursor: isProcessing || mergeFiles.length < 2 ? 'not-allowed' : 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '8px',
                                         }}
                                     >
                                         <FaLayerGroup />
@@ -485,40 +835,14 @@ export default function PDFManagerClient() {
                                     </button>
                                     <button
                                         onClick={() => mergeInputRef.current?.click()}
-                                        style={{
-                                            padding: '14px 24px',
-                                            background: isDark ? '#1e293b' : '#f8f9fa',
-                                            color: isDark ? '#94a3b8' : '#666',
-                                            border: isDark ? '1px solid #334155' : '1px solid #ddd',
-                                            borderRadius: '25px',
-                                            fontSize: '1rem',
-                                            fontWeight: 600,
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '8px',
-                                        }}
+                                        style={pillButton(false)}
                                     >
                                         <FaPlus />
                                         {t('merge.addMore')}
                                     </button>
                                     <button
                                         onClick={clearMergeFiles}
-                                        style={{
-                                            padding: '14px 24px',
-                                            background: isDark ? '#1e293b' : '#f8f9fa',
-                                            color: isDark ? '#94a3b8' : '#666',
-                                            border: isDark ? '1px solid #334155' : '1px solid #ddd',
-                                            borderRadius: '25px',
-                                            fontSize: '1rem',
-                                            fontWeight: 600,
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '8px',
-                                        }}
+                                        style={pillButton(false)}
                                     >
                                         <FaTrash />
                                         {t('merge.clearAll')}
@@ -529,7 +853,7 @@ export default function PDFManagerClient() {
                     </>
                 )}
 
-                {/* Split Tab */}
+                {/* ============ SPLIT TAB ============ */}
                 {activeTab === 'split' && (
                     <>
                         {/* Upload Area */}
@@ -537,7 +861,7 @@ export default function PDFManagerClient() {
                             <div
                                 onClick={() => splitInputRef.current?.click()}
                                 style={{
-                                    background: isDark ? '#1e293b' : 'white',
+                                    background: cardBg,
                                     border: '2px dashed #e74c3c',
                                     borderRadius: '16px',
                                     padding: '40px 20px',
@@ -547,11 +871,11 @@ export default function PDFManagerClient() {
                                     transition: 'all 0.3s ease',
                                 }}
                                 onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.background = isDark ? '#2d1a1a' : '#fff5f5'; }}
-                                onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = isDark ? '#1e293b' : 'white'; }}
+                                onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = cardBg; }}
                                 onDrop={(e) => {
                                     e.preventDefault();
                                     e.currentTarget.style.borderColor = '#e74c3c';
-                                    e.currentTarget.style.background = isDark ? '#1e293b' : 'white';
+                                    e.currentTarget.style.background = cardBg;
                                     const files = e.dataTransfer.files;
                                     if (files.length > 0) {
                                         const event = { target: { files } } as React.ChangeEvent<HTMLInputElement>;
@@ -560,10 +884,10 @@ export default function PDFManagerClient() {
                                 }}
                             >
                                 <FaFilePdf style={{ fontSize: '3rem', color: '#e74c3c', marginBottom: '15px' }} />
-                                <p style={{ color: isDark ? '#f1f5f9' : '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
+                                <p style={{ color: textPrimary, fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
                                     {t('split.upload.title')}
                                 </p>
-                                <p style={{ color: isDark ? '#64748b' : '#888', fontSize: '0.9rem' }}>
+                                <p style={{ color: textMuted, fontSize: '0.9rem' }}>
                                     {t('split.upload.subtitle')}
                                 </p>
                                 <input
@@ -580,29 +904,29 @@ export default function PDFManagerClient() {
                         {splitFile && (
                             <>
                                 <div style={{
-                                    background: isDark ? '#1e293b' : 'white',
+                                    background: cardBg,
                                     borderRadius: '16px',
                                     padding: '20px',
                                     marginBottom: '20px',
-                                    boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
+                                    boxShadow: cardShadow,
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                                         <FaFilePdf style={{ fontSize: '2.5rem', color: '#e74c3c' }} />
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 600, color: isDark ? '#f1f5f9' : '#333', marginBottom: '4px' }}>
+                                            <div style={{ fontWeight: 600, color: textPrimary, marginBottom: '4px' }}>
                                                 {splitFile.name}
                                             </div>
-                                            <div style={{ fontSize: '0.9rem', color: isDark ? '#64748b' : '#888' }}>
+                                            <div style={{ fontSize: '0.9rem', color: textMuted }}>
                                                 {t('split.file.info', { pages: splitFile.pageCount, size: formatBytes(splitFile.size) })}
                                             </div>
                                         </div>
                                         <button
-                                            onClick={() => setSplitFile(null)}
+                                            onClick={() => { setSplitFile(null); setSplitPages([]); }}
                                             style={{
                                                 padding: '8px 16px',
-                                                background: isDark ? '#0f172a' : '#f8f9fa',
-                                                color: isDark ? '#94a3b8' : '#666',
-                                                border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                                background: subtleBg,
+                                                color: textSecondary,
+                                                border: `1px solid ${borderColor}`,
                                                 borderRadius: '20px',
                                                 cursor: 'pointer',
                                                 display: 'flex',
@@ -615,9 +939,183 @@ export default function PDFManagerClient() {
                                         </button>
                                     </div>
 
+                                    {/* Page Thumbnails Grid */}
+                                    {splitPages.length > 0 && (
+                                        <div style={{ marginBottom: '20px' }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                marginBottom: '12px',
+                                            }}>
+                                                <div style={{ fontWeight: 600, color: textPrimary, fontSize: '0.95rem' }}>
+                                                    {t('split.pages.title')}
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <button
+                                                        onClick={selectAllPages}
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            background: subtleBg,
+                                                            color: textSecondary,
+                                                            border: `1px solid ${borderColor}`,
+                                                            borderRadius: '6px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '0.8rem',
+                                                            fontWeight: 600,
+                                                        }}
+                                                    >
+                                                        {t('split.pages.selectAll')}
+                                                    </button>
+                                                    <button
+                                                        onClick={deselectAllPages}
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            background: subtleBg,
+                                                            color: textSecondary,
+                                                            border: `1px solid ${borderColor}`,
+                                                            borderRadius: '6px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '0.8rem',
+                                                            fontWeight: 600,
+                                                        }}
+                                                    >
+                                                        {t('split.pages.deselectAll')}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                                                gap: '12px',
+                                            }}>
+                                                {splitPages.map((page) => (
+                                                    <div
+                                                        key={page.index}
+                                                        style={{
+                                                            background: page.selected ? (isDark ? '#3b1111' : '#fff0f0') : (isDark ? '#0f172a' : '#f8f9fa'),
+                                                            borderRadius: '10px',
+                                                            padding: '10px',
+                                                            border: page.selected ? '2px solid #e74c3c' : `2px solid ${borderColor}`,
+                                                            textAlign: 'center',
+                                                            transition: 'all 0.2s ease',
+                                                        }}
+                                                    >
+                                                        {/* Checkbox */}
+                                                        <div
+                                                            onClick={() => togglePageSelection(page.index)}
+                                                            style={{ cursor: 'pointer', marginBottom: '6px', display: 'flex', justifyContent: 'flex-start' }}
+                                                        >
+                                                            {page.selected
+                                                                ? <FaCheckSquare style={{ color: '#e74c3c', fontSize: '1.1rem' }} />
+                                                                : <FaRegSquare style={{ color: textMuted, fontSize: '1.1rem' }} />
+                                                            }
+                                                        </div>
+
+                                                        {/* Thumbnail */}
+                                                        {page.thumbnail && (
+                                                            <div style={{ marginBottom: '8px' }}>
+                                                                <img
+                                                                    src={page.thumbnail}
+                                                                    alt={`Page ${page.index + 1}`}
+                                                                    style={{
+                                                                        maxWidth: '100%',
+                                                                        height: 'auto',
+                                                                        borderRadius: '4px',
+                                                                        border: `1px solid ${borderColor}`,
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        )}
+
+                                                        {/* Page number */}
+                                                        <div style={{ fontSize: '0.8rem', color: textPrimary, fontWeight: 600, marginBottom: '4px' }}>
+                                                            {t('split.pages.pageNum', { num: page.index + 1 })}
+                                                        </div>
+
+                                                        {/* Rotation display */}
+                                                        {page.rotation !== 0 && (
+                                                            <div style={{ fontSize: '0.7rem', color: '#e74c3c', marginBottom: '4px' }}>
+                                                                {page.rotation}°
+                                                            </div>
+                                                        )}
+
+                                                        {/* Rotation buttons */}
+                                                        <div style={{ display: 'flex', justifyContent: 'center', gap: '6px' }}>
+                                                            <button
+                                                                onClick={() => rotatePage(page.index, 'ccw')}
+                                                                title={t('split.pages.rotateCCW')}
+                                                                style={{
+                                                                    padding: '4px 8px',
+                                                                    background: subtleBg,
+                                                                    border: `1px solid ${borderColor}`,
+                                                                    borderRadius: '4px',
+                                                                    cursor: 'pointer',
+                                                                    color: textSecondary,
+                                                                    fontSize: '0.8rem',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                <FaUndo size={10} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => rotatePage(page.index, 'cw')}
+                                                                title={t('split.pages.rotateCW')}
+                                                                style={{
+                                                                    padding: '4px 8px',
+                                                                    background: subtleBg,
+                                                                    border: `1px solid ${borderColor}`,
+                                                                    borderRadius: '4px',
+                                                                    cursor: 'pointer',
+                                                                    color: textSecondary,
+                                                                    fontSize: '0.8rem',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                <FaRedo size={10} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Delete Selected */}
+                                            {selectedCount > 0 && (
+                                                <div style={{ marginTop: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <button
+                                                        onClick={handleDeleteSelected}
+                                                        disabled={isProcessing}
+                                                        style={{
+                                                            padding: '10px 20px',
+                                                            background: isProcessing ? '#ccc' : '#e74c3c',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '20px',
+                                                            fontSize: '0.9rem',
+                                                            fontWeight: 600,
+                                                            cursor: isProcessing ? 'not-allowed' : 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '6px',
+                                                        }}
+                                                    >
+                                                        <FaTrash size={12} />
+                                                        {t('split.pages.deleteSelected', { count: selectedCount })}
+                                                    </button>
+                                                    <span style={{ fontSize: '0.85rem', color: textMuted }}>
+                                                        {t('split.pages.deleteHint')}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
                                     {/* Split Options */}
-                                    <div style={{ borderTop: isDark ? '1px solid #334155' : '1px solid #eee', paddingTop: '20px' }}>
-                                        <div style={{ marginBottom: '15px', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>
+                                    <div style={{ borderTop: `1px solid ${isDark ? '#334155' : '#eee'}`, paddingTop: '20px' }}>
+                                        <div style={{ marginBottom: '15px', fontWeight: 600, color: textPrimary }}>
                                             {t('split.options.title')}
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -629,7 +1127,7 @@ export default function PDFManagerClient() {
                                                     onChange={() => setSplitMode('all')}
                                                     style={{ accentColor: '#e74c3c' }}
                                                 />
-                                                <span style={{ color: isDark ? '#f1f5f9' : '#333' }}>{t('split.options.all')}</span>
+                                                <span style={{ color: textPrimary }}>{t('split.options.all')}</span>
                                             </label>
                                             <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
                                                 <input
@@ -640,7 +1138,7 @@ export default function PDFManagerClient() {
                                                     style={{ accentColor: '#e74c3c', marginTop: '4px' }}
                                                 />
                                                 <div style={{ flex: 1 }}>
-                                                    <span style={{ color: isDark ? '#f1f5f9' : '#333' }}>{t('split.options.range')}</span>
+                                                    <span style={{ color: textPrimary }}>{t('split.options.range')}</span>
                                                     {splitMode === 'range' && (
                                                         <input
                                                             type="text"
@@ -652,10 +1150,10 @@ export default function PDFManagerClient() {
                                                                 width: '100%',
                                                                 marginTop: '8px',
                                                                 padding: '10px 12px',
-                                                                border: isDark ? '1px solid #334155' : '1px solid #ddd',
+                                                                border: `1px solid ${borderColor}`,
                                                                 borderRadius: '8px',
                                                                 fontSize: '0.95rem',
-                                                                background: isDark ? '#0f172a' : '#fff',
+                                                                background: inputBg,
                                                                 color: isDark ? '#e2e8f0' : '#1f2937',
                                                             }}
                                                         />
@@ -673,7 +1171,7 @@ export default function PDFManagerClient() {
                                     style={{
                                         width: '100%',
                                         padding: '14px 24px',
-                                        background: isProcessing ? '#ccc' : 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
+                                        background: isProcessing ? '#ccc' : redGradient,
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '25px',
@@ -694,6 +1192,261 @@ export default function PDFManagerClient() {
                     </>
                 )}
 
+                {/* ============ WATERMARK TAB ============ */}
+                {activeTab === 'watermark' && (
+                    <>
+                        {/* Upload Area */}
+                        {!watermarkFile && (
+                            <div
+                                onClick={() => watermarkInputRef.current?.click()}
+                                style={{
+                                    background: cardBg,
+                                    border: '2px dashed #e74c3c',
+                                    borderRadius: '16px',
+                                    padding: '40px 20px',
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    marginBottom: '20px',
+                                    transition: 'all 0.3s ease',
+                                }}
+                                onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c0392b'; e.currentTarget.style.background = isDark ? '#2d1a1a' : '#fff5f5'; }}
+                                onDragLeave={(e) => { e.currentTarget.style.borderColor = '#e74c3c'; e.currentTarget.style.background = cardBg; }}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    e.currentTarget.style.borderColor = '#e74c3c';
+                                    e.currentTarget.style.background = cardBg;
+                                    const files = e.dataTransfer.files;
+                                    if (files.length > 0) {
+                                        const event = { target: { files } } as React.ChangeEvent<HTMLInputElement>;
+                                        handleWatermarkFileSelect(event);
+                                    }
+                                }}
+                            >
+                                <FaTint style={{ fontSize: '3rem', color: '#e74c3c', marginBottom: '15px' }} />
+                                <p style={{ color: textPrimary, fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
+                                    {t('watermark.upload.title')}
+                                </p>
+                                <p style={{ color: textMuted, fontSize: '0.9rem' }}>
+                                    {t('watermark.upload.subtitle')}
+                                </p>
+                                <input
+                                    ref={watermarkInputRef}
+                                    type="file"
+                                    accept=".pdf"
+                                    onChange={handleWatermarkFileSelect}
+                                    style={{ display: 'none' }}
+                                />
+                            </div>
+                        )}
+
+                        {watermarkFile && (
+                            <>
+                                <div style={{
+                                    background: cardBg,
+                                    borderRadius: '16px',
+                                    padding: '20px',
+                                    marginBottom: '20px',
+                                    boxShadow: cardShadow,
+                                }}>
+                                    {/* File info */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                                        <FaFilePdf style={{ fontSize: '2.5rem', color: '#e74c3c' }} />
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: 600, color: textPrimary, marginBottom: '4px' }}>
+                                                {watermarkFile.name}
+                                            </div>
+                                            <div style={{ fontSize: '0.9rem', color: textMuted }}>
+                                                {t('split.file.info', { pages: watermarkFile.pageCount, size: formatBytes(watermarkFile.size) })}
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => setWatermarkFile(null)}
+                                            style={{
+                                                padding: '8px 16px',
+                                                background: subtleBg,
+                                                color: textSecondary,
+                                                border: `1px solid ${borderColor}`,
+                                                borderRadius: '20px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '5px',
+                                            }}
+                                        >
+                                            <FaTrash />
+                                            {t('split.change')}
+                                        </button>
+                                    </div>
+
+                                    {/* Watermark Options */}
+                                    <div style={{ borderTop: `1px solid ${isDark ? '#334155' : '#eee'}`, paddingTop: '20px' }}>
+                                        <div style={{ marginBottom: '15px', fontWeight: 600, color: textPrimary }}>
+                                            {t('watermark.options.title')}
+                                        </div>
+
+                                        {/* Watermark Text */}
+                                        <div style={{ marginBottom: '15px' }}>
+                                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', color: textSecondary, fontWeight: 600 }}>
+                                                {t('watermark.options.text')}
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={watermarkText}
+                                                onChange={(e) => setWatermarkText(e.target.value)}
+                                                placeholder={t('watermark.options.textPlaceholder')}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '10px 12px',
+                                                    border: `1px solid ${borderColor}`,
+                                                    borderRadius: '8px',
+                                                    fontSize: '0.95rem',
+                                                    background: inputBg,
+                                                    color: isDark ? '#e2e8f0' : '#1f2937',
+                                                    boxSizing: 'border-box',
+                                                }}
+                                            />
+                                        </div>
+
+                                        {/* Font Size */}
+                                        <div style={{ marginBottom: '15px' }}>
+                                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', color: textSecondary, fontWeight: 600 }}>
+                                                {t('watermark.options.fontSize')} : {watermarkFontSize}px
+                                            </label>
+                                            <input
+                                                type="range"
+                                                min="12"
+                                                max="120"
+                                                value={watermarkFontSize}
+                                                onChange={(e) => setWatermarkFontSize(Number(e.target.value))}
+                                                style={{ width: '100%', accentColor: '#e74c3c' }}
+                                            />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: textMuted }}>
+                                                <span>12px</span>
+                                                <span>120px</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Opacity */}
+                                        <div style={{ marginBottom: '15px' }}>
+                                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', color: textSecondary, fontWeight: 600 }}>
+                                                {t('watermark.options.opacity')} : {Math.round(watermarkOpacity * 100)}%
+                                            </label>
+                                            <input
+                                                type="range"
+                                                min="5"
+                                                max="100"
+                                                value={Math.round(watermarkOpacity * 100)}
+                                                onChange={(e) => setWatermarkOpacity(Number(e.target.value) / 100)}
+                                                style={{ width: '100%', accentColor: '#e74c3c' }}
+                                            />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: textMuted }}>
+                                                <span>5%</span>
+                                                <span>100%</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Position */}
+                                        <div style={{ marginBottom: '5px' }}>
+                                            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', color: textSecondary, fontWeight: 600 }}>
+                                                {t('watermark.options.position')}
+                                            </label>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                <button
+                                                    onClick={() => setWatermarkPosition('diagonal')}
+                                                    style={{
+                                                        flex: 1,
+                                                        padding: '10px',
+                                                        background: watermarkPosition === 'diagonal' ? redGradient : subtleBg,
+                                                        color: watermarkPosition === 'diagonal' ? 'white' : textSecondary,
+                                                        border: watermarkPosition === 'diagonal' ? 'none' : `1px solid ${borderColor}`,
+                                                        borderRadius: '8px',
+                                                        cursor: 'pointer',
+                                                        fontWeight: 600,
+                                                        fontSize: '0.9rem',
+                                                    }}
+                                                >
+                                                    {t('watermark.options.diagonal')}
+                                                </button>
+                                                <button
+                                                    onClick={() => setWatermarkPosition('center')}
+                                                    style={{
+                                                        flex: 1,
+                                                        padding: '10px',
+                                                        background: watermarkPosition === 'center' ? redGradient : subtleBg,
+                                                        color: watermarkPosition === 'center' ? 'white' : textSecondary,
+                                                        border: watermarkPosition === 'center' ? 'none' : `1px solid ${borderColor}`,
+                                                        borderRadius: '8px',
+                                                        cursor: 'pointer',
+                                                        fontWeight: 600,
+                                                        fontSize: '0.9rem',
+                                                    }}
+                                                >
+                                                    {t('watermark.options.center')}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Preview hint */}
+                                        <div style={{
+                                            marginTop: '15px',
+                                            padding: '15px',
+                                            background: isDark ? '#0f172a' : '#f0f0f0',
+                                            borderRadius: '8px',
+                                            textAlign: 'center',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            minHeight: '80px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}>
+                                            {watermarkText ? (
+                                                <span style={{
+                                                    fontSize: `${Math.min(watermarkFontSize * 0.4, 32)}px`,
+                                                    color: 'rgba(128,128,128,' + watermarkOpacity + ')',
+                                                    fontWeight: 'bold',
+                                                    transform: watermarkPosition === 'diagonal' ? 'rotate(-30deg)' : 'none',
+                                                    display: 'inline-block',
+                                                }}>
+                                                    {watermarkText}
+                                                </span>
+                                            ) : (
+                                                <span style={{ color: textMuted, fontSize: '0.85rem' }}>
+                                                    {t('watermark.preview')}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Watermark Button */}
+                                <button
+                                    onClick={handleWatermark}
+                                    disabled={isProcessing || !watermarkText.trim()}
+                                    style={{
+                                        width: '100%',
+                                        padding: '14px 24px',
+                                        background: isProcessing || !watermarkText.trim() ? '#ccc' : redGradient,
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '25px',
+                                        fontSize: '1rem',
+                                        fontWeight: 600,
+                                        cursor: isProcessing || !watermarkText.trim() ? 'not-allowed' : 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                    }}
+                                >
+                                    <FaDownload />
+                                    {isProcessing ? t('watermark.processing') : t('watermark.button')}
+                                </button>
+                            </>
+                        )}
+                    </>
+                )}
+
                 {/* Info Section */}
                 <article style={{ marginTop: '50px', lineHeight: '1.7' }}>
                     <section style={{ marginBottom: '40px' }}>
@@ -705,27 +1458,27 @@ export default function PDFManagerClient() {
                             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                             gap: '15px'
                         }}>
-                            <div style={{ background: isDark ? '#1e293b' : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: cardBg, padding: '20px', borderRadius: '12px', boxShadow: cardShadow }}>
                                 <h3 style={{ fontSize: '1rem', color: '#e74c3c', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.privacy.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: textSecondary, margin: 0 }}>
                                     {t('info.privacy.desc')}
                                 </p>
                             </div>
-                            <div style={{ background: isDark ? '#1e293b' : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: cardBg, padding: '20px', borderRadius: '12px', boxShadow: cardShadow }}>
                                 <h3 style={{ fontSize: '1rem', color: '#e74c3c', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.free.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: textSecondary, margin: 0 }}>
                                     {t('info.free.desc')}
                                 </p>
                             </div>
-                            <div style={{ background: isDark ? '#1e293b' : 'white', padding: '20px', borderRadius: '12px', boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)' }}>
+                            <div style={{ background: cardBg, padding: '20px', borderRadius: '12px', boxShadow: cardShadow }}>
                                 <h3 style={{ fontSize: '1rem', color: '#e74c3c', marginBottom: '8px', fontWeight: 600 }}>
                                     {t('info.easy.title')}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', margin: 0 }}>
+                                <p style={{ fontSize: '0.9rem', color: textSecondary, margin: 0 }}>
                                     {t('info.easy.desc')}
                                 </p>
                             </div>
@@ -734,7 +1487,7 @@ export default function PDFManagerClient() {
 
                     {/* FAQ Section */}
                     <section style={{
-                        background: isDark ? '#1e293b' : 'white',
+                        background: cardBg,
                         padding: '30px',
                         borderRadius: '15px',
                         boxShadow: isDark ? 'none' : '0 2px 15px rgba(0,0,0,0.05)'

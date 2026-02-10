@@ -18,6 +18,9 @@ interface IpInfo {
     isp: string;
     org: string;
     as: string;
+    reverse: string;
+    proxy: boolean;
+    hosting: boolean;
 }
 
 export default function IpAddressClient() {
@@ -26,25 +29,55 @@ export default function IpAddressClient() {
     const isDark = theme === 'dark';
 
     const [ipv4, setIpv4] = useState<string | null>(null);
+    const [ipv6, setIpv6] = useState<string | null>(null);
+    const [ipv6Status, setIpv6Status] = useState<'loading' | 'detected' | 'not_detected'>('loading');
     const [ipInfo, setIpInfo] = useState<IpInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+    const [copiedIpv6, setCopiedIpv6] = useState(false);
 
-    const fetchIpInfo = useCallback(async () => {
+    // Custom lookup state
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isCustomLookup, setIsCustomLookup] = useState(false);
+    const [lookupLoading, setLookupLoading] = useState(false);
+
+    const fetchIpv6 = useCallback(async () => {
+        setIpv6Status('loading');
+        try {
+            const res = await fetch('https://api64.ipify.org?format=json', { signal: AbortSignal.timeout(5000) });
+            if (!res.ok) throw new Error('IPv6 fetch failed');
+            const data = await res.json();
+            const detectedIp: string = data.ip;
+            // api64 returns IPv4 if no IPv6 available; check if it contains ':'
+            if (detectedIp.includes(':')) {
+                setIpv6(detectedIp);
+                setIpv6Status('detected');
+            } else {
+                setIpv6(null);
+                setIpv6Status('not_detected');
+            }
+        } catch {
+            setIpv6(null);
+            setIpv6Status('not_detected');
+        }
+    }, []);
+
+    const fetchMyIpInfo = useCallback(async () => {
         setLoading(true);
         setError(null);
+        setIsCustomLookup(false);
 
         try {
-            // 1단계: IP 주소 가져오기
+            // Step 1: Get my IPv4 address
             const ipRes = await fetch('https://api.ipify.org?format=json');
             if (!ipRes.ok) throw new Error('IP fetch failed');
             const ipData = await ipRes.json();
             const ip = ipData.ip;
             setIpv4(ip);
 
-            // 2단계: IP 위치 정보 가져오기
-            const geoRes = await fetch(`https://ip-api.com/json/${ip}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`);
+            // Step 2: Fetch geolocation info with extended fields
+            const geoRes = await fetch(`https://ip-api.com/json/${ip}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,reverse,proxy,hosting,query`);
             if (!geoRes.ok) throw new Error('Geo fetch failed');
             const geoData = await geoRes.json();
 
@@ -63,9 +96,13 @@ export default function IpAddressClient() {
                     isp: geoData.isp,
                     org: geoData.org,
                     as: geoData.as,
+                    reverse: geoData.reverse || '',
+                    proxy: geoData.proxy || false,
+                    hosting: geoData.hosting || false,
                 });
             } else {
                 setIpInfo(null);
+                setError(geoData.message || t('error'));
             }
         } catch {
             setError(t('error'));
@@ -74,25 +111,86 @@ export default function IpAddressClient() {
         }
     }, [t]);
 
-    useEffect(() => {
-        fetchIpInfo();
-    }, [fetchIpInfo]);
+    const fetchCustomIpInfo = useCallback(async (query: string) => {
+        const trimmed = query.trim();
+        if (!trimmed) return;
 
-    const handleCopy = async () => {
-        if (!ipv4) return;
+        setLookupLoading(true);
+        setError(null);
+        setIsCustomLookup(true);
+
         try {
-            await navigator.clipboard.writeText(ipv4);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+            const geoRes = await fetch(`https://ip-api.com/json/${encodeURIComponent(trimmed)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,reverse,proxy,hosting,query`);
+            if (!geoRes.ok) throw new Error('Geo fetch failed');
+            const geoData = await geoRes.json();
+
+            if (geoData.status === 'success') {
+                setIpv4(geoData.query);
+                setIpInfo({
+                    ip: geoData.query,
+                    country: geoData.country,
+                    countryCode: geoData.countryCode,
+                    region: geoData.region,
+                    regionName: geoData.regionName,
+                    city: geoData.city,
+                    zip: geoData.zip,
+                    lat: geoData.lat,
+                    lon: geoData.lon,
+                    timezone: geoData.timezone,
+                    isp: geoData.isp,
+                    org: geoData.org,
+                    as: geoData.as,
+                    reverse: geoData.reverse || '',
+                    proxy: geoData.proxy || false,
+                    hosting: geoData.hosting || false,
+                });
+            } else {
+                setError(geoData.message || t('lookupError'));
+                setIpInfo(null);
+            }
+        } catch {
+            setError(t('lookupError'));
+        } finally {
+            setLookupLoading(false);
+        }
+    }, [t]);
+
+    useEffect(() => {
+        fetchMyIpInfo();
+        fetchIpv6();
+    }, [fetchMyIpInfo, fetchIpv6]);
+
+    const handleCopy = async (text: string, setter: (v: boolean) => void) => {
+        if (!text) return;
+        try {
+            await navigator.clipboard.writeText(text);
+            setter(true);
+            setTimeout(() => setter(false), 2000);
         } catch {
             const textarea = document.createElement('textarea');
-            textarea.value = ipv4;
+            textarea.value = text;
             document.body.appendChild(textarea);
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+            setter(true);
+            setTimeout(() => setter(false), 2000);
+        }
+    };
+
+    const handleLookup = () => {
+        fetchCustomIpInfo(searchQuery);
+    };
+
+    const handleMyIp = () => {
+        setSearchQuery('');
+        fetchMyIpInfo();
+        fetchIpv6();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleLookup();
         }
     };
 
@@ -104,9 +202,70 @@ export default function IpAddressClient() {
         return String.fromCodePoint(...codePoints);
     };
 
+    const isDataReady = ipInfo && !loading && !lookupLoading;
+
     return (
         <div className="container" style={{ maxWidth: "800px", padding: "20px" }}>
-            {/* IP 주소 표시 카드 */}
+            {/* Custom IP/Domain Lookup */}
+            <div style={{
+                background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)",
+                padding: "20px", marginBottom: "20px"
+            }}>
+                <h2 style={{ fontSize: "1.1rem", color: isDark ? "#f1f5f9" : "#333", marginBottom: "12px" }}>
+                    {t('lookupTitle')}
+                </h2>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder={t('lookupPlaceholder')}
+                        style={{
+                            flex: 1, minWidth: "200px", padding: "10px 14px",
+                            border: `1px solid ${isDark ? "#475569" : "#ddd"}`,
+                            borderRadius: "8px", fontSize: "0.95rem",
+                            background: isDark ? "#0f172a" : "#f8f9fa",
+                            color: isDark ? "#e2e8f0" : "#333",
+                            outline: "none"
+                        }}
+                    />
+                    <button
+                        onClick={handleLookup}
+                        disabled={!searchQuery.trim() || lookupLoading}
+                        style={{
+                            padding: "10px 20px",
+                            background: searchQuery.trim() ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : (isDark ? "#334155" : "#ccc"),
+                            color: "white", border: "none", borderRadius: "8px",
+                            fontSize: "0.95rem", fontWeight: 600, cursor: searchQuery.trim() ? "pointer" : "not-allowed",
+                            opacity: lookupLoading ? 0.7 : 1, transition: "all 0.2s"
+                        }}
+                    >
+                        {lookupLoading ? t('lookupSearching') : t('lookupBtn')}
+                    </button>
+                    <button
+                        onClick={handleMyIp}
+                        style={{
+                            padding: "10px 20px",
+                            background: isDark ? "#1e3a5f" : "#e8f0fe",
+                            color: isDark ? "#93c5fd" : "#1a73e8",
+                            border: `1px solid ${isDark ? "#2563eb" : "#b3d4fc"}`,
+                            borderRadius: "8px", fontSize: "0.95rem", fontWeight: 500,
+                            cursor: "pointer", transition: "all 0.2s"
+                        }}
+                    >
+                        {t('myIpBtn')}
+                    </button>
+                </div>
+                {isCustomLookup && ipInfo && (
+                    <p style={{ marginTop: "8px", fontSize: "0.85rem", color: isDark ? "#64748b" : "#888" }}>
+                        {t('lookupResult', { query: searchQuery, ip: ipInfo.ip })}
+                    </p>
+                )}
+            </div>
+
+            {/* IP Address Display Card */}
             <div style={{
                 background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                 borderRadius: "16px", padding: "40px 30px", marginBottom: "20px",
@@ -114,9 +273,9 @@ export default function IpAddressClient() {
                 boxShadow: "0 10px 40px rgba(102, 126, 234, 0.3)"
             }}>
                 <p style={{ fontSize: "0.95rem", opacity: 0.85, marginBottom: "10px", letterSpacing: "2px", textTransform: "uppercase" }}>
-                    {t('yourIp')}
+                    {isCustomLookup ? t('lookupIp') : t('yourIp')}
                 </p>
-                {loading ? (
+                {(loading || lookupLoading) ? (
                     <div style={{ fontSize: "1.5rem", padding: "20px 0" }}>
                         <span style={{ display: "inline-block", animation: "pulse 1.5s infinite" }}>
                             {t('loading')}
@@ -126,7 +285,7 @@ export default function IpAddressClient() {
                     <div>
                         <p style={{ fontSize: "1.2rem", marginBottom: "15px" }}>{error}</p>
                         <button
-                            onClick={fetchIpInfo}
+                            onClick={handleMyIp}
                             style={{
                                 padding: "10px 24px", background: "rgba(255,255,255,0.2)",
                                 color: "white", border: "1px solid rgba(255,255,255,0.3)",
@@ -138,15 +297,17 @@ export default function IpAddressClient() {
                     </div>
                 ) : (
                     <>
+                        {/* IPv4 */}
+                        <p style={{ fontSize: "0.8rem", opacity: 0.7, marginBottom: "4px", letterSpacing: "1px" }}>IPv4</p>
                         <p style={{
                             fontSize: "2.8rem", fontWeight: 700, letterSpacing: "2px",
                             fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
-                            marginBottom: "15px", wordBreak: "break-all"
+                            marginBottom: "10px", wordBreak: "break-all"
                         }}>
                             {ipv4}
                         </p>
                         <button
-                            onClick={handleCopy}
+                            onClick={() => handleCopy(ipv4 || '', setCopied)}
                             style={{
                                 padding: "10px 28px", background: copied ? "rgba(39,174,96,0.8)" : "rgba(255,255,255,0.2)",
                                 color: "white", border: "1px solid rgba(255,255,255,0.3)",
@@ -156,12 +317,126 @@ export default function IpAddressClient() {
                         >
                             {copied ? t('copied') : t('copyBtn')}
                         </button>
+
+                        {/* IPv6 section */}
+                        {!isCustomLookup && (
+                            <div style={{ marginTop: "20px", paddingTop: "20px", borderTop: "1px solid rgba(255,255,255,0.2)" }}>
+                                <p style={{ fontSize: "0.8rem", opacity: 0.7, marginBottom: "4px", letterSpacing: "1px" }}>IPv6</p>
+                                {ipv6Status === 'loading' ? (
+                                    <p style={{ fontSize: "1rem", opacity: 0.7, animation: "pulse 1.5s infinite" }}>
+                                        {t('ipv6Detecting')}
+                                    </p>
+                                ) : ipv6Status === 'detected' && ipv6 ? (
+                                    <>
+                                        <p style={{
+                                            fontSize: "1.3rem", fontWeight: 600, letterSpacing: "1px",
+                                            fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
+                                            marginBottom: "8px", wordBreak: "break-all"
+                                        }}>
+                                            {ipv6}
+                                        </p>
+                                        <button
+                                            onClick={() => handleCopy(ipv6, setCopiedIpv6)}
+                                            style={{
+                                                padding: "6px 18px", background: copiedIpv6 ? "rgba(39,174,96,0.8)" : "rgba(255,255,255,0.15)",
+                                                color: "white", border: "1px solid rgba(255,255,255,0.2)",
+                                                borderRadius: "6px", cursor: "pointer", fontSize: "0.85rem",
+                                                fontWeight: 500, transition: "all 0.2s"
+                                            }}
+                                        >
+                                            {copiedIpv6 ? t('copied') : t('copyIpv6Btn')}
+                                        </button>
+                                    </>
+                                ) : (
+                                    <p style={{ fontSize: "1rem", opacity: 0.6 }}>
+                                        {t('ipv6NotDetected')}
+                                    </p>
+                                )}
+                            </div>
+                        )}
                     </>
                 )}
             </div>
 
-            {/* 위치 정보 */}
-            {ipInfo && !loading && (
+            {/* VPN/Proxy/Hosting Detection Badges */}
+            {isDataReady && (
+                <div style={{
+                    background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)",
+                    padding: "20px 25px", marginBottom: "20px"
+                }}>
+                    <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#333", marginBottom: "15px" }}>
+                        {t('securityTitle')}
+                    </h2>
+                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                        {/* VPN/Proxy Badge */}
+                        <div style={{
+                            display: "inline-flex", alignItems: "center", gap: "8px",
+                            padding: "10px 18px", borderRadius: "10px",
+                            background: ipInfo.proxy
+                                ? (isDark ? "rgba(239,68,68,0.15)" : "rgba(239,68,68,0.08)")
+                                : (isDark ? "rgba(34,197,94,0.15)" : "rgba(34,197,94,0.08)"),
+                            border: `1px solid ${ipInfo.proxy
+                                ? (isDark ? "rgba(239,68,68,0.3)" : "rgba(239,68,68,0.2)")
+                                : (isDark ? "rgba(34,197,94,0.3)" : "rgba(34,197,94,0.2)")}`
+                        }}>
+                            <span style={{ fontSize: "1.2rem" }}>{ipInfo.proxy ? "\u{1F6E1}" : "\u2705"}</span>
+                            <div>
+                                <span style={{
+                                    fontSize: "0.75rem", color: isDark ? "#94a3b8" : "#888",
+                                    display: "block", lineHeight: 1.2
+                                }}>
+                                    {t('proxyLabel')}
+                                </span>
+                                <span style={{
+                                    fontSize: "0.95rem", fontWeight: 700,
+                                    color: ipInfo.proxy
+                                        ? (isDark ? "#f87171" : "#dc2626")
+                                        : (isDark ? "#4ade80" : "#16a34a")
+                                }}>
+                                    {ipInfo.proxy ? t('detected') : t('notDetected')}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Hosting/Datacenter Badge */}
+                        <div style={{
+                            display: "inline-flex", alignItems: "center", gap: "8px",
+                            padding: "10px 18px", borderRadius: "10px",
+                            background: ipInfo.hosting
+                                ? (isDark ? "rgba(251,191,36,0.15)" : "rgba(251,191,36,0.08)")
+                                : (isDark ? "rgba(34,197,94,0.15)" : "rgba(34,197,94,0.08)"),
+                            border: `1px solid ${ipInfo.hosting
+                                ? (isDark ? "rgba(251,191,36,0.3)" : "rgba(251,191,36,0.2)")
+                                : (isDark ? "rgba(34,197,94,0.3)" : "rgba(34,197,94,0.2)")}`
+                        }}>
+                            <span style={{ fontSize: "1.2rem" }}>{ipInfo.hosting ? "\u{1F5A5}" : "\u{1F3E0}"}</span>
+                            <div>
+                                <span style={{
+                                    fontSize: "0.75rem", color: isDark ? "#94a3b8" : "#888",
+                                    display: "block", lineHeight: 1.2
+                                }}>
+                                    {t('hostingLabel')}
+                                </span>
+                                <span style={{
+                                    fontSize: "0.95rem", fontWeight: 700,
+                                    color: ipInfo.hosting
+                                        ? (isDark ? "#fbbf24" : "#d97706")
+                                        : (isDark ? "#4ade80" : "#16a34a")
+                                }}>
+                                    {ipInfo.hosting ? t('detected') : t('notDetected')}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <p style={{ marginTop: "12px", fontSize: "0.82rem", color: isDark ? "#64748b" : "#999", lineHeight: 1.5 }}>
+                        {t('securityDesc')}
+                    </p>
+                </div>
+            )}
+
+            {/* Location Info */}
+            {isDataReady && (
                 <div style={{
                     background: isDark ? "#1e293b" : "white", borderRadius: "10px",
                     boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
@@ -171,7 +446,7 @@ export default function IpAddressClient() {
                     </h2>
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
-                        {/* 국가 */}
+                        {/* Country */}
                         <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
                             <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('country')}</span>
                         </div>
@@ -181,7 +456,7 @@ export default function IpAddressClient() {
                             </span>
                         </div>
 
-                        {/* 지역 */}
+                        {/* Region */}
                         <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
                             <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('region')}</span>
                         </div>
@@ -189,7 +464,7 @@ export default function IpAddressClient() {
                             <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.regionName}</span>
                         </div>
 
-                        {/* 도시 */}
+                        {/* City */}
                         <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
                             <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('city')}</span>
                         </div>
@@ -197,7 +472,7 @@ export default function IpAddressClient() {
                             <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.city}</span>
                         </div>
 
-                        {/* 우편번호 */}
+                        {/* Zip */}
                         {ipInfo.zip && (
                             <>
                                 <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
@@ -209,7 +484,7 @@ export default function IpAddressClient() {
                             </>
                         )}
 
-                        {/* 위도/경도 */}
+                        {/* Coordinates */}
                         <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
                             <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('coordinates')}</span>
                         </div>
@@ -219,7 +494,7 @@ export default function IpAddressClient() {
                             </span>
                         </div>
 
-                        {/* 시간대 */}
+                        {/* Timezone */}
                         <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
                             <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('timezone')}</span>
                         </div>
@@ -230,8 +505,8 @@ export default function IpAddressClient() {
                 </div>
             )}
 
-            {/* 네트워크 정보 */}
-            {ipInfo && !loading && (
+            {/* Network Info */}
+            {isDataReady && (
                 <div style={{
                     background: isDark ? "#1e293b" : "white", borderRadius: "10px",
                     boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
@@ -249,7 +524,7 @@ export default function IpAddressClient() {
                             <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit" }}>{ipInfo.isp}</span>
                         </div>
 
-                        {/* 조직 */}
+                        {/* Organization */}
                         {ipInfo.org && (
                             <>
                                 <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
@@ -261,7 +536,7 @@ export default function IpAddressClient() {
                             </>
                         )}
 
-                        {/* AS */}
+                        {/* AS Number */}
                         {ipInfo.as && (
                             <>
                                 <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
@@ -272,12 +547,26 @@ export default function IpAddressClient() {
                                 </div>
                             </>
                         )}
+
+                        {/* Reverse DNS (Hostname) */}
+                        {ipInfo.reverse && (
+                            <>
+                                <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                                    <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{t('reverseDns')}</span>
+                                </div>
+                                <div style={{ padding: "14px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                                    <span style={{ fontWeight: 600, fontSize: "0.9rem", fontFamily: "monospace", color: isDark ? "#e2e8f0" : "inherit", wordBreak: "break-all" }}>
+                                        {ipInfo.reverse}
+                                    </span>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
 
-            {/* 지도 (Google Maps Embed) */}
-            {ipInfo && !loading && (
+            {/* Map */}
+            {isDataReady && (
                 <div style={{
                     background: isDark ? "#1e293b" : "white", borderRadius: "10px",
                     boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
@@ -302,11 +591,11 @@ export default function IpAddressClient() {
                 </div>
             )}
 
-            {/* 새로고침 버튼 */}
-            {!loading && (
+            {/* Refresh Button */}
+            {!loading && !lookupLoading && (
                 <div style={{ textAlign: "center", marginBottom: "30px" }}>
                     <button
-                        onClick={fetchIpInfo}
+                        onClick={handleMyIp}
                         style={{
                             padding: "12px 30px", background: isDark ? "#0f172a" : "#f0f4f8", color: isDark ? "#94a3b8" : "#555",
                             border: "none", borderRadius: "8px", fontSize: "0.95rem",
@@ -318,7 +607,7 @@ export default function IpAddressClient() {
                 </div>
             )}
 
-            {/* 안내 정보 */}
+            {/* Info Cards */}
             <div style={{
                 background: isDark ? "#1e293b" : "white", borderRadius: "10px",
                 boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
@@ -354,7 +643,7 @@ export default function IpAddressClient() {
                 </div>
             </div>
 
-            {/* 사용 가이드 */}
+            {/* Usage Guide */}
             <div style={{
                 background: isDark ? "#1e293b" : "white", borderRadius: "10px",
                 boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px"

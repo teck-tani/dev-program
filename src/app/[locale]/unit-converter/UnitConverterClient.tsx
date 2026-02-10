@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 
-type CategoryKey = 'length' | 'weight' | 'temperature' | 'speed' | 'area' | 'volume' | 'data' | 'time';
+type CategoryKey = 'length' | 'weight' | 'temperature' | 'speed' | 'area' | 'volume' | 'data' | 'time' | 'pressure' | 'energy' | 'power' | 'cooking';
 
 interface UnitDef {
     name: string;
@@ -13,6 +13,8 @@ interface UnitDef {
 }
 
 type UnitDefinition = Record<string, UnitDef>;
+
+type PrecisionOption = 2 | 4 | 6 | 8;
 
 export default function UnitConverterClient() {
     const t = useTranslations('UnitConverter');
@@ -24,6 +26,8 @@ export default function UnitConverterClient() {
     const [fromUnit, setFromUnit] = useState<string>('m');
     const [toUnit, setToUnit] = useState<string>('km');
     const [result, setResult] = useState<string>('');
+    const [precision, setPrecision] = useState<PrecisionOption>(6);
+    const [copied, setCopied] = useState(false);
 
     const categories: { key: CategoryKey; label: string; icon: string }[] = [
         { key: 'length', label: t('categories.length'), icon: '📏' },
@@ -34,6 +38,10 @@ export default function UnitConverterClient() {
         { key: 'speed', label: t('categories.speed'), icon: '🚀' },
         { key: 'data', label: t('categories.data'), icon: '💾' },
         { key: 'time', label: t('categories.time'), icon: '⏱️' },
+        { key: 'pressure', label: t('categories.pressure'), icon: '🌀' },
+        { key: 'energy', label: t('categories.energy'), icon: '⚡' },
+        { key: 'power', label: t('categories.power'), icon: '🔌' },
+        { key: 'cooking', label: t('categories.cooking'), icon: '🍳' },
     ];
 
     const units: Record<CategoryKey, UnitDefinition> = {
@@ -99,6 +107,33 @@ export default function UnitConverterClient() {
             day: { name: t('units.day'), toBase: (v) => v * 86400, fromBase: (v) => v / 86400 },
             week: { name: t('units.week'), toBase: (v) => v * 604800, fromBase: (v) => v / 604800 },
         },
+        pressure: {
+            pa: { name: t('units.pa'), toBase: (v) => v, fromBase: (v) => v },
+            bar: { name: t('units.bar'), toBase: (v) => v * 100000, fromBase: (v) => v / 100000 },
+            atm: { name: t('units.atm'), toBase: (v) => v * 101325, fromBase: (v) => v / 101325 },
+            psi: { name: t('units.psi'), toBase: (v) => v * 6894.76, fromBase: (v) => v / 6894.76 },
+            mmHg: { name: t('units.mmHg'), toBase: (v) => v * 133.322, fromBase: (v) => v / 133.322 },
+        },
+        energy: {
+            j: { name: t('units.j'), toBase: (v) => v, fromBase: (v) => v },
+            cal: { name: t('units.cal'), toBase: (v) => v * 4.184, fromBase: (v) => v / 4.184 },
+            kcal: { name: t('units.kcal'), toBase: (v) => v * 4184, fromBase: (v) => v / 4184 },
+            kwh: { name: t('units.kwh'), toBase: (v) => v * 3600000, fromBase: (v) => v / 3600000 },
+            wh: { name: t('units.wh'), toBase: (v) => v * 3600, fromBase: (v) => v / 3600 },
+            btu: { name: t('units.btu'), toBase: (v) => v * 1055.06, fromBase: (v) => v / 1055.06 },
+        },
+        power: {
+            w: { name: t('units.w'), toBase: (v) => v, fromBase: (v) => v },
+            kw: { name: t('units.kw'), toBase: (v) => v * 1000, fromBase: (v) => v / 1000 },
+            hp: { name: t('units.hp'), toBase: (v) => v * 745.7, fromBase: (v) => v / 745.7 },
+            ps: { name: t('units.ps'), toBase: (v) => v * 735.499, fromBase: (v) => v / 735.499 },
+        },
+        cooking: {
+            cookingCup: { name: t('units.cookingCup'), toBase: (v) => v * 240, fromBase: (v) => v / 240 },
+            tbsp: { name: t('units.tbsp'), toBase: (v) => v * 15, fromBase: (v) => v / 15 },
+            tsp: { name: t('units.tsp'), toBase: (v) => v * 5, fromBase: (v) => v / 5 },
+            cc: { name: t('units.cc'), toBase: (v) => v, fromBase: (v) => v },
+        },
     };
 
     const defaultUnits: Record<CategoryKey, { from: string; to: string }> = {
@@ -110,18 +145,13 @@ export default function UnitConverterClient() {
         speed: { from: 'kmph', to: 'mph' },
         data: { from: 'mb', to: 'gb' },
         time: { from: 'min', to: 'hr' },
+        pressure: { from: 'atm', to: 'psi' },
+        energy: { from: 'kcal', to: 'j' },
+        power: { from: 'kw', to: 'hp' },
+        cooking: { from: 'cookingCup', to: 'tbsp' },
     };
 
-    useEffect(() => {
-        setFromUnit(defaultUnits[category].from);
-        setToUnit(defaultUnits[category].to);
-    }, [category]);
-
-    useEffect(() => {
-        convert();
-    }, [inputValue, fromUnit, toUnit, category]);
-
-    const convert = () => {
+    const convert = useCallback(() => {
         const value = parseFloat(inputValue);
         if (isNaN(value)) { setResult(''); return; }
         const categoryUnits = units[category];
@@ -130,13 +160,42 @@ export default function UnitConverterClient() {
         if (!fromDef || !toDef) { setResult(''); return; }
         const baseValue = fromDef.toBase(value);
         const convertedValue = toDef.fromBase(baseValue);
-        setResult(convertedValue.toLocaleString('ko-KR', { maximumFractionDigits: 10, minimumFractionDigits: 0 }));
-    };
+        setResult(convertedValue.toLocaleString('ko-KR', { maximumFractionDigits: precision, minimumFractionDigits: 0 }));
+    }, [inputValue, fromUnit, toUnit, category, precision]);
+
+    useEffect(() => {
+        setFromUnit(defaultUnits[category].from);
+        setToUnit(defaultUnits[category].to);
+    }, [category]);
+
+    useEffect(() => {
+        convert();
+    }, [convert]);
 
     const swapUnits = () => {
         const temp = fromUnit;
         setFromUnit(toUnit);
         setToUnit(temp);
+    };
+
+    const copyToClipboard = async () => {
+        if (!result) return;
+        const textToCopy = `${result} ${currentUnits[toUnit]?.name || ''}`;
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            // fallback
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
     };
 
     const currentUnits = units[category];
@@ -170,6 +229,33 @@ export default function UnitConverterClient() {
                         <span>{cat.label}</span>
                     </button>
                 ))}
+            </div>
+
+            {/* Precision selector */}
+            <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                gap: '8px', marginBottom: '15px',
+            }}>
+                <label style={{
+                    fontSize: '0.85rem', color: isDark ? '#94a3b8' : '#666', fontWeight: 500,
+                }}>
+                    {t('precision')}
+                </label>
+                <select
+                    value={precision}
+                    onChange={(e) => setPrecision(Number(e.target.value) as PrecisionOption)}
+                    style={{
+                        padding: '6px 10px', fontSize: '0.85rem',
+                        border: `1px solid ${isDark ? '#334155' : '#e0e0e0'}`, borderRadius: '8px',
+                        background: isDark ? '#0f172a' : 'white', cursor: 'pointer', outline: 'none',
+                        color: isDark ? '#e2e8f0' : '#333',
+                    }}
+                >
+                    <option value={2}>2 {t('digits')}</option>
+                    <option value={4}>4 {t('digits')}</option>
+                    <option value={6}>6 {t('digits')}</option>
+                    <option value={8}>8 {t('digits')}</option>
+                </select>
             </div>
 
             {/* Conversion area */}
@@ -221,14 +307,34 @@ export default function UnitConverterClient() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <label style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', fontWeight: 500 }}>{t('to')}</label>
-                    <div style={{
-                        padding: '15px', fontSize: '1.5rem', fontWeight: 600,
-                        background: isDark ? '#0f172a' : '#f8f9fa',
-                        border: `2px solid ${isDark ? '#334155' : '#e0e0e0'}`, borderRadius: '12px',
-                        textAlign: 'center', minHeight: '60px', display: 'flex',
-                        alignItems: 'center', justifyContent: 'center', color: accent,
-                    }}>
-                        {result || '0'}
+                    <div style={{ position: 'relative' }}>
+                        <div style={{
+                            padding: '15px', fontSize: '1.5rem', fontWeight: 600,
+                            background: isDark ? '#0f172a' : '#f8f9fa',
+                            border: `2px solid ${isDark ? '#334155' : '#e0e0e0'}`, borderRadius: '12px',
+                            textAlign: 'center', minHeight: '60px', display: 'flex',
+                            alignItems: 'center', justifyContent: 'center', color: accent,
+                            paddingRight: '50px',
+                        }}>
+                            {result || '0'}
+                        </div>
+                        {/* Copy button */}
+                        <button
+                            onClick={copyToClipboard}
+                            title={copied ? t('copied') : t('copy')}
+                            style={{
+                                position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                                width: '36px', height: '36px', borderRadius: '8px', border: 'none',
+                                background: copied
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                    : isDark ? '#334155' : '#e5e7eb',
+                                color: copied ? 'white' : isDark ? '#94a3b8' : '#666',
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: '1rem', transition: 'all 0.2s',
+                            }}
+                        >
+                            {copied ? '✓' : '📋'}
+                        </button>
                     </div>
                     <select
                         value={toUnit}
@@ -271,7 +377,7 @@ export default function UnitConverterClient() {
                     {[1, 10, 100, 1000].map((val) => {
                         const baseValue = currentUnits[fromUnit]?.toBase(val);
                         const converted = currentUnits[toUnit]?.fromBase(baseValue);
-                        const formattedConverted = converted?.toLocaleString('ko-KR', { maximumFractionDigits: 6 });
+                        const formattedConverted = converted?.toLocaleString('ko-KR', { maximumFractionDigits: precision });
                         return (
                             <div key={val} style={{
                                 padding: '12px',

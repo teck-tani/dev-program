@@ -470,11 +470,15 @@
     },
     "Timer": {
       "meta": {
-        "title": "온라인 타이머 - 타바타 운동 | 라면 3분 & 주방 타이머",
-        "description": "타바타 운동, 인터벌 트레이닝, 라면 타이머, 주방 타이머로 활용 가능한 온라인 타이머입니다. 3분, 5분 등 원하는 시간을 설정하고 알람을 받으세요.",
-        "keywords": "온라인 타이머, 타바타 타이머, 운동 타이머, 루틴 타이머, 주방 타이머, 라면 타이머, 요리 타이머, 인터벌 타이머, 알람 설정",
-        "ogTitle": "온라인 타이머 | 타바타 운동 & 요리 알람",
-        "ogDescription": "타바타 운동, 라면 3분 타이머, 요리 알람까지! 원하는 시간을 설정하고 알림을 받으세요."
+        "title": "온라인 타이머 & 포모도로 - 타바타 운동 | 라면 3분 & 주방 타이머",
+        "description": "포모도로 타이머, 타바타 운동, 인터벌 트레이닝, 주방 타이머로 활용 가능한 온라인 타이머입니다. 5종 알람음, 진동 알림, 포모도로 기법까지 지원합니다.",
+        "keywords": "온라인 타이머, 포모도로 타이머, 타바타 타이머, 운동 타이머, 주방 타이머, 라면 타이머, 요리 타이머, 인터벌 타이머, 알람 설정, 뽀모도로",
+        "ogTitle": "온라인 타이머 & 포모도로 | 운동 & 요리 알람",
+        "ogDescription": "포모도로 집중 타이머, 타바타 운동, 라면 3분 타이머까지! 5종 알람음과 진동 알림을 지원합니다."
+      },
+      "mode": {
+        "timer": "타이머",
+        "pomodoro": "포모도로"
       },
       "controls": {
         "start": "시작",
@@ -489,11 +493,31 @@
         "second": "초"
       },
       "modal": {
-        "title": "타이머"
+        "title": "타이머 완료!"
+      },
+      "pomodoro": {
+        "work": "집중",
+        "break": "휴식",
+        "longBreak": "긴 휴식",
+        "session": "세션",
+        "autoStart": "자동으로 다음 세션 시작",
+        "workDone": "집중 시간 완료!",
+        "breakDone": "휴식 시간 완료!",
+        "startBreak": "휴식 시작",
+        "startWork": "집중 시작"
+      },
+      "sounds": {
+        "title": "알람음 & 설정",
+        "classic": "클래식",
+        "digital": "디지털",
+        "gentle": "차임벨",
+        "bird": "새소리",
+        "school": "학교종",
+        "vibration": "진동 알림"
       },
       "seo": {
-        "title": "온라인 타이머 - 운동 & 요리용 알람",
-        "desc": "타바타 운동이나 인터벌 트레이닝을 위한 루틴 타이머, 라면이나 요리를 위한 주방 타이머로 활용하세요. 3분, 5분 등 자주 쓰는 시간을 간편하게 설정하고, 시간이 되면 알람으로 알려드립니다. 전체화면 모드와 다크/라이트 테마를 지원합니다."
+        "title": "온라인 타이머 & 포모도로 - 운동 & 요리용 알람",
+        "desc": "포모도로 기법으로 25분 집중/5분 휴식을 반복하거나, 타바타 운동·요리용 주방 타이머로 활용하세요. 5종 알람음(클래식/디지털/차임벨/새소리/학교종)과 진동 알림을 지원합니다."
       }
     }
   },
@@ -1017,12 +1041,71 @@
     },
     "result": {
       "title": "예상 퇴직금",
+      "grossTitle": "세전 퇴직금",
+      "netTitle": "세후 실수령액",
       "disclaimer": "* 위 결과는 예상 금액이며, 실제 지급액은 회사 규정 및 세금 공제에 따라 달라질 수 있습니다.",
       "servicePeriod": "근속 기간",
       "calculating": "계산 중...",
       "year": "년",
       "months": "개월",
       "currency": "원"
+    },
+    "tax": {
+      "incomeTax": "퇴직소득세",
+      "localTax": "지방소득세 (10%)",
+      "totalTax": "총 세금",
+      "sectionTitle": "퇴직소득세 안내",
+      "sectionDesc": "퇴직소득세는 퇴직금에 부과되는 세금으로, 근속연수가 길수록 공제 혜택이 커집니다. 아래는 2026년 기준 퇴직소득세 계산 과정입니다.",
+      "deductionTitle": "근속연수 공제",
+      "brackets": {
+        "1": { "range": "5년 이하", "amount": "연 100만원" },
+        "2": { "range": "5~10년", "amount": "연 200만원" },
+        "3": { "range": "10~20년", "amount": "연 250만원" },
+        "4": { "range": "20년 초과", "amount": "연 300만원" }
+      },
+      "processTitle": "퇴직소득세 계산 절차",
+      "processStep1": "① 근속연수 공제 적용 (퇴직금 - 근속연수공제액)",
+      "processStep2": "② 환산급여 산출 (공제 후 금액 × 12 / 근속연수)",
+      "processStep3": "③ 환산급여 과세표준에 소득세율 적용",
+      "processStep4": "④ 산출세액 × 근속연수 / 12 = 최종 퇴직소득세"
+    },
+    "calcSteps": {
+      "title": "계산 과정 상세보기",
+      "step1": {
+        "title": "STEP 1. 근속 기간 산정",
+        "period": "근속 기간",
+        "days": "일"
+      },
+      "step2": {
+        "title": "STEP 2. 1일 평균임금 산출",
+        "totalWages": "3개월 임금 총액",
+        "formula": "1일 평균임금"
+      },
+      "step3": {
+        "title": "STEP 3. 세전 퇴직금 계산",
+        "formula": "1일 평균임금 × 30 × (재직일수 / 365)"
+      },
+      "step4": {
+        "title": "STEP 4. 퇴직소득세 산출",
+        "serviceDeduction": "근속연수 공제액",
+        "taxableAmount": "과세 대상 금액",
+        "convertedIncome": "환산급여",
+        "taxBase": "과세표준"
+      },
+      "step5": {
+        "title": "STEP 5. 세후 실수령액"
+      }
+    },
+    "pension": {
+      "dcReturnRateLabel": "DC형 예상 수익률 (%)",
+      "dcReturnRateDesc": "DC형 퇴직연금의 연평균 예상 수익률을 입력하세요 (기본 3%)",
+      "dbTitle": "DB형 (확정급여형)",
+      "dbSubtitle": "회사가 운용, 퇴직 시 확정 금액 지급",
+      "dbFormula": "퇴직금 = 1일 평균임금 × 30 × (재직연수)",
+      "dcTitle": "DC형 (확정기여형)",
+      "dcSubtitle": "본인이 운용, 수익률에 따라 변동",
+      "dcDetail": "월 적립액: {monthly}원 × {months}개월, 예상 수익률 {rate}% 적용",
+      "comparisonNote": "※ DB형은 퇴직 시 급여 기준, DC형은 매월 적립금 운용 결과에 따라 달라집니다. 임금상승률이 높으면 DB형이, 운용수익률이 높으면 DC형이 유리합니다."
     },
     "info": {
       "title": "퇴직금 지급 기준 및 요건",
@@ -1199,7 +1282,11 @@
       "area": "넓이",
       "volume": "부피",
       "data": "데이터",
-      "time": "시간"
+      "time": "시간",
+      "pressure": "압력",
+      "energy": "에너지",
+      "power": "전력",
+      "cooking": "요리"
     },
     "units": {
       "mm": "밀리미터 (mm)",
@@ -1247,12 +1334,35 @@
       "min": "분 (min)",
       "hr": "시간 (hr)",
       "day": "일",
-      "week": "주"
+      "week": "주",
+      "pa": "파스칼 (Pa)",
+      "bar": "바 (bar)",
+      "atm": "기압 (atm)",
+      "psi": "psi",
+      "mmHg": "수은주밀리미터 (mmHg)",
+      "j": "줄 (J)",
+      "cal": "칼로리 (cal)",
+      "kcal": "킬로칼로리 (kcal)",
+      "kwh": "킬로와트시 (kWh)",
+      "wh": "와트시 (Wh)",
+      "btu": "BTU",
+      "w": "와트 (W)",
+      "kw": "킬로와트 (kW)",
+      "hp": "마력 (hp)",
+      "ps": "독일마력 (PS)",
+      "cookingCup": "계량컵 (240mL)",
+      "tbsp": "큰술 (15mL)",
+      "tsp": "작은술 (5mL)",
+      "cc": "cc (mL)"
     },
     "from": "변환 전",
     "to": "변환 후",
     "swap": "단위 바꾸기",
     "quickReference": "빠른 참조표",
+    "precision": "소수점 자릿수",
+    "digits": "자리",
+    "copy": "복사",
+    "copied": "복사됨!",
     "info": {
       "title": "단위 변환 가이드",
       "length": {
@@ -1289,18 +1399,47 @@
   },
   "ColorConverter": {
     "meta": {
-      "title": "색상 코드 변환기 | HEX RGB HSL 변환 - 무료 온라인",
-      "description": "HEX, RGB, HSL 색상 코드를 실시간으로 상호 변환하는 무료 온라인 도구입니다. 웹 디자인, CSS 코딩에 필요한 색상 코드를 쉽게 변환하고 복사하세요.",
-      "keywords": "색상 코드 변환, HEX to RGB, RGB to HEX, HSL 변환, 컬러 피커, 색상 코드 복사, CSS 색상, 웹 색상",
-      "ogTitle": "색상 코드 변환기 | HEX RGB HSL 변환",
-      "ogDescription": "HEX, RGB, HSL 색상 코드를 실시간으로 변환! 웹 디자인과 개발에 필수적인 색상 도구."
+      "title": "색상 코드 변환기 | HEX RGB HSL RGBA CMYK 변환 - 무료 온라인",
+      "description": "HEX, RGB, HSL, RGBA, CMYK 색상 코드를 실시간으로 상호 변환하는 무료 온라인 도구입니다. WCAG 명암비 체크, 색상 조화, 팔레트 생성까지 한 번에!",
+      "keywords": "색상 코드 변환, HEX to RGB, RGB to HEX, HSL 변환, RGBA, CMYK, 컬러 피커, 색상 코드 복사, CSS 색상, 웹 색상, WCAG 명암비, 색상 조화",
+      "ogTitle": "색상 코드 변환기 | HEX RGB HSL RGBA CMYK 변환",
+      "ogDescription": "HEX, RGB, HSL, RGBA, CMYK 색상 코드를 실시간으로 변환! WCAG 명암비 체크와 색상 조화 추천까지."
     },
     "title": "색상 코드 변환기",
-    "subtitle": "HEX, RGB, HSL 색상 코드를 실시간으로 변환하세요.<br />웹 디자인, CSS 코딩에 필요한 색상 코드를 쉽게 변환하고 복사할 수 있습니다.",
+    "subtitle": "HEX, RGB, HSL, RGBA, CMYK 색상 코드를 실시간으로 변환하세요.<br />WCAG 명암비 체크, 색상 조화 추천, 팔레트 생성까지 한 번에!",
     "clickToChange": "클릭해서 색상 선택",
     "presets": "프리셋 색상",
     "copy": "복사",
     "copied": "복사됨!",
+    "alphaLabel": "투명도 (Alpha)",
+    "cmykNote": "RGB에서 CMYK로의 근사 변환입니다. 정확한 인쇄 색상은 ICC 프로파일 기반 변환이 필요합니다.",
+    "contrastTitle": "WCAG 명암비 체커",
+    "contrastDesc": "전경색과 배경색의 명암비를 계산하여 WCAG 2.1 접근성 기준 충족 여부를 확인합니다.",
+    "foreground": "전경색 (텍스트)",
+    "background": "배경색",
+    "useCurrentColor": "현재 색상 사용",
+    "contrastPreviewLarge": "큰 텍스트 미리보기 (18pt+)",
+    "contrastPreviewNormal": "일반 텍스트 미리보기 (16px 이하)",
+    "contrastRatio": "명암비 (Contrast Ratio)",
+    "normalText": "일반 텍스트",
+    "largeText": "큰 텍스트",
+    "pass": "통과",
+    "fail": "미달",
+    "harmonyTitle": "색상 조화 추천",
+    "harmonyDesc": "색상환을 기반으로 현재 색상과 어울리는 조합을 추천합니다. 스와치를 클릭하면 해당 색상으로 변경됩니다.",
+    "harmonyComplementary": "보색 (Complementary)",
+    "harmonyComplementaryDesc": "색상환에서 정반대(180도) 위치의 색상",
+    "harmonyAnalogous": "유사색 (Analogous)",
+    "harmonyAnalogousDesc": "색상환에서 인접한(±30도) 색상",
+    "harmonyTriadic": "삼각배색 (Triadic)",
+    "harmonyTriadicDesc": "색상환에서 120도 간격의 세 가지 색상",
+    "harmonySplitComplementary": "분열보색 (Split-Complementary)",
+    "harmonySplitComplementaryDesc": "보색 양쪽의 인접색(150도, 210도)",
+    "paletteTitle": "틴트 & 셰이드 팔레트",
+    "paletteDesc": "현재 색상을 기준으로 밝게(틴트) 또는 어둡게(셰이드) 변형한 팔레트입니다. 클릭하면 해당 색상이 선택됩니다.",
+    "tints": "틴트 (밝게)",
+    "shades": "셰이드 (어둡게)",
+    "currentColor": "현재 색상",
     "info": {
       "title": "색상 코드 형식 안내",
       "hex": {
@@ -1796,7 +1935,8 @@
     "subtitle": "여러 PDF 파일을 하나로 합치거나, PDF를 페이지별로 분리하세요.<br />모든 작업은 브라우저에서 처리되어 파일이 서버로 전송되지 않습니다.",
     "tabs": {
       "merge": "PDF 합치기",
-      "split": "PDF 분리"
+      "split": "PDF 분리",
+      "watermark": "워터마크"
     },
     "merge": {
       "upload": {
@@ -1811,6 +1951,7 @@
       "file": {
         "pages": "{count}페이지"
       },
+      "dragHint": "드래그하여 순서를 변경할 수 있습니다",
       "button": "PDF 합치기",
       "processing": "처리 중...",
       "addMore": "파일 추가",
@@ -1825,6 +1966,14 @@
         "info": "{pages}페이지 · {size}"
       },
       "change": "파일 변경",
+      "pages": {
+        "title": "페이지 관리",
+        "selectAll": "전체 선택",
+        "deselectAll": "전체 해제",
+        "rotateCCW": "반시계 방향 회전",
+        "rotateCW": "시계 방향 회전",
+        "deleteHint": "선택한 페이지를 삭제하려면 위의 삭제 버튼을 사용하세요"
+      },
       "options": {
         "title": "분리 옵션",
         "all": "모든 페이지를 개별 PDF로 분리",
@@ -1841,7 +1990,30 @@
       "noFile": "파일을 먼저 업로드해주세요.",
       "invalidRange": "유효한 페이지 범위를 입력해주세요.",
       "mergeFailed": "PDF 합치기에 실패했습니다.",
-      "splitFailed": "PDF 분리에 실패했습니다."
+      "splitFailed": "PDF 분리에 실패했습니다.",
+      "cannotDeleteAll": "모든 페이지를 삭제할 수 없습니다.",
+      "deleteFailed": "페이지 삭제에 실패했습니다.",
+      "noWatermarkText": "워터마크 텍스트를 입력해주세요.",
+      "watermarkFailed": "워터마크 적용에 실패했습니다."
+    },
+    "watermark": {
+      "upload": {
+        "title": "워터마크를 적용할 PDF 파일을 업로드하세요",
+        "subtitle": "클릭하거나 파일을 드래그하세요"
+      },
+      "options": {
+        "title": "워터마크 설정",
+        "text": "워터마크 텍스트",
+        "textPlaceholder": "예: CONFIDENTIAL, DRAFT",
+        "fontSize": "글꼴 크기",
+        "opacity": "투명도",
+        "position": "위치",
+        "diagonal": "대각선",
+        "center": "중앙"
+      },
+      "preview": "미리보기",
+      "button": "워터마크 적용",
+      "processing": "처리 중..."
     },
     "info": {
       "title": "PDF 합치기/분리 도구 특징",
@@ -2127,7 +2299,8 @@
       "ogDescription": "한 줄로 붙어 있는 SQL 쿼리를 키워드별로 줄바꿈하고 들여쓰기해서 보기 좋게 정리해 드립니다."
     },
     "title": "SQL 포맷터",
-    "subtitle": "로그에 찍힌 떡진 SQL 쿼리를 보기 좋게 정렬하세요.<br />키워드 대문자 변환, 들여쓰기까지 한 번에 처리합니다.",
+    "subtitle": "로그에 찍힌 떡진 SQL 쿼리를 보기 좋게 정렬하세요.<br />구문 강조, Dialect 지원, 키워드 대문자 변환까지 한 번에 처리합니다.",
+    "dialect": "SQL 종류",
     "indent": "들여쓰기",
     "spaces": "칸",
     "uppercase": "키워드 대문자 변환 (SELECT, FROM...)",
@@ -2137,12 +2310,15 @@
     "outputPlaceholder": "포맷 결과가 여기에 표시됩니다...",
     "lines": "줄",
     "formatBtn": "포맷하기",
+    "formatting": "포맷 중...",
     "minifyBtn": "압축 (한 줄)",
     "copyBtn": "복사",
     "copied": "복사됨!",
     "swapBtn": "결과를 입력으로",
     "sampleBtn": "샘플",
     "clearBtn": "초기화",
+    "uploadBtn": ".sql 파일 열기",
+    "downloadBtn": ".sql 파일 저장",
     "guideTitle": "사용 가이드",
     "guideStep1Title": "SQL 쿼리 입력",
     "guideStep1Desc": "왼쪽 입력 영역에 정렬하려는 SQL 쿼리를 붙여넣으세요. 로그에서 복사한 한 줄 쿼리도 OK!",
@@ -2395,6 +2571,24 @@
     "retry": "다시 시도",
     "copyBtn": "IP 복사",
     "copied": "복사됨!",
+    "copyIpv6Btn": "IPv6 복사",
+    "lookupTitle": "IP 주소 / 도메인 조회",
+    "lookupPlaceholder": "IP 주소 또는 도메인 입력 (예: 8.8.8.8, google.com)",
+    "lookupBtn": "조회",
+    "lookupSearching": "조회 중...",
+    "lookupError": "입력한 IP 또는 도메인 정보를 조회할 수 없습니다.",
+    "lookupResult": "\"{query}\" 조회 결과 (IP: {ip})",
+    "lookupIp": "조회된 IP 주소",
+    "myIpBtn": "내 IP 보기",
+    "ipv6Detecting": "IPv6 감지 중...",
+    "ipv6NotDetected": "IPv6가 감지되지 않았습니다",
+    "securityTitle": "보안 감지",
+    "proxyLabel": "VPN / 프록시",
+    "hostingLabel": "호스팅 / 데이터센터",
+    "detected": "감지됨",
+    "notDetected": "감지되지 않음",
+    "securityDesc": "VPN/프록시 감지는 ip-api.com 데이터 기반이며, 100% 정확하지 않을 수 있습니다. 호스팅은 해당 IP가 데이터센터(클라우드/서버)에 속하는지 여부입니다.",
+    "reverseDns": "역방향 DNS (호스트네임)",
     "locationTitle": "위치 정보",
     "country": "국가",
     "region": "지역",

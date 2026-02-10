@@ -63,6 +63,10 @@ npm run lint     # Run ESLint
 
 5. **Optional: Add to homepage**: `src/app/[locale]/page.tsx` → `toolCategories` array
 
+6. **GitHub 공개 저장소 업데이트**: `https://github.com/teck-tani/teck-tani.com` README.md에 새 도구 추가
+   - 로컬 경로: `C:/Users/dckwon/teck-tani-landing/README.md`
+   - 해당 카테고리 테이블에 한국어 도구명 + `/ko/` 링크 추가 후 push
+
 ### Key Files
 - `src/navigation.ts` - Locale routing setup, exports `Link`, `locales`
 - `src/i18n/request.ts` - next-intl config, loads messages
