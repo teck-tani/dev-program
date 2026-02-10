@@ -470,11 +470,15 @@
     },
     "Timer": {
       "meta": {
-        "title": "Online Timer - Workout Tabata & Cooking Alarm",
-        "description": "Online timer for Tabata workout, interval training, noodle timer, and kitchen timer. Set your desired time like 3 or 5 minutes and get alarm notifications.",
-        "keywords": "online timer, tabata timer, workout timer, routine timer, kitchen timer, cooking timer, interval timer, alarm setting",
-        "ogTitle": "Online Timer | Tabata Workout & Cooking Alarm",
-        "ogDescription": "Tabata workout, 3-minute noodle timer, cooking alarm! Set your time and get notified."
+        "title": "Online Timer & Pomodoro - Workout Tabata & Cooking Alarm",
+        "description": "Pomodoro timer, Tabata workout timer, interval training, and kitchen timer. Features 5 alarm sounds, vibration alerts, and Pomodoro technique support.",
+        "keywords": "online timer, pomodoro timer, tabata timer, workout timer, kitchen timer, cooking timer, interval timer, alarm setting, focus timer",
+        "ogTitle": "Online Timer & Pomodoro | Workout & Cooking Alarm",
+        "ogDescription": "Pomodoro focus timer, Tabata workout, 3-min noodle timer! 5 alarm sounds and vibration alerts."
+      },
+      "mode": {
+        "timer": "Timer",
+        "pomodoro": "Pomodoro"
       },
       "controls": {
         "start": "Start",
@@ -489,11 +493,31 @@
         "second": "Sec"
       },
       "modal": {
-        "title": "Timer"
+        "title": "Timer Complete!"
+      },
+      "pomodoro": {
+        "work": "Focus",
+        "break": "Break",
+        "longBreak": "Long Break",
+        "session": "Session",
+        "autoStart": "Auto-start next session",
+        "workDone": "Focus time complete!",
+        "breakDone": "Break time complete!",
+        "startBreak": "Start Break",
+        "startWork": "Start Focus"
+      },
+      "sounds": {
+        "title": "Alarm Sound & Settings",
+        "classic": "Classic",
+        "digital": "Digital",
+        "gentle": "Chime",
+        "bird": "Bird",
+        "school": "School Bell",
+        "vibration": "Vibration alert"
       },
       "seo": {
-        "title": "Online Timer - Workout & Cooking Alarm",
-        "desc": "Use as a routine timer for Tabata workouts or interval training, or as a kitchen timer for cooking. Easily set common times like 3 or 5 minutes and get alarm notifications. Supports fullscreen mode and dark/light themes."
+        "title": "Online Timer & Pomodoro - Workout & Cooking Alarm",
+        "desc": "Use the Pomodoro technique with 25-min focus / 5-min break cycles, or set Tabata workout and kitchen timers. Features 5 alarm sounds (Classic/Digital/Chime/Bird/School Bell) and vibration alerts."
       }
     }
   },
@@ -558,7 +582,6 @@
       "copy": "Copy",
       "rateDate": "As of {date} (Korea Exim Bank)",
       "quickAmount": "Quick amount",
-      "reset": "Reset",
       "buyRate": "Buy",
       "sellRate": "Sell",
       "chartTitle": "{currency}/KRW Exchange Rate Trend",
@@ -980,43 +1003,73 @@
       "alertInput": "Please enter join date, resignation date, and 3-month salary total.",
       "alertPeriod": "Employees with less than 1 year of continuous service are not eligible for severance pay."
     },
-    "breakdown": {
-      "title": "Calculation Breakdown",
-      "step1Title": "STEP 1. Total 3-Month Wages",
-      "baseSalary3m": "Base Salary (3 months)",
-      "bonusContrib": "Bonus (3/12 of annual)",
-      "leaveContrib": "Leave Allowance (3/12 of annual)",
-      "total3m": "Total 3-Month Wages",
-      "step2Title": "STEP 2. Average Daily Wage",
-      "avgDailyCalc": "÷ 91 days (total days in 3 months)",
-      "avgDailyWage": "Average Daily Wage",
-      "step3Title": "STEP 3. Severance Pay Calculation",
-      "severanceCalc": "× 30 days × ({days} days ÷ 365)",
-      "grossSeverance": "Gross Severance Pay",
-      "step4Title": "STEP 4. Retirement Income Tax (Annualization Method)",
-      "serviceYearsLabel": "Service Years",
-      "serviceDeduction": "Service Years Deduction",
-      "convertedSalary": "Converted Salary",
-      "convertedDeduction": "Converted Salary Deduction",
-      "taxBase": "Tax Base",
-      "retirementTax": "Retirement Income Tax",
-      "localTax": "Local Income Tax (10%)",
-      "totalTax": "Total Tax",
-      "step5Title": "STEP 5. Net Severance Pay",
-      "netSeverance": "Net Amount After Tax"
-    },
     "result": {
       "title": "Estimated Severance Pay",
-      "grossTitle": "Gross Severance",
-      "taxTitle": "Retirement Tax",
-      "netTitle": "Net Amount",
-      "taxDetail": "(Income Tax + Local Tax)",
+      "grossTitle": "Gross Severance (Pre-tax)",
+      "netTitle": "Net Severance (After-tax)",
       "disclaimer": "* This is an estimate. Actual amount may vary depending on company regulations and tax deductions.",
       "servicePeriod": "Service Period",
       "calculating": "Calculating...",
       "year": "yr",
       "months": "mo",
       "currency": "KRW"
+    },
+    "tax": {
+      "incomeTax": "Retirement Income Tax",
+      "localTax": "Local Income Tax (10%)",
+      "totalTax": "Total Tax",
+      "sectionTitle": "Retirement Income Tax Guide",
+      "sectionDesc": "Retirement income tax is levied on severance pay. Longer service periods receive greater deduction benefits. Below is the 2026 tax calculation process.",
+      "deductionTitle": "Service Years Deduction",
+      "brackets": {
+        "1": { "range": "Up to 5 years", "amount": "1M KRW/year" },
+        "2": { "range": "5-10 years", "amount": "2M KRW/year" },
+        "3": { "range": "10-20 years", "amount": "2.5M KRW/year" },
+        "4": { "range": "Over 20 years", "amount": "3M KRW/year" }
+      },
+      "processTitle": "Tax Calculation Process",
+      "processStep1": "① Apply service years deduction (Severance - Service Deduction)",
+      "processStep2": "② Calculate converted income (Post-deduction × 12 / Service years)",
+      "processStep3": "③ Apply income tax rate to converted income tax base",
+      "processStep4": "④ Calculated tax × Service years / 12 = Final retirement income tax"
+    },
+    "calcSteps": {
+      "title": "View Calculation Details",
+      "step1": {
+        "title": "STEP 1. Service Period Calculation",
+        "period": "Service Period",
+        "days": "days"
+      },
+      "step2": {
+        "title": "STEP 2. Average Daily Wage Calculation",
+        "totalWages": "Total 3-Month Wages",
+        "formula": "Average Daily Wage"
+      },
+      "step3": {
+        "title": "STEP 3. Gross Severance Calculation",
+        "formula": "Avg Daily Wage × 30 × (Service days / 365)"
+      },
+      "step4": {
+        "title": "STEP 4. Retirement Income Tax",
+        "serviceDeduction": "Service Years Deduction",
+        "taxableAmount": "Taxable Amount",
+        "convertedIncome": "Converted Income",
+        "taxBase": "Tax Base"
+      },
+      "step5": {
+        "title": "STEP 5. Net Severance (After-tax)"
+      }
+    },
+    "pension": {
+      "dcReturnRateLabel": "DC Expected Return Rate (%)",
+      "dcReturnRateDesc": "Enter the expected annual return rate for DC pension (default 3%)",
+      "dbTitle": "DB Plan (Defined Benefit)",
+      "dbSubtitle": "Company manages, fixed payout at retirement",
+      "dbFormula": "Severance = Avg Daily Wage × 30 × (Service years)",
+      "dcTitle": "DC Plan (Defined Contribution)",
+      "dcSubtitle": "Self-managed, varies by return rate",
+      "dcDetail": "Monthly contribution: {monthly} KRW × {months} months, expected return {rate}%",
+      "comparisonNote": "※ DB plan is based on salary at retirement, DC plan depends on investment returns. Higher wage growth favors DB; higher investment returns favor DC."
     },
     "info": {
       "title": "Eligibility Criteria",
@@ -1229,7 +1282,11 @@
       "area": "Area",
       "volume": "Volume",
       "data": "Data",
-      "time": "Time"
+      "time": "Time",
+      "pressure": "Pressure",
+      "energy": "Energy",
+      "power": "Power",
+      "cooking": "Cooking"
     },
     "units": {
       "mm": "Millimeter (mm)",
@@ -1277,12 +1334,35 @@
       "min": "Minute (min)",
       "hr": "Hour (hr)",
       "day": "Day",
-      "week": "Week"
+      "week": "Week",
+      "pa": "Pascal (Pa)",
+      "bar": "Bar (bar)",
+      "atm": "Atmosphere (atm)",
+      "psi": "psi",
+      "mmHg": "mmHg",
+      "j": "Joule (J)",
+      "cal": "Calorie (cal)",
+      "kcal": "Kilocalorie (kcal)",
+      "kwh": "Kilowatt-hour (kWh)",
+      "wh": "Watt-hour (Wh)",
+      "btu": "BTU",
+      "w": "Watt (W)",
+      "kw": "Kilowatt (kW)",
+      "hp": "Horsepower (hp)",
+      "ps": "Metric HP (PS)",
+      "cookingCup": "Measuring Cup (240mL)",
+      "tbsp": "Tablespoon (15mL)",
+      "tsp": "Teaspoon (5mL)",
+      "cc": "cc (mL)"
     },
     "from": "From",
     "to": "To",
     "swap": "Swap Units",
     "quickReference": "Quick Reference",
+    "precision": "Decimal places",
+    "digits": "digits",
+    "copy": "Copy",
+    "copied": "Copied!",
     "info": {
       "title": "Unit Conversion Guide",
       "length": {
@@ -1524,14 +1604,14 @@
   },
   "ColorConverter": {
     "meta": {
-      "title": "Color Code Converter | HEX RGB HSL Real-time Conversion - Tani DevTool",
-      "description": "Free online tool to convert between HEX, RGB, and HSL color codes in real-time. Includes color picker, preset colors, and one-click copy. Essential for web designers and developers.",
-      "keywords": "color converter, HEX to RGB, RGB to HSL, color picker, web color, CSS color code, color code conversion, design tool",
-      "ogTitle": "Color Code Converter | HEX RGB HSL Conversion",
-      "ogDescription": "Convert HEX, RGB, HSL color codes in real-time. Includes color picker and one-click copy!"
+      "title": "Color Code Converter | HEX RGB HSL RGBA CMYK Conversion - Tani DevTool",
+      "description": "Free online tool to convert between HEX, RGB, HSL, RGBA, and CMYK color codes in real-time. Includes WCAG contrast checker, color harmony recommendations, and palette generator.",
+      "keywords": "color converter, HEX to RGB, RGB to HSL, RGBA, CMYK, color picker, web color, CSS color code, WCAG contrast, color harmony, palette generator",
+      "ogTitle": "Color Code Converter | HEX RGB HSL RGBA CMYK",
+      "ogDescription": "Convert HEX, RGB, HSL, RGBA, CMYK color codes in real-time. WCAG contrast checker and color harmony included!"
     },
     "title": "Color Code Converter",
-    "subtitle": "Convert between HEX, RGB, and HSL color codes in real-time.<br />Essential for web design and CSS styling!",
+    "subtitle": "Convert between HEX, RGB, HSL, RGBA, and CMYK color codes in real-time.<br />WCAG contrast checker, color harmony, and palette generator all in one!",
     "clickToChange": "Click to pick color",
     "presets": "Preset Colors",
     "colorPicker": "Color Picker",
@@ -1542,6 +1622,35 @@
     "copy": "Copy",
     "copied": "Copied!",
     "preview": "Color Preview",
+    "alphaLabel": "Opacity (Alpha)",
+    "cmykNote": "Approximate RGB-to-CMYK conversion. For accurate print colors, ICC profile-based conversion is required.",
+    "contrastTitle": "WCAG Contrast Checker",
+    "contrastDesc": "Calculate the contrast ratio between foreground and background colors to verify WCAG 2.1 accessibility compliance.",
+    "foreground": "Foreground (Text)",
+    "background": "Background",
+    "useCurrentColor": "Use current",
+    "contrastPreviewLarge": "Large Text Preview (18pt+)",
+    "contrastPreviewNormal": "Normal text preview (16px or smaller)",
+    "contrastRatio": "Contrast Ratio",
+    "normalText": "Normal Text",
+    "largeText": "Large Text",
+    "pass": "PASS",
+    "fail": "FAIL",
+    "harmonyTitle": "Color Harmony",
+    "harmonyDesc": "Color combinations based on the color wheel. Click any swatch to switch to that color.",
+    "harmonyComplementary": "Complementary",
+    "harmonyComplementaryDesc": "Opposite on the color wheel (180 degrees)",
+    "harmonyAnalogous": "Analogous",
+    "harmonyAnalogousDesc": "Adjacent colors on the wheel (plus or minus 30 degrees)",
+    "harmonyTriadic": "Triadic",
+    "harmonyTriadicDesc": "Three colors spaced 120 degrees apart",
+    "harmonySplitComplementary": "Split-Complementary",
+    "harmonySplitComplementaryDesc": "Colors adjacent to the complement (150 and 210 degrees)",
+    "paletteTitle": "Tint & Shade Palette",
+    "paletteDesc": "Lighter tints and darker shades generated from the current color. Click to select.",
+    "tints": "Tints (Lighter)",
+    "shades": "Shades (Darker)",
+    "currentColor": "Current Color",
     "info": {
       "title": "Understanding Color Codes",
       "hex": {
@@ -1832,7 +1941,8 @@
     "subtitle": "Merge multiple PDF files into one or split a PDF into individual pages.<br />All processing happens in your browser - files are never uploaded to a server.",
     "tabs": {
       "merge": "Merge PDF",
-      "split": "Split PDF"
+      "split": "Split PDF",
+      "watermark": "Watermark"
     },
     "merge": {
       "upload": {
@@ -1847,6 +1957,7 @@
       "file": {
         "pages": "{count} pages"
       },
+      "dragHint": "Drag to reorder files",
       "button": "Merge PDFs",
       "processing": "Processing...",
       "addMore": "Add More",
@@ -1861,6 +1972,14 @@
         "info": "{pages} pages · {size}"
       },
       "change": "Change File",
+      "pages": {
+        "title": "Page Management",
+        "selectAll": "Select All",
+        "deselectAll": "Deselect All",
+        "rotateCCW": "Rotate Counter-clockwise",
+        "rotateCW": "Rotate Clockwise",
+        "deleteHint": "Use the delete button above to remove selected pages"
+      },
       "options": {
         "title": "Split Options",
         "all": "Split all pages into separate PDFs",
@@ -1877,7 +1996,30 @@
       "noFile": "Please upload a file first.",
       "invalidRange": "Please enter a valid page range.",
       "mergeFailed": "Failed to merge PDF files.",
-      "splitFailed": "Failed to split PDF file."
+      "splitFailed": "Failed to split PDF file.",
+      "cannotDeleteAll": "Cannot delete all pages.",
+      "deleteFailed": "Failed to delete pages.",
+      "noWatermarkText": "Please enter watermark text.",
+      "watermarkFailed": "Failed to apply watermark."
+    },
+    "watermark": {
+      "upload": {
+        "title": "Upload PDF file for watermarking",
+        "subtitle": "Click or drag file here"
+      },
+      "options": {
+        "title": "Watermark Settings",
+        "text": "Watermark Text",
+        "textPlaceholder": "e.g., CONFIDENTIAL, DRAFT",
+        "fontSize": "Font Size",
+        "opacity": "Opacity",
+        "position": "Position",
+        "diagonal": "Diagonal",
+        "center": "Center"
+      },
+      "preview": "Preview",
+      "button": "Apply Watermark",
+      "processing": "Processing..."
     },
     "info": {
       "title": "PDF Merge/Split Tool Features",
@@ -2163,7 +2305,8 @@
       "ogDescription": "Transform messy single-line SQL queries into beautifully formatted, readable SQL with proper indentation and keyword highlighting."
     },
     "title": "SQL Formatter",
-    "subtitle": "Beautify messy SQL queries from logs into clean, readable format.<br />Automatic keyword uppercasing and indentation in one click.",
+    "subtitle": "Beautify messy SQL queries from logs into clean, readable format.<br />Syntax highlighting, Dialect support, and keyword uppercasing in one click.",
+    "dialect": "SQL Dialect",
     "indent": "Indent",
     "spaces": "spaces",
     "uppercase": "Uppercase keywords (SELECT, FROM...)",
@@ -2173,12 +2316,15 @@
     "outputPlaceholder": "Formatted result will appear here...",
     "lines": "lines",
     "formatBtn": "Format",
+    "formatting": "Formatting...",
     "minifyBtn": "Minify",
     "copyBtn": "Copy",
     "copied": "Copied!",
     "swapBtn": "Swap to input",
     "sampleBtn": "Sample",
     "clearBtn": "Clear",
+    "uploadBtn": "Open .sql file",
+    "downloadBtn": "Save .sql file",
     "guideTitle": "How to Use",
     "guideStep1Title": "Enter SQL Query",
     "guideStep1Desc": "Paste the SQL query you want to format in the left input area. Single-line queries from logs work great!",
@@ -2431,6 +2577,24 @@
     "retry": "Retry",
     "copyBtn": "Copy IP",
     "copied": "Copied!",
+    "copyIpv6Btn": "Copy IPv6",
+    "lookupTitle": "IP Address / Domain Lookup",
+    "lookupPlaceholder": "Enter IP address or domain (e.g., 8.8.8.8, google.com)",
+    "lookupBtn": "Lookup",
+    "lookupSearching": "Looking up...",
+    "lookupError": "Unable to look up the entered IP address or domain.",
+    "lookupResult": "Result for \"{query}\" (IP: {ip})",
+    "lookupIp": "Looked Up IP Address",
+    "myIpBtn": "My IP",
+    "ipv6Detecting": "Detecting IPv6...",
+    "ipv6NotDetected": "IPv6 not detected",
+    "securityTitle": "Security Detection",
+    "proxyLabel": "VPN / Proxy",
+    "hostingLabel": "Hosting / Datacenter",
+    "detected": "Detected",
+    "notDetected": "Not Detected",
+    "securityDesc": "VPN/Proxy detection is based on ip-api.com data and may not be 100% accurate. Hosting indicates whether the IP belongs to a datacenter (cloud/server).",
+    "reverseDns": "Reverse DNS (Hostname)",
     "locationTitle": "Location Info",
     "country": "Country",
     "region": "Region",

@@ -1,225 +1,32 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 
-// SQL 키워드 목록
-const KEYWORDS_NEWLINE = [
-    'SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'ORDER BY', 'GROUP BY',
-    'HAVING', 'LIMIT', 'OFFSET', 'UNION', 'UNION ALL', 'EXCEPT', 'INTERSECT',
-    'INSERT INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE FROM',
-    'LEFT JOIN', 'RIGHT JOIN', 'INNER JOIN', 'OUTER JOIN', 'FULL JOIN',
-    'LEFT OUTER JOIN', 'RIGHT OUTER JOIN', 'FULL OUTER JOIN',
-    'CROSS JOIN', 'NATURAL JOIN', 'JOIN', 'ON',
-    'CREATE TABLE', 'ALTER TABLE', 'DROP TABLE',
-    'CASE', 'WHEN', 'THEN', 'ELSE', 'END',
-    'WITH', 'AS',
+// SQL dialect options mapped to sql-formatter library language values
+type SqlDialect = "sql" | "mysql" | "postgresql" | "tsql" | "plsql" | "sqlite";
+
+const DIALECT_OPTIONS: { value: SqlDialect; label: string }[] = [
+    { value: "sql", label: "Standard SQL" },
+    { value: "mysql", label: "MySQL" },
+    { value: "postgresql", label: "PostgreSQL" },
+    { value: "tsql", label: "SQL Server (T-SQL)" },
+    { value: "plsql", label: "Oracle (PL/SQL)" },
+    { value: "sqlite", label: "SQLite" },
 ];
 
-const KEYWORDS_ALL = [
-    ...KEYWORDS_NEWLINE,
-    'AS', 'IN', 'NOT', 'NULL', 'IS', 'LIKE', 'BETWEEN', 'EXISTS',
-    'ALL', 'ANY', 'DISTINCT', 'TOP', 'INTO', 'IF',
-    'ASC', 'DESC', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
-    'COALESCE', 'CAST', 'CONVERT', 'ISNULL', 'NVL',
-    'TRUE', 'FALSE', 'PRIMARY KEY', 'FOREIGN KEY', 'INDEX',
-    'NOT NULL', 'DEFAULT', 'CHECK', 'UNIQUE', 'CONSTRAINT',
-    'BEGIN', 'COMMIT', 'ROLLBACK', 'TRUNCATE',
-];
+// Lazy-loaded sql-formatter module
+let sqlFormatterModule: { format: (query: string, options?: Record<string, unknown>) => string } | null = null;
 
-function formatSQL(sql: string, indentSize: number, uppercase: boolean): string {
-    if (!sql.trim()) return '';
-
-    // 전처리: 연속 공백 정리 (문자열 리터럴 보존)
-    let normalized = '';
-    let inSingleQuote = false;
-    let inDoubleQuote = false;
-
-    for (let i = 0; i < sql.length; i++) {
-        const ch = sql[i];
-        if (ch === "'" && !inDoubleQuote && (i === 0 || sql[i - 1] !== '\\')) {
-            inSingleQuote = !inSingleQuote;
-        } else if (ch === '"' && !inSingleQuote && (i === 0 || sql[i - 1] !== '\\')) {
-            inDoubleQuote = !inDoubleQuote;
-        }
-
-        if (!inSingleQuote && !inDoubleQuote) {
-            if (/\s/.test(ch)) {
-                if (normalized.length > 0 && !/\s/.test(normalized[normalized.length - 1])) {
-                    normalized += ' ';
-                }
-            } else {
-                normalized += ch;
-            }
-        } else {
-            normalized += ch;
-        }
+async function loadSqlFormatter() {
+    if (!sqlFormatterModule) {
+        sqlFormatterModule = await import("sql-formatter");
     }
-    normalized = normalized.trim();
-
-    const indent = ' '.repeat(indentSize);
-    let result = '';
-    let depth = 0;
-    let i = 0;
-
-    // 문자열 리터럴 추출 및 플레이스홀더 치환
-    const strings: string[] = [];
-    let processed = '';
-    inSingleQuote = false;
-    inDoubleQuote = false;
-    let currentStr = '';
-    let capturing = false;
-
-    for (let j = 0; j < normalized.length; j++) {
-        const ch = normalized[j];
-        if (!capturing) {
-            if (ch === "'" && !inDoubleQuote) {
-                capturing = true;
-                inSingleQuote = true;
-                currentStr = ch;
-            } else if (ch === '"' && !inSingleQuote) {
-                capturing = true;
-                inDoubleQuote = true;
-                currentStr = ch;
-            } else {
-                processed += ch;
-            }
-        } else {
-            currentStr += ch;
-            if (ch === "'" && inSingleQuote && (j === 0 || normalized[j - 1] !== '\\')) {
-                strings.push(currentStr);
-                processed += `__STR${strings.length - 1}__`;
-                capturing = false;
-                inSingleQuote = false;
-                currentStr = '';
-            } else if (ch === '"' && inDoubleQuote && (j === 0 || normalized[j - 1] !== '\\')) {
-                strings.push(currentStr);
-                processed += `__STR${strings.length - 1}__`;
-                capturing = false;
-                inDoubleQuote = false;
-                currentStr = '';
-            }
-        }
-    }
-    if (capturing) {
-        strings.push(currentStr);
-        processed += `__STR${strings.length - 1}__`;
-    }
-
-    // 키워드를 대소문자 변환
-    if (uppercase) {
-        // 키워드를 대문자로 변환 (복합 키워드 우선)
-        const sortedKeywords = [...KEYWORDS_ALL].sort((a, b) => b.length - a.length);
-        for (const kw of sortedKeywords) {
-            const regex = new RegExp(`\\b${kw.replace(/\s+/g, '\\s+')}\\b`, 'gi');
-            processed = processed.replace(regex, kw.toUpperCase());
-        }
-    }
-
-    // 줄바꿈 키워드 기준으로 포맷팅
-    const sortedNewlineKw = [...KEYWORDS_NEWLINE].sort((a, b) => b.length - a.length);
-
-    // 토큰화
-    const tokens: string[] = [];
-    let remaining = processed;
-
-    while (remaining.length > 0) {
-        remaining = remaining.trimStart();
-        if (remaining.length === 0) break;
-
-        let matched = false;
-
-        // 줄바꿈 키워드 매칭
-        for (const kw of sortedNewlineKw) {
-            const pattern = uppercase ? kw.toUpperCase() : kw;
-            const regex = new RegExp(`^(${kw.replace(/\s+/g, '\\s+')})\\b`, 'i');
-            const m = remaining.match(regex);
-            if (m) {
-                tokens.push('\n' + (uppercase ? m[1].toUpperCase() : m[1].toUpperCase()));
-                remaining = remaining.slice(m[1].length);
-                matched = true;
-                break;
-            }
-        }
-
-        if (!matched) {
-            if (remaining[0] === '(') {
-                tokens.push('(');
-                remaining = remaining.slice(1);
-            } else if (remaining[0] === ')') {
-                tokens.push(')');
-                remaining = remaining.slice(1);
-            } else if (remaining[0] === ',') {
-                tokens.push(',');
-                remaining = remaining.slice(1);
-            } else if (remaining[0] === ';') {
-                tokens.push(';');
-                remaining = remaining.slice(1);
-            } else {
-                // 일반 토큰 (다음 키워드, 괄호, 쉼표, 세미콜론까지)
-                let end = 1;
-                while (end < remaining.length) {
-                    if ('(),;'.includes(remaining[end])) break;
-
-                    let kwFound = false;
-                    for (const kw of sortedNewlineKw) {
-                        const regex = new RegExp(`^\\s+(${kw.replace(/\s+/g, '\\s+')})\\b`, 'i');
-                        const m = remaining.slice(end - 1).match(regex);
-                        if (m && m.index === 0) {
-                            kwFound = true;
-                            break;
-                        }
-                    }
-                    if (kwFound) break;
-                    end++;
-                }
-                tokens.push(remaining.slice(0, end));
-                remaining = remaining.slice(end);
-            }
-        }
-    }
-
-    // 토큰을 결과로 조합
-    depth = 0;
-    let lineHasContent = false;
-
-    for (i = 0; i < tokens.length; i++) {
-        const token = tokens[i];
-
-        if (token.startsWith('\n')) {
-            const keyword = token.slice(1);
-            result += '\n' + indent.repeat(depth) + keyword;
-            lineHasContent = true;
-        } else if (token === '(') {
-            result += ' (';
-            depth++;
-        } else if (token === ')') {
-            depth = Math.max(0, depth - 1);
-            result += ')';
-        } else if (token === ',') {
-            result += ',\n' + indent.repeat(depth) + '  ';
-            lineHasContent = false;
-        } else if (token === ';') {
-            result += ';\n';
-            lineHasContent = false;
-        } else {
-            if (lineHasContent && !result.endsWith(' ') && !result.endsWith('(')) {
-                result += ' ';
-            }
-            result += token.trim();
-            lineHasContent = true;
-        }
-    }
-
-    // 문자열 리터럴 복원
-    for (let s = 0; s < strings.length; s++) {
-        result = result.replace(`__STR${s}__`, strings[s]);
-    }
-
-    return result.trim();
+    return sqlFormatterModule;
 }
 
+// Simple minifier that preserves string literals
 function minifySQL(sql: string): string {
     if (!sql.trim()) return '';
 
@@ -251,6 +58,175 @@ function minifySQL(sql: string): string {
     return result.trim();
 }
 
+// Regex-based SQL syntax highlighter
+// Returns an HTML string with <span> wrapped tokens
+function highlightSQL(sql: string, isDark: boolean): string {
+    if (!sql) return '';
+
+    const colors = {
+        keyword: isDark ? "#93c5fd" : "#1d4ed8",   // blue
+        string: isDark ? "#86efac" : "#15803d",     // green
+        number: isDark ? "#fdba74" : "#c2410c",     // orange
+        comment: isDark ? "#6b7280" : "#9ca3af",    // gray
+        punctuation: isDark ? "#d1d5db" : "#4b5563", // subtle gray
+        default: isDark ? "#e2e8f0" : "#1f2937",
+    };
+
+    // SQL keywords (comprehensive list)
+    const KEYWORDS = new Set([
+        'SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'NOT', 'IN', 'IS', 'NULL',
+        'AS', 'ON', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'FULL', 'CROSS', 'NATURAL',
+        'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'OFFSET', 'ASC', 'DESC',
+        'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE',
+        'CREATE', 'TABLE', 'ALTER', 'DROP', 'INDEX', 'VIEW',
+        'UNION', 'ALL', 'EXCEPT', 'INTERSECT',
+        'CASE', 'WHEN', 'THEN', 'ELSE', 'END',
+        'WITH', 'RECURSIVE', 'EXISTS', 'BETWEEN', 'LIKE', 'ILIKE',
+        'DISTINCT', 'TOP', 'IF', 'BEGIN', 'COMMIT', 'ROLLBACK', 'TRUNCATE',
+        'PRIMARY', 'FOREIGN', 'KEY', 'CONSTRAINT', 'UNIQUE', 'CHECK', 'DEFAULT',
+        'NOT', 'NULL', 'TRUE', 'FALSE',
+        'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'COALESCE', 'CAST', 'CONVERT',
+        'ISNULL', 'NVL', 'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK',
+        'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE',
+        'DECLARE', 'EXEC', 'EXECUTE', 'PROCEDURE', 'FUNCTION', 'RETURN', 'RETURNS',
+        'TRIGGER', 'GRANT', 'REVOKE', 'SCHEMA', 'DATABASE', 'USE',
+        'FETCH', 'NEXT', 'ROWS', 'ONLY', 'PERCENT', 'PIVOT', 'UNPIVOT',
+        'MERGE', 'MATCHED', 'OUTPUT', 'INSERTED', 'DELETED',
+        'TEMPORARY', 'TEMP', 'REPLACE', 'EXPLAIN', 'ANALYZE',
+        'CASCADE', 'RESTRICT', 'REFERENCES', 'ADD', 'COLUMN',
+        'WINDOW', 'RANGE', 'UNBOUNDED', 'PRECEDING', 'FOLLOWING', 'CURRENT', 'ROW',
+        'LATERAL', 'CROSS', 'APPLY', 'TABLESAMPLE',
+    ]);
+
+    const escapeHtml = (str: string) =>
+        str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const lines = sql.split('\n');
+    const highlightedLines: string[] = [];
+
+    for (const line of lines) {
+        let result = '';
+        let i = 0;
+
+        while (i < line.length) {
+            // Single-line comment --
+            if (line[i] === '-' && i + 1 < line.length && line[i + 1] === '-') {
+                const rest = line.slice(i);
+                result += `<span style="color:${colors.comment};font-style:italic">${escapeHtml(rest)}</span>`;
+                i = line.length;
+                continue;
+            }
+
+            // Block comment start (may span lines, but we handle per-line simply)
+            if (line[i] === '/' && i + 1 < line.length && line[i + 1] === '*') {
+                const endIdx = line.indexOf('*/', i + 2);
+                if (endIdx !== -1) {
+                    const comment = line.slice(i, endIdx + 2);
+                    result += `<span style="color:${colors.comment};font-style:italic">${escapeHtml(comment)}</span>`;
+                    i = endIdx + 2;
+                } else {
+                    const rest = line.slice(i);
+                    result += `<span style="color:${colors.comment};font-style:italic">${escapeHtml(rest)}</span>`;
+                    i = line.length;
+                }
+                continue;
+            }
+
+            // Single-quoted strings
+            if (line[i] === "'") {
+                let j = i + 1;
+                while (j < line.length) {
+                    if (line[j] === "'" && (j + 1 >= line.length || line[j + 1] !== "'")) {
+                        j++;
+                        break;
+                    }
+                    if (line[j] === "'" && j + 1 < line.length && line[j + 1] === "'") {
+                        j += 2; // escaped quote ''
+                        continue;
+                    }
+                    j++;
+                }
+                const str = line.slice(i, j);
+                result += `<span style="color:${colors.string}">${escapeHtml(str)}</span>`;
+                i = j;
+                continue;
+            }
+
+            // Double-quoted identifiers
+            if (line[i] === '"') {
+                let j = i + 1;
+                while (j < line.length && line[j] !== '"') j++;
+                if (j < line.length) j++; // include closing quote
+                const str = line.slice(i, j);
+                result += `<span style="color:${colors.string}">${escapeHtml(str)}</span>`;
+                i = j;
+                continue;
+            }
+
+            // Backtick-quoted identifiers (MySQL)
+            if (line[i] === '`') {
+                let j = i + 1;
+                while (j < line.length && line[j] !== '`') j++;
+                if (j < line.length) j++;
+                const str = line.slice(i, j);
+                result += `<span style="color:${colors.string}">${escapeHtml(str)}</span>`;
+                i = j;
+                continue;
+            }
+
+            // Numbers (integer or decimal)
+            if (/\d/.test(line[i]) && (i === 0 || /[\s,;()=<>!+\-*/]/.test(line[i - 1]))) {
+                let j = i;
+                while (j < line.length && /[\d.]/.test(line[j])) j++;
+                // Make sure it's not part of an identifier (e.g. "table1")
+                if (j < line.length && /[a-zA-Z_]/.test(line[j])) {
+                    // It's an identifier like "col1", don't highlight as number
+                    let k = j;
+                    while (k < line.length && /[a-zA-Z0-9_]/.test(line[k])) k++;
+                    const word = line.slice(i, k);
+                    result += `<span style="color:${colors.default}">${escapeHtml(word)}</span>`;
+                    i = k;
+                } else {
+                    const num = line.slice(i, j);
+                    result += `<span style="color:${colors.number}">${escapeHtml(num)}</span>`;
+                    i = j;
+                }
+                continue;
+            }
+
+            // Words (keywords or identifiers)
+            if (/[a-zA-Z_]/.test(line[i])) {
+                let j = i;
+                while (j < line.length && /[a-zA-Z0-9_]/.test(line[j])) j++;
+                const word = line.slice(i, j);
+                if (KEYWORDS.has(word.toUpperCase())) {
+                    result += `<span style="color:${colors.keyword};font-weight:600">${escapeHtml(word)}</span>`;
+                } else {
+                    result += `<span style="color:${colors.default}">${escapeHtml(word)}</span>`;
+                }
+                i = j;
+                continue;
+            }
+
+            // Punctuation and operators
+            if (/[(),;=<>!+\-*/%.]/.test(line[i])) {
+                result += `<span style="color:${colors.punctuation}">${escapeHtml(line[i])}</span>`;
+                i++;
+                continue;
+            }
+
+            // Whitespace and everything else
+            result += escapeHtml(line[i]);
+            i++;
+        }
+
+        highlightedLines.push(result);
+    }
+
+    return highlightedLines.join('\n');
+}
+
+
 export default function SqlFormatterClient() {
     const t = useTranslations('SqlFormatter');
     const { theme } = useTheme();
@@ -260,13 +236,38 @@ export default function SqlFormatterClient() {
     const [output, setOutput] = useState('');
     const [indentSize, setIndentSize] = useState(4);
     const [uppercaseKeywords, setUppercaseKeywords] = useState(true);
+    const [dialect, setDialect] = useState<SqlDialect>('sql');
     const [copied, setCopied] = useState(false);
+    const [isFormatting, setIsFormatting] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFormat = useCallback(() => {
+    // Highlighted HTML for the output pane
+    const highlightedOutput = useMemo(() => {
+        if (!output) return '';
+        return highlightSQL(output, isDark);
+    }, [output, isDark]);
+
+    const outputLines = output ? output.split('\n').length : 0;
+
+    const handleFormat = useCallback(async () => {
         if (!input.trim()) return;
-        const result = formatSQL(input, indentSize, uppercaseKeywords);
-        setOutput(result);
-    }, [input, indentSize, uppercaseKeywords]);
+        setIsFormatting(true);
+        try {
+            const mod = await loadSqlFormatter();
+            const result = mod.format(input, {
+                language: dialect,
+                tabWidth: indentSize,
+                useTabs: false,
+                keywordCase: uppercaseKeywords ? 'upper' : 'preserve',
+            });
+            setOutput(result);
+        } catch {
+            // Fallback: if sql-formatter fails, show raw input with basic cleanup
+            setOutput(input);
+        } finally {
+            setIsFormatting(false);
+        }
+    }, [input, indentSize, uppercaseKeywords, dialect]);
 
     const handleMinify = useCallback(() => {
         if (!input.trim()) return;
@@ -280,7 +281,6 @@ export default function SqlFormatterClient() {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch {
-            // fallback
             const textarea = document.createElement('textarea');
             textarea.value = output;
             document.body.appendChild(textarea);
@@ -308,12 +308,42 @@ export default function SqlFormatterClient() {
         setOutput('');
     };
 
+    // File upload (.sql)
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const text = ev.target?.result;
+            if (typeof text === 'string') {
+                setInput(text);
+                setOutput('');
+            }
+        };
+        reader.readAsText(file);
+        // Reset file input so the same file can be re-uploaded
+        e.target.value = '';
+    };
+
+    // File download (.sql)
+    const handleFileDownload = () => {
+        if (!output) return;
+        const blob = new Blob([output], { type: 'application/sql' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'formatted.sql';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     const inputLines = input.split('\n').length;
-    const outputLines = output.split('\n').length;
 
     return (
         <div className="container" style={{ maxWidth: "1000px", padding: "20px" }}>
-            {/* 옵션 바 */}
+            {/* Options bar */}
             <div style={{
                 background: isDark ? "#1e293b" : "white", borderRadius: "10px",
                 boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "20px", marginBottom: "20px"
@@ -321,6 +351,26 @@ export default function SqlFormatterClient() {
                 <div style={{
                     display: "flex", gap: "20px", flexWrap: "wrap", alignItems: "center"
                 }}>
+                    {/* Dialect selector */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <label style={{ fontWeight: 500, fontSize: "0.95rem" }}>{t('dialect')}:</label>
+                        <select
+                            value={dialect}
+                            onChange={(e) => setDialect(e.target.value as SqlDialect)}
+                            style={{
+                                padding: "6px 10px", border: `1px solid ${isDark ? "#334155" : "#ddd"}`,
+                                borderRadius: "6px", fontSize: "0.95rem",
+                                color: isDark ? "#e2e8f0" : "#1f2937",
+                                background: isDark ? "#0f172a" : "#fff"
+                            }}
+                        >
+                            {DIALECT_OPTIONS.map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Indent size */}
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <label style={{ fontWeight: 500, fontSize: "0.95rem" }}>{t('indent')}:</label>
                         <select
@@ -338,6 +388,8 @@ export default function SqlFormatterClient() {
                             <option value={8}>8 {t('spaces')}</option>
                         </select>
                     </div>
+
+                    {/* Uppercase checkbox */}
                     <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
                         <input
                             type="checkbox"
@@ -350,14 +402,14 @@ export default function SqlFormatterClient() {
                 </div>
             </div>
 
-            {/* 입출력 영역 */}
+            {/* Input/Output panels */}
             <div style={{
                 display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px",
                 marginBottom: "15px"
             }}
                 className="sql-editor-grid"
             >
-                {/* 입력 */}
+                {/* Input panel */}
                 <div style={{
                     background: isDark ? "#1e293b" : "white", borderRadius: "10px",
                     boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", overflow: "hidden"
@@ -386,10 +438,11 @@ export default function SqlFormatterClient() {
                     />
                 </div>
 
-                {/* 출력 */}
+                {/* Output panel - syntax highlighted */}
                 <div style={{
                     background: isDark ? "#1e293b" : "white", borderRadius: "10px",
-                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", overflow: "hidden"
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", overflow: "hidden",
+                    display: "flex", flexDirection: "column"
                 }}>
                     <div style={{
                         padding: "12px 15px", background: isDark ? "#1e293b" : "#f8f9fa",
@@ -401,36 +454,49 @@ export default function SqlFormatterClient() {
                             {output ? `${outputLines} ${t('lines')}` : ''}
                         </span>
                     </div>
-                    <textarea
-                        value={output}
-                        readOnly
-                        placeholder={t('outputPlaceholder')}
-                        spellCheck={false}
-                        style={{
+                    {output ? (
+                        <pre style={{
                             width: "100%", minHeight: "350px", padding: "15px",
-                            border: "none", outline: "none", resize: "vertical",
+                            margin: 0, overflowX: "auto", overflowY: "auto", resize: "vertical",
                             fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
                             fontSize: "0.9rem", lineHeight: 1.6,
                             boxSizing: "border-box", background: isDark ? "#0f172a" : "#f5f7f5",
-                            color: isDark ? "#e2e8f0" : "#1f2937"
-                        }}
-                    />
+                            color: isDark ? "#e2e8f0" : "#1f2937",
+                            whiteSpace: "pre-wrap", wordBreak: "break-word",
+                            flex: 1
+                        }}>
+                            <code dangerouslySetInnerHTML={{ __html: highlightedOutput }} />
+                        </pre>
+                    ) : (
+                        <div style={{
+                            width: "100%", minHeight: "350px", padding: "15px",
+                            fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
+                            fontSize: "0.9rem", lineHeight: 1.6,
+                            boxSizing: "border-box", background: isDark ? "#0f172a" : "#f5f7f5",
+                            color: isDark ? "#475569" : "#9ca3af",
+                            flex: 1
+                        }}>
+                            {t('outputPlaceholder')}
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* 버튼 영역 */}
+            {/* Action buttons */}
             <div style={{
                 display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "30px"
             }}>
                 <button
                     onClick={handleFormat}
+                    disabled={isFormatting}
                     style={{
                         flex: 2, padding: "14px", background: "#4A90D9", color: "white",
                         border: "none", borderRadius: "8px", fontSize: "1rem",
-                        fontWeight: 600, cursor: "pointer", minWidth: "120px"
+                        fontWeight: 600, cursor: isFormatting ? "wait" : "pointer", minWidth: "120px",
+                        opacity: isFormatting ? 0.7 : 1
                     }}
                 >
-                    {t('formatBtn')}
+                    {isFormatting ? t('formatting') : t('formatBtn')}
                 </button>
                 <button
                     onClick={handleMinify}
@@ -466,7 +532,7 @@ export default function SqlFormatterClient() {
                     }}
                     title={t('swapBtn')}
                 >
-                    ↕
+                    &#x21D5;
                 </button>
                 <button
                     onClick={handleSample}
@@ -490,7 +556,50 @@ export default function SqlFormatterClient() {
                 </button>
             </div>
 
-            {/* 사용 가이드 */}
+            {/* File upload / download row */}
+            <div style={{
+                display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "30px"
+            }}>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".sql,.txt"
+                    onChange={handleFileUpload}
+                    style={{ display: "none" }}
+                />
+                <button
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                        padding: "12px 20px",
+                        background: isDark
+                            ? "linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%)"
+                            : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        color: "white", border: "none", borderRadius: "8px", fontSize: "0.9rem",
+                        fontWeight: 500, cursor: "pointer"
+                    }}
+                >
+                    {t('uploadBtn')}
+                </button>
+                <button
+                    onClick={handleFileDownload}
+                    disabled={!output}
+                    style={{
+                        padding: "12px 20px",
+                        background: output
+                            ? (isDark
+                                ? "linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%)"
+                                : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)")
+                            : (isDark ? "#334155" : "#eee"),
+                        color: output ? "white" : "#999",
+                        border: "none", borderRadius: "8px", fontSize: "0.9rem",
+                        fontWeight: 500, cursor: output ? "pointer" : "default"
+                    }}
+                >
+                    {t('downloadBtn')}
+                </button>
+            </div>
+
+            {/* Usage guide */}
             <div style={{
                 background: isDark ? "#1e293b" : "white", borderRadius: "10px",
                 boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "25px", marginBottom: "20px"
@@ -518,7 +627,7 @@ export default function SqlFormatterClient() {
                 </div>
             </div>
 
-            {/* 반응형 스타일 */}
+            {/* Responsive styles */}
             <style jsx>{`
                 @media (max-width: 768px) {
                     .sql-editor-grid {

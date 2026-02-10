@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['react-icons'],
   },
   compress: true,
+  redirects: async () => [
+    {
+      source: '/pay-cal',
+      destination: '/ko/dutch-pay',
+      permanent: true,
+    },
+    {
+      source: '/clock/timer',
+      destination: '/ko/timer',
+      permanent: true,
+    },
+  ],
   headers: async () => [
     {
       source: '/:all*(svg|jpg|png)',
