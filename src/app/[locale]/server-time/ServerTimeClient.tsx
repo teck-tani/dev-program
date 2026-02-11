@@ -40,48 +40,68 @@ export default function ServerTimeClient() {
   // Animation frame ref
   const rafRef = useRef<number | null>(null);
   const syncOffsetRef = useRef<number>(0);
+  const resyncTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ===== Server Time Sync =====
+  const measureOffset = useCallback(async (apiUrl: string, parseTimestamp: (data: unknown) => number) => {
+    const before = Date.now();
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error("Sync failed");
+    const data = await response.json();
+    const after = Date.now();
+    const latency = (after - before) / 2;
+    const serverTimeMs = parseTimestamp(data);
+    return { offset: serverTimeMs + latency - after, latency };
+  }, []);
+
   const syncWithServer = useCallback(async () => {
     setSync((prev) => ({ ...prev, status: "syncing" }));
 
-    try {
-      const before = Date.now();
-      const response = await fetch("https://worldtimeapi.org/api/timezone/Asia/Seoul");
+    // Source 1: Internal API (fast, reliable)
+    // Source 2: worldtimeapi.org (external fallback)
+    const sources = [
+      { url: "/api/server-time", parse: (d: { timestamp: number }) => d.timestamp },
+      { url: "https://worldtimeapi.org/api/timezone/Asia/Seoul", parse: (d: { datetime: string }) => new Date(d.datetime).getTime() },
+    ];
 
-      if (!response.ok) throw new Error("Sync failed");
+    for (const source of sources) {
+      try {
+        // 3-sample median for accuracy
+        const samples: { offset: number; latency: number }[] = [];
+        for (let i = 0; i < 3; i++) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          samples.push(await measureOffset(source.url, source.parse as (data: any) => number));
+        }
+        // Pick median by latency (most stable sample)
+        samples.sort((a, b) => a.latency - b.latency);
+        const median = samples[1];
 
-      const data = await response.json();
-      const after = Date.now();
-
-      // Calculate network latency (round-trip / 2)
-      const latency = (after - before) / 2;
-
-      // Server time in ms
-      const serverTimeMs = new Date(data.datetime).getTime();
-
-      // Offset = how much our clock is ahead/behind
-      // correctedServerTime = serverTime + latency (to account for network delay)
-      const correctedServerTime = serverTimeMs + latency;
-      const offset = correctedServerTime - after;
-
-      syncOffsetRef.current = offset;
-
-      setSync({
-        status: "synced",
-        offset: Math.round(offset),
-        lastSynced: Date.now(),
-      });
-    } catch {
-      setSync((prev) => ({ ...prev, status: "failed" }));
-      syncOffsetRef.current = 0;
+        syncOffsetRef.current = median.offset;
+        setSync({
+          status: "synced",
+          offset: Math.round(median.offset),
+          lastSynced: Date.now(),
+        });
+        return; // Success — stop trying other sources
+      } catch {
+        // Try next source
+      }
     }
-  }, []);
 
-  // Initial sync
+    // All sources failed
+    setSync((prev) => ({ ...prev, status: "failed" }));
+    syncOffsetRef.current = 0;
+  }, [measureOffset]);
+
+  // Initial sync + auto re-sync every 10 minutes
   useEffect(() => {
     setHydrated(true);
     syncWithServer();
+
+    resyncTimerRef.current = setInterval(syncWithServer, 10 * 60 * 1000);
+    return () => {
+      if (resyncTimerRef.current) clearInterval(resyncTimerRef.current);
+    };
   }, [syncWithServer]);
 
   // ===== Animation Loop (requestAnimationFrame) =====

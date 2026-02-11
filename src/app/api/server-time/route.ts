@@ -1,10 +1,14 @@
-import { NextResponse } from 'next/server';
-
-export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 export async function GET() {
-    return NextResponse.json({
-        timestamp: Date.now(),
-        datetime: new Date().toISOString(),
-    });
+    const timestamp = Date.now();
+    return new Response(
+        JSON.stringify({ timestamp }),
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store, no-cache, must-revalidate',
+            },
+        }
+    );
 }
