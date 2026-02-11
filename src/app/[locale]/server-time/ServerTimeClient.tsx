@@ -324,10 +324,11 @@ export default function ServerTimeClient() {
           <span>{formatTimeDisplay(currentTime)}</span>
           <span className={styles.msDisplay}>.{formatMs(currentTime)}</span>
         </div>
-        <div className={styles.dateDisplay}>{formatDate(currentTime)}</div>
 
-        {/* Sync Badge */}
-        <div className={styles.syncRow}>
+        {/* Compact info row: date + sync + copy */}
+        <div className={styles.infoRow}>
+          <span className={styles.dateDisplay}>{formatDate(currentTime)}</span>
+          <span className={styles.infoDivider}>·</span>
           <span
             className={`${styles.syncBadge} ${
               sync.status === "synced"
@@ -342,24 +343,22 @@ export default function ServerTimeClient() {
               : sync.status === "syncing"
               ? t("syncing")
               : t("syncFailed")}
+            {sync.status === "synced" && (
+              <span className={styles.offsetText}>
+                {" "}{sync.offset > 0 ? "+" : ""}{sync.offset}ms
+              </span>
+            )}
           </span>
-          {sync.status === "synced" && (
-            <span className={styles.offsetText}>
-              {t("offset")}: {sync.offset > 0 ? "+" : ""}
-              {sync.offset}ms
-            </span>
-          )}
           {sync.status === "failed" && (
             <button className={styles.resyncBtn} onClick={syncWithServer}>
               {t("retry")}
             </button>
           )}
+          <span className={styles.infoDivider}>·</span>
+          <button className={`${styles.copyBtn} ${copied ? styles.copyBtnCopied : ""}`} onClick={handleCopyTime}>
+            {copied ? t("copied") : t("copyTime")}
+          </button>
         </div>
-
-        {/* Copy Button */}
-        <button className={`${styles.copyBtn} ${copied ? styles.copyBtnCopied : ""}`} onClick={handleCopyTime}>
-          {copied ? t("copied") : t("copyTime")}
-        </button>
       </div>
 
       {/* Ticketing Section */}
