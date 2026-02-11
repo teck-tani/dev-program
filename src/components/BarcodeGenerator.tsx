@@ -1,144 +1,224 @@
 "use client";
 
-import { useState, useRef, useEffect, memo, useCallback } from "react";
+import { useState, useRef, useEffect, memo, useCallback, useMemo } from "react";
 import styles from "@/app/[locale]/barcode/barcode.module.css";
 import { useTranslations } from "next-intl";
 import { HiOutlineSave } from "react-icons/hi";
 import { IoCopyOutline } from "react-icons/io5";
+import {
+    BARCODE_CATEGORIES,
+    findType,
+    findCategory,
+    is2DBarcode,
+    validateBarcodeValue,
+    generateSequence,
+    parseCSV,
+    MAX_BARCODES,
+    DPI_OPTIONS,
+    FONT_FAMILIES,
+    ROTATION_OPTIONS,
+    ECLEVEL_OPTIONS,
+    PRINT_LAYOUTS,
+} from "@/utils/barcodeUtils";
+// bwip-js RenderOptions type (from bwip-js namespace - can't use named import)
+interface RenderOptions {
+    bcid: string;
+    text: string;
+    scale?: number;
+    height?: number;
+    width?: number;
+    includetext?: boolean;
+    textxalign?: 'offleft' | 'left' | 'center' | 'right' | 'offright' | 'justify';
+    textfont?: string;
+    textsize?: number;
+    rotate?: 'N' | 'R' | 'I' | 'L';
+    paddingwidth?: number;
+    paddingheight?: number;
+    barcolor?: string;
+    backgroundcolor?: string;
+    textcolor?: string;
+    eclevel?: string;
+    [key: string]: unknown;
+}
 
+// ─── Hooks ───────────────────────────────────────────────
 const useIsMobile = () => {
     const [isMobile, setIsMobile] = useState(false);
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
     }, []);
     return isMobile;
 };
 
+// ─── Types ───────────────────────────────────────────────
 interface BarcodeItem {
     id: string;
     value: string;
-    type: string;
+    type: string; // bcid
 }
 
 interface BarcodeOptions {
-    barWidth: number;
-    barHeight: number;
+    scale: number;
+    height: number;
     displayValue: boolean;
+    barColor: string;
+    bgColor: string;
+    textColor: string;
+    rotation: string;
+    margin: number;
+    fontFamily: string;
+    fontSize: number;
+    fontBold: boolean;
+    eclevel: string;
+    dpi: number;
 }
 
-interface BarcodeItemProps {
-    item: BarcodeItem;
-    index: number;
-    options: BarcodeOptions;
-    onRemove: (index: number) => void;
-    onDragStart: (e: React.DragEvent, index: number) => void;
-    onDragOver: (e: React.DragEvent, index: number) => void;
-    onDrop: (e: React.DragEvent, index: number) => void;
-    removeLabel: string;
-    isMobile: boolean;
-    onDownloadPNG?: (index: number) => void;
-    onDownloadSVG?: (index: number) => void;
-    downloadPNGLabel: string;
-    downloadSVGLabel: string;
+interface HistoryEntry {
+    type: string;
+    value: string;
+    timestamp: number;
 }
 
-/** Validate barcode value for given type */
-function validateBarcodeValue(value: string, type: string): string | null {
-    if (!value) return 'empty';
+// ─── Constants ───────────────────────────────────────────
+const HISTORY_KEY = "barcode_history";
+const MAX_HISTORY = 20;
 
-    switch (type) {
-        case 'EAN13':
-            if (!/^\d{12,13}$/.test(value)) return 'ean13';
-            break;
-        case 'EAN8':
-            if (!/^\d{7,8}$/.test(value)) return 'ean8';
-            break;
-        case 'UPC':
-            if (!/^\d{11,12}$/.test(value)) return 'upc';
-            break;
-        case 'CODE128C':
-            if (!/^\d+$/.test(value) || value.length % 2 !== 0) return 'code128c';
-            break;
-        case 'ITF14':
-            if (!/^\d{13,14}$/.test(value)) return 'itf14';
-            break;
-        case 'ITF':
-            if (!/^\d+$/.test(value) || value.length % 2 !== 0) return 'itf';
-            break;
-        case 'pharmacode':
-            if (!/^\d+$/.test(value)) return 'pharmaNum';
-            else {
-                const num = parseInt(value);
-                if (num < 3 || num > 131070) return 'pharmaRange';
-            }
-            break;
-        case 'codabar':
-            if (!/^[A-Da-d][0-9\-$:/.+]+[A-Da-d]$/.test(value)) return 'codabar';
-            break;
+function loadHistory(): HistoryEntry[] {
+    try {
+        const data = localStorage.getItem(HISTORY_KEY);
+        return data ? JSON.parse(data) : [];
+    } catch {
+        return [];
     }
-    return null;
 }
 
-function svgToCanvas(svg: SVGSVGElement): Promise<HTMLCanvasElement> {
-    return new Promise((resolve) => {
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d")!;
-        const img = new Image();
-        const svgRect = svg.getBoundingClientRect();
-        canvas.width = Math.max(svgRect.width, 200) + 20;
-        canvas.height = Math.max(svgRect.height, 100) + 20;
-        img.onload = () => {
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 10, 10);
-            resolve(canvas);
-        };
-        img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
-    });
+function saveHistory(entries: HistoryEntry[]) {
+    try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(entries.slice(0, MAX_HISTORY)));
+    } catch { /* ignore */ }
 }
 
+// ═══════════════════════════════════════════════════════════
+// Main Component
+// ═══════════════════════════════════════════════════════════
 export default function BarcodeGenerator() {
     const t = useTranslations("Barcode.generator");
-    const [barcodes, setBarcodes] = useState<BarcodeItem[]>([]);
-    const [barcodeType, setBarcodeType] = useState("CODE128");
+    const isMobile = useIsMobile();
+
+    // ── Core State ──
+    const SAMPLE_BARCODE: BarcodeItem = { id: "sample", value: "SAMPLE-001", type: "code128" };
+    const [barcodes, setBarcodes] = useState<BarcodeItem[]>([SAMPLE_BARCODE]);
+    const [barcodeCategory, setBarcodeCategory] = useState("1d");
+    const [barcodeType, setBarcodeType] = useState("code128");
     const [barcodeValue, setBarcodeValue] = useState("");
     const [excelData, setExcelData] = useState("");
     const [error, setError] = useState("");
     const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
-    const [barWidth, setBarWidth] = useState(2);
-    const [barHeight, setBarHeight] = useState(80);
-    const [displayValue, setDisplayValue] = useState(true);
     const [isZipping, setIsZipping] = useState(false);
-    const isMobile = useIsMobile();
     const barcodeRef = useRef<HTMLDivElement>(null);
 
-    const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-        setBarcodeValue(newValue);
-        setError("");
+    // ── Visual Options ──
+    const [scale, setScale] = useState(2);
+    const [barHeight, setBarHeight] = useState(15); // mm
+    const [displayValue, setDisplayValue] = useState(true);
+    const [barColor, setBarColor] = useState("#000000");
+    const [bgColor, setBgColor] = useState("#ffffff");
+    const [textColor, setTextColor] = useState("#000000");
+    const [rotation, setRotation] = useState("N");
+    const [margin, setMargin] = useState(2);
+    const [fontFamily, setFontFamily] = useState("monospace");
+    const [fontSize, setFontSize] = useState(14);
+    const [fontBold, setFontBold] = useState(false);
+    const [eclevel, setEclevel] = useState("M");
+    const [dpi, setDpi] = useState(150);
 
-        if (isMobile) {
-            if (!newValue) {
-                setBarcodes([]);
-            } else {
-                const err = validateBarcodeValue(newValue, barcodeType);
-                if (!err) {
-                    setBarcodes([{ id: crypto.randomUUID(), value: newValue, type: barcodeType }]);
-                }
-            }
-        }
+    // ── Sequence Mode ──
+    const [sequenceMode, setSequenceMode] = useState(false);
+    const [seqPrefix, setSeqPrefix] = useState("");
+    const [seqStart, setSeqStart] = useState(1);
+    const [seqEnd, setSeqEnd] = useState(10);
+    const [seqStep, setSeqStep] = useState(1);
+    const [seqPadding, setSeqPadding] = useState(3);
+    const [seqSuffix, setSeqSuffix] = useState("");
+
+    // ── Advanced Options ──
+    const [showAdvanced, setShowAdvanced] = useState(false);
+    const [printLayout, setPrintLayout] = useState("auto");
+
+    // ── Tab: Simple / Bulk ──
+    const [activeTab, setActiveTab] = useState<"simple" | "bulk">("simple");
+    const isSimple = activeTab === "simple" || isMobile;
+
+    // ── History ──
+    const [history, setHistory] = useState<HistoryEntry[]>([]);
+    const [showHistory, setShowHistory] = useState(false);
+    useEffect(() => { setHistory(loadHistory()); }, []);
+
+    // ── CSV Import ──
+    const csvInputRef = useRef<HTMLInputElement>(null);
+    const [csvColumns, setCsvColumns] = useState<string[][]>([]);
+    const [csvSelectedCol, setCsvSelectedCol] = useState(0);
+    const [showCsvDialog, setShowCsvDialog] = useState(false);
+
+    // Derived: current category types
+    const categoryTypes = useMemo(() => {
+        return BARCODE_CATEGORIES.find((c) => c.key === barcodeCategory)?.types ?? [];
+    }, [barcodeCategory]);
+
+    // Derived: is current type 2D?
+    const is2D = useMemo(() => is2DBarcode(barcodeType), [barcodeType]);
+
+    // Derived: show QR eclevel?
+    const showEclevel = useMemo(() => {
+        const t = findType(barcodeType);
+        return t?.hasEclevel === true;
+    }, [barcodeType]);
+
+    // ── Build bwip-js options ──
+    const barcodeOptions: BarcodeOptions = useMemo(() => ({
+        scale, height: barHeight, displayValue,
+        barColor, bgColor, textColor, rotation,
+        margin, fontFamily, fontSize, fontBold,
+        eclevel, dpi,
+    }), [scale, barHeight, displayValue, barColor, bgColor, textColor, rotation, margin, fontFamily, fontSize, fontBold, eclevel, dpi]);
+
+    // ── Error message helper ──
+    const getValidationError = useCallback((errKey: string): string => {
+        const map: Record<string, string> = {
+            empty: t("errorEmpty"),
+            numeric: t("errorNumeric"),
+            length: t("errorLength"),
+            even: t("errorEven"),
+            range: t("errorRange"),
+            rationalizedCodabar: t("errorCodabar"),
+        };
+        return map[errKey] || t("errorInvalid");
+    }, [t]);
+
+    // ── Add to history ──
+    const addToHistory = useCallback((type: string, value: string) => {
+        const entry: HistoryEntry = { type, value, timestamp: Date.now() };
+        const updated = [entry, ...history.filter(h => !(h.type === type && h.value === value))].slice(0, MAX_HISTORY);
+        setHistory(updated);
+        saveHistory(updated);
+    }, [history]);
+
+    // ── Handlers ──
+    const handleCategoryChange = (cat: string) => {
+        setBarcodeCategory(cat);
+        const firstType = BARCODE_CATEGORIES.find(c => c.key === cat)?.types[0];
+        if (firstType) setBarcodeType(firstType.bcid);
+        setError("");
+        if (isSimple) { setBarcodes([]); setBarcodeValue(""); }
     };
 
-    const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newType = e.target.value;
+    const handleTypeChange = (newType: string) => {
         setBarcodeType(newType);
         setError("");
-
-        if (isMobile && barcodeValue) {
+        if (isSimple && barcodeValue) {
             const err = validateBarcodeValue(barcodeValue, newType);
             if (!err) {
                 setBarcodes([{ id: crypto.randomUUID(), value: barcodeValue, type: newType }]);
@@ -146,145 +226,245 @@ export default function BarcodeGenerator() {
         }
     };
 
-    const getValidationError = (errKey: string): string => {
-        const errorMap: Record<string, string> = {
-            empty: t("errorEmpty"),
-            ean13: t("errorEanInvalid"),
-            ean8: t("errorEan8Invalid"),
-            upc: t("errorUpcInvalid"),
-            code128c: t("errorCode128C"),
-            itf14: t("errorItf14"),
-            itf: t("errorItf"),
-            pharmaNum: t("errorPharmaNum"),
-            pharmaRange: t("errorPharmaRange"),
-            codabar: t("errorCodabar"),
-        };
-        return errorMap[errKey] || t("errorEmpty");
+    const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setBarcodeValue(val);
+        setError("");
+        if (isSimple) {
+            if (!val) { setBarcodes([SAMPLE_BARCODE]); }
+            else {
+                const err = validateBarcodeValue(val, barcodeType);
+                if (!err) {
+                    setBarcodes([{ id: crypto.randomUUID(), value: val, type: barcodeType }]);
+                }
+            }
+        }
     };
 
-    const addBarcode = () => {
-        const err = validateBarcodeValue(barcodeValue, barcodeType);
-        if (err) {
-            setError(getValidationError(err));
+    const addBarcode = useCallback(() => {
+        if (barcodes.length >= MAX_BARCODES) {
+            setError(t("errorMax", { max: MAX_BARCODES }));
             return;
         }
-        setBarcodes([...barcodes, { id: crypto.randomUUID(), value: barcodeValue, type: barcodeType }]);
+        const err = validateBarcodeValue(barcodeValue, barcodeType);
+        if (err) { setError(getValidationError(err)); return; }
+        setBarcodes(prev => [...prev, { id: crypto.randomUUID(), value: barcodeValue, type: barcodeType }]);
+        addToHistory(barcodeType, barcodeValue);
         setBarcodeValue("");
         setError("");
-    };
+    }, [barcodeValue, barcodeType, barcodes.length, getValidationError, addToHistory, t]);
 
-    const generateFromExcel = () => {
+    const generateFromExcel = useCallback(() => {
         if (!excelData) { setError(t("errorExcelEmpty")); return; }
-        const lines = excelData.split(/\r?\n/).filter((line) => line.trim() !== "");
+        const lines = excelData.split(/\r?\n/).filter(l => l.trim());
         let errCount = 0;
         const newBarcodes: BarcodeItem[] = [];
         for (const line of lines) {
+            if (barcodes.length + newBarcodes.length >= MAX_BARCODES) break;
             const val = line.trim();
             const err = validateBarcodeValue(val, barcodeType);
             if (err) { errCount++; continue; }
             newBarcodes.push({ id: crypto.randomUUID(), value: val, type: barcodeType });
         }
-        setBarcodes([...barcodes, ...newBarcodes]);
+        setBarcodes(prev => [...prev, ...newBarcodes]);
         setExcelData("");
-        if (errCount > 0) {
-            setError(t("resultBulkError", { count: newBarcodes.length, error: errCount }));
-        } else {
-            setError("");
+        setError(errCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errCount }) : "");
+    }, [excelData, barcodeType, barcodes.length, t]);
+
+    const generateSequenceBarcodes = useCallback(() => {
+        const values = generateSequence(seqPrefix, seqStart, seqEnd, seqStep, seqPadding, seqSuffix);
+        const remaining = MAX_BARCODES - barcodes.length;
+        const toAdd = values.slice(0, remaining);
+        let errCount = 0;
+        const newBarcodes: BarcodeItem[] = [];
+        for (const val of toAdd) {
+            const err = validateBarcodeValue(val, barcodeType);
+            if (err) { errCount++; continue; }
+            newBarcodes.push({ id: crypto.randomUUID(), value: val, type: barcodeType });
         }
-    };
+        setBarcodes(prev => [...prev, ...newBarcodes]);
+        setError(errCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errCount }) : t("resultBulk", { count: newBarcodes.length }));
+    }, [seqPrefix, seqStart, seqEnd, seqStep, seqPadding, seqSuffix, barcodeType, barcodes.length, t]);
 
-    const removeBarcode = (index: number) => {
-        const newBarcodes = [...barcodes];
-        newBarcodes.splice(index, 1);
-        setBarcodes(newBarcodes);
-    };
+    const removeBarcode = useCallback((index: number) => {
+        setBarcodes(prev => prev.filter((_, i) => i !== index));
+    }, []);
 
+    const clearAll = useCallback(() => {
+        setBarcodes([]);
+        setError("");
+    }, []);
+
+    // ── Drag & Drop ──
     const handleDragStart = (e: React.DragEvent, index: number) => {
         setDraggedItemIndex(index);
         e.dataTransfer.effectAllowed = "move";
     };
-
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
     };
-
     const handleDrop = (e: React.DragEvent, dropIndex: number) => {
         e.preventDefault();
         if (draggedItemIndex === null || draggedItemIndex === dropIndex) return;
-        const newBarcodes = [...barcodes];
-        const [draggedItem] = newBarcodes.splice(draggedItemIndex, 1);
-        newBarcodes.splice(dropIndex, 0, draggedItem);
-        setBarcodes(newBarcodes);
+        setBarcodes(prev => {
+            const newArr = [...prev];
+            const [dragged] = newArr.splice(draggedItemIndex, 1);
+            newArr.splice(dropIndex, 0, dragged);
+            return newArr;
+        });
         setDraggedItemIndex(null);
     };
 
-    // Download single barcode as PNG
-    const downloadPNG = useCallback((index: number) => {
-        if (!barcodeRef.current) return;
-        const items = barcodeRef.current.querySelectorAll(`.${styles.barcodeItem}`);
-        const item = items[index];
-        if (!item) return;
-        const svg = item.querySelector('svg') as SVGSVGElement | null;
-        if (!svg) return;
+    // ── Download helpers ──
+    const renderToCanvas = useCallback(async (item: BarcodeItem, opts: BarcodeOptions, dpiScale: number): Promise<HTMLCanvasElement> => {
+        const bwipjs = (await import("bwip-js/browser")).default;
+        const canvas = document.createElement("canvas");
+        const renderOpts: RenderOptions = {
+            bcid: item.type,
+            text: item.value,
+            scale: opts.scale * (dpiScale / 72),
+            includetext: opts.displayValue,
+            textxalign: "center",
+            rotate: opts.rotation as 'N' | 'R' | 'I' | 'L',
+            paddingwidth: opts.margin,
+            paddingheight: opts.margin,
+            barcolor: opts.barColor.replace("#", ""),
+            backgroundcolor: opts.bgColor.replace("#", ""),
+            textcolor: opts.textColor.replace("#", ""),
+        };
+        if (!is2DBarcode(item.type)) {
+            renderOpts.height = opts.height;
+        }
+        if (opts.displayValue) {
+            renderOpts.textfont = opts.fontBold ? `Bold ${opts.fontFamily}` : opts.fontFamily;
+            renderOpts.textsize = opts.fontSize;
+        }
+        const typeInfo = findType(item.type);
+        if (typeInfo?.hasEclevel) {
+            renderOpts.eclevel = opts.eclevel;
+        }
+        bwipjs.toCanvas(canvas, renderOpts);
+        return canvas;
+    }, []);
 
-        svgToCanvas(svg).then(canvas => {
+    const renderToSVG = useCallback(async (item: BarcodeItem, opts: BarcodeOptions): Promise<string> => {
+        const bwipjs = (await import("bwip-js/browser")).default;
+        const renderOpts: RenderOptions = {
+            bcid: item.type,
+            text: item.value,
+            scale: opts.scale,
+            includetext: opts.displayValue,
+            textxalign: "center",
+            rotate: opts.rotation as 'N' | 'R' | 'I' | 'L',
+            paddingwidth: opts.margin,
+            paddingheight: opts.margin,
+            barcolor: opts.barColor.replace("#", ""),
+            backgroundcolor: opts.bgColor.replace("#", ""),
+            textcolor: opts.textColor.replace("#", ""),
+        };
+        if (!is2DBarcode(item.type)) {
+            renderOpts.height = opts.height;
+        }
+        if (opts.displayValue) {
+            renderOpts.textfont = opts.fontBold ? `Bold ${opts.fontFamily}` : opts.fontFamily;
+            renderOpts.textsize = opts.fontSize;
+        }
+        const typeInfo = findType(item.type);
+        if (typeInfo?.hasEclevel) {
+            renderOpts.eclevel = opts.eclevel;
+        }
+        return bwipjs.toSVG(renderOpts);
+    }, []);
+
+    const downloadPNG = useCallback(async (index: number) => {
+        const item = barcodes[index];
+        if (!item) return;
+        try {
+            const canvas = await renderToCanvas(item, barcodeOptions, dpi);
             const link = document.createElement("a");
-            link.download = `barcode_${barcodes[index]?.value || index}.png`;
+            link.download = `barcode_${item.value}.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
-        });
-    }, [barcodes]);
+        } catch (e) {
+            console.error("PNG download failed:", e);
+        }
+    }, [barcodes, barcodeOptions, dpi, renderToCanvas]);
 
-    // Download single barcode as SVG
-    const downloadSVG = useCallback((index: number) => {
-        if (!barcodeRef.current) return;
-        const items = barcodeRef.current.querySelectorAll(`.${styles.barcodeItem}`);
-        const item = items[index];
+    const downloadSVG = useCallback(async (index: number) => {
+        const item = barcodes[index];
         if (!item) return;
-        const svg = item.querySelector('svg');
-        if (!svg) return;
+        try {
+            const svgStr = await renderToSVG(item, barcodeOptions);
+            const blob = new Blob([svgStr], { type: "image/svg+xml" });
+            const link = document.createElement("a");
+            link.download = `barcode_${item.value}.svg`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            URL.revokeObjectURL(link.href);
+        } catch (e) {
+            console.error("SVG download failed:", e);
+        }
+    }, [barcodes, barcodeOptions, renderToSVG]);
 
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const blob = new Blob([svgData], { type: "image/svg+xml" });
-        const link = document.createElement("a");
-        link.download = `barcode_${barcodes[index]?.value || index}.svg`;
-        link.href = URL.createObjectURL(blob);
-        link.click();
-        URL.revokeObjectURL(link.href);
-    }, [barcodes]);
+    const downloadPDF = useCallback(async () => {
+        if (barcodes.length === 0) return;
+        try {
+            const { PDFDocument } = await import("pdf-lib");
+            const pdf = await PDFDocument.create();
+            for (const item of barcodes) {
+                const canvas = await renderToCanvas(item, barcodeOptions, dpi);
+                const imgData = canvas.toDataURL("image/png");
+                const base64 = imgData.split(",")[1];
+                const imgBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+                const img = await pdf.embedPng(imgBytes);
+                const pageWidth = Math.max(img.width + 40, 200);
+                const pageHeight = Math.max(img.height + 40, 150);
+                const page = pdf.addPage([pageWidth, pageHeight]);
+                page.drawImage(img, {
+                    x: (pageWidth - img.width) / 2,
+                    y: (pageHeight - img.height) / 2,
+                    width: img.width,
+                    height: img.height,
+                });
+            }
+            const pdfBytes = await pdf.save();
+            const blob = new Blob([pdfBytes as BlobPart], { type: "application/pdf" });
+            const link = document.createElement("a");
+            link.download = "barcodes.pdf";
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            URL.revokeObjectURL(link.href);
+        } catch (e) {
+            console.error("PDF download failed:", e);
+        }
+    }, [barcodes, barcodeOptions, dpi, renderToCanvas]);
 
-    // Mobile download (first barcode)
-    const downloadBarcode = useCallback(() => {
-        if (!barcodeRef.current || barcodes.length === 0) return;
-        const svg = barcodeRef.current.querySelector('svg') as SVGSVGElement | null;
-        if (!svg) return;
-        svgToCanvas(svg).then(canvas => {
+    const downloadBarcode = useCallback(async () => {
+        if (barcodes.length === 0) return;
+        try {
+            const canvas = await renderToCanvas(barcodes[0], barcodeOptions, dpi);
             const link = document.createElement("a");
             link.download = `barcode_${barcodes[0].value}.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
-        });
-    }, [barcodes]);
+        } catch (e) {
+            console.error("Download failed:", e);
+        }
+    }, [barcodes, barcodeOptions, dpi, renderToCanvas]);
 
-    // Bulk ZIP download
     const downloadAllZIP = useCallback(async () => {
-        if (!barcodeRef.current || barcodes.length === 0) return;
+        if (barcodes.length === 0) return;
         setIsZipping(true);
         try {
-            const JSZip = (await import('jszip')).default;
+            const JSZip = (await import("jszip")).default;
             const zip = new JSZip();
-            const items = barcodeRef.current.querySelectorAll(`.${styles.barcodeItem}`);
-
-            for (let i = 0; i < items.length; i++) {
-                const svg = items[i].querySelector('svg') as SVGSVGElement | null;
-                if (!svg) continue;
-                const canvas = await svgToCanvas(svg);
+            for (const item of barcodes) {
+                const canvas = await renderToCanvas(item, barcodeOptions, dpi);
                 const dataUrl = canvas.toDataURL("image/png");
-                const base64 = dataUrl.split(',')[1];
-                zip.file(`barcode_${barcodes[i]?.value || i}.png`, base64, { base64: true });
+                const base64 = dataUrl.split(",")[1];
+                zip.file(`barcode_${item.value}.png`, base64, { base64: true });
             }
-
             const blob = await zip.generateAsync({ type: "blob" });
             const link = document.createElement("a");
             link.download = "barcodes.zip";
@@ -295,194 +475,603 @@ export default function BarcodeGenerator() {
             console.error("ZIP generation failed:", e);
         }
         setIsZipping(false);
-    }, [barcodes]);
+    }, [barcodes, barcodeOptions, dpi, renderToCanvas]);
 
-    const options: BarcodeOptions = { barWidth, barHeight, displayValue };
+    // ── Print ──
+    const handlePrint = useCallback(() => {
+        window.print();
+    }, []);
 
+    // ── CSV Import ──
+    const handleCsvFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const text = ev.target?.result as string;
+            const rows = parseCSV(text);
+            if (rows.length > 0 && rows[0].length > 1) {
+                setCsvColumns(rows);
+                setCsvSelectedCol(0);
+                setShowCsvDialog(true);
+            } else {
+                // Single column — import directly
+                const values = rows.map(r => r[0]?.trim()).filter(Boolean);
+                importValues(values);
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+    }, []);
+
+    const importValues = useCallback((values: string[]) => {
+        let errCount = 0;
+        const newBarcodes: BarcodeItem[] = [];
+        for (const val of values) {
+            if (barcodes.length + newBarcodes.length >= MAX_BARCODES) break;
+            const err = validateBarcodeValue(val, barcodeType);
+            if (err) { errCount++; continue; }
+            newBarcodes.push({ id: crypto.randomUUID(), value: val, type: barcodeType });
+        }
+        setBarcodes(prev => [...prev, ...newBarcodes]);
+        setShowCsvDialog(false);
+        setCsvColumns([]);
+        setError(errCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errCount }) : t("resultBulk", { count: newBarcodes.length }));
+    }, [barcodes.length, barcodeType, t]);
+
+    const confirmCsvImport = useCallback(() => {
+        const values = csvColumns.map(row => row[csvSelectedCol]?.trim()).filter(Boolean);
+        importValues(values);
+    }, [csvColumns, csvSelectedCol, importValues]);
+
+    // ── Embed Code ──
+    const [embedCode, setEmbedCode] = useState("");
+    const [showEmbed, setShowEmbed] = useState(false);
+
+    const generateEmbedCode = useCallback(async (index: number) => {
+        const item = barcodes[index];
+        if (!item) return;
+        try {
+            const canvas = await renderToCanvas(item, barcodeOptions, 150);
+            const dataUrl = canvas.toDataURL("image/png");
+            const code = `<img src="${dataUrl}" alt="barcode ${item.type}: ${item.value}" />`;
+            setEmbedCode(code);
+            setShowEmbed(true);
+        } catch (e) {
+            console.error("Embed generation failed:", e);
+        }
+    }, [barcodes, barcodeOptions, renderToCanvas]);
+
+    // ── Keyboard shortcuts ──
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Enter" && !e.ctrlKey && !e.metaKey && document.activeElement?.tagName === "INPUT") {
+                const inputEl = document.activeElement as HTMLInputElement;
+                if (inputEl.id === "barcodeValue") {
+                    e.preventDefault();
+                    addBarcode();
+                }
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === "p") {
+                e.preventDefault();
+                handlePrint();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [addBarcode, handlePrint]);
+
+    // ═══════════════════════════════════════════════════════
+    // RENDER
+    // ═══════════════════════════════════════════════════════
     return (
-        <div className={styles.barcodeWrapper}>
-            <div className={styles.controlsContainer}>
-                <div className={styles.inputGroup}>
-                    <label htmlFor="barcodeType">{t("labelType")}</label>
-                    <select id="barcodeType" value={barcodeType} onChange={handleTypeChange}>
-                        <option value="CODE128">CODE128</option>
-                        <option value="CODE128A">CODE128 A</option>
-                        <option value="CODE128B">CODE128 B</option>
-                        <option value="CODE128C">CODE128 C</option>
-                        <option value="EAN13">EAN</option>
-                        <option value="EAN8">EAN8</option>
-                        <option value="UPC">UPC</option>
-                        <option value="CODE39">CODE39</option>
-                        <option value="ITF14">ITF14</option>
-                        <option value="ITF">ITF</option>
-                        <option value="MSI">MSI</option>
-                        <option value="MSI10">MSI10</option>
-                        <option value="MSI11">MSI11</option>
-                        <option value="MSI1010">MSI1010</option>
-                        <option value="MSI1110">MSI1110</option>
-                        <option value="pharmacode">Pharmacode</option>
-                        <option value="codabar">Codabar</option>
-                    </select>
-                </div>
-                <div className={styles.inputGroup}>
-                    <input value={barcodeValue} onChange={handleValueChange} placeholder={t("placeholderValue")} />
-                    {!isMobile && (
-                        <button onClick={addBarcode} className={`${styles.actionButton} ${styles.addButton}`}>{t("btnAdd")}</button>
-                    )}
-                </div>
-
-                {/* 크기 커스터마이징 */}
-                <div className={styles.inputGroup}>
-                    <label>{t("labelWidth")}: {barWidth}</label>
-                    <input type="range" min="1" max="4" step="0.5" value={barWidth}
-                        onChange={e => setBarWidth(parseFloat(e.target.value))}
-                        style={{ width: '100%', accentColor: '#1a7e32' }}
-                    />
-                </div>
-                <div className={styles.inputGroup}>
-                    <label>{t("labelHeight")}: {barHeight}px</label>
-                    <input type="range" min="30" max="180" step="10" value={barHeight}
-                        onChange={e => setBarHeight(parseInt(e.target.value))}
-                        style={{ width: '100%', accentColor: '#1a7e32' }}
-                    />
-                </div>
-                <div className={styles.inputGroup} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <label htmlFor="displayText" style={{ marginBottom: 0, cursor: 'pointer' }}>{t("labelShowText")}</label>
-                    <input type="checkbox" id="displayText" checked={displayValue}
-                        onChange={e => setDisplayValue(e.target.checked)}
-                        style={{ width: '18px', height: '18px', accentColor: '#1a7e32', cursor: 'pointer' }}
-                    />
-                </div>
-
-                {!isMobile && (
-                    <div className={styles.inputGroup}>
-                        <textarea value={excelData} onChange={(e) => setExcelData(e.target.value)} placeholder={t("placeholderExcel")} />
-                        <button onClick={generateFromExcel} className={`${styles.actionButton} ${styles.generateButton}`}>{t("btnBulk")}</button>
-                    </div>
-                )}
-
-                {/* PC: 일괄 ZIP 다운로드 */}
-                {!isMobile && barcodes.length > 1 && (
-                    <button onClick={downloadAllZIP} disabled={isZipping}
-                        className={`${styles.actionButton}`}
-                        style={{ background: isZipping ? '#94a3b8' : '#7c3aed', color: '#fff' }}>
-                        {isZipping ? t("zipping") : t("downloadZip")}
-                    </button>
-                )}
-
-                <div className={styles.error}>{error}</div>
-            </div>
-
-            {/* 모바일: 클립보드 복사 버튼 */}
-            {isMobile && barcodes.length > 0 && (
-                <div className={styles.copyButtonRow}>
+        <div className={`${styles.barcodeWrapper} ${isSimple && !isMobile ? styles.simpleMode : ""}`}>
+            {/* ── Tab Bar (desktop only) ── */}
+            {!isMobile && (
+                <div className={styles.tabBar}>
                     <button
-                        className={styles.copyButtonOutside}
-                        onClick={() => {
-                            if (barcodes.length > 0) {
-                                navigator.clipboard.writeText(barcodes[0].value);
-                            }
-                        }}
-                        aria-label="Copy to Clipboard"
+                        className={`${styles.tabBtn} ${activeTab === "simple" ? styles.tabActive : ""}`}
+                        onClick={() => { setActiveTab("simple"); setBarcodes([SAMPLE_BARCODE]); setBarcodeValue(""); setError(""); }}
                     >
-                        <IoCopyOutline />
+                        {t("tabSimple")}
+                    </button>
+                    <button
+                        className={`${styles.tabBtn} ${activeTab === "bulk" ? styles.tabActive : ""}`}
+                        onClick={() => { setActiveTab("bulk"); setBarcodes([]); setBarcodeValue(""); setError(""); }}
+                    >
+                        {t("tabBulk")}
                     </button>
                 </div>
             )}
 
-            <div className={styles.barcodeContainer} ref={barcodeRef}>
-                <div className={styles.barcodeGrid}>
-                    {barcodes.map((item, index) => (
-                        <BarcodeItemComponent
-                            key={item.id} item={item} index={index} options={options}
-                            onRemove={removeBarcode}
-                            onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop}
-                            removeLabel={t("remove")}
-                            isMobile={isMobile}
-                            onDownloadPNG={!isMobile ? downloadPNG : undefined}
-                            onDownloadSVG={!isMobile ? downloadSVG : undefined}
-                            downloadPNGLabel={t("downloadPNG")}
-                            downloadSVGLabel={t("downloadSVG")}
-                        />
+            {/* ══════ SIMPLE TAB: Preview at TOP (desktop + mobile) ══════ */}
+            {isSimple && (
+                <div className={styles.simplePreview}>
+                    {barcodes.length > 0 ? (
+                        <>
+                            <BarcodeItemComponent
+                                item={barcodes[0]} index={0} options={barcodeOptions}
+                                onRemove={() => {}} onDragStart={() => {}} onDragOver={() => {}} onDrop={() => {}}
+                                isMobile={true} t={t}
+                            />
+                            <div className={styles.simpleDownloadRow}>
+                                <button className={styles.simpleDownloadBtn} onClick={() => downloadPNG(0)}>
+                                    <HiOutlineSave /> PNG
+                                </button>
+                                <button className={styles.simpleDownloadBtn} onClick={() => downloadSVG(0)}>
+                                    <HiOutlineSave /> SVG
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div className={styles.simplePlaceholder}>
+                            {t("placeholderValue")}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            <div className={styles.controlsContainer}>
+                {/* ── Category Selector (common) ── */}
+                <div className={styles.categoryBar}>
+                    {BARCODE_CATEGORIES.map((cat) => (
+                        <button
+                            key={cat.key}
+                            className={`${styles.categoryBtn} ${barcodeCategory === cat.key ? styles.categoryActive : ""}`}
+                            onClick={() => handleCategoryChange(cat.key)}
+                        >
+                            {t(`category_${cat.key}`)}
+                        </button>
                     ))}
                 </div>
+
+                {/* ── Type Selector (common) ── */}
+                <div className={styles.inputGroup}>
+                    <label htmlFor="barcodeType">{t("labelType")}</label>
+                    <select id="barcodeType" value={barcodeType} onChange={(e) => handleTypeChange(e.target.value)}>
+                        {categoryTypes.map((bt) => (
+                            <option key={bt.bcid} value={bt.bcid}>{bt.label}</option>
+                        ))}
+                    </select>
+                    {barcodeType === "qrcode" && (
+                        <a href="qr-generator" className={styles.qrLink}>{t("moreQR")}</a>
+                    )}
+                </div>
+
+                {/* ── Value Input (common) ── */}
+                <div className={styles.inputGroup}>
+                    <input id="barcodeValue" value={barcodeValue} onChange={handleValueChange}
+                        placeholder={isSimple ? "SAMPLE-001" : t("placeholderValue")} />
+                    {/* Add button: bulk tab desktop only */}
+                    {!isSimple && (
+                        <button onClick={addBarcode} className={`${styles.actionButton} ${styles.addButton}`}>
+                            {t("btnAdd")}
+                        </button>
+                    )}
+                </div>
+
+                {/* ── QR Error Correction (common) ── */}
+                {showEclevel && (
+                    <div className={styles.inputGroup}>
+                        <label>{t("labelEclevel")}</label>
+                        <div className={styles.segmentedControl}>
+                            {ECLEVEL_OPTIONS.map((lvl) => (
+                                <button key={lvl} className={`${styles.segBtn} ${eclevel === lvl ? styles.segActive : ""}`}
+                                    onClick={() => setEclevel(lvl)}>{lvl}</button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── Size Controls (common) ── */}
+                <div className={styles.inputGroup}>
+                    <label>{t("labelScale")}: {scale}</label>
+                    <input type="range" min="1" max="5" step="0.5" value={scale}
+                        onChange={(e) => setScale(parseFloat(e.target.value))}
+                        className={styles.rangeInput} />
+                </div>
+                {!is2D && (
+                    <div className={styles.inputGroup}>
+                        <label>{t("labelHeight")}: {barHeight}mm</label>
+                        <input type="range" min="5" max="40" step="1" value={barHeight}
+                            onChange={(e) => setBarHeight(parseInt(e.target.value))}
+                            className={styles.rangeInput} />
+                    </div>
+                )}
+                <div className={styles.inputGroup} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <label htmlFor="displayText" style={{ marginBottom: 0, cursor: "pointer" }}>{t("labelShowText")}</label>
+                    <input type="checkbox" id="displayText" checked={displayValue}
+                        onChange={(e) => setDisplayValue(e.target.checked)}
+                        className={styles.checkboxInput} />
+                </div>
+
+                {/* ── Color Pickers (common) ── */}
+                <div className={styles.colorRow}>
+                    <div className={styles.colorPicker}>
+                        <label>{t("labelBarColor")}</label>
+                        <div className={styles.colorInputWrap}>
+                            <input type="color" value={barColor} onChange={(e) => setBarColor(e.target.value)} />
+                            <span>{barColor}</span>
+                        </div>
+                    </div>
+                    <div className={styles.colorPicker}>
+                        <label>{t("labelBgColor")}</label>
+                        <div className={styles.colorInputWrap}>
+                            <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} />
+                            <span>{bgColor}</span>
+                        </div>
+                    </div>
+                    <div className={styles.colorPicker}>
+                        <label>{t("labelTextColor")}</label>
+                        <div className={styles.colorInputWrap}>
+                            <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} />
+                            <span>{textColor}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Rotation (common) ── */}
+                <div className={styles.inputGroup}>
+                    <label>{t("labelRotation")}</label>
+                    <div className={styles.segmentedControl}>
+                        {ROTATION_OPTIONS.map((r) => (
+                            <button key={r.value}
+                                className={`${styles.segBtn} ${rotation === r.value ? styles.segActive : ""}`}
+                                onClick={() => setRotation(r.value)}>{r.label}</button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* ══════ BULK-ONLY CONTROLS ══════ */}
+                {!isSimple && (
+                    <>
+                        {/* ── Advanced Toggle ── */}
+                        <button className={styles.advancedToggle} onClick={() => setShowAdvanced(!showAdvanced)}>
+                            {showAdvanced ? "▲" : "▼"} {t("labelAdvanced")}
+                        </button>
+
+                        {showAdvanced && (
+                            <div className={styles.advancedPanel}>
+                                <div className={styles.inputGroup}>
+                                    <label>{t("labelMargin")}: {margin}mm</label>
+                                    <input type="range" min="0" max="20" step="1" value={margin}
+                                        onChange={(e) => setMargin(parseInt(e.target.value))}
+                                        className={styles.rangeInput} />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>{t("labelFont")}</label>
+                                    <select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)}>
+                                        {FONT_FAMILIES.map((f) => (
+                                            <option key={f} value={f}>{f}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>{t("labelFontSize")}: {fontSize}pt</label>
+                                    <input type="range" min="8" max="24" step="1" value={fontSize}
+                                        onChange={(e) => setFontSize(parseInt(e.target.value))}
+                                        className={styles.rangeInput} />
+                                </div>
+                                <div className={styles.inputGroup} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                    <label htmlFor="fontBold" style={{ marginBottom: 0, cursor: "pointer" }}>{t("labelBold")}</label>
+                                    <input type="checkbox" id="fontBold" checked={fontBold}
+                                        onChange={(e) => setFontBold(e.target.checked)}
+                                        className={styles.checkboxInput} />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>{t("labelDPI")}</label>
+                                    <div className={styles.segmentedControl}>
+                                        {DPI_OPTIONS.map((d) => (
+                                            <button key={d}
+                                                className={`${styles.segBtn} ${dpi === d ? styles.segActive : ""}`}
+                                                onClick={() => setDpi(d)}>{d}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>{t("labelPrintLayout")}</label>
+                                    <select value={printLayout} onChange={(e) => setPrintLayout(e.target.value)}>
+                                        {PRINT_LAYOUTS.map((pl) => (
+                                            <option key={pl} value={pl}>{t(`printLayout_${pl}`)}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ── Sequence Mode ── */}
+                        <div className={styles.inputGroup}>
+                            <button className={styles.modeToggle} onClick={() => setSequenceMode(!sequenceMode)}>
+                                {sequenceMode ? "▲" : "▼"} {t("labelSequence")}
+                            </button>
+                            {sequenceMode && (
+                                <div className={styles.sequencePanel}>
+                                    <div className={styles.seqRow}>
+                                        <input placeholder={t("seqPrefix")} value={seqPrefix}
+                                            onChange={(e) => setSeqPrefix(e.target.value)} />
+                                        <input type="number" placeholder={t("seqStart")} value={seqStart}
+                                            onChange={(e) => setSeqStart(parseInt(e.target.value) || 0)} />
+                                        <input type="number" placeholder={t("seqEnd")} value={seqEnd}
+                                            onChange={(e) => setSeqEnd(parseInt(e.target.value) || 0)} />
+                                    </div>
+                                    <div className={styles.seqRow}>
+                                        <input type="number" placeholder={t("seqStep")} value={seqStep} min={1}
+                                            onChange={(e) => setSeqStep(Math.max(1, parseInt(e.target.value) || 1))} />
+                                        <input type="number" placeholder={t("seqPadding")} value={seqPadding} min={1} max={10}
+                                            onChange={(e) => setSeqPadding(parseInt(e.target.value) || 1)} />
+                                        <input placeholder={t("seqSuffix")} value={seqSuffix}
+                                            onChange={(e) => setSeqSuffix(e.target.value)} />
+                                    </div>
+                                    <div className={styles.seqPreview}>
+                                        {t("seqPreview")}: {seqPrefix}{String(seqStart).padStart(seqPadding, "0")}{seqSuffix} ~ {seqPrefix}{String(seqEnd).padStart(seqPadding, "0")}{seqSuffix}
+                                    </div>
+                                    <button onClick={generateSequenceBarcodes} className={`${styles.actionButton} ${styles.generateButton}`}>
+                                        {t("btnSequence")}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ── Excel Bulk Input ── */}
+                        {!sequenceMode && (
+                            <div className={styles.inputGroup}>
+                                <textarea value={excelData} onChange={(e) => setExcelData(e.target.value)}
+                                    placeholder={t("placeholderExcel")} />
+                                <button onClick={generateFromExcel} className={`${styles.actionButton} ${styles.generateButton}`}>
+                                    {t("btnBulk")}
+                                </button>
+                            </div>
+                        )}
+
+                        {/* ── CSV Import ── */}
+                        <div className={styles.inputGroup}>
+                            <input ref={csvInputRef} type="file" accept=".csv,.tsv,.txt"
+                                onChange={handleCsvFile} style={{ display: "none" }} />
+                            <button onClick={() => csvInputRef.current?.click()}
+                                className={`${styles.actionButton}`}
+                                style={{ background: "#059669", color: "#fff" }}>
+                                {t("btnCSV")}
+                            </button>
+                        </div>
+
+                        {/* ── Action Buttons ── */}
+                        {barcodes.length > 0 && (
+                            <div className={styles.actionRow}>
+                                <button onClick={downloadAllZIP} disabled={isZipping}
+                                    className={styles.actionButton}
+                                    style={{ background: isZipping ? "#94a3b8" : "#7c3aed", color: "#fff" }}>
+                                    {isZipping ? t("zipping") : t("downloadZip")}
+                                </button>
+                                <button onClick={downloadPDF}
+                                    className={styles.actionButton}
+                                    style={{ background: "#dc2626", color: "#fff" }}>
+                                    {t("downloadPDF")}
+                                </button>
+                                <button onClick={handlePrint}
+                                    className={styles.actionButton}
+                                    style={{ background: "#0ea5e9", color: "#fff" }}>
+                                    {t("btnPrint")}
+                                </button>
+                                <button onClick={clearAll}
+                                    className={`${styles.actionButton} ${styles.clearButton}`}>
+                                    {t("btnClear")}
+                                </button>
+                            </div>
+                        )}
+
+                        {/* ── History ── */}
+                        {history.length > 0 && (
+                            <div className={styles.inputGroup}>
+                                <button className={styles.modeToggle} onClick={() => setShowHistory(!showHistory)}>
+                                    {showHistory ? "▲" : "▼"} {t("labelHistory")} ({history.length})
+                                </button>
+                                {showHistory && (
+                                    <div className={styles.historyList}>
+                                        {history.map((h, i) => (
+                                            <button key={i} className={styles.historyItem}
+                                                onClick={() => {
+                                                    const cat = findCategory(h.type);
+                                                    setBarcodeCategory(cat);
+                                                    setBarcodeType(h.type);
+                                                    setBarcodeValue(h.value);
+                                                }}>
+                                                <span className={styles.historyType}>{h.type}</span>
+                                                <span className={styles.historyValue}>{h.value}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </>
+                )}
+
+                <div className={styles.error}>{error}</div>
+                {!isSimple && barcodes.length > 0 && (
+                    <div className={styles.barcodeCount}>{barcodes.length} / {MAX_BARCODES}</div>
+                )}
             </div>
-            {/* 모바일 다운로드 버튼 */}
-            {isMobile && barcodes.length > 0 && (
+
+            {/* ══════ MOBILE: Download button ══════ */}
+            {isMobile && barcodes.length > 0 && barcodes[0].id !== "sample" && (
                 <button className={styles.downloadButtonLarge} onClick={downloadBarcode}>
                     <HiOutlineSave />
                     <span>{t("download")}</span>
                 </button>
             )}
+
+            {/* ══════ BULK TAB: Barcode Grid ══════ */}
+            {!isSimple && (
+                <div className={`${styles.barcodeContainer} ${styles[`print_${printLayout}`] || ""}`} ref={barcodeRef}>
+                    <div className={styles.barcodeGrid}>
+                        {barcodes.map((item, index) => (
+                            <BarcodeItemComponent
+                                key={item.id} item={item} index={index} options={barcodeOptions}
+                                onRemove={removeBarcode}
+                                onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop}
+                                isMobile={false}
+                                onDownloadPNG={downloadPNG}
+                                onDownloadSVG={downloadSVG}
+                                onEmbed={generateEmbedCode}
+                                t={t}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* ── CSV Column Dialog ── */}
+            {showCsvDialog && (
+                <div className={styles.modalOverlay} onClick={() => setShowCsvDialog(false)}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <h3>{t("csvSelectColumn")}</h3>
+                        <div className={styles.csvPreview}>
+                            {csvColumns[0]?.map((col, i) => (
+                                <button key={i}
+                                    className={`${styles.csvColBtn} ${csvSelectedCol === i ? styles.csvColActive : ""}`}
+                                    onClick={() => setCsvSelectedCol(i)}>
+                                    {col || `Column ${i + 1}`}
+                                </button>
+                            ))}
+                        </div>
+                        <p>{t("csvRowCount", { count: csvColumns.length })}</p>
+                        <div style={{ display: "flex", gap: 8 }}>
+                            <button onClick={confirmCsvImport} className={`${styles.actionButton} ${styles.addButton}`}>
+                                {t("btnImport")}
+                            </button>
+                            <button onClick={() => setShowCsvDialog(false)} className={`${styles.actionButton} ${styles.clearButton}`}>
+                                {t("btnCancel")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Embed Code Dialog ── */}
+            {showEmbed && (
+                <div className={styles.modalOverlay} onClick={() => setShowEmbed(false)}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <h3>{t("embedTitle")}</h3>
+                        <textarea readOnly value={embedCode} className={styles.embedTextarea} />
+                        <div style={{ display: "flex", gap: 8 }}>
+                            <button onClick={() => {
+                                navigator.clipboard.writeText(embedCode);
+                                setShowEmbed(false);
+                            }} className={`${styles.actionButton} ${styles.addButton}`}>
+                                {t("btnCopy")}
+                            </button>
+                            <button onClick={() => setShowEmbed(false)} className={`${styles.actionButton} ${styles.clearButton}`}>
+                                {t("btnClose")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
+// ═══════════════════════════════════════════════════════════
+// Barcode Item Component (memoized)
+// ═══════════════════════════════════════════════════════════
+interface BarcodeItemProps {
+    item: BarcodeItem;
+    index: number;
+    options: BarcodeOptions;
+    onRemove: (index: number) => void;
+    onDragStart: (e: React.DragEvent, index: number) => void;
+    onDragOver: (e: React.DragEvent, index: number) => void;
+    onDrop: (e: React.DragEvent, index: number) => void;
+    isMobile: boolean;
+    onDownloadPNG?: (index: number) => void;
+    onDownloadSVG?: (index: number) => void;
+    onEmbed?: (index: number) => void;
+    t: ReturnType<typeof useTranslations>;
+}
+
 const BarcodeItemComponent = memo(function BarcodeItemComponent({
-    item, index, options, onRemove, onDragStart, onDragOver, onDrop, removeLabel, isMobile,
-    onDownloadPNG, onDownloadSVG, downloadPNGLabel, downloadSVGLabel,
+    item, index, options, onRemove, onDragStart, onDragOver, onDrop,
+    isMobile, onDownloadPNG, onDownloadSVG, onEmbed, t,
 }: BarcodeItemProps) {
-    const svgRef = useRef<SVGSVGElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [renderError, setRenderError] = useState("");
 
     useEffect(() => {
-        if (svgRef.current) {
-            const barcodeOptions: Record<string, string | number | boolean> = {
-                width: options.barWidth,
-                height: options.barHeight,
-                displayValue: options.displayValue,
-                margin: 5,
-                fontSize: 18,
-                fontOptions: "bold",
-                textMargin: 8,
-                font: "monospace",
-            };
-            import("jsbarcode").then((module) => {
-                const JsBarcode = module.default;
-                try {
-                    JsBarcode(svgRef.current, item.value, barcodeOptions);
-                } catch {
-                    // barcode rendering error (invalid value for format)
+        if (!canvasRef.current) return;
+        setRenderError("");
+
+        import("bwip-js/browser").then((module) => {
+            const bwipjs = module.default;
+            if (!canvasRef.current) return;
+            try {
+                const renderOpts: RenderOptions = {
+                    bcid: item.type,
+                    text: item.value,
+                    scale: options.scale,
+                    includetext: options.displayValue,
+                    textxalign: "center",
+                    rotate: options.rotation as 'N' | 'R' | 'I' | 'L',
+                    paddingwidth: options.margin,
+                    paddingheight: options.margin,
+                    barcolor: options.barColor.replace("#", ""),
+                    backgroundcolor: options.bgColor.replace("#", ""),
+                    textcolor: options.textColor.replace("#", ""),
+                };
+                if (!is2DBarcode(item.type)) {
+                    renderOpts.height = options.height;
                 }
-                if (isMobile && svgRef.current) {
-                    svgRef.current.setAttribute('preserveAspectRatio', 'none');
+                if (options.displayValue) {
+                    renderOpts.textfont = options.fontBold ? `Bold ${options.fontFamily}` : options.fontFamily;
+                    renderOpts.textsize = options.fontSize;
                 }
-            });
-        }
-    }, [item, isMobile, options]);
+                const typeInfo = findType(item.type);
+                if (typeInfo?.hasEclevel) {
+                    renderOpts.eclevel = options.eclevel;
+                }
+                bwipjs.toCanvas(canvasRef.current, renderOpts);
+            } catch (e) {
+                setRenderError(String(e));
+            }
+        });
+    }, [item, options]);
 
     return (
         <div
-            className={styles.barcodeItem} draggable={!isMobile}
+            className={styles.barcodeItem}
+            draggable={!isMobile}
             onDragStart={(e) => onDragStart(e, index)}
             onDragOver={(e) => onDragOver(e, index)}
             onDrop={(e) => onDrop(e, index)}
         >
             {!isMobile && <div className={styles.barcodeNumber}>{index + 1}</div>}
             {!isMobile && (
-                <button className={styles.removeBarcode} onClick={() => onRemove(index)} aria-label={removeLabel}></button>
+                <button className={styles.removeBarcode} onClick={() => onRemove(index)} aria-label={t("remove")} />
             )}
-            <svg ref={svgRef} />
-            {/* PC: 개별 다운로드 버튼 (PNG / SVG) */}
-            {!isMobile && onDownloadPNG && onDownloadSVG && (
-                <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
-                    <button onClick={() => onDownloadPNG(index)}
-                        style={{
-                            padding: '3px 10px', fontSize: '0.7rem', borderRadius: '4px',
-                            border: '1px solid #ddd', background: '#f8f9fa', cursor: 'pointer',
-                            color: '#333', fontWeight: '600',
-                        }}>
-                        {downloadPNGLabel}
-                    </button>
-                    <button onClick={() => onDownloadSVG(index)}
-                        style={{
-                            padding: '3px 10px', fontSize: '0.7rem', borderRadius: '4px',
-                            border: '1px solid #ddd', background: '#f8f9fa', cursor: 'pointer',
-                            color: '#333', fontWeight: '600',
-                        }}>
-                        {downloadSVGLabel}
-                    </button>
+            {renderError ? (
+                <div className={styles.renderError}>{renderError}</div>
+            ) : (
+                <canvas ref={canvasRef} />
+            )}
+            {!isMobile && (onDownloadPNG || onDownloadSVG || onEmbed) && (
+                <div className={styles.itemActions}>
+                    {onDownloadPNG && (
+                        <button onClick={() => onDownloadPNG(index)} className={styles.itemBtn}>
+                            {t("downloadPNG")}
+                        </button>
+                    )}
+                    {onDownloadSVG && (
+                        <button onClick={() => onDownloadSVG(index)} className={styles.itemBtn}>
+                            {t("downloadSVG")}
+                        </button>
+                    )}
+                    {onEmbed && (
+                        <button onClick={() => onEmbed(index)} className={styles.itemBtn}>
+                            {"</>"}
+                        </button>
+                    )}
                 </div>
             )}
         </div>
     );
 });
+

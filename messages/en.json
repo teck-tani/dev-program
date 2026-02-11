@@ -84,7 +84,7 @@
       },
       "format": {
         "title": "🎨 Various Formats Supported",
-        "desc": "Fully supports 16 standard formats, from the widely used CODE128 to EAN-13 for products and ITF for logistics."
+        "desc": "Supports 40+ standard formats including CODE128, EAN-13 (1D), QR Code, Data Matrix (2D), GS1 DataBar, and postal barcodes."
       },
       "security": {
         "title": "🔒 Secure & Safe",
@@ -127,17 +127,21 @@
         "q": "Q. Are there any usage limits?",
         "a": "It is free for everyone, including commercial use. All features are available without signup or payment."
       },
-      "expiry": {
-        "q": "Q. Do generated barcodes expire?",
-        "a": "No, generated barcodes are image files and can be used permanently as long as they are scannable."
+      "formats": {
+        "q": "Q. What barcode formats are supported?",
+        "a": "Over 40 formats including 1D (CODE128, EAN-13, UPC), 2D (QR Code, Data Matrix, PDF417, Aztec), GS1 DataBar, and postal barcodes."
       },
-      "korean": {
-        "q": "Q. Can I make barcodes with Korean text?",
-        "a": "QR codes fully support Korean text. However, 1D barcodes like CODE128 or EAN-13 typically support only English and numbers."
+      "customize": {
+        "q": "Q. Can I customize barcode colors and design?",
+        "a": "Yes, you can change bar color, background, and text color. Rotation (0°/90°/180°/270°), DPI (72-600), font, and margin are also adjustable."
       },
       "batch": {
         "q": "Q. How do I convert Excel data at once?",
-        "a": "Drag and copy (Ctrl+C) the cells you want to convert in Excel, then paste (Ctrl+V) them into the input box on this site. It automatically recognizes line-separated data and generates multiple barcodes at once."
+        "a": "Copy from Excel (Ctrl+C) and paste (Ctrl+V), or import a CSV file. The sequence generator also supports creating sequential barcodes."
+      },
+      "download": {
+        "q": "Q. What download formats are available?",
+        "a": "Individual barcodes as PNG/SVG, batch download as ZIP, or export as PDF. Print layouts (1×1, 2×5, 3×10) are also supported."
       }
     },
     "seo": {
@@ -145,8 +149,8 @@
         "title": "Key Features",
         "list": {
           "formats": {
-            "title": "16 Barcode Formats",
-            "desc": "Supports 16 standard barcode formats including CODE128, EAN-13, ITF, UPC, Codabar, and Pharmacode."
+            "title": "40+ Barcode Formats",
+            "desc": "Supports 40+ standard barcode formats including 1D (CODE128, EAN-13), 2D (QR Code, Data Matrix, PDF417), GS1 DataBar, and postal barcodes."
           },
           "customize": {
             "title": "Size & Design Controls",
@@ -198,51 +202,85 @@
       }
     },
     "generator": {
+      "tabSimple": "Single",
+      "tabBulk": "Bulk",
+      "sampleLabel": "Preview sample",
+      "category_1d": "1D Barcode",
+      "category_2d": "2D Barcode",
+      "category_gs1": "GS1",
+      "category_postal": "Postal",
       "labelType": "Barcode Type:",
-      "labelValue": "Barcode Value:",
       "placeholderValue": "Enter barcode value",
       "btnAdd": "Add",
-      "labelExcel": "Excel Data (One value per line):",
+      "moreQR": "Go to QR page →",
+      "labelScale": "Scale",
+      "labelHeight": "Bar Height",
+      "labelShowText": "Show Text Below",
+      "labelEclevel": "Error Correction",
+      "labelBarColor": "Bar Color",
+      "labelBgColor": "Background",
+      "labelTextColor": "Text Color",
+      "labelRotation": "Rotation",
+      "labelAdvanced": "Advanced Options",
+      "labelMargin": "Margin",
+      "labelFont": "Font",
+      "labelFontSize": "Font Size",
+      "labelBold": "Bold",
+      "labelDPI": "DPI (Resolution)",
+      "labelPrintLayout": "Print Layout",
+      "printLayout_auto": "Auto",
+      "printLayout_1x1": "1×1",
+      "printLayout_2x5": "2×5",
+      "printLayout_3x10": "3×10",
+      "labelSequence": "Sequence Generator",
+      "seqPrefix": "Prefix",
+      "seqStart": "Start",
+      "seqEnd": "End",
+      "seqStep": "Step",
+      "seqPadding": "Padding",
+      "seqSuffix": "Suffix",
+      "seqPreview": "Preview",
+      "btnSequence": "Generate Sequence",
       "placeholderExcel": "Paste data copied from Excel here",
       "btnBulk": "Bulk Generate",
+      "btnCSV": "Import CSV File",
       "btnClear": "Clear All",
       "btnPrint": "Print Barcodes",
+      "downloadPDF": "Download PDF",
+      "downloadZip": "Download All (ZIP)",
+      "zipping": "Creating ZIP...",
+      "labelHistory": "Recent",
+      "csvSelectColumn": "Select column to import",
+      "csvRowCount": "{count} rows detected",
+      "btnImport": "Import",
+      "btnCancel": "Cancel",
+      "embedTitle": "Embed Code",
+      "btnCopy": "Copy",
+      "btnClose": "Close",
       "errorEmpty": "Please enter a barcode value",
       "errorMax": "Maximum barcode limit ({max}) reached",
-      "errorEanInvalid": "EAN barcode must be 12 or 13 digits",
-      "errorEan8Invalid": "EAN-8 barcode must be 7 or 8 digits",
-      "errorUpcInvalid": "UPC barcode must be 11 or 12 digits",
+      "errorNumeric": "Only numeric input is allowed",
+      "errorLength": "Invalid input length",
+      "errorEven": "Even-length numeric value required",
+      "errorRange": "Value is out of allowed range",
+      "errorInvalid": "Invalid barcode value",
       "errorExcelEmpty": "Please enter Excel data",
-      "errorBulkMax": "Exceeds maximum limit. Current: {current}, Adding: {added}, Max: {max}",
+      "errorCodabar": "Codabar must start/end with A-D and contain digits, -$:/.+",
       "resultBulk": "{count} barcodes generated",
       "resultBulkError": "{count} generated, {error} errors",
       "remove": "Remove Barcode",
-      "default": "Default",
-      "qr": "QR Code",
-      "barcodeLabel": "Barcode: {value}",
       "download": "Download",
       "downloadPNG": "PNG",
-      "downloadSVG": "SVG",
-      "downloadZip": "Download All (ZIP)",
-      "zipping": "Creating ZIP...",
-      "labelWidth": "Bar Width",
-      "labelHeight": "Bar Height",
-      "labelShowText": "Show Text Below",
-      "errorCode128C": "CODE128C requires even-length numeric values only",
-      "errorItf14": "ITF14 must be 13 or 14 digits",
-      "errorItf": "ITF requires even-length numeric values only",
-      "errorPharmaNum": "Pharmacode supports numbers only",
-      "errorPharmaRange": "Pharmacode value must be between 3 and 131070",
-      "errorCodabar": "Codabar must start/end with A-D and contain digits, -$:/.+"
+      "downloadSVG": "SVG"
     }
   },
   "QRGenerator": {
     "meta": {
       "title": "QR Code Generator - Free Online QR Code Maker (Custom Colors)",
-      "description": "Free online QR code generator. Convert URLs, text, and contact info to QR codes. Customize colors, download in high resolution, and bulk generate from Excel - all for free.",
+      "description": "Free online QR code generator. Convert URLs, text, and contact info to QR codes. Customize colors, insert logos, and download in high resolution - all for free.",
       "keywords": "QR code generator, QR code maker, free QR code, online QR code, QR code converter, QR code download, custom QR code, color QR code",
       "ogTitle": "QR Code Generator | Free Online QR Code Maker",
-      "ogDescription": "Convert URLs, text, and contacts to QR codes. Color customization, logo insertion, and bulk generation - all free!"
+      "ogDescription": "Convert URLs, text, and contacts to QR codes. Color customization, logo insertion, SVG/PNG download - all free!"
     },
     "title": "QR Code Generator - Free Online QR Code Maker",
     "mobileTitle": "QR Code Generator",
@@ -261,10 +299,6 @@
     "emptyState": "Enter content above to generate a QR code",
     "errorEmpty": "Please enter content to convert to QR code",
     "errorGenerate": "Error generating QR code",
-    "errorBulkEmpty": "Please enter Excel data",
-    "bulkTitle": "Bulk Generation (Paste Excel Data)",
-    "placeholderBulk": "Paste data copied from Excel (one per line)",
-    "btnBulkGenerate": "Bulk Generate",
     "tabs": {
       "textUrl": "Text/URL",
       "wifi": "Wi-Fi",
@@ -303,7 +337,7 @@
     },
     "whyUse": {
       "title": "Why use this QR code generator?",
-      "desc": "Generate <strong>QR codes for free</strong> directly in your web browser without installing any apps. Color customization, high-resolution download, and bulk generation - all features are free."
+      "desc": "Generate <strong>QR codes for free</strong> directly in your web browser without installing any apps. Color customization, logo insertion, and high-resolution download - all features are free."
     },
     "useCases": {
       "title": "QR Code Use Cases",
@@ -331,9 +365,9 @@
         "q": "Q. Can I change the QR code color?",
         "a": "Yes, you can freely change the foreground and background colors. Just maintain enough contrast."
       },
-      "bulk": {
-        "q": "Q. Can I create multiple QR codes at once?",
-        "a": "Yes, on PC you can paste Excel data to generate multiple QR codes at once."
+      "logo": {
+        "q": "Q. Can I insert a logo in the QR code?",
+        "a": "Yes, you can insert a brand logo or image in the center of the QR code. The error correction level is automatically set to H for stable scanning even with a logo."
       }
     },
     "seo": {
@@ -364,10 +398,6 @@
           "color": {
             "title": "Color Customization",
             "desc": "Freely change QR code and background colors to match your brand identity."
-          },
-          "bulk": {
-            "title": "Excel Bulk Generation",
-            "desc": "Paste Excel data to generate multiple QR codes at once and download them in bulk."
           }
         }
       },

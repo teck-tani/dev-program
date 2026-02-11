@@ -84,7 +84,7 @@
       },
       "format": {
         "title": "🎨 다양한 포맷 지원",
-        "desc": "가장 널리 쓰이는 CODE128부터 제품용 EAN-13, ITF 등 16종의 표준 형식을 완벽하게 지원합니다."
+        "desc": "CODE128, EAN-13 등 1D 바코드부터 QR Code, Data Matrix 등 2D 바코드까지 40종 이상의 표준 형식을 지원합니다."
       },
       "security": {
         "title": "🔒 안전한 보안",
@@ -127,17 +127,21 @@
         "q": "Q. 이 바코드 생성기는 사용 제한이 있나요?",
         "a": "상업적 용도를 포함해 누구나 자유롭게 사용하실 수 있습니다. 회원가입이나 결제 없이 모든 기능을 이용할 수 있습니다."
       },
-      "expiry": {
-        "q": "Q. 생성된 바코드에 유효기간이 있나요?",
-        "a": "아니요, 생성된 바코드는 이미지 파일이므로 영구적으로 사용할 수 있습니다. 스캔이 가능한 한 언제까지나 유효합니다."
+      "formats": {
+        "q": "Q. 어떤 바코드 형식을 지원하나요?",
+        "a": "CODE128, EAN-13, UPC 등 1D 바코드, QR Code, Data Matrix, PDF417, Aztec 등 2D 바코드, GS1 DataBar, 우편 바코드까지 총 40종 이상을 지원합니다."
       },
-      "korean": {
-        "q": "Q. 한글 데이터도 바코드로 만들 수 있나요?",
-        "a": "QR코드의 경우 한글 데이터를 완벽하게 지원합니다. 하지만 CODE128이나 EAN-13 같은 1차원 바코드는 구조상 영문과 숫자만 지원하는 경우가 많으니 참고해주세요."
+      "customize": {
+        "q": "Q. 바코드 색상이나 디자인을 변경할 수 있나요?",
+        "a": "네, 바 색상·배경색·텍스트 색상을 자유롭게 변경할 수 있으며, 회전(0°/90°/180°/270°), DPI(72~600), 글꼴, 여백 등도 조절할 수 있습니다."
       },
       "batch": {
         "q": "Q. 엑셀 데이터를 어떻게 한 번에 변환하나요?",
-        "a": "엑셀에서 바코드로 만들고 싶은 셀들을 드래그하여 복사(Ctrl+C)한 뒤, 이 사이트의 입력창에 붙여넣기(Ctrl+V) 하세요. 줄바꿈으로 구분된 데이터를 자동으로 인식하여 한 번에 여러 개의 바코드를 생성해줍니다."
+        "a": "엑셀에서 복사(Ctrl+C)하여 붙여넣기(Ctrl+V)하거나, CSV 파일을 가져올 수 있습니다. 시퀀스 생성기로 연번 바코드도 만들 수 있습니다."
+      },
+      "download": {
+        "q": "Q. 어떤 형식으로 다운로드할 수 있나요?",
+        "a": "개별 바코드는 PNG/SVG로, 여러 개를 ZIP으로 일괄 다운로드하거나 PDF로 출력할 수 있습니다. 인쇄 레이아웃도 지원합니다."
       }
     },
     "seo": {
@@ -145,8 +149,8 @@
         "title": "주요 기능",
         "list": {
           "formats": {
-            "title": "16종 바코드 포맷",
-            "desc": "CODE128, EAN-13, ITF, UPC, Codabar, Pharmacode 등 16가지 표준 바코드 형식을 지원합니다."
+            "title": "40종+ 바코드 포맷",
+            "desc": "CODE128, EAN-13 등 1D 바코드부터 QR Code, Data Matrix, PDF417 등 2D 바코드, GS1 DataBar, 우편 바코드까지 40종 이상을 지원합니다."
           },
           "customize": {
             "title": "크기 & 디자인 조절",
@@ -198,51 +202,85 @@
       }
     },
     "generator": {
+      "tabSimple": "기본 생성",
+      "tabBulk": "대량 생성",
+      "sampleLabel": "미리보기 샘플",
+      "category_1d": "1D 바코드",
+      "category_2d": "2D 바코드",
+      "category_gs1": "GS1",
+      "category_postal": "우편",
       "labelType": "바코드 종류:",
-      "labelValue": "바코드 값:",
       "placeholderValue": "바코드 값을 입력하세요",
       "btnAdd": "추가",
-      "labelExcel": "Excel 데이터 (한 줄에 하나의 값):",
+      "moreQR": "QR 전용 페이지 →",
+      "labelScale": "배율",
+      "labelHeight": "바 높이",
+      "labelShowText": "하단 텍스트 표시",
+      "labelEclevel": "오류 보정 레벨",
+      "labelBarColor": "바 색상",
+      "labelBgColor": "배경 색상",
+      "labelTextColor": "텍스트 색상",
+      "labelRotation": "회전",
+      "labelAdvanced": "고급 옵션",
+      "labelMargin": "여백",
+      "labelFont": "글꼴",
+      "labelFontSize": "글꼴 크기",
+      "labelBold": "굵게",
+      "labelDPI": "DPI (해상도)",
+      "labelPrintLayout": "인쇄 레이아웃",
+      "printLayout_auto": "자동",
+      "printLayout_1x1": "1×1",
+      "printLayout_2x5": "2×5",
+      "printLayout_3x10": "3×10",
+      "labelSequence": "시퀀스 생성",
+      "seqPrefix": "접두사",
+      "seqStart": "시작 번호",
+      "seqEnd": "끝 번호",
+      "seqStep": "간격",
+      "seqPadding": "자릿수",
+      "seqSuffix": "접미사",
+      "seqPreview": "미리보기",
+      "btnSequence": "시퀀스 생성",
       "placeholderExcel": "엑셀에서 복사한 데이터를 붙여넣으세요",
       "btnBulk": "일괄 생성",
+      "btnCSV": "CSV 파일 가져오기",
       "btnClear": "모두 지우기",
       "btnPrint": "바코드 인쇄",
+      "downloadPDF": "PDF 다운로드",
+      "downloadZip": "ZIP 일괄 다운로드",
+      "zipping": "ZIP 생성 중...",
+      "labelHistory": "최근 사용",
+      "csvSelectColumn": "가져올 열을 선택하세요",
+      "csvRowCount": "{count}행 감지됨",
+      "btnImport": "가져오기",
+      "btnCancel": "취소",
+      "embedTitle": "임베드 코드",
+      "btnCopy": "복사",
+      "btnClose": "닫기",
       "errorEmpty": "바코드 값을 입력해주세요",
       "errorMax": "최대 바코드 개수 ({max}개)에 도달했습니다",
-      "errorEanInvalid": "EAN 바코드는 12자리 또는 13자리 숫자여야 합니다",
-      "errorEan8Invalid": "EAN-8 바코드는 7자리 또는 8자리 숫자여야 합니다",
-      "errorUpcInvalid": "UPC 바코드는 11자리 또는 12자리 숫자여야 합니다",
+      "errorNumeric": "숫자만 입력 가능합니다",
+      "errorLength": "입력 길이가 올바르지 않습니다",
+      "errorEven": "짝수 자릿수의 숫자가 필요합니다",
+      "errorRange": "허용 범위를 벗어난 값입니다",
+      "errorInvalid": "유효하지 않은 바코드 값입니다",
       "errorExcelEmpty": "엑셀 데이터를 입력해주세요",
-      "errorBulkMax": "최대 바코드 개수를 초과합니다. 현재 {current}개, 추가 {added}개, 최대 {max}개",
+      "errorCodabar": "Codabar는 A-D로 시작/끝나며 숫자와 -$:/.+ 포함",
       "resultBulk": "{count}개 바코드 생성 완료",
       "resultBulkError": "{count}개 생성, {error}개 오류",
       "remove": "바코드 삭제",
-      "default": "기본값",
-      "qr": "QR코드",
-      "barcodeLabel": "바코드: {value}",
       "download": "다운로드",
       "downloadPNG": "PNG",
-      "downloadSVG": "SVG",
-      "downloadZip": "ZIP 일괄 다운로드",
-      "zipping": "ZIP 생성 중...",
-      "labelWidth": "바 너비",
-      "labelHeight": "바 높이",
-      "labelShowText": "하단 텍스트 표시",
-      "errorCode128C": "CODE128C는 짝수 자릿수의 숫자만 지원합니다",
-      "errorItf14": "ITF14는 13~14자리 숫자여야 합니다",
-      "errorItf": "ITF는 짝수 자릿수의 숫자만 지원합니다",
-      "errorPharmaNum": "Pharmacode는 숫자만 지원합니다",
-      "errorPharmaRange": "Pharmacode는 3~131070 범위의 숫자여야 합니다",
-      "errorCodabar": "Codabar는 A-D로 시작/끝나며 숫자와 -$:/.+ 포함"
+      "downloadSVG": "SVG"
     }
   },
   "QRGenerator": {
     "meta": {
       "title": "QR코드 생성기 - 무료 온라인 QR코드 만들기 (로고, 색상 지원)",
-      "description": "무료 온라인 QR코드 생성기입니다. URL, 텍스트, 연락처 정보를 QR코드로 변환하세요. 색상 커스터마이징, 고해상도 다운로드, 엑셀 대량 생성까지 모두 무료로 지원합니다.",
+      "description": "무료 온라인 QR코드 생성기입니다. URL, 텍스트, 연락처 정보를 QR코드로 변환하세요. 색상 커스터마이징, 로고 삽입, 고해상도 다운로드까지 모두 무료로 지원합니다.",
       "keywords": "QR코드 생성기, QR코드 만들기, 무료 QR코드, 온라인 QR코드, QR코드 변환, QR코드 다운로드, 커스텀 QR코드, 컬러 QR코드",
       "ogTitle": "QR코드 생성기 | 무료 온라인 QR코드 만들기",
-      "ogDescription": "URL, 텍스트, 연락처를 QR코드로 변환하세요. 색상 커스터마이징, 로고 삽입, 대량 생성까지 모두 무료!"
+      "ogDescription": "URL, 텍스트, 연락처를 QR코드로 변환하세요. 색상 커스터마이징, 로고 삽입, SVG/PNG 다운로드까지 모두 무료!"
     },
     "title": "QR코드 생성기 - 무료 온라인 QR코드 만들기",
     "mobileTitle": "QR코드 생성기",
@@ -261,10 +299,6 @@
     "emptyState": "위에 내용을 입력하면 QR코드가 생성됩니다",
     "errorEmpty": "QR코드로 변환할 내용을 입력해주세요",
     "errorGenerate": "QR코드 생성 중 오류가 발생했습니다",
-    "errorBulkEmpty": "엑셀 데이터를 입력해주세요",
-    "bulkTitle": "대량 생성 (엑셀 데이터 붙여넣기)",
-    "placeholderBulk": "엑셀에서 복사한 데이터를 붙여넣으세요 (한 줄에 하나씩)",
-    "btnBulkGenerate": "일괄 생성",
     "tabs": {
       "textUrl": "텍스트/URL",
       "wifi": "Wi-Fi",
@@ -303,7 +337,7 @@
     },
     "whyUse": {
       "title": "왜 이 QR코드 생성기를 사용해야 할까요?",
-      "desc": "복잡한 앱 설치 없이 웹 브라우저에서 바로 <strong>무료로 QR코드를 생성</strong>할 수 있습니다. 색상 변경, 고해상도 다운로드, 대량 생성까지 모든 기능이 무료입니다."
+      "desc": "복잡한 앱 설치 없이 웹 브라우저에서 바로 <strong>무료로 QR코드를 생성</strong>할 수 있습니다. 색상 변경, 로고 삽입, 고해상도 다운로드까지 모든 기능이 무료입니다."
     },
     "useCases": {
       "title": "QR코드 활용 예시",
@@ -331,9 +365,9 @@
         "q": "Q. QR코드 색상을 변경할 수 있나요?",
         "a": "네, 전경색(QR코드 색상)과 배경색을 자유롭게 변경할 수 있습니다. 단, 대비를 유지해주세요."
       },
-      "bulk": {
-        "q": "Q. 여러 개의 QR코드를 한 번에 만들 수 있나요?",
-        "a": "네, PC에서 엑셀 데이터를 붙여넣어 여러 개의 QR코드를 한 번에 생성할 수 있습니다."
+      "logo": {
+        "q": "Q. QR코드에 로고를 넣을 수 있나요?",
+        "a": "네, QR코드 중앙에 브랜드 로고나 이미지를 삽입할 수 있습니다. 에러 보정 레벨이 자동으로 H등급으로 조정되어 로고가 있어도 안정적으로 스캔됩니다."
       }
     },
     "seo": {
@@ -364,10 +398,6 @@
           "color": {
             "title": "색상 커스터마이징",
             "desc": "QR코드 색상과 배경색을 자유롭게 변경하여 브랜드 아이덴티티에 맞는 QR코드를 만드세요."
-          },
-          "bulk": {
-            "title": "엑셀 대량 생성",
-            "desc": "엑셀 데이터를 붙여넣어 여러 개의 QR코드를 한 번에 생성하고 일괄 다운로드할 수 있습니다."
           }
         }
       },
