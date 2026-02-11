@@ -421,35 +421,36 @@ export default function TimerView() {
                         ) : (
                             /* Pomodoro Settings */
                             <div style={{ marginBottom: '20px' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px', marginBottom: '20px' }}>
                                     {([
                                         { label: t('pomodoro.work'), value: pomoWork, setter: setPomoWork, color: '#ef4444', icon: '🔴' },
                                         { label: t('pomodoro.break'), value: pomoBreak, setter: setPomoBreak, color: '#22c55e', icon: '🟢' },
                                         { label: t('pomodoro.longBreak'), value: pomoLongBreak, setter: setPomoLongBreak, color: '#3b82f6', icon: '🔵' },
                                     ] as const).map(item => (
                                         <div key={item.label} style={{
-                                            background: isDark ? '#0f172a' : '#f8f9fa', borderRadius: '12px', padding: '16px',
+                                            background: isDark ? '#0f172a' : '#f8f9fa', borderRadius: '12px', padding: '12px 8px',
                                             border: `1.5px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                                            minWidth: 0, overflow: 'hidden',
                                         }}>
-                                            <div style={{ fontSize: '0.8rem', color: isDark ? '#94a3b8' : '#666', marginBottom: '8px' }}>
+                                            <div style={{ fontSize: '0.75rem', color: isDark ? '#94a3b8' : '#666', marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {item.icon} {item.label}
                                             </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                                                 <button onClick={() => item.setter(Math.max(1, item.value - 5))} style={{
-                                                    width: '28px', height: '28px', borderRadius: '50%', border: 'none',
+                                                    width: '26px', height: '26px', borderRadius: '50%', border: 'none', flexShrink: 0,
                                                     background: isDark ? '#334155' : '#e5e7eb', color: isDark ? '#e2e8f0' : '#333',
-                                                    cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                 }}>−</button>
-                                                <span style={{ fontSize: '1.4rem', fontWeight: 700, color: item.color, minWidth: '36px', textAlign: 'center' }}>
+                                                <span style={{ fontSize: '1.3rem', fontWeight: 700, color: item.color, minWidth: '28px', textAlign: 'center' }}>
                                                     {item.value}
                                                 </span>
                                                 <button onClick={() => item.setter(Math.min(90, item.value + 5))} style={{
-                                                    width: '28px', height: '28px', borderRadius: '50%', border: 'none',
+                                                    width: '26px', height: '26px', borderRadius: '50%', border: 'none', flexShrink: 0,
                                                     background: isDark ? '#334155' : '#e5e7eb', color: isDark ? '#e2e8f0' : '#333',
-                                                    cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                 }}>+</button>
                                             </div>
-                                            <div style={{ fontSize: '0.75rem', color: isDark ? '#64748b' : '#999', marginTop: '4px' }}>{t('labels.minute')}</div>
+                                            <div style={{ fontSize: '0.7rem', color: isDark ? '#64748b' : '#999', marginTop: '4px' }}>{t('labels.minute')}</div>
                                         </div>
                                     ))}
                                 </div>

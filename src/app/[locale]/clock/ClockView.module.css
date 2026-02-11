@@ -528,6 +528,32 @@
   background: rgba(8, 145, 178, 0.1);
 }
 
+/* Favorite Star Button */
+.favBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: transform 0.15s ease;
+}
+
+.favBtn:hover {
+  transform: scale(1.2);
+}
+
+.dark .favBtn {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.light .favBtn {
+  color: rgba(0, 0, 0, 0.25);
+}
+
 .cityFlag {
   font-size: 28px;
 }
@@ -707,52 +733,312 @@
   width: 100%;
 }
 
-/* SEO Content Section */
+/* ============================================
+   SEO Content Section
+   ============================================ */
 .seoSection {
   margin: 50px auto 0;
   padding: 0 20px 40px;
-  text-align: center;
   max-width: 800px;
   width: 100%;
   font-size: 0.9rem;
   line-height: 1.6;
-}
-
-.dark .seoSection {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.light .seoSection {
   color: rgba(0, 0, 0, 0.7);
 }
 
-.seoSection h1,
-.seoSection h2 {
-  margin: 20px 0 10px;
+.seoArticle {
+  line-height: 1.7;
+  text-align: left;
 }
 
-.dark .seoSection h1,
-.dark .seoSection h2 {
-  color: #00ff88;
+.seoBlock {
+  margin-bottom: 40px;
 }
 
-.light .seoSection h1,
-.light .seoSection h2 {
-  color: #0891b2;
+/* Headings */
+.seoHeading {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
 }
 
-.seoSection p {
-  margin: 15px 0;
+.seoHeadingCyan {
+  border-bottom: 2px solid #0891b2;
 }
 
-.seoSection ul {
-  list-style: none;
-  padding: 0;
-  margin: 15px 0;
+.seoHeadingGreen {
+  border-bottom: 2px solid #10b981;
 }
 
-.seoSection li {
-  margin: 8px 0;
+.seoHeadingIndigo {
+  border-bottom: 2px solid #6366f1;
+}
+
+/* Text */
+.seoText {
+  color: #555;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+/* Feature Box */
+.seoFeatureBox {
+  background: #f8fafc;
+  padding: 16px 20px;
+  border-radius: 10px;
+  border-left: 4px solid #0891b2;
+}
+
+.seoFeatureList {
+  margin: 0;
+  padding-left: 20px;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.seoFeatureList li {
+  margin-bottom: 6px;
+}
+
+/* HowTo Grid */
+.seoHowtoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.seoHowtoCard {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #d1fae5;
+}
+
+.seoHowtoHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.seoStepBadge {
+  background: #10b981;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.seoHowtoTitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #065f46;
+}
+
+.seoHowtoDesc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Use Case Grid */
+.seoUsecaseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.seoUsecaseCard {
+  background: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.seoUsecaseHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.seoUsecaseIcon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.seoUsecaseTitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.seoUsecaseDesc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* City Guide Grid */
+.seoCityGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.seoCityCard {
+  background: #f8fafc;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.seoCityRegion {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.seoCityList {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* FAQ Section */
+.seoFaqSection {
+  background: #fafafa;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 40px;
+}
+
+.seoFaqTitle {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.seoFaqItem {
+  margin-bottom: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.seoFaqQuestion {
+  cursor: pointer;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.seoFaqAnswer {
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* ============================================
+   SEO Dark Mode (CSS Module — :global 필수)
+   ============================================ */
+:global(body[data-theme="dark"]) .seoSection {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+:global(body[data-theme="dark"]) .seoHeading {
+  color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .seoText {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .seoFeatureBox {
+  background: #1e293b;
+  border-left-color: #0891b2;
+}
+
+:global(body[data-theme="dark"]) .seoFeatureList {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .seoHowtoCard {
+  background: linear-gradient(135deg, #132a1e 0%, #0f2318 100%);
+  border-color: #1a3a2a;
+}
+
+:global(body[data-theme="dark"]) .seoHowtoTitle {
+  color: #6ee7b7;
+}
+
+:global(body[data-theme="dark"]) .seoHowtoDesc {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .seoUsecaseCard {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+:global(body[data-theme="dark"]) .seoUsecaseTitle {
+  color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .seoUsecaseDesc {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .seoCityCard {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .seoCityRegion {
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .seoCityList {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .seoFaqSection {
+  background: #162032;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .seoFaqTitle {
+  color: #f1f5f9;
+}
+
+:global(body[data-theme="dark"]) .seoFaqItem {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .seoFaqQuestion {
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .seoFaqAnswer {
+  color: #94a3b8;
 }
 
 .addCityBtn {

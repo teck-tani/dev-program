@@ -583,6 +583,86 @@
           "responsive": "Responsive design",
           "fullscreen": "Fullscreen mode"
         },
+        "howto": {
+          "title": "How to Use",
+          "steps": {
+            "step1": {
+              "num": "1",
+              "title": "Check Current Time",
+              "desc": "Upon loading, the precise server-synced current time is displayed to the millisecond in a digital segment display."
+            },
+            "step2": {
+              "num": "2",
+              "title": "Add World Cities",
+              "desc": "Tap the '+' button to search and add cities. Over 70 major cities worldwide are supported."
+            },
+            "step3": {
+              "num": "3",
+              "title": "Reorder & Set Main",
+              "desc": "Drag and drop to reorder clocks, and tap the star icon to set any city as the main clock."
+            },
+            "step4": {
+              "num": "4",
+              "title": "Theme & Fullscreen",
+              "desc": "Switch between dark/light modes, and use the fullscreen button for an immersive experience."
+            }
+          }
+        },
+        "usecases": {
+          "title": "Use Cases",
+          "list": {
+            "ticketing": {
+              "icon": "🎫",
+              "title": "Concert & Event Ticketing",
+              "desc": "Start booking at the exact moment with millisecond-accurate server time. Essential for high-demand ticket sales!"
+            },
+            "exam": {
+              "icon": "📝",
+              "title": "Exams & Certifications",
+              "desc": "Manage time precisely to the second just like a real exam. Perfect for practice test simulations."
+            },
+            "trading": {
+              "icon": "💹",
+              "title": "International Stock & Crypto Trading",
+              "desc": "Check opening and closing times for NYSE, TSE, LSE, and other exchanges in real-time."
+            },
+            "meeting": {
+              "icon": "🌍",
+              "title": "International Video Conferences",
+              "desc": "Instantly see current time and time differences across cities when meeting with global teams."
+            },
+            "travel": {
+              "icon": "✈️",
+              "title": "Travel Time Zone Management",
+              "desc": "Check your destination's current time before traveling. Calculate flight boarding and hotel check-in times."
+            },
+            "deadline": {
+              "icon": "⏰",
+              "title": "Deadline Management",
+              "desc": "Precisely manage second-critical deadlines for project submissions, bids, and event entries."
+            }
+          }
+        },
+        "cities": {
+          "title": "Supported Cities Guide",
+          "desc": "Check the time in over 70 major cities worldwide. Tap the '+' button to search and add any city you need.",
+          "asia": {
+            "title": "🌏 Asia & Oceania",
+            "list": "Seoul, Tokyo, Beijing, Shanghai, Hong Kong, Singapore, Bangkok, Jakarta, Mumbai, Dubai, Sydney, Auckland, etc."
+          },
+          "europe": {
+            "title": "🌍 Europe",
+            "list": "London, Paris, Berlin, Amsterdam, Rome, Madrid, Moscow, Istanbul, Zurich, Stockholm, etc."
+          },
+          "americas": {
+            "title": "🌎 Americas",
+            "list": "New York, Los Angeles, Chicago, Toronto, Mexico City, São Paulo, Buenos Aires, Vancouver, etc."
+          },
+          "africa": {
+            "title": "🌍 Africa & Middle East",
+            "list": "Cairo, Johannesburg, Nairobi, Lagos, Casablanca, etc."
+          }
+        },
         "tips": {
           "title": "Usage Tips",
           "p1": "Use for precise timing during concert ticketing, or simulate exam conditions when preparing for tests. Also useful for checking stock exchange opening/closing times for international trading. Your settings are automatically saved in your browser, so you can continue with the same setup on your next visit."
@@ -605,6 +685,14 @@
             "mobile": {
               "q": "Can I use it on mobile?",
               "a": "Yes, with responsive design, it works optimally on all devices including PCs, tablets, and smartphones. Fullscreen mode is also supported."
+            },
+            "accuracy": {
+              "q": "Is the time accurate? Could it differ from my computer clock?",
+              "a": "Yes, this clock is based on NTP-synchronized server time. It uses the median of multiple measurements to minimize network latency, making it more accurate than your computer clock. It automatically re-syncs every 10 minutes."
+            },
+            "offline": {
+              "q": "Does the clock work without internet?",
+              "a": "After the initial load, time is calculated within your browser, so it works even during brief internet interruptions. However, extended offline use may cause slight drift, and it will automatically re-sync when connectivity is restored."
             }
           }
         },

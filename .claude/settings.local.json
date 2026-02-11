@@ -39,7 +39,9 @@
       "mcp__plugin_playwright_playwright__browser_click",
       "mcp__plugin_playwright_playwright__browser_type",
       "mcp__plugin_playwright_playwright__browser_press_key",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Edit",
+      "Write"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

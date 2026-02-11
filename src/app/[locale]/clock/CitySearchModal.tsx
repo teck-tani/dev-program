@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import styles from './ClockView.module.css';
 
 // ============================================
@@ -143,6 +143,21 @@ const CloseIcon = () => (
   </svg>
 );
 
+const StarOutlineIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+  </svg>
+);
+
+const StarFilledIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#eab308" strokeWidth="1.5">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+  </svg>
+);
+
+// localStorage key for favorite cities
+const FAVORITES_KEY = 'clockFavoriteCities';
+
 // Flag Image Component using Flagcdn
 interface FlagImageProps {
   countryCode: string;
@@ -182,16 +197,47 @@ export default function CitySearchModal({
   isOpen, onClose, onSelect, existingCities, theme, locale
 }: CitySearchModalProps) {
   const [search, setSearch] = useState('');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
   const t = i18n[locale];
 
-  const filteredCities = useMemo(() => CITY_DATABASE.filter(city =>
-    !existingCities.includes(city.id) &&
-    (city.name.toLowerCase().includes(search.toLowerCase()) ||
-      city.nameKo.includes(search) ||
-      city.country.toLowerCase().includes(search.toLowerCase()) ||
-      city.countryKo.includes(search))
-  ), [existingCities, search]);
+  // Load favorites from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(FAVORITES_KEY);
+      if (saved) setFavorites(new Set(JSON.parse(saved)));
+    } catch { /* ignore */ }
+  }, []);
+
+  const toggleFavorite = useCallback((cityId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (next.has(cityId)) {
+        next.delete(cityId);
+      } else {
+        next.add(cityId);
+      }
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+
+  const filteredCities = useMemo(() => {
+    const filtered = CITY_DATABASE.filter(city =>
+      !existingCities.includes(city.id) &&
+      (city.name.toLowerCase().includes(search.toLowerCase()) ||
+        city.nameKo.includes(search) ||
+        city.country.toLowerCase().includes(search.toLowerCase()) ||
+        city.countryKo.includes(search))
+    );
+    // Sort: favorites first
+    return filtered.sort((a, b) => {
+      const aFav = favorites.has(a.id) ? 0 : 1;
+      const bFav = favorites.has(b.id) ? 0 : 1;
+      return aFav - bFav;
+    });
+  }, [existingCities, search, favorites]);
 
   useEffect(() => {
     if (isOpen) {
@@ -248,6 +294,13 @@ export default function CitySearchModal({
                   onClose();
                 }}
               >
+                <button
+                  className={styles.favBtn}
+                  onClick={(e) => toggleFavorite(city.id, e)}
+                  aria-label={favorites.has(city.id) ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  {favorites.has(city.id) ? <StarFilledIcon /> : <StarOutlineIcon />}
+                </button>
                 <span className={styles.cityFlag}><FlagImage countryCode={city.countryCode} size={24} /></span>
                 <div className={styles.cityDetails}>
                   <div className={styles.cityName}>{getCityName(city, locale)}</div>

@@ -547,6 +547,7 @@ export default function ClockView() {
       mainClock: city,
       subClocks: [prev.mainClock, ...prev.subClocks.filter(c => c.id !== city.id)],
     }));
+    window.scrollTo({ top: 0 });
   }, []);
 
   const handleAddCity = useCallback((city: City) => {

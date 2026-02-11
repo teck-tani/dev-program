@@ -109,6 +109,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "모바일에서도 사용할 수 있나요?",
             answer: "네, 반응형 디자인으로 PC, 태블릿, 스마트폰 등 모든 기기에서 최적화된 화면으로 사용할 수 있습니다. 전체화면 모드도 지원합니다."
+        },
+        {
+            question: "시간이 정확한가요? 컴퓨터 시계와 다를 수 있나요?",
+            answer: "네, 이 시계는 서버의 NTP 동기화된 시간을 기준으로 표시합니다. 여러 번 측정한 중앙값을 사용하여 네트워크 지연을 최소화하며, 컴퓨터 시계보다 더 정확합니다. 10분마다 자동으로 재동기화됩니다."
+        },
+        {
+            question: "인터넷이 끊겨도 시계가 작동하나요?",
+            answer: "최초 로딩 후에는 브라우저 내에서 시간이 계산되므로 일시적인 인터넷 끊김에도 작동합니다. 다만 장시간 오프라인 시 약간의 오차가 발생할 수 있으며, 인터넷 복구 후 자동으로 재동기화됩니다."
         }
     ] : [
         {
@@ -126,6 +134,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "Can I use it on mobile?",
             answer: "Yes, with responsive design, it works optimally on all devices including PCs, tablets, and smartphones. Fullscreen mode is also supported."
+        },
+        {
+            question: "Is the time accurate? Could it differ from my computer clock?",
+            answer: "Yes, this clock is based on NTP-synchronized server time. It uses the median of multiple measurements to minimize network latency, making it more accurate than your computer clock. It automatically re-syncs every 10 minutes."
+        },
+        {
+            question: "Does the clock work without internet?",
+            answer: "After the initial load, time is calculated within your browser, so it works even during brief internet interruptions. However, extended offline use may cause slight drift, and it will automatically re-sync when connectivity is restored."
         }
     ];
 
@@ -228,7 +244,10 @@ function generateWebAppSchema(locale: string, t: Awaited<ReturnType<typeof getTr
 }
 
 const featureKeys = ['serverTime', 'exam', 'worldCities', 'timeDiff', 'theme', 'dragDrop', 'fontSize', 'fullscreen'] as const;
-const faqKeys = ['ticketing', 'cityCount', 'settings', 'mobile'] as const;
+const howToStepKeys = ['step1', 'step2', 'step3', 'step4'] as const;
+const useCaseKeys = ['ticketing', 'exam', 'trading', 'meeting', 'travel', 'deadline'] as const;
+const faqKeys = ['ticketing', 'cityCount', 'settings', 'mobile', 'accuracy', 'offline'] as const;
+const cityRegionKeys = ['asia', 'europe', 'americas', 'africa'] as const;
 
 export default async function ClockPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
@@ -241,9 +260,7 @@ export default async function ClockPage(props: { params: Promise<{ locale: strin
     const webAppSchema = generateWebAppSchema(locale, t);
 
     return (
-        <main style={{
-            width: '100%'
-        }}>
+        <main style={{ width: '100%' }}>
             {/* 구조화된 데이터 (JSON-LD) */}
             <script
                 type="application/ld+json"
@@ -266,36 +283,103 @@ export default async function ClockPage(props: { params: Promise<{ locale: strin
 
             {/* SEO Content Section (SSR) */}
             <section className={styles.seoSection} aria-label={t('seo.ariaLabel')}>
-                <h1>{t('meta.title')}</h1>
+                <article className={styles.seoArticle}>
+                    {/* 1. 정의 — 이 도구가 무엇인지 */}
+                    <section className={styles.seoBlock}>
+                        <h2 className={`${styles.seoHeading} ${styles.seoHeadingCyan}`}>
+                            {t('seo.description.title')}
+                        </h2>
+                        <p className={styles.seoText}>{t('seo.description.p1')}</p>
+                        <div className={styles.seoFeatureBox}>
+                            <ul className={styles.seoFeatureList}>
+                                {featureKeys.map((key) => (
+                                    <li key={key}>{t(`seo.features.list.${key}`)}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </section>
 
-                <h2>{t('seo.description.title')}</h2>
-                <p>{t('seo.description.p1')}</p>
+                    {/* 2. 세계 시간 설명 */}
+                    <section className={styles.seoBlock}>
+                        <h2 className={`${styles.seoHeading} ${styles.seoHeadingCyan}`}>
+                            {t('seo.worldTime.title')}
+                        </h2>
+                        <p className={styles.seoText}>{t('seo.worldTime.p1')}</p>
+                    </section>
 
-                <h2>{t('seo.worldTime.title')}</h2>
-                <p>{t('seo.worldTime.p1')}</p>
+                    {/* 3. 사용법 — 단계별 카드 */}
+                    <section className={styles.seoBlock}>
+                        <h2 className={`${styles.seoHeading} ${styles.seoHeadingGreen}`}>
+                            {t('seo.howto.title')}
+                        </h2>
+                        <div className={styles.seoHowtoGrid}>
+                            {howToStepKeys.map((key) => (
+                                <div key={key} className={styles.seoHowtoCard}>
+                                    <div className={styles.seoHowtoHeader}>
+                                        <span className={styles.seoStepBadge}>{t(`seo.howto.steps.${key}.num`)}</span>
+                                        <h3 className={styles.seoHowtoTitle}>{t(`seo.howto.steps.${key}.title`)}</h3>
+                                    </div>
+                                    <p className={styles.seoHowtoDesc}>{t(`seo.howto.steps.${key}.desc`)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                <h2>{t('seo.features.title')}</h2>
-                <ul>
-                    {featureKeys.map((key) => (
-                        <li key={key}>{t(`seo.features.list.${key}`)}</li>
-                    ))}
-                </ul>
+                    {/* 4. 활용 사례 — 아이콘 카드 */}
+                    <section className={styles.seoBlock}>
+                        <h2 className={`${styles.seoHeading} ${styles.seoHeadingIndigo}`}>
+                            {t('seo.usecases.title')}
+                        </h2>
+                        <div className={styles.seoUsecaseGrid}>
+                            {useCaseKeys.map((key) => (
+                                <div key={key} className={styles.seoUsecaseCard}>
+                                    <div className={styles.seoUsecaseHeader}>
+                                        <span className={styles.seoUsecaseIcon}>{t(`seo.usecases.list.${key}.icon`)}</span>
+                                        <h3 className={styles.seoUsecaseTitle}>{t(`seo.usecases.list.${key}.title`)}</h3>
+                                    </div>
+                                    <p className={styles.seoUsecaseDesc}>{t(`seo.usecases.list.${key}.desc`)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                <h2>{t('seo.tips.title')}</h2>
-                <p>{t('seo.tips.p1')}</p>
+                    {/* 5. 지원 도시 가이드 */}
+                    <section className={styles.seoBlock}>
+                        <h2 className={`${styles.seoHeading} ${styles.seoHeadingCyan}`}>
+                            {t('seo.cities.title')}
+                        </h2>
+                        <p className={styles.seoText}>{t('seo.cities.desc')}</p>
+                        <div className={styles.seoCityGrid}>
+                            {cityRegionKeys.map((key) => (
+                                <div key={key} className={styles.seoCityCard}>
+                                    <h4 className={styles.seoCityRegion}>{t(`seo.cities.${key}.title`)}</h4>
+                                    <p className={styles.seoCityList}>{t(`seo.cities.${key}.list`)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                {/* FAQ Section for SEO */}
-                <h2>{t('seo.faq.title')}</h2>
-                {faqKeys.map((key) => (
-                    <details key={key} style={{ marginBottom: '10px' }}>
-                        <summary style={{ fontWeight: 'bold', cursor: 'pointer' }}>{t(`seo.faq.list.${key}.q`)}</summary>
-                        <p style={{ marginTop: '8px', paddingLeft: '16px' }}>{t(`seo.faq.list.${key}.a`)}</p>
-                    </details>
-                ))}
+                    {/* 6. FAQ — 스타일 아코디언 */}
+                    <section className={styles.seoFaqSection}>
+                        <h2 className={styles.seoFaqTitle}>
+                            {t('seo.faq.title')}
+                        </h2>
+                        {faqKeys.map((key) => (
+                            <details key={key} className={styles.seoFaqItem}>
+                                <summary className={styles.seoFaqQuestion}>{t(`seo.faq.list.${key}.q`)}</summary>
+                                <p className={styles.seoFaqAnswer}>{t(`seo.faq.list.${key}.a`)}</p>
+                            </details>
+                        ))}
+                    </section>
 
-                {/* 개인정보 안내 */}
-                <h2>{t('seo.privacy.title')}</h2>
-                <p>{t('seo.privacy.text')}</p>
+                    {/* 7. 개인정보 안내 */}
+                    <section className={styles.seoBlock}>
+                        <h2 className={`${styles.seoHeading} ${styles.seoHeadingCyan}`}>
+                            {t('seo.privacy.title')}
+                        </h2>
+                        <p className={styles.seoText}>{t('seo.privacy.text')}</p>
+                    </section>
+                </article>
             </section>
         </main>
     );
