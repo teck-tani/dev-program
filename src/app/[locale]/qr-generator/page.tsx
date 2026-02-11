@@ -79,8 +79,8 @@ function generateFaqSchema(locale: string) {
             answer: "네, 전경색(QR코드 색상)과 배경색을 자유롭게 변경할 수 있습니다. 단, 너무 비슷한 색상을 사용하면 스캔이 어려울 수 있으니 대비를 유지해주세요."
         },
         {
-            question: "여러 개의 QR코드를 한 번에 만들 수 있나요?",
-            answer: "네, PC에서 엑셀 데이터를 붙여넣어 여러 개의 QR코드를 한 번에 생성할 수 있습니다."
+            question: "QR코드에 로고를 넣을 수 있나요?",
+            answer: "네, QR코드 중앙에 브랜드 로고나 이미지를 삽입할 수 있습니다. 에러 보정 레벨이 자동으로 H등급으로 조정되어 로고가 있어도 안정적으로 스캔됩니다."
         }
     ] : [
         {
@@ -100,8 +100,8 @@ function generateFaqSchema(locale: string) {
             answer: "Yes, you can freely change the foreground (QR code) and background colors. Just maintain enough contrast for scanning."
         },
         {
-            question: "Can I create multiple QR codes at once?",
-            answer: "Yes, on PC you can paste Excel data to generate multiple QR codes at once."
+            question: "Can I insert a logo in the QR code?",
+            answer: "Yes, you can insert a brand logo or image in the center of the QR code. The error correction level is automatically set to H for stable scanning even with a logo."
         }
     ];
 
@@ -197,8 +197,8 @@ function generateWebAppSchema(locale: string) {
             "priceCurrency": "KRW"
         },
         "featureList": isKo
-            ? ["무료 QR코드 생성", "색상 커스터마이징", "고해상도 다운로드", "대량 생성", "모바일 최적화"]
-            : ["Free QR code generation", "Color customization", "High-resolution download", "Bulk generation", "Mobile optimized"],
+            ? ["무료 QR코드 생성", "색상 커스터마이징", "로고 삽입", "고해상도 다운로드", "모바일 최적화"]
+            : ["Free QR code generation", "Color customization", "Logo insertion", "High-resolution download", "Mobile optimized"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"
     };
@@ -230,18 +230,6 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
             />
 
             <div className="container">
-                {/* 타이틀 섹션 */}
-                <div className={styles.headerSection}>
-                    <h1 className={styles.headerTitle}>
-                        <span className={styles.desktopOnly}>{t('title')}</span>
-                        <span className={styles.mobileOnly}>{t('mobileTitle')}</span>
-                    </h1>
-                    <p className={styles.headerSubtitle}>
-                        <span className={styles.desktopOnly}>{t('subtitle')}</span>
-                        <span className={styles.mobileOnly}>{t('mobileSubtitle')}</span>
-                    </p>
-                </div>
-
                 {/* 클라이언트 컴포넌트 호출 */}
                 <QRGeneratorClient />
 
@@ -258,7 +246,7 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
                     <section style={{ marginBottom: 40 }}>
                         <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.features.title')}</h2>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
-                            {['wifi', 'vcard', 'logo', 'svg', 'color', 'bulk'].map((key) => (
+                            {['wifi', 'vcard', 'logo', 'svg', 'color'].map((key) => (
                                 <div key={key} style={{ padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
                                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 8 }}>{t(`seo.features.list.${key}.title`)}</h3>
                                     <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>{t(`seo.features.list.${key}.desc`)}</p>
@@ -292,7 +280,7 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
                     {/* 5. FAQ */}
                     <section className={styles.faqSection} style={{ marginBottom: 40 }}>
                         <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16, textAlign: 'center' }}>{t('faq.title')}</h2>
-                        {['free', 'expiry', 'korean', 'color', 'bulk'].map((key) => (
+                        {['free', 'expiry', 'korean', 'color', 'logo'].map((key) => (
                             <details key={key}>
                                 <summary>{t(`faq.${key}.q`)}</summary>
                                 <p>{t(`faq.${key}.a`)}</p>

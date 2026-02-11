@@ -14,6 +14,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@types/jsbarcode": "^3.11.4",
     "@types/qrcode": "^1.5.6",
+    "bwip-js": "^4.8.0",
     "hanspell": "^0.9.7",
     "jsbarcode": "^3.12.1",
     "jszip": "^3.10.1",

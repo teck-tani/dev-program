@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 import BarcodeTool from "./BarcodeTool";
-import BarcodeHeader from "./BarcodeHeader";
 import styles from "./barcode.module.css";
 
 export function generateStaticParams() {
@@ -21,8 +20,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         : "Bulk Barcode Generator - Free Online Tool with Excel Support";
 
     const description = isKo
-        ? "엑셀 데이터를 복사해서 붙여넣기만 하면 수백 개의 바코드를 한 번에 생성합니다. CODE128, EAN-13, ITF 등 16종 포맷 지원. 무료, 설치 없이 웹에서 바로 사용하세요."
-        : "Generate hundreds of barcodes at once by pasting Excel data. Supports CODE128, EAN-13, ITF and 16 formats. Free, no installation required.";
+        ? "CODE128, EAN-13 등 1D부터 QR Code, Data Matrix 등 2D까지 40종+ 바코드를 생성합니다. 색상·회전·DPI 커스터마이징, PDF/SVG 출력, 엑셀 대량 생성까지. 무료, 설치 불필요."
+        : "Generate 40+ barcode types from 1D (CODE128, EAN-13) to 2D (QR Code, Data Matrix). Color, rotation, DPI customization, PDF/SVG export, Excel bulk generation. Free, no install.";
 
     const baseUrl = 'https://teck-tani.com';
     const url = `${baseUrl}/${locale}/barcode`;
@@ -31,8 +30,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         title,
         description,
         keywords: isKo
-            ? "바코드 생성기, 대량 바코드, 엑셀 바코드, CODE128, EAN-13, 무료 바코드, 온라인 바코드, ITF, UPC"
-            : "barcode generator, bulk barcode, excel barcode, CODE128, EAN-13, free barcode, online barcode, ITF, UPC",
+            ? "바코드 생성기, 대량 바코드, 엑셀 바코드, CODE128, EAN-13, QR코드, Data Matrix, PDF417, 무료 바코드, 온라인 바코드, 2D 바코드, ITF, UPC, GS1"
+            : "barcode generator, bulk barcode, excel barcode, CODE128, EAN-13, QR code, Data Matrix, PDF417, free barcode, online barcode, 2D barcode, ITF, UPC, GS1",
         alternates: { 
             canonical: url,
             languages: {
@@ -79,16 +78,20 @@ function generateFaqSchema(locale: string) {
             answer: "상업적 용도를 포함해 누구나 자유롭게 사용하실 수 있습니다. 회원가입이나 결제 없이 모든 기능을 이용할 수 있습니다."
         },
         {
-            question: "생성된 바코드에 유효기간이 있나요?",
-            answer: "아니요, 생성된 바코드는 이미지 파일이므로 영구적으로 사용할 수 있습니다. 스캔이 가능한 한 언제까지나 유효합니다."
+            question: "어떤 바코드 형식을 지원하나요?",
+            answer: "CODE128, EAN-13, UPC 등 1D 바코드, QR Code, Data Matrix, PDF417, Aztec 등 2D 바코드, GS1 DataBar, USPS, Royal Mail 등 우편 바코드까지 총 40종 이상을 지원합니다."
         },
         {
-            question: "한글 데이터도 바코드로 만들 수 있나요?",
-            answer: "QR코드의 경우 한글 데이터를 완벽하게 지원합니다. 하지만 CODE128이나 EAN-13 같은 1차원 바코드는 구조상 영문과 숫자만 지원하는 경우가 많으니 참고해주세요."
+            question: "바코드 색상이나 디자인을 변경할 수 있나요?",
+            answer: "네, 바 색상·배경색·텍스트 색상을 자유롭게 변경할 수 있으며, 회전(0°/90°/180°/270°), DPI(72~600), 글꼴, 여백 등도 조절할 수 있습니다."
         },
         {
             question: "엑셀 데이터를 어떻게 한 번에 변환하나요?",
-            answer: "엑셀에서 바코드로 만들고 싶은 셀들을 드래그하여 복사(Ctrl+C)한 뒤, 이 사이트의 입력창에 붙여넣기(Ctrl+V) 하세요. 줄바꿈으로 구분된 데이터를 자동으로 인식하여 한 번에 여러 개의 바코드를 생성해줍니다."
+            answer: "엑셀에서 바코드로 만들고 싶은 셀들을 드래그하여 복사(Ctrl+C)한 뒤, 입력창에 붙여넣기(Ctrl+V) 하세요. CSV 파일 가져오기도 지원하며, 시퀀스 생성기로 연번 바코드도 만들 수 있습니다."
+        },
+        {
+            question: "어떤 형식으로 다운로드할 수 있나요?",
+            answer: "개별 바코드는 PNG 또는 SVG로, 여러 개를 ZIP으로 일괄 다운로드하거나 PDF로 출력할 수 있습니다. 인쇄 레이아웃(1×1, 2×5, 3×10)도 지원합니다."
         }
     ] : [
         {
@@ -96,16 +99,20 @@ function generateFaqSchema(locale: string) {
             answer: "Anyone can use it freely, including for commercial purposes. All features are available without registration or payment."
         },
         {
-            question: "Do generated barcodes have an expiration date?",
-            answer: "No, generated barcodes are image files and can be used permanently. They remain valid as long as they can be scanned."
+            question: "What barcode formats are supported?",
+            answer: "Over 40 formats including 1D (CODE128, EAN-13, UPC), 2D (QR Code, Data Matrix, PDF417, Aztec), GS1 DataBar, and postal barcodes (USPS, Royal Mail)."
         },
         {
-            question: "Can I create barcodes with Korean characters?",
-            answer: "QR codes fully support Korean characters. However, 1D barcodes like CODE128 or EAN-13 typically only support alphanumeric characters."
+            question: "Can I customize barcode colors and design?",
+            answer: "Yes, you can change bar color, background, and text color freely. Rotation (0°/90°/180°/270°), DPI (72-600), font, and margin are also adjustable."
         },
         {
             question: "How do I convert Excel data at once?",
-            answer: "Select and copy (Ctrl+C) the cells you want to convert from Excel, then paste (Ctrl+V) into the input field. The tool automatically recognizes line-separated data and generates multiple barcodes at once."
+            answer: "Copy cells from Excel (Ctrl+C) and paste (Ctrl+V) into the input field. CSV file import and sequence generator for sequential barcodes are also supported."
+        },
+        {
+            question: "What download formats are available?",
+            answer: "Individual barcodes as PNG or SVG, batch download as ZIP, or export as PDF. Print layouts (1×1, 2×5, 3×10) are also supported."
         }
     ];
 
@@ -191,10 +198,10 @@ function generateWebAppSchema(locale: string) {
             "priceCurrency": "KRW"
         },
         "featureList": isKo
-            ? ["CODE128 바코드", "EAN-13 바코드", "ITF 바코드", "엑셀 대량 생성", "무료 사용"]
-            : ["CODE128 barcode", "EAN-13 barcode", "ITF barcode", "Excel bulk generation", "Free to use"],
+            ? ["40종+ 바코드 포맷", "1D/2D 바코드 (QR, Data Matrix, PDF417)", "색상/회전/DPI 커스터마이징", "PDF/SVG/PNG/ZIP 다운로드", "엑셀/CSV 대량 생성", "시퀀스 자동 생성", "인쇄 레이아웃"]
+            : ["40+ barcode formats", "1D/2D barcodes (QR, Data Matrix, PDF417)", "Color/rotation/DPI customization", "PDF/SVG/PNG/ZIP download", "Excel/CSV bulk generation", "Sequence auto-generation", "Print layouts"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "softwareVersion": "1.0"
+        "softwareVersion": "2.0"
     };
 }
 
@@ -224,13 +231,8 @@ export default async function BarcodePage({ params }: { params: Promise<{ locale
             />
 
             <div className="container">
-                {/* 타이틀 섹션 */}
-                <BarcodeHeader 
-                    title={t('title')} 
-                    mobileTitle={t('mobileTitle')}
-                    subtitle={t('subtitle')}
-                    mobileSubtitle={t('mobileSubtitle')}
-                />
+                {/* SEO용 h1 (화면에는 헤더가 제목 표시) */}
+                <h1 className="sr-only">{t('title')}</h1>
 
                 {/* 클라이언트 컴포넌트 호출 */}
                 <BarcodeTool />
@@ -284,7 +286,7 @@ export default async function BarcodePage({ params }: { params: Promise<{ locale
                     {/* 5. FAQ */}
                     <section style={{ marginBottom: 40 }}>
                         <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('faq.title')}</h2>
-                        {['limit', 'expiry', 'korean', 'batch'].map((key) => (
+                        {['limit', 'formats', 'customize', 'batch', 'download'].map((key) => (
                             <details key={key} style={{ marginBottom: 8, padding: '12px 16px', borderRadius: 10, border: '1px solid #e2e8f0' }}>
                                 <summary style={{ fontWeight: 600, cursor: 'pointer' }}>{t(`faq.${key}.q`)}</summary>
                                 <p style={{ marginTop: 8, lineHeight: 1.7 }}>{t(`faq.${key}.a`)}</p>

@@ -289,6 +289,11 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
 }
 
 .clearButton:hover {
@@ -408,112 +413,6 @@
     transform: translateY(-2px);
 }
 
-/* 대량 생성 섹션 (PC 전용) */
-.bulkSection {
-    margin-top: 16px;
-    padding-top: 24px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.bulkSection h3 {
-    font-size: 1.1rem;
-    color: #374151;
-    margin-bottom: 12px;
-    font-weight: 600;
-}
-
-.bulkGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
-    margin-top: 20px;
-}
-
-.bulkItem {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e5e7eb;
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-.bulkItem:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-}
-
-.bulkItem canvas {
-    max-width: 100%;
-    height: auto;
-}
-
-.bulkItemValue {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin-top: 8px;
-    word-break: break-all;
-    line-height: 1.4;
-}
-
-.bulkItemRemove {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #fee2e2;
-    color: #ef4444;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    opacity: 0;
-}
-
-.bulkItem:hover .bulkItemRemove {
-    opacity: 1;
-}
-
-.bulkItemRemove:hover {
-    background: #ef4444;
-    color: white;
-}
-
-.bulkItemDownload {
-    position: absolute;
-    bottom: 6px;
-    right: 6px;
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: #f0fdf4;
-    color: #10b981;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    opacity: 0;
-}
-
-.bulkItem:hover .bulkItemDownload {
-    opacity: 1;
-}
-
-.bulkItemDownload:hover {
-    background: #10b981;
-    color: white;
-}
-
 /* 빈 상태 */
 .emptyState {
     text-align: center;
@@ -610,10 +509,6 @@
 
     .qrCodeContainer {
         padding: 20px;
-    }
-
-    .bulkSection {
-        display: none;
     }
 
     .desktopOnly {
@@ -855,49 +750,6 @@
     border-color: #3b82f6;
     color: #3b82f6;
     background: #172554;
-}
-
-:global(body[data-theme="dark"]) .bulkSection {
-    border-top-color: #334155;
-}
-
-:global(body[data-theme="dark"]) .bulkSection h3 {
-    color: #f1f5f9;
-}
-
-:global(body[data-theme="dark"]) .bulkItem {
-    background: #1e293b;
-    border-color: #334155;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-:global(body[data-theme="dark"]) .bulkItem:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-}
-
-:global(body[data-theme="dark"]) .bulkItemValue {
-    color: #94a3b8;
-}
-
-:global(body[data-theme="dark"]) .bulkItemRemove {
-    background: #450a0a;
-    color: #fca5a5;
-}
-
-:global(body[data-theme="dark"]) .bulkItemRemove:hover {
-    background: #ef4444;
-    color: white;
-}
-
-:global(body[data-theme="dark"]) .bulkItemDownload {
-    background: #052e16;
-    color: #34d399;
-}
-
-:global(body[data-theme="dark"]) .bulkItemDownload:hover {
-    background: #10b981;
-    color: white;
 }
 
 :global(body[data-theme="dark"]) .typeTabs {

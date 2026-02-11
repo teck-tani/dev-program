@@ -1,333 +1,658 @@
+/* ═══════════════════════════════════════════════════════════ */
+/* Barcode Generator — Complete Styling (Tier 1-5)            */
+/* ═══════════════════════════════════════════════════════════ */
+
 .barcodeWrapper {
     background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     display: flex;
-    gap: 20px;
+    gap: 8px;
     margin: 0;
     width: 100%;
     box-sizing: border-box;
+    flex-direction: column;
 }
 
+/* ── Tab Bar ── */
+.tabBar {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 0;
+}
+.tabBtn {
+    flex: 1;
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+.tabBtn:hover { color: #334155; }
+.tabActive {
+    color: #1a7e32;
+    border-bottom-color: #1a7e32;
+}
+
+/* ── Simple Mode (narrower width) ── */
+.simpleMode {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+/* ── Simple Preview ── */
+.simplePreview {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.simplePreview canvas {
+    max-width: 100%;
+    height: auto;
+}
+.simpleDownloadRow {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+    justify-content: center;
+}
+.simpleDownloadBtn {
+    padding: 3px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    background: white;
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.simpleDownloadBtn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+.simpleDownloadBtn:active {
+    transform: scale(0.98);
+}
+.simplePlaceholder {
+    color: #94a3b8;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+}
+.sampleLabel {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+/* ── Main Layout ── */
 .barcodeContainer {
     flex: 2;
     padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #fafafa;
     position: relative;
 }
-
 .controlsContainer {
-    flex: 1;
-    padding: 20px;
-    border-right: 1px solid #ddd;
+    padding: 0;
 }
 
+/* ── Category Bar ── */
+.categoryBar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+.categoryBtn {
+    padding: 6px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background: #f8fafc;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.categoryBtn:hover { border-color: #94a3b8; color: #334155; }
+.categoryActive {
+    background: #1a7e32;
+    color: white;
+    border-color: #1a7e32;
+}
+
+/* ── Input Groups ── */
 .inputGroup {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
-
 .inputGroup label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #475569;
 }
-
 .inputGroup select,
-.inputGroup input,
+.inputGroup input[type="text"],
+.inputGroup input[type="number"],
+.inputGroup input:not([type]),
 .inputGroup textarea {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 7px 10px;
+    margin-bottom: 4px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
     box-sizing: border-box;
+    font-size: 14px;
+    transition: border-color 0.2s;
 }
-
+.inputGroup select:focus,
+.inputGroup input:focus,
+.inputGroup textarea:focus {
+    outline: none;
+    border-color: #1a7e32;
+    box-shadow: 0 0 0 2px rgba(26, 126, 50, 0.1);
+}
 .inputGroup textarea {
-    height: 100px;
+    height: 90px;
     resize: vertical;
 }
 
-/* 입력 필드와 다운로드 버튼 나란히 배치 */
-.inputWithButton {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+/* ── Range & Checkbox ── */
+.rangeInput {
+    width: 100% !important;
+    accent-color: #1a7e32;
+}
+.checkboxInput {
+    width: 18px !important;
+    height: 18px;
+    accent-color: #1a7e32;
+    cursor: pointer;
 }
 
-.inputWithButton input {
+/* ── Color Pickers ── */
+.colorRow {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.colorPicker {
     flex: 1;
-    margin-bottom: 0;
+    min-width: 90px;
 }
-
-.downloadButtonInline {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    background: #f1f5f9;
-    color: #0ea5e9;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    cursor: pointer;
+.colorPicker label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+.colorInputWrap {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    transition: all 0.2s ease;
+    gap: 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 4px 8px;
+    background: white;
 }
-
-.downloadButtonInline:active {
-    background: #e0f2fe;
-    border-color: #bae6fd;
-    transform: scale(0.95);
-}
-
-.actionButton {
-    padding: 10px 20px;
+.colorInputWrap input[type="color"] {
+    width: 28px !important;
+    height: 28px;
     border: none;
-    border-radius: 4px;
+    padding: 0;
+    margin: 0;
     cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 10px;
+    border-radius: 4px;
+}
+.colorInputWrap span {
+    font-size: 12px;
+    color: #64748b;
+    font-family: monospace;
+}
+
+/* ── Segmented Controls ── */
+.segmentedControl {
+    display: flex;
+    gap: 0;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.segBtn {
+    flex: 1;
+    padding: 6px 10px;
+    border: none;
+    border-right: 1px solid #d1d5db;
+    background: #f8fafc;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.segBtn:last-child { border-right: none; }
+.segBtn:hover { background: #f1f5f9; }
+.segActive {
+    background: #1a7e32;
     color: white;
-    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* ── QR Link ── */
+.qrLink {
+    display: inline-block;
+    font-size: 12px;
+    color: #0ea5e9;
+    text-decoration: none;
+    margin-top: 4px;
+}
+.qrLink:hover { text-decoration: underline; }
+
+/* ── Action Buttons ── */
+.actionButton {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: white;
+    transition: all 0.2s;
     width: 100%;
 }
+.actionButton:active { transform: scale(0.98); }
+.actionButton:disabled { opacity: 0.6; cursor: not-allowed; }
+.addButton { background-color: #1a7e32; }
+.addButton:hover { background-color: #15803d; }
+.generateButton { background-color: #0056b3; }
+.generateButton:hover { background-color: #0b7dda; }
+.clearButton { background-color: #dc2626; }
+.clearButton:hover { background-color: #ef4444; }
 
-.actionButton:active {
-    transform: scale(0.98);
+.actionRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
 }
 
-.addButton {
-    background-color: #1a7e32;
-    color: white;
+/* ── Advanced & Sequence Toggles ── */
+.advancedToggle,
+.modeToggle {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #f8fafc;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+}
+.advancedToggle:hover, .modeToggle:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+.advancedPanel {
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #f8fafc;
+    margin-bottom: 12px;
 }
 
-.addButton:hover {
-    background-color: #45a049;
+/* ── Sequence Panel ── */
+.sequencePanel {
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #f8fafc;
+    margin-top: 8px;
+}
+.seqRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.seqRow input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 13px;
+}
+.seqPreview {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    font-family: monospace;
+    word-break: break-all;
 }
 
-.generateButton {
-    background-color: #0056b3;
-    color: white;
-}
-
-.generateButton:hover {
-    background-color: #0b7dda;
-}
-
-.clearButton {
-    background-color: #bd2130;
-    color: white;
-}
-
-.clearButton:hover {
-    background-color: #d32f2f;
-}
-
-.error {
-    color: red;
-    margin-top: 10px;
-}
-
+/* ── Barcode Grid ── */
 .barcodeGrid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    margin-top: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
     padding: 10px;
     width: 100%;
-    min-height: 300px;
+    min-height: 200px;
 }
 
+/* ── Barcode Item ── */
 .barcodeItem {
-    border: 1px solid #ddd;
-    padding: 15px 10px;
+    border: 1px solid #e2e8f0;
+    padding: 12px 8px 8px;
     text-align: center;
     position: relative;
     background-color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
     cursor: move;
     user-select: none;
     transition: all 0.2s ease;
-    min-height: 150px;
-    height: auto;
+    min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    gap: 10px;
+    gap: 6px;
 }
-
+.barcodeItem canvas {
+    max-width: 100%;
+    height: auto;
+}
 .barcodeItem.dragging {
     opacity: 0.7;
     background-color: #e3f2fd;
     border: 2px solid #2196F3;
-    transform: scale(1.02);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
 .barcodeItem.dragOver {
     background-color: #bbdefb;
     border: 2px dashed #1976D2;
-    transform: translateY(2px);
-    box-shadow: 0 0 10px rgba(33, 150, 243, 0.6);
-    transition: all 0.3s ease;
 }
 
-.barcodeItem svg,
-.barcodeItem canvas {
-    max-width: 100%;
-    height: auto;
-    width: 100% !important;
-    height: 80px !important;
-    display: block;
-    margin: 0 auto;
+/* ── Item Actions ── */
+.itemActions {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+}
+.itemBtn {
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    cursor: pointer;
+    color: #475569;
+    font-weight: 600;
+    transition: all 0.15s;
+}
+.itemBtn:hover {
+    background: #e2e8f0;
 }
 
+/* ── Barcode Number & Remove ── */
 .barcodeNumber {
     position: absolute;
-    top: 5px;
-    left: 5px;
-    font-size: 12px;
-    color: #666;
-    background-color: rgba(255, 255, 255, 0.7);
-    padding: 2px 5px;
-    border-radius: 3px;
+    top: 4px;
+    left: 6px;
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
     z-index: 5;
 }
-
-.barcodeValue {
-    margin-top: 5px;
-    font-size: 12px;
-    word-break: break-all;
-    height: auto;
-    overflow: visible;
-    white-space: normal;
-    width: 100%;
-    position: relative;
-    bottom: 0;
-}
-
 .removeBarcode {
     position: absolute !important;
-    top: 5px !important;
-    right: 5px !important;
-    background: #ff3333 !important;
+    top: 4px !important;
+    right: 4px !important;
+    background: #ef4444 !important;
     color: white !important;
     border: none !important;
     cursor: pointer !important;
     font-size: 0 !important;
     padding: 0 !important;
-    line-height: 1 !important;
-    width: 20px !important;
-    height: 20px !important;
+    width: 18px !important;
+    height: 18px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    margin: 0 !important;
     z-index: 10 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+    opacity: 0;
+    transition: opacity 0.15s !important;
 }
-
+.barcodeItem:hover .removeBarcode { opacity: 1; }
 .removeBarcode::before {
-    content: '×';
-    font-size: 16px;
+    content: '\00d7';
+    font-size: 14px;
     line-height: 1;
 }
+.removeBarcode:hover { background: #dc2626 !important; }
 
-.removeBarcode:hover {
-    background: #cc0000 !important;
-    transform: scale(1.1) !important;
+/* ── Render Error ── */
+.renderError {
+    color: #dc2626;
+    font-size: 12px;
+    padding: 8px;
+    text-align: center;
+    word-break: break-all;
 }
 
-.barcodeControls {
-    position: absolute;
-    top: 10px;
-    left: 10px;
+/* ── Barcode Count ── */
+.barcodeCount {
+    font-size: 12px;
+    color: #94a3b8;
+    text-align: right;
+    margin-top: 4px;
+}
+
+/* ── Error ── */
+.error {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 4px;
+    min-height: 18px;
+}
+
+/* ── History ── */
+.historyList {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    margin-top: 4px;
+}
+.historyItem {
     display: flex;
-    gap: 10px;
-    z-index: 10;
+    gap: 8px;
+    padding: 6px 10px;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    background: white;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+}
+.historyItem:hover { background: #f8fafc; }
+.historyItem:last-child { border-bottom: none; }
+.historyType {
+    font-size: 11px;
+    color: #94a3b8;
+    font-family: monospace;
+    min-width: 70px;
+}
+.historyValue {
+    font-size: 13px;
+    color: #334155;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.printButton {
-    background-color: #00A9FF !important;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 50%;
-    transition: all 0.2s ease;
+/* ── Modal ── */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    font-size: 18px;
-    box-shadow: none;
+    z-index: 1000;
+}
+.modalContent {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.modalContent h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
 }
 
-.printButton:hover {
-    background-color: #0095E5 !important;
-    transform: scale(1.05);
+/* ── CSV Preview ── */
+.csvPreview {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+.csvColBtn {
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #f8fafc;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+}
+.csvColBtn:hover { border-color: #1a7e32; }
+.csvColActive {
+    background: #1a7e32;
+    color: white;
+    border-color: #1a7e32;
 }
 
+/* ── Embed ── */
+.embedTextarea {
+    width: 100%;
+    height: 120px;
+    font-family: monospace;
+    font-size: 11px;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    resize: vertical;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* Print Styles                                               */
+/* ═══════════════════════════════════════════════════════════ */
 @media print {
+    .controlsContainer,
+    .tabBar,
+    .copyButtonRow,
+    .downloadButtonLarge,
+    .simpleDownloadRow,
+    .actionRow { display: none !important; }
 
-    .barcodeControls,
-    .controlsContainer {
-        display: none;
+    .barcodeWrapper {
+        box-shadow: none;
+        padding: 0;
     }
-
     .barcodeContainer {
         border: none;
         padding: 0;
     }
-
     .barcodeItem {
         break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
     }
+    .removeBarcode, .barcodeNumber, .itemActions {
+        display: none !important;
+    }
+    /* Print layouts */
+    .print_auto .barcodeGrid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    .print_1x1 .barcodeGrid { grid-template-columns: 1fr; }
+    .print_2x5 .barcodeGrid { grid-template-columns: repeat(2, 1fr); }
+    .print_3x10 .barcodeGrid { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* ═══════════════════════════════════════════════════════════ */
+/* Mobile Responsive                                          */
+/* ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
     .barcodeWrapper {
-        flex-direction: column;
-        padding: 10px;
-        gap: 6px;
+        padding: 8px 10px;
+        gap: 4px;
     }
-
     .controlsContainer {
-        border-right: none;
-        border-bottom: 1px solid #ddd;
-        padding: 10px;
-        padding-bottom: 15px;
+        padding: 0;
+        padding-bottom: 10px;
         width: 100%;
     }
-
-    .inputGroup {
-        margin-bottom: 8px;
+    .categoryBar {
+        gap: 4px;
+        margin-bottom: 10px;
     }
+    .categoryBtn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    .inputGroup { margin-bottom: 6px; }
+    .colorRow { gap: 8px; }
+    .colorPicker { min-width: 80px; }
 
     .barcodeContainer {
         width: 100%;
-        padding: 16px 12px;
-        margin-top: 0;
+        padding: 12px;
         min-height: 140px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        position: relative;
         background: #f1f5f9;
         border-radius: 12px;
     }
 
-    /* 클립보드 복사 버튼 - 박스와 바짝 붙이기 */
     .copyButtonRow {
         width: 100%;
         display: flex;
@@ -335,7 +660,6 @@
         margin-bottom: 0;
         margin-top: -4px;
     }
-
     .copyButtonOutside {
         width: 36px;
         height: 36px;
@@ -347,16 +671,13 @@
         align-items: center;
         justify-content: center;
         font-size: 22px;
-        transition: all 0.2s ease;
         padding: 0;
     }
-
     .copyButtonOutside:active {
         color: #0ea5e9;
         transform: scale(0.95);
     }
 
-    /* 하단 다운로드 버튼 */
     .downloadButtonLarge {
         width: 100%;
         margin-top: 8px;
@@ -372,134 +693,68 @@
         gap: 8px;
         font-size: 16px;
         font-weight: 500;
-        transition: all 0.2s ease;
     }
-
-    .downloadButtonLarge svg {
-        font-size: 20px;
-        color: #0ea5e9;
-    }
-
+    .downloadButtonLarge svg { font-size: 20px; color: #0ea5e9; }
     .downloadButtonLarge:active {
         background: #f8fafc;
-        border-color: #cbd5e1;
         transform: scale(0.98);
     }
 
-    /* 바코드 그리드 - 위로 최대한 붙이기 */
     .barcodeGrid {
-        padding: 0;
         grid-template-columns: 1fr;
+        padding: 0;
         min-height: auto;
-        padding-top: 0;
-        margin-top: 0;
-        width: 100%;
         gap: 0;
     }
-
     .barcodeItem {
         width: 100%;
-        height: 120px;
+        height: auto;
+        min-height: 100px;
         padding: 8px;
-        overflow: hidden;
-        position: relative;
         border: none;
         box-shadow: none;
         background: white;
         border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-sizing: border-box;
     }
-
-    /* 바코드(SVG) - 모바일에서 가로 꽉 차게, 높이 고정 */
-    .barcodeItem svg {
-        width: 100% !important;
-        height: 100% !important;
-        display: block;
+    .barcodeItem canvas {
+        max-width: 100%;
+        height: auto;
     }
-
-    .barcodeValue {
-        font-size: 14px;
-        margin-top: 8px;
-        color: #475569;
-    }
-
-    .downloadButtonMobile {
-        position: absolute;
-        top: -36px;
-        right: 8px;
-        background: #f1f5f9;
-        color: #0ea5e9;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        padding: 0;
-        width: 32px;
-        height: 32px;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        z-index: 20;
-        transition: all 0.2s ease;
-    }
-
-    .downloadButtonMobile:active {
-        background: #e0f2fe;
-        border-color: #bae6fd;
-        transform: scale(0.95);
-    }
+    .segmentedControl { flex-wrap: wrap; }
+    .segBtn { font-size: 12px; padding: 5px 8px; }
+    .actionRow { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
-    .barcodeGrid {
-        grid-template-columns: 1fr;
-        padding: 0;
-        gap: 0;
-    }
-
-    .barcodeWrapper {
-        padding: 10px;
-    }
-
-    .barcodeItem {
-        height: 110px;
-        padding: 6px;
-    }
-
-    .barcodeItem svg {
-        width: 100% !important;
-        height: 100% !important;
-    }
+    .barcodeWrapper { padding: 8px; }
+    .barcodeItem { padding: 6px; }
+    .seqRow { grid-template-columns: 1fr; }
 }
 
-/* [수정] 태그 대신 클래스명(.articleSection) 사용 */
+/* ═══════════════════════════════════════════════════════════ */
+/* SEO Article Sections                                       */
+/* ═══════════════════════════════════════════════════════════ */
 .articleSection,
 .faqSection {
     content-visibility: auto;
     contain-intrinsic-size: 0 500px;
 }
 
-/* .barcodeItem { contain: content; } 제거됨 (오버플로우 문제 해결) */
-
-/* ========== Header Section (SSR 친화적 반응형) ========== */
+/* ═══════════════════════════════════════════════════════════ */
+/* Header Section                                             */
+/* ═══════════════════════════════════════════════════════════ */
 .headerSection {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     margin-top: 0;
     padding: 0;
 }
-
 .headerTitle {
     font-size: 2rem;
     word-break: keep-all;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     color: #1e293b;
 }
-
 .headerSubtitle {
     color: #64748b;
     white-space: pre-line;
@@ -507,15 +762,8 @@
     word-break: keep-all;
     line-height: 1.5;
 }
-
-/* 반응형 표시 (CSS로 처리 - SSR 친화적) */
-.desktopOnly {
-    display: inline;
-}
-
-.mobileOnly {
-    display: none;
-}
+.desktopOnly { display: inline; }
+.mobileOnly { display: none; }
 
 @media (max-width: 768px) {
     .headerSection {
@@ -523,23 +771,162 @@
         margin-top: -8px;
         padding: 0 8px;
     }
-
-    .headerTitle {
-        font-size: 1.2rem;
-        margin-bottom: 2px;
-    }
-
-    .headerSubtitle {
-        font-size: 0.8rem;
-        margin-top: 0;
-        line-height: 1.3;
-    }
-
-    .desktopOnly {
-        display: none;
-    }
-
-    .mobileOnly {
-        display: inline;
-    }
+    .headerTitle { font-size: 1.2rem; margin-bottom: 2px; }
+    .headerSubtitle { font-size: 0.8rem; margin-top: 0; line-height: 1.3; }
+    .desktopOnly { display: none; }
+    .mobileOnly { display: inline; }
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* Dark Mode                                                  */
+/* ═══════════════════════════════════════════════════════════ */
+:global(body[data-theme="dark"]) .barcodeWrapper {
+    background-color: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+:global(body[data-theme="dark"]) .tabBtn { color: #94a3b8; }
+:global(body[data-theme="dark"]) .tabBtn:hover { color: #e2e8f0; }
+:global(body[data-theme="dark"]) .tabActive { color: #4ade80; border-bottom-color: #4ade80; }
+:global(body[data-theme="dark"]) .tabBar { border-bottom-color: #334155; }
+:global(body[data-theme="dark"]) .simplePreview {
+    background: #0f172a;
+    border-color: #334155;
+}
+:global(body[data-theme="dark"]) .simpleDownloadBtn {
+    background: #334155;
+    border-color: #475569;
+    color: #e2e8f0;
+}
+:global(body[data-theme="dark"]) .simpleDownloadBtn:hover {
+    background: #3f4f63;
+}
+:global(body[data-theme="dark"]) .simplePlaceholder { color: #64748b; }
+:global(body[data-theme="dark"]) .categoryBtn {
+    background: #334155;
+    border-color: #475569;
+    color: #94a3b8;
+}
+:global(body[data-theme="dark"]) .categoryBtn:hover { color: #e2e8f0; }
+:global(body[data-theme="dark"]) .categoryActive {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: white;
+}
+
+:global(body[data-theme="dark"]) .inputGroup label { color: #94a3b8; }
+:global(body[data-theme="dark"]) .inputGroup select,
+:global(body[data-theme="dark"]) .inputGroup input[type="text"],
+:global(body[data-theme="dark"]) .inputGroup input[type="number"],
+:global(body[data-theme="dark"]) .inputGroup input:not([type]),
+:global(body[data-theme="dark"]) .inputGroup textarea {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+}
+:global(body[data-theme="dark"]) .inputGroup select:focus,
+:global(body[data-theme="dark"]) .inputGroup input:focus,
+:global(body[data-theme="dark"]) .inputGroup textarea:focus {
+    border-color: #4ade80;
+    box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.15);
+}
+
+:global(body[data-theme="dark"]) .colorInputWrap {
+    background: #0f172a;
+    border-color: #475569;
+}
+:global(body[data-theme="dark"]) .colorInputWrap span { color: #94a3b8; }
+:global(body[data-theme="dark"]) .colorPicker label { color: #94a3b8; }
+
+:global(body[data-theme="dark"]) .segBtn {
+    background: #334155;
+    border-color: #475569;
+    color: #94a3b8;
+}
+:global(body[data-theme="dark"]) .segBtn:hover { background: #3f4f63; }
+:global(body[data-theme="dark"]) .segActive {
+    background: #16a34a;
+    color: white;
+}
+:global(body[data-theme="dark"]) .segmentedControl { border-color: #475569; }
+
+:global(body[data-theme="dark"]) .advancedToggle,
+:global(body[data-theme="dark"]) .modeToggle {
+    background: #334155;
+    border-color: #475569;
+    color: #94a3b8;
+}
+:global(body[data-theme="dark"]) .advancedPanel,
+:global(body[data-theme="dark"]) .sequencePanel {
+    background: #0f172a;
+    border-color: #475569;
+}
+:global(body[data-theme="dark"]) .seqRow input {
+    background: #1e293b;
+    border-color: #475569;
+    color: #e2e8f0;
+}
+:global(body[data-theme="dark"]) .seqPreview {
+    background: #1e293b;
+    color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .barcodeContainer {
+    background-color: #0f172a;
+    border-color: #334155;
+}
+/* Barcode items stay white for scannability */
+:global(body[data-theme="dark"]) .barcodeItem {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+}
+:global(body[data-theme="dark"]) .barcodeNumber { color: #64748b; }
+
+:global(body[data-theme="dark"]) .itemBtn {
+    background: #f1f5f9;
+    border-color: #d1d5db;
+    color: #475569;
+}
+
+:global(body[data-theme="dark"]) .error { color: #f87171; }
+:global(body[data-theme="dark"]) .barcodeCount { color: #64748b; }
+
+:global(body[data-theme="dark"]) .historyList { border-color: #334155; }
+:global(body[data-theme="dark"]) .historyItem {
+    background: #1e293b;
+    border-color: #334155;
+}
+:global(body[data-theme="dark"]) .historyItem:hover { background: #334155; }
+:global(body[data-theme="dark"]) .historyType { color: #64748b; }
+:global(body[data-theme="dark"]) .historyValue { color: #e2e8f0; }
+
+:global(body[data-theme="dark"]) .modalContent {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+:global(body[data-theme="dark"]) .embedTextarea {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+}
+:global(body[data-theme="dark"]) .csvColBtn {
+    background: #334155;
+    border-color: #475569;
+    color: #94a3b8;
+}
+:global(body[data-theme="dark"]) .csvColActive {
+    background: #16a34a;
+    color: white;
+    border-color: #16a34a;
+}
+
+:global(body[data-theme="dark"]) .headerTitle { color: #f1f5f9; }
+:global(body[data-theme="dark"]) .headerSubtitle { color: #94a3b8; }
+
+:global(body[data-theme="dark"]) .renderError { color: #f87171; }
+
+:global(body[data-theme="dark"]) .downloadButtonLarge {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #475569;
+}
+:global(body[data-theme="dark"]) .copyButtonOutside { color: #94a3b8; }

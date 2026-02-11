@@ -85,6 +85,10 @@ t('keyName')           // Simple key
 t.raw('htmlContent')   // For HTML content (use with dangerouslySetInnerHTML)
 ```
 
+### UI Layout Rules
+- **제목은 헤더(Header)에만 표시** — 본문(page.tsx)에 별도의 제목(h1)/부제를 넣지 않는다. 헤더 컴포넌트가 이미 도구명을 보여주므로 중복 금지.
+- 모바일에서는 헤더가 도구명을 짧게 표시하고, 데스크톱에서는 전체 제목을 표시한다.
+
 ### SEO Requirements
 
 #### Meta & JSON-LD (in `page.tsx`)
