@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, memo, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, memo, useCallback, useMemo } from "react";
 import styles from "@/app/[locale]/barcode/barcode.module.css";
 import { useTranslations } from "next-intl";
 import { HiOutlineSave } from "react-icons/hi";
@@ -84,7 +84,59 @@ interface HistoryEntry {
 
 // ─── Constants ───────────────────────────────────────────
 const HISTORY_KEY = "barcode_history";
+const SETTINGS_KEY = "barcode_settings";
 const MAX_HISTORY = 20;
+
+interface BarcodeSettings {
+    barcodeCategory: string;
+    barcodeType: string;
+    scale: number;
+    barHeight: number;
+    displayValue: boolean;
+    barColor: string;
+    bgColor: string;
+    textColor: string;
+    rotation: string;
+    margin: number;
+    fontFamily: string;
+    fontSize: number;
+    fontBold: boolean;
+    eclevel: string;
+    dpi: number;
+}
+
+const DEFAULT_SETTINGS: BarcodeSettings = {
+    barcodeCategory: "1d",
+    barcodeType: "code128",
+    scale: 2,
+    barHeight: 15,
+    displayValue: true,
+    barColor: "#000000",
+    bgColor: "#ffffff",
+    textColor: "#000000",
+    rotation: "N",
+    margin: 2,
+    fontFamily: "monospace",
+    fontSize: 14,
+    fontBold: false,
+    eclevel: "M",
+    dpi: 150,
+};
+
+function loadSettings(): Partial<BarcodeSettings> {
+    try {
+        const data = localStorage.getItem(SETTINGS_KEY);
+        return data ? JSON.parse(data) : {};
+    } catch {
+        return {};
+    }
+}
+
+function saveSettings(settings: BarcodeSettings) {
+    try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch { /* ignore */ }
+}
 
 function loadHistory(): HistoryEntry[] {
     try {
@@ -111,8 +163,8 @@ export default function BarcodeGenerator() {
     // ── Core State ──
     const SAMPLE_BARCODE: BarcodeItem = { id: "sample", value: "SAMPLE-001", type: "code128" };
     const [barcodes, setBarcodes] = useState<BarcodeItem[]>([SAMPLE_BARCODE]);
-    const [barcodeCategory, setBarcodeCategory] = useState("1d");
-    const [barcodeType, setBarcodeType] = useState("code128");
+    const [barcodeCategory, setBarcodeCategory] = useState(DEFAULT_SETTINGS.barcodeCategory);
+    const [barcodeType, setBarcodeType] = useState(DEFAULT_SETTINGS.barcodeType);
     const [barcodeValue, setBarcodeValue] = useState("");
     const [excelData, setExcelData] = useState("");
     const [error, setError] = useState("");
@@ -121,19 +173,19 @@ export default function BarcodeGenerator() {
     const barcodeRef = useRef<HTMLDivElement>(null);
 
     // ── Visual Options ──
-    const [scale, setScale] = useState(2);
-    const [barHeight, setBarHeight] = useState(15); // mm
-    const [displayValue, setDisplayValue] = useState(true);
-    const [barColor, setBarColor] = useState("#000000");
-    const [bgColor, setBgColor] = useState("#ffffff");
-    const [textColor, setTextColor] = useState("#000000");
-    const [rotation, setRotation] = useState("N");
-    const [margin, setMargin] = useState(2);
-    const [fontFamily, setFontFamily] = useState("monospace");
-    const [fontSize, setFontSize] = useState(14);
-    const [fontBold, setFontBold] = useState(false);
-    const [eclevel, setEclevel] = useState("M");
-    const [dpi, setDpi] = useState(150);
+    const [scale, setScale] = useState(DEFAULT_SETTINGS.scale);
+    const [barHeight, setBarHeight] = useState(DEFAULT_SETTINGS.barHeight);
+    const [displayValue, setDisplayValue] = useState(DEFAULT_SETTINGS.displayValue);
+    const [barColor, setBarColor] = useState(DEFAULT_SETTINGS.barColor);
+    const [bgColor, setBgColor] = useState(DEFAULT_SETTINGS.bgColor);
+    const [textColor, setTextColor] = useState(DEFAULT_SETTINGS.textColor);
+    const [rotation, setRotation] = useState(DEFAULT_SETTINGS.rotation);
+    const [margin, setMargin] = useState(DEFAULT_SETTINGS.margin);
+    const [fontFamily, setFontFamily] = useState(DEFAULT_SETTINGS.fontFamily);
+    const [fontSize, setFontSize] = useState(DEFAULT_SETTINGS.fontSize);
+    const [fontBold, setFontBold] = useState(DEFAULT_SETTINGS.fontBold);
+    const [eclevel, setEclevel] = useState(DEFAULT_SETTINGS.eclevel);
+    const [dpi, setDpi] = useState(DEFAULT_SETTINGS.dpi);
 
     // ── Sequence Mode ──
     const [sequenceMode, setSequenceMode] = useState(false);
@@ -157,6 +209,84 @@ export default function BarcodeGenerator() {
     const [showHistory, setShowHistory] = useState(false);
     useEffect(() => { setHistory(loadHistory()); }, []);
 
+    // ── Load saved settings on mount ──
+    useEffect(() => {
+        const s = loadSettings();
+        if (Object.keys(s).length === 0) return;
+        if (s.barcodeCategory !== undefined) setBarcodeCategory(s.barcodeCategory);
+        if (s.barcodeType !== undefined) setBarcodeType(s.barcodeType);
+        if (s.scale !== undefined) setScale(s.scale);
+        if (s.barHeight !== undefined) setBarHeight(s.barHeight);
+        if (s.displayValue !== undefined) setDisplayValue(s.displayValue);
+        if (s.barColor !== undefined) setBarColor(s.barColor);
+        if (s.bgColor !== undefined) setBgColor(s.bgColor);
+        if (s.textColor !== undefined) setTextColor(s.textColor);
+        if (s.rotation !== undefined) setRotation(s.rotation);
+        if (s.margin !== undefined) setMargin(s.margin);
+        if (s.fontFamily !== undefined) setFontFamily(s.fontFamily);
+        if (s.fontSize !== undefined) setFontSize(s.fontSize);
+        if (s.fontBold !== undefined) setFontBold(s.fontBold);
+        if (s.eclevel !== undefined) setEclevel(s.eclevel);
+        if (s.dpi !== undefined) setDpi(s.dpi);
+    }, []);
+
+    // ── Auto-save settings on change ──
+    const settingsInitRef = useRef(false);
+    useEffect(() => {
+        if (!settingsInitRef.current) { settingsInitRef.current = true; return; }
+        saveSettings({
+            barcodeCategory, barcodeType, scale, barHeight, displayValue,
+            barColor, bgColor, textColor, rotation, margin,
+            fontFamily, fontSize, fontBold, eclevel, dpi,
+        });
+    }, [barcodeCategory, barcodeType, scale, barHeight, displayValue, barColor, bgColor, textColor, rotation, margin, fontFamily, fontSize, fontBold, eclevel, dpi]);
+
+    // ── Reset to defaults ──
+    const resetSettings = useCallback(() => {
+        setBarcodeCategory(DEFAULT_SETTINGS.barcodeCategory);
+        setBarcodeType(DEFAULT_SETTINGS.barcodeType);
+        setScale(DEFAULT_SETTINGS.scale);
+        setBarHeight(DEFAULT_SETTINGS.barHeight);
+        setDisplayValue(DEFAULT_SETTINGS.displayValue);
+        setBarColor(DEFAULT_SETTINGS.barColor);
+        setBgColor(DEFAULT_SETTINGS.bgColor);
+        setTextColor(DEFAULT_SETTINGS.textColor);
+        setRotation(DEFAULT_SETTINGS.rotation);
+        setMargin(DEFAULT_SETTINGS.margin);
+        setFontFamily(DEFAULT_SETTINGS.fontFamily);
+        setFontSize(DEFAULT_SETTINGS.fontSize);
+        setFontBold(DEFAULT_SETTINGS.fontBold);
+        setEclevel(DEFAULT_SETTINGS.eclevel);
+        setDpi(DEFAULT_SETTINGS.dpi);
+        localStorage.removeItem(SETTINGS_KEY);
+    }, []);
+
+    // ── Scroll-lock during slider drag ──
+    const controlsRef = useRef<HTMLDivElement>(null);
+    const sliderDragRef = useRef<{ active: boolean; topBefore: number }>({ active: false, topBefore: 0 });
+
+    // Keep controls at same viewport position when preview resizes during drag
+    useLayoutEffect(() => {
+        const drag = sliderDragRef.current;
+        if (drag.active && controlsRef.current) {
+            const topAfter = controlsRef.current.getBoundingClientRect().top;
+            const diff = topAfter - drag.topBefore;
+            if (Math.abs(diff) > 1) {
+                window.scrollBy(0, diff);
+                drag.topBefore = controlsRef.current.getBoundingClientRect().top;
+            }
+        }
+    }, [scale, barHeight, margin, fontSize]);
+
+    const handleSliderStart = useCallback(() => {
+        if (controlsRef.current) {
+            sliderDragRef.current = { active: true, topBefore: controlsRef.current.getBoundingClientRect().top };
+        }
+    }, []);
+    const handleSliderEnd = useCallback(() => {
+        sliderDragRef.current.active = false;
+    }, []);
+
     // ── CSV Import ──
     const csvInputRef = useRef<HTMLInputElement>(null);
     const [csvColumns, setCsvColumns] = useState<string[][]>([]);
@@ -176,6 +306,63 @@ export default function BarcodeGenerator() {
         const t = findType(barcodeType);
         return t?.hasEclevel === true;
     }, [barcodeType]);
+
+    // Derived: bulk textarea placeholder samples per type
+    const bulkPlaceholder = useMemo(() => {
+        const samples: Record<string, string[]> = {
+            code128: ["ABC-001", "ABC-002", "ABC-003"],
+            code93: ["CODE93-A", "CODE93-B", "CODE93-C"],
+            code39: ["CODE39-01", "CODE39-02", "CODE39-03"],
+            ean13: ["4901234567890", "4901234567906", "4901234567913"],
+            ean8: ["49012345", "49012352", "49012369"],
+            upca: ["012345678905", "012345678912", "012345678929"],
+            upce: ["0123456", "0123463", "0123470"],
+            interleaved2of5: ["1234567890", "1234567906", "1234567913"],
+            itf14: ["14901234567891", "14901234567907", "14901234567914"],
+            "gs1-128": ["(01)04901234567890", "(01)04901234567906", "(01)04901234567913"],
+            rationalizedCodabar: ["A12345B", "A67890C", "A11111D"],
+            msi: ["123456", "789012", "345678"],
+            pharmacode: ["12345", "67890", "131070"],
+            isbn: ["9781234567890", "9781234567906", "9781234567913"],
+            issn: ["12345679", "98765432", "11223344"],
+            ismn: ["9790000000001", "9790000000002", "9790000000003"],
+            qrcode: ["https://example.com/1", "https://example.com/2", "https://example.com/3"],
+            datamatrix: ["DM-DATA-001", "DM-DATA-002", "DM-DATA-003"],
+            pdf417: ["PDF417-DATA-001", "PDF417-DATA-002", "PDF417-DATA-003"],
+            azteccode: ["AZTEC-001", "AZTEC-002", "AZTEC-003"],
+            microqrcode: ["MQR-01", "MQR-02", "MQR-03"],
+            databaromni: ["0123456789012", "0123456789029", "0123456789036"],
+            databarlimited: ["0123456789012", "0123456789029", "0123456789036"],
+            databarexpanded: ["(01)04901234567890", "(01)04901234567906", "(01)04901234567913"],
+            databarstacked: ["0123456789012", "0123456789029", "0123456789036"],
+            postnet: ["12345", "12345-6789", "98765-4321"],
+            onecode: ["00040123456200800001987654321", "00040123456200800001987654322", "00040123456200800001987654323"],
+            royalmail: ["LE11AA1A", "LE11AA1B", "LE11AA1C"],
+            japanpost: ["1530041", "1530042", "1530043"],
+            auspost: ["12345678", "12345679", "12345680"],
+            kix: ["1234AA", "5678BB", "9012CC"],
+        };
+        return (samples[barcodeType] || ["SAMPLE-001", "SAMPLE-002", "SAMPLE-003"]).join("\n");
+    }, [barcodeType]);
+
+    // Derived: type rule hint text
+    const typeRuleHint = useMemo(() => {
+        const info = findType(barcodeType);
+        if (!info) return "";
+        const parts: string[] = [];
+        if (info.numericOnly) parts.push(t("ruleNumericOnly"));
+        if (info.fixedLength) parts.push(t("ruleFixedLength", { lengths: info.fixedLength.join("/") }));
+        if (info.evenLength) parts.push(t("ruleEvenLength"));
+        if (info.minVal !== undefined && info.maxVal !== undefined) parts.push(t("ruleRange", { min: info.minVal, max: info.maxVal }));
+        if (info.is2D) parts.push(t("rule2D"));
+        return parts.join(" · ");
+    }, [barcodeType, t]);
+
+    // Derived: live line count for bulk textarea
+    const bulkLineCount = useMemo(() => {
+        if (!excelData.trim()) return 0;
+        return excelData.split(/\r?\n/).filter(l => l.trim()).length;
+    }, [excelData]);
 
     // ── Build bwip-js options ──
     const barcodeOptions: BarcodeOptions = useMemo(() => ({
@@ -210,18 +397,27 @@ export default function BarcodeGenerator() {
     const handleCategoryChange = (cat: string) => {
         setBarcodeCategory(cat);
         const firstType = BARCODE_CATEGORIES.find(c => c.key === cat)?.types[0];
-        if (firstType) setBarcodeType(firstType.bcid);
+        if (firstType) {
+            setBarcodeType(firstType.bcid);
+            if (isSimple) {
+                setBarcodeValue("");
+                setBarcodes([{ id: "sample", value: "SAMPLE-001", type: firstType.bcid }]);
+            }
+        }
         setError("");
-        if (isSimple) { setBarcodes([]); setBarcodeValue(""); }
     };
 
     const handleTypeChange = (newType: string) => {
         setBarcodeType(newType);
         setError("");
-        if (isSimple && barcodeValue) {
-            const err = validateBarcodeValue(barcodeValue, newType);
-            if (!err) {
-                setBarcodes([{ id: crypto.randomUUID(), value: barcodeValue, type: newType }]);
+        if (isSimple) {
+            if (barcodeValue) {
+                const err = validateBarcodeValue(barcodeValue, newType);
+                if (!err) {
+                    setBarcodes([{ id: crypto.randomUUID(), value: barcodeValue, type: newType }]);
+                }
+            } else {
+                setBarcodes([{ id: "sample", value: "SAMPLE-001", type: newType }]);
             }
         }
     };
@@ -231,7 +427,7 @@ export default function BarcodeGenerator() {
         setBarcodeValue(val);
         setError("");
         if (isSimple) {
-            if (!val) { setBarcodes([SAMPLE_BARCODE]); }
+            if (!val) { setBarcodes([{ id: "sample", value: "SAMPLE-001", type: barcodeType }]); }
             else {
                 const err = validateBarcodeValue(val, barcodeType);
                 if (!err) {
@@ -248,7 +444,7 @@ export default function BarcodeGenerator() {
         }
         const err = validateBarcodeValue(barcodeValue, barcodeType);
         if (err) { setError(getValidationError(err)); return; }
-        setBarcodes(prev => [...prev, { id: crypto.randomUUID(), value: barcodeValue, type: barcodeType }]);
+        setBarcodes(prev => [{ id: crypto.randomUUID(), value: barcodeValue, type: barcodeType }, ...prev]);
         addToHistory(barcodeType, barcodeValue);
         setBarcodeValue("");
         setError("");
@@ -266,7 +462,7 @@ export default function BarcodeGenerator() {
             if (err) { errCount++; continue; }
             newBarcodes.push({ id: crypto.randomUUID(), value: val, type: barcodeType });
         }
-        setBarcodes(prev => [...prev, ...newBarcodes]);
+        setBarcodes(prev => [...newBarcodes, ...prev]);
         setExcelData("");
         setError(errCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errCount }) : "");
     }, [excelData, barcodeType, barcodes.length, t]);
@@ -282,7 +478,7 @@ export default function BarcodeGenerator() {
             if (err) { errCount++; continue; }
             newBarcodes.push({ id: crypto.randomUUID(), value: val, type: barcodeType });
         }
-        setBarcodes(prev => [...prev, ...newBarcodes]);
+        setBarcodes(prev => [...newBarcodes, ...prev]);
         setError(errCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errCount }) : t("resultBulk", { count: newBarcodes.length }));
     }, [seqPrefix, seqStart, seqEnd, seqStep, seqPadding, seqSuffix, barcodeType, barcodes.length, t]);
 
@@ -513,7 +709,7 @@ export default function BarcodeGenerator() {
             if (err) { errCount++; continue; }
             newBarcodes.push({ id: crypto.randomUUID(), value: val, type: barcodeType });
         }
-        setBarcodes(prev => [...prev, ...newBarcodes]);
+        setBarcodes(prev => [...newBarcodes, ...prev]);
         setShowCsvDialog(false);
         setCsvColumns([]);
         setError(errCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errCount }) : t("resultBulk", { count: newBarcodes.length }));
@@ -571,7 +767,7 @@ export default function BarcodeGenerator() {
                 <div className={styles.tabBar}>
                     <button
                         className={`${styles.tabBtn} ${activeTab === "simple" ? styles.tabActive : ""}`}
-                        onClick={() => { setActiveTab("simple"); setBarcodes([SAMPLE_BARCODE]); setBarcodeValue(""); setError(""); }}
+                        onClick={() => { setActiveTab("simple"); setBarcodes([{ id: "sample", value: "SAMPLE-001", type: barcodeType }]); setBarcodeValue(""); setError(""); }}
                     >
                         {t("tabSimple")}
                     </button>
@@ -611,7 +807,7 @@ export default function BarcodeGenerator() {
                 </div>
             )}
 
-            <div className={styles.controlsContainer}>
+            <div className={styles.controlsContainer} ref={controlsRef}>
                 {/* ── Category Selector (common) ── */}
                 <div className={styles.categoryBar}>
                     {BARCODE_CATEGORIES.map((cat) => (
@@ -668,6 +864,7 @@ export default function BarcodeGenerator() {
                     <label>{t("labelScale")}: {scale}</label>
                     <input type="range" min="1" max="5" step="0.5" value={scale}
                         onChange={(e) => setScale(parseFloat(e.target.value))}
+                        onPointerDown={handleSliderStart} onPointerUp={handleSliderEnd} onPointerCancel={handleSliderEnd}
                         className={styles.rangeInput} />
                 </div>
                 {!is2D && (
@@ -675,6 +872,7 @@ export default function BarcodeGenerator() {
                         <label>{t("labelHeight")}: {barHeight}mm</label>
                         <input type="range" min="5" max="40" step="1" value={barHeight}
                             onChange={(e) => setBarHeight(parseInt(e.target.value))}
+                            onPointerDown={handleSliderStart} onPointerUp={handleSliderEnd} onPointerCancel={handleSliderEnd}
                             className={styles.rangeInput} />
                     </div>
                 )}
@@ -722,6 +920,11 @@ export default function BarcodeGenerator() {
                     </div>
                 </div>
 
+                {/* ── Reset Button ── */}
+                <button className={styles.resetButton} onClick={resetSettings}>
+                    {t("btnResetSettings")}
+                </button>
+
                 {/* ══════ BULK-ONLY CONTROLS ══════ */}
                 {!isSimple && (
                     <>
@@ -736,6 +939,7 @@ export default function BarcodeGenerator() {
                                     <label>{t("labelMargin")}: {margin}mm</label>
                                     <input type="range" min="0" max="20" step="1" value={margin}
                                         onChange={(e) => setMargin(parseInt(e.target.value))}
+                                        onPointerDown={handleSliderStart} onPointerUp={handleSliderEnd} onPointerCancel={handleSliderEnd}
                                         className={styles.rangeInput} />
                                 </div>
                                 <div className={styles.inputGroup}>
@@ -750,6 +954,7 @@ export default function BarcodeGenerator() {
                                     <label>{t("labelFontSize")}: {fontSize}pt</label>
                                     <input type="range" min="8" max="24" step="1" value={fontSize}
                                         onChange={(e) => setFontSize(parseInt(e.target.value))}
+                                        onPointerDown={handleSliderStart} onPointerUp={handleSliderEnd} onPointerCancel={handleSliderEnd}
                                         className={styles.rangeInput} />
                                 </div>
                                 <div className={styles.inputGroup} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -815,8 +1020,15 @@ export default function BarcodeGenerator() {
                         {/* ── Excel Bulk Input ── */}
                         {!sequenceMode && (
                             <div className={styles.inputGroup}>
+                                <div className={styles.bulkGuide}>
+                                    <span>{t("bulkGuide")}</span>
+                                    {typeRuleHint && <span className={styles.typeRule}>{typeRuleHint}</span>}
+                                </div>
                                 <textarea value={excelData} onChange={(e) => setExcelData(e.target.value)}
-                                    placeholder={t("placeholderExcel")} />
+                                    placeholder={bulkPlaceholder} />
+                                {bulkLineCount > 0 && (
+                                    <div className={styles.bulkCounter}>{t("bulkCount", { count: bulkLineCount })}</div>
+                                )}
                                 <button onClick={generateFromExcel} className={`${styles.actionButton} ${styles.generateButton}`}>
                                     {t("btnBulk")}
                                 </button>

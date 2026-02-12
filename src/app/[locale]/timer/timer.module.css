@@ -1,0 +1,1765 @@
+/* ========================================
+   Timer & Pomodoro - CSS Module
+   ======================================== */
+
+/* === Layout === */
+.wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%);
+}
+
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* === Mode Toggle === */
+.modeToggle {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: #e5e7eb;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.modeBtn {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  background: transparent;
+  color: #666;
+}
+
+.modeBtn.active {
+  color: white;
+}
+
+.modeBtn.timerActive {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.modeBtn.pomoActive {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.modeBtn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Main Card === */
+.mainCard {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  text-align: center;
+}
+
+/* === Pomodoro Phase Indicator === */
+.phaseIndicator {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+}
+
+.phaseBadge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.sessionBadge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  background: #f1f5f9;
+  color: #666;
+}
+
+/* === Preset Buttons === */
+.presetContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.presetBtn {
+  padding: 8px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 20px;
+  background: #f8f9fa;
+  color: #555;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.presetBtn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.06);
+}
+
+/* === Time Input === */
+.timeInputRow {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeSeparator {
+  font-size: 2rem;
+  color: #ccc;
+  font-weight: 300;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeInput {
+  width: 70px;
+  height: 70px;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  outline: none;
+  color: #333;
+  background: #f8f9fa;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.timeInput:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.inputLabel {
+  color: #888;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+/* === Pomodoro Settings === */
+.pomoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.pomoCard {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 12px 8px;
+  border: 1.5px solid #e5e7eb;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pomoLabel {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pomoAdjustRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.pomoAdjustBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  flex-shrink: 0;
+  background: #e5e7eb;
+  color: #333;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.pomoAdjustBtn:hover {
+  background: #d1d5db;
+}
+
+.pomoValue {
+  font-size: 1.3rem;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: center;
+}
+
+.pomoUnit {
+  font-size: 0.7rem;
+  color: #999;
+  margin-top: 4px;
+}
+
+.autoStartLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.autoStartLabel input {
+  accent-color: #ef4444;
+}
+
+/* === Progress Ring === */
+.ringContainer {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto 20px;
+}
+
+.ringSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ringBg {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 4;
+}
+
+.ringProgress {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s linear;
+}
+
+.ringTime {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(1.8rem, 8vw, 2.5rem);
+  font-weight: 700;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  letter-spacing: 2px;
+}
+
+/* === Sound Settings === */
+.soundCard {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.soundTitle {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.soundBtnRow {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.soundBtn {
+  padding: 8px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  background: transparent;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.soundBtn.soundActive {
+  background: rgba(102, 126, 234, 0.09);
+}
+
+.soundBtn:hover {
+  border-color: #667eea;
+}
+
+.vibrationLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  cursor: pointer;
+}
+
+/* === Control Buttons === */
+.controlRow {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.startBtn {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  border: none;
+  padding: 14px 35px;
+  border-radius: 25px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.startBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+}
+
+.startBtn:active {
+  transform: translateY(0);
+}
+
+.stopBtn {
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+  color: white;
+  border: none;
+  padding: 14px 35px;
+  border-radius: 25px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stopBtn:hover {
+  transform: translateY(-1px);
+}
+
+.resetBtn {
+  background: #e5e7eb;
+  color: #555;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 25px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resetBtn:hover {
+  background: #d1d5db;
+}
+
+/* === Keyboard Shortcuts Hint === */
+.shortcutHint {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.shortcutHint span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #f1f5f9;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* === Alarm Modal === */
+.alarmOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.alarmModal {
+  background-color: white;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.alarmHeader {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alarmTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+}
+
+.alarmClose {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+
+.alarmClose:hover {
+  color: white;
+}
+
+.alarmBody {
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.alarmIcon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.alarmSessionText {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.alarmFooter {
+  padding: 20px 24px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.alarmNextBtn {
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.15s;
+}
+
+.alarmNextBtn:hover {
+  transform: translateY(-1px);
+}
+
+.alarmConfirmBtn {
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.15s;
+}
+
+.alarmConfirmBtn:hover {
+  transform: translateY(-1px);
+}
+
+/* === Auto-stop countdown === */
+.autoStopText {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* === Extend Buttons (+1m/+5m) === */
+.extendRow {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.extendBtn {
+  padding: 6px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 20px;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.extendBtn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.06);
+}
+
+/* === Volume Slider === */
+.volumeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 0 8px;
+}
+
+.volumeLabel {
+  font-size: 0.8rem;
+  color: #666;
+  min-width: 36px;
+}
+
+.volumeSlider {
+  flex: 1;
+  height: 4px;
+  accent-color: #667eea;
+  cursor: pointer;
+}
+
+.volumeValue {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* === Wake Lock Toggle === */
+.wakeLockBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 20px;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.78rem;
+  transition: all 0.2s;
+}
+
+.wakeLockBtn.wakeLockActive {
+  border-color: #22c55e;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.08);
+}
+
+/* === Share / Voice / Presets row === */
+.featureRow {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.featureBtn {
+  padding: 5px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.featureBtn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.featureBtn.featureActive {
+  border-color: #667eea;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.06);
+}
+
+/* === User Presets === */
+.presetSavedSection {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.presetSavedTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.presetSavedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.presetSavedItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border: 1.5px solid #667eea33;
+  border-radius: 16px;
+  background: rgba(102, 126, 234, 0.05);
+  font-size: 0.8rem;
+  color: #667eea;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.presetSavedItem:hover {
+  background: rgba(102, 126, 234, 0.12);
+}
+
+.presetDeleteBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+.presetDeleteBtn:hover {
+  color: #ef4444;
+}
+
+.presetSaveRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.presetNameInput {
+  flex: 1;
+  padding: 5px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  outline: none;
+  background: #f8f9fa;
+  color: #333;
+}
+
+.presetNameInput:focus {
+  border-color: #667eea;
+}
+
+.presetSaveBtn {
+  padding: 5px 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* === Interval Mode === */
+.intervalPresets {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.intervalPresetBtn {
+  padding: 7px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 16px;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.intervalPresetBtn.intervalPresetActive {
+  border-color: #f59e0b;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.intervalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.intervalCard {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 12px 8px;
+  border: 1.5px solid #e5e7eb;
+  text-align: center;
+}
+
+.intervalCardLabel {
+  font-size: 0.72rem;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.intervalCardValue {
+  font-size: 1.2rem;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+.intervalPhaseDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.intervalPhaseBadge {
+  padding: 5px 14px;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.intervalRoundBadge {
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  background: #f1f5f9;
+  color: #666;
+}
+
+/* === Multi-Timer === */
+.multiContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.multiCard {
+  background: #f8f9fa;
+  border-radius: 14px;
+  padding: 16px;
+  border: 1.5px solid #e5e7eb;
+  position: relative;
+}
+
+.multiCard.multiCardRunning {
+  border-color: #22c55e66;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
+}
+
+.multiHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.multiLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.multiRemoveBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+  transition: all 0.15s;
+}
+
+.multiRemoveBtn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.multiTimeDisplay {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.multiControls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.multiBtn {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.multiBtnStart {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.multiBtnStop {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.multiBtnReset {
+  background: #e5e7eb;
+  color: #555;
+}
+
+.multiAddBtn {
+  padding: 14px;
+  border: 2px dashed #d1d5db;
+  border-radius: 14px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.multiAddBtn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.multiInputRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.multiInput {
+  width: 50px;
+  height: 40px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  outline: none;
+  color: #333;
+  background: white;
+}
+
+.multiInput:focus {
+  border-color: #667eea;
+}
+
+.multiSep {
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+/* === Pomodoro Stats === */
+.statsCard {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  margin-top: 16px;
+}
+
+.statsTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.statsEmpty {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  padding: 20px 0;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.statItem {
+  text-align: center;
+  padding: 10px 4px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.statValue {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.statLabel {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.statsFocusRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: #666;
+  padding: 8px 4px;
+  border-top: 1px solid #f1f5f9;
+  margin-bottom: 12px;
+}
+
+.statsChart {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 80px;
+  padding: 0 4px;
+  margin-bottom: 12px;
+}
+
+.statsBar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.statsBarTrack {
+  width: 100%;
+  height: 60px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.statsBarFill {
+  width: 100%;
+  background: #fca5a5;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s;
+}
+
+.statsBarToday {
+  background: #ef4444;
+}
+
+.statsBarLabel {
+  font-size: 0.6rem;
+  color: #94a3b8;
+}
+
+.statsBarLabelToday {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.statsResetBtn {
+  display: block;
+  margin: 0 auto;
+  padding: 5px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+/* === Pomodoro Tasks === */
+.tasksCard {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  margin-top: 12px;
+}
+
+.tasksTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.tasksAddRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tasksInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  outline: none;
+  background: #f8f9fa;
+  color: #333;
+}
+
+.tasksInput:focus {
+  border-color: #ef4444;
+}
+
+.tasksPomoInput {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tasksPomoBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: #e5e7eb;
+  color: #555;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tasksPomoValue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 16px;
+  text-align: center;
+  color: #ef4444;
+}
+
+.tasksAddBtn {
+  padding: 8px 14px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tasksList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.taskItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.taskItem:hover {
+  background: #f8f9fa;
+}
+
+.taskActive {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid #fca5a544;
+}
+
+.taskDone {
+  opacity: 0.5;
+}
+
+.taskCheckbox {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 0;
+  width: 24px;
+}
+
+.taskContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.taskText {
+  font-size: 0.85rem;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.taskTextDone {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.taskPomoBadge {
+  font-size: 0.7rem;
+  color: #ef4444;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.taskDeleteBtn {
+  background: none;
+  border: none;
+  color: #d1d5db;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+}
+
+.taskDeleteBtn:hover {
+  color: #ef4444;
+}
+
+.tasksClearBtn {
+  display: block;
+  margin: 8px auto 0;
+  padding: 5px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+/* === Ambient Player === */
+.ambientCard {
+  background: white;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  margin-top: 12px;
+}
+
+.ambientTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.ambientGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.ambientBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 4px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ambientBtn:hover {
+  border-color: #667eea;
+}
+
+.ambientActive {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.ambientIcon {
+  font-size: 1.2rem;
+}
+
+.ambientLabel {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.ambientActive .ambientLabel {
+  color: #22c55e;
+}
+
+.ambientVolume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 0 4px;
+}
+
+/* === Timer Chain === */
+.chainCard {
+  background: white;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  margin-top: 12px;
+}
+
+.chainTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.chainList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.chainItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+}
+
+.chainItem.chainItemActive {
+  background: rgba(102, 126, 234, 0.06);
+  border-color: #667eea66;
+}
+
+.chainItem.chainItemDone {
+  opacity: 0.4;
+}
+
+.chainStepNum {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #555;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chainItemActive .chainStepNum {
+  background: #667eea;
+  color: white;
+}
+
+.chainItemLabel {
+  flex: 1;
+  font-size: 0.82rem;
+  color: #333;
+}
+
+.chainItemTime {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #667eea;
+  font-family: monospace;
+}
+
+.chainItemRemove {
+  background: none;
+  border: none;
+  color: #d1d5db;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.chainItemRemove:hover {
+  color: #ef4444;
+}
+
+.chainAddRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.chainLabelInput {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  outline: none;
+  background: #f8f9fa;
+  color: #333;
+}
+
+.chainTimeInput {
+  width: 44px;
+  padding: 6px 4px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  outline: none;
+  background: #f8f9fa;
+  color: #333;
+}
+
+.chainAddBtn {
+  padding: 6px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chainEmpty {
+  text-align: center;
+  color: #d1d5db;
+  font-size: 0.8rem;
+  padding: 16px 0;
+}
+
+/* ==================================
+   DARK MODE
+   ================================== */
+:global(body[data-theme="dark"]) .wrapper {
+  background: #0f172a;
+}
+
+:global(body[data-theme="dark"]) .modeToggle {
+  background: #1e293b;
+}
+
+:global(body[data-theme="dark"]) .modeBtn {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .mainCard {
+  background: #1e293b;
+  box-shadow: none;
+}
+
+:global(body[data-theme="dark"]) .sessionBadge {
+  background: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .presetBtn {
+  border-color: #334155;
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .presetBtn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+:global(body[data-theme="dark"]) .timeSeparator {
+  color: #475569;
+}
+
+:global(body[data-theme="dark"]) .timeInput {
+  border-color: #334155;
+  color: #e2e8f0;
+  background: #1e293b;
+}
+
+:global(body[data-theme="dark"]) .timeInput:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+:global(body[data-theme="dark"]) .inputLabel {
+  color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .pomoCard {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .pomoLabel {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .pomoAdjustBtn {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .pomoAdjustBtn:hover {
+  background: #475569;
+}
+
+:global(body[data-theme="dark"]) .pomoUnit {
+  color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .autoStartLabel {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .ringBg {
+  stroke: #334155;
+}
+
+:global(body[data-theme="dark"]) .soundCard {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .soundTitle {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .soundBtn {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .soundBtn:hover {
+  border-color: #667eea;
+}
+
+:global(body[data-theme="dark"]) .vibrationLabel {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .resetBtn {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .resetBtn:hover {
+  background: #475569;
+}
+
+:global(body[data-theme="dark"]) .kbd {
+  border-color: #475569;
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .alarmModal {
+  background-color: #1e293b;
+  box-shadow: none;
+}
+
+:global(body[data-theme="dark"]) .alarmSessionText {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .alarmFooter {
+  border-top-color: #334155;
+}
+
+/* New components dark mode */
+:global(body[data-theme="dark"]) .extendBtn {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .volumeLabel {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .wakeLockBtn {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .featureBtn {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .presetSavedSection {
+  border-top-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .presetSavedItem {
+  border-color: rgba(102, 126, 234, 0.2);
+  background: rgba(102, 126, 234, 0.08);
+}
+
+:global(body[data-theme="dark"]) .presetNameInput {
+  border-color: #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .intervalCard {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .intervalCardLabel {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .intervalPresetBtn {
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .intervalRoundBadge {
+  background: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .multiCard {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .multiLabel {
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .multiInput {
+  border-color: #334155;
+  color: #e2e8f0;
+  background: #1e293b;
+}
+
+:global(body[data-theme="dark"]) .multiSep {
+  color: #475569;
+}
+
+:global(body[data-theme="dark"]) .multiBtnReset {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .multiAddBtn {
+  border-color: #334155;
+  color: #64748b;
+}
+
+:global(body[data-theme="dark"]) .statsCard,
+:global(body[data-theme="dark"]) .tasksCard,
+:global(body[data-theme="dark"]) .ambientCard,
+:global(body[data-theme="dark"]) .chainCard {
+  background: #1e293b;
+  box-shadow: none;
+}
+
+:global(body[data-theme="dark"]) .statsTitle,
+:global(body[data-theme="dark"]) .tasksTitle {
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .statItem {
+  background: #0f172a;
+}
+
+:global(body[data-theme="dark"]) .statsFocusRow {
+  color: #94a3b8;
+  border-top-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .statsBarTrack {
+  background: #334155;
+}
+
+:global(body[data-theme="dark"]) .tasksInput {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .tasksPomoBtn {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .taskText {
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .taskItem:hover {
+  background: #334155;
+}
+
+:global(body[data-theme="dark"]) .ambientBtn {
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .chainItem {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .chainStepNum {
+  background: #334155;
+  color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .chainItemLabel {
+  color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .chainLabelInput,
+:global(body[data-theme="dark"]) .chainTimeInput {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+/* === Responsive === */
+@media (max-width: 375px) {
+  .mainCard {
+    padding: 20px 16px;
+  }
+
+  .pomoGrid {
+    gap: 6px;
+  }
+
+  .timeInput {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .ringContainer {
+    width: 180px;
+    height: 180px;
+  }
+
+  .startBtn,
+  .stopBtn {
+    padding: 12px 28px;
+    font-size: 0.95rem;
+  }
+
+  .resetBtn {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+
+  .shortcutHint {
+    gap: 10px;
+    font-size: 0.7rem;
+  }
+}

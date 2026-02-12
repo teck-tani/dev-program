@@ -242,8 +242,16 @@
       "seqPreview": "미리보기",
       "btnSequence": "시퀀스 생성",
       "placeholderExcel": "엑셀에서 복사한 데이터를 붙여넣으세요",
+      "bulkGuide": "한 줄에 하나씩 입력하세요. 엑셀에서 열을 복사해 붙여넣기도 가능합니다.",
+      "bulkCount": "{count}건 감지",
+      "ruleNumericOnly": "숫자만 입력",
+      "ruleFixedLength": "{lengths}자리",
+      "ruleEvenLength": "짝수 자릿수",
+      "ruleRange": "{min}~{max} 범위",
+      "rule2D": "텍스트/URL 가능",
       "btnBulk": "일괄 생성",
       "btnCSV": "CSV 파일 가져오기",
+      "btnResetSettings": "설정 초기화",
       "btnClear": "모두 지우기",
       "btnPrint": "바코드 인쇄",
       "downloadPDF": "PDF 다운로드",
@@ -861,6 +869,93 @@
         "bird": "새소리",
         "school": "학교종",
         "vibration": "진동 알림"
+      },
+      "volume": {
+        "label": "볼륨"
+      },
+      "extend": {
+        "plus1": "+1분",
+        "plus5": "+5분"
+      },
+      "wakeLock": {
+        "on": "화면 켜짐 유지",
+        "off": "화면 켜짐 해제"
+      },
+      "voice": {
+        "label": "음성 카운트다운",
+        "desc": "마지막 5초 음성 안내"
+      },
+      "share": {
+        "copy": "링크 복사",
+        "copied": "복사됨!",
+        "title": "타이머 공유"
+      },
+      "presets": {
+        "save": "저장",
+        "delete": "삭제",
+        "name": "프리셋 이름",
+        "saved": "내 프리셋",
+        "empty": "저장된 프리셋이 없습니다",
+        "max": "최대 10개까지 저장 가능합니다"
+      },
+      "interval": {
+        "title": "인터벌",
+        "work": "운동",
+        "rest": "휴식",
+        "rounds": "라운드",
+        "currentRound": "라운드",
+        "tabataPreset": "타바타 (20s/10s×8)",
+        "hiitPreset": "HIIT (40s/20s×6)",
+        "customPreset": "사용자 설정",
+        "phase": "구간",
+        "completed": "운동 완료!"
+      },
+      "multi": {
+        "title": "멀티",
+        "add": "타이머 추가",
+        "max": "최대 4개까지 추가 가능",
+        "timer": "타이머",
+        "remove": "삭제"
+      },
+      "stats": {
+        "title": "포모도로 통계",
+        "today": "오늘",
+        "week": "이번 주",
+        "total": "전체",
+        "streak": "연속",
+        "days": "일",
+        "focusTime": "집중 시간",
+        "sessions": "세션 수",
+        "minutes": "분",
+        "noData": "아직 기록이 없습니다",
+        "reset": "기록 초기화"
+      },
+      "tasks": {
+        "title": "할 일 목록",
+        "add": "할 일 추가",
+        "placeholder": "할 일을 입력하세요",
+        "estimated": "예상 뽀모",
+        "done": "완료",
+        "clear": "완료 항목 삭제"
+      },
+      "ambient": {
+        "title": "배경음",
+        "rain": "빗소리",
+        "cafe": "카페",
+        "whiteNoise": "백색소음",
+        "fire": "모닥불",
+        "ocean": "파도",
+        "forest": "숲속"
+      },
+      "chain": {
+        "title": "연속 타이머",
+        "add": "단계 추가",
+        "queue": "대기열",
+        "next": "다음",
+        "step": "단계",
+        "running": "진행 중",
+        "label": "이름",
+        "empty": "단계를 추가하세요"
       },
       "seo": {
         "title": "온라인 타이머 & 포모도로 - 운동 & 요리용 알람",

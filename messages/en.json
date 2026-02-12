@@ -242,8 +242,16 @@
       "seqPreview": "Preview",
       "btnSequence": "Generate Sequence",
       "placeholderExcel": "Paste data copied from Excel here",
+      "bulkGuide": "Enter one value per line. You can also copy a column from Excel and paste it here.",
+      "bulkCount": "{count} entries detected",
+      "ruleNumericOnly": "Numeric only",
+      "ruleFixedLength": "{lengths} digits",
+      "ruleEvenLength": "Even-length",
+      "ruleRange": "Range {min}–{max}",
+      "rule2D": "Text/URL supported",
       "btnBulk": "Bulk Generate",
       "btnCSV": "Import CSV File",
+      "btnResetSettings": "Reset Settings",
       "btnClear": "Clear All",
       "btnPrint": "Print Barcodes",
       "downloadPDF": "Download PDF",
@@ -861,6 +869,93 @@
         "bird": "Bird",
         "school": "School Bell",
         "vibration": "Vibration alert"
+      },
+      "volume": {
+        "label": "Volume"
+      },
+      "extend": {
+        "plus1": "+1 min",
+        "plus5": "+5 min"
+      },
+      "wakeLock": {
+        "on": "Keep Screen On",
+        "off": "Screen Lock Off"
+      },
+      "voice": {
+        "label": "Voice Countdown",
+        "desc": "Voice guide for last 5 seconds"
+      },
+      "share": {
+        "copy": "Copy Link",
+        "copied": "Copied!",
+        "title": "Share Timer"
+      },
+      "presets": {
+        "save": "Save",
+        "delete": "Delete",
+        "name": "Preset name",
+        "saved": "My Presets",
+        "empty": "No saved presets",
+        "max": "Maximum 10 presets"
+      },
+      "interval": {
+        "title": "Interval",
+        "work": "Work",
+        "rest": "Rest",
+        "rounds": "Rounds",
+        "currentRound": "Round",
+        "tabataPreset": "Tabata (20s/10s×8)",
+        "hiitPreset": "HIIT (40s/20s×6)",
+        "customPreset": "Custom",
+        "phase": "Phase",
+        "completed": "Workout Complete!"
+      },
+      "multi": {
+        "title": "Multi",
+        "add": "Add Timer",
+        "max": "Max 4 timers allowed",
+        "timer": "Timer",
+        "remove": "Remove"
+      },
+      "stats": {
+        "title": "Pomodoro Stats",
+        "today": "Today",
+        "week": "This Week",
+        "total": "Total",
+        "streak": "Streak",
+        "days": "days",
+        "focusTime": "Focus Time",
+        "sessions": "Sessions",
+        "minutes": "min",
+        "noData": "No records yet",
+        "reset": "Reset Records"
+      },
+      "tasks": {
+        "title": "Task List",
+        "add": "Add Task",
+        "placeholder": "Enter a task",
+        "estimated": "Est. pomos",
+        "done": "Done",
+        "clear": "Clear completed"
+      },
+      "ambient": {
+        "title": "Ambient",
+        "rain": "Rain",
+        "cafe": "Cafe",
+        "whiteNoise": "White Noise",
+        "fire": "Fireplace",
+        "ocean": "Ocean",
+        "forest": "Forest"
+      },
+      "chain": {
+        "title": "Chain Timer",
+        "add": "Add Step",
+        "queue": "Queue",
+        "next": "Next",
+        "step": "Step",
+        "running": "Running",
+        "label": "Label",
+        "empty": "Add steps to begin"
       },
       "seo": {
         "title": "Online Timer & Pomodoro - Workout & Cooking Alarm",
