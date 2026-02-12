@@ -7,7 +7,8 @@ import {
     FaTerminal, FaYoutube, FaGlobe, FaQrcode, FaTools, FaBell,
     FaServer, FaCalendarAlt, FaSearch, FaWeight, FaFileInvoiceDollar, FaLock,
     FaHandHoldingUsd, FaHome, FaFingerprint, FaShieldAlt, FaHistory, FaKey,
-    FaTag
+    FaTag, FaIdCard, FaBriefcase, FaChartLine,
+    FaHashtag, FaAlignLeft, FaFileCode, FaCube, FaHeart, FaCalendarCheck
 } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
@@ -42,6 +43,9 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/loan-calculator', labelKey: 'loanCalculator', icon: FaHandHoldingUsd, category: 'calculators' },
     { href: '/rent-conversion', labelKey: 'rentConversion', icon: FaHome, category: 'calculators' },
     { href: '/discount-calculator', labelKey: 'discountCalculator', icon: FaTag, category: 'calculators' },
+    { href: '/insurance-calculator', labelKey: 'insuranceCalculator', icon: FaIdCard, category: 'calculators' },
+    { href: '/freelancer-tax', labelKey: 'freelancerTax', icon: FaBriefcase, category: 'calculators' },
+    { href: '/stock-calculator', labelKey: 'stockCalculator', icon: FaChartLine, category: 'calculators' },
 
     // 시간 (6)
     { href: '/clock', labelKey: 'clock', icon: FaClock, category: 'time' },
@@ -70,6 +74,9 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/youtube-thumbnail', labelKey: 'youtubeThumbnail', icon: FaYoutube, category: 'utilities' },
     { href: '/ip-address', labelKey: 'ipAddress', icon: FaGlobe, category: 'utilities' },
     { href: '/password-generator', labelKey: 'passwordGenerator', icon: FaLock, category: 'utilities' },
+    { href: '/random-generator', labelKey: 'randomGenerator', icon: FaCube, category: 'utilities' },
+    { href: '/compatibility-checker', labelKey: 'compatibilityChecker', icon: FaHeart, category: 'utilities' },
+    { href: '/business-day-calculator', labelKey: 'businessDayCalculator', icon: FaCalendarCheck, category: 'utilities' },
 
     // 개발 도구 (5)
     { href: '/sql-formatter', labelKey: 'sqlFormatter', icon: FaDatabase, category: 'devtools' },
@@ -79,6 +86,9 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/hash-generator', labelKey: 'hashGenerator', icon: FaShieldAlt, category: 'devtools' },
     { href: '/timestamp-converter', labelKey: 'timestampConverter', icon: FaHistory, category: 'devtools' },
     { href: '/jwt-decoder', labelKey: 'jwtDecoder', icon: FaKey, category: 'devtools' },
+    { href: '/html-entity', labelKey: 'htmlEntity', icon: FaHashtag, category: 'devtools' },
+    { href: '/markdown-preview', labelKey: 'markdownPreview', icon: FaAlignLeft, category: 'devtools' },
+    { href: '/css-minifier', labelKey: 'cssMinifier', icon: FaFileCode, category: 'devtools' },
 ];
 
 export const CATEGORIES: CategoryDef[] = [

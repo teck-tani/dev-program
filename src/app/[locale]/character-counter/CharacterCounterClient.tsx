@@ -35,10 +35,14 @@ export default function CharacterCounterClient() {
             ? Math.round((charWithoutSpace / 500) * 60)
             : Math.round((words / 200) * 60);
 
+        // 원고지 매수 (manuscript pages): count all visible characters including spaces
+        const manuscript200 = Math.ceil(charWithSpace / 200);
+        const manuscript400 = Math.ceil(charWithSpace / 400);
+
         return {
             charWithSpace, charWithoutSpace, words, lines, paragraphs,
             bytes, koreanChars, englishChars, numbers, specialChars,
-            readMinutes, readSeconds,
+            readMinutes, readSeconds, manuscript200, manuscript400,
         };
     }, [text]);
 
@@ -120,6 +124,8 @@ export default function CharacterCounterClient() {
                     <StatCard label={t('stats.bytes')} value={formatBytes(stats.bytes)} highlight />
                     <StatCard label={t('stats.words')} value={stats.words} />
                     <StatCard label={t('stats.readTime')} value={stats.readMinutes > 0 ? `${stats.readMinutes}${t('stats.min')}` : `${stats.readSeconds}${t('stats.sec')}`} />
+                    <StatCard label={t('stats.manuscript200')} value={stats.manuscript200} />
+                    <StatCard label={t('stats.manuscript400')} value={stats.manuscript400} />
                 </div>
 
                 {/* Textarea */}

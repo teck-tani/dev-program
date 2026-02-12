@@ -562,7 +562,7 @@ const ScientificCalculator = () => {
           )}
 
           {/* Keypad - 9 rows × 5 cols */}
-          <div className={`flex-1 p-4 ${dark ? 'bg-slate-800' : 'bg-white'}`}>
+          <div className={`flex-1 p-4 ${dark ? 'bg-slate-800' : 'bg-white'}`} data-hide-feedback>
             <div className="grid grid-cols-5 gap-2 sm:gap-3">
 
               {/* Row 1: Mode Toggle & Trig */}

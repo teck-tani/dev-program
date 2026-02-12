@@ -7,6 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **반드시 `WORK_LOG.md`를 매 세션 시작 시 읽고, 작업 완료 시 업데이트할 것.**
 - `WORK_LOG.md` - 전체 도구 현황, 진행중/완료 작업, 버그, 아이디어 기록
 
+## Finalized Tools (수정 금지)
+
+**`FINALIZED_TOOLS.md`에 등록된 도구는 절대 수정하지 말 것.**
+- 사용자가 직접 검수 완료한 도구 → 코드/번역/SEO 일체 변경 금지
+- 수정은 사용자가 명시적으로 요청한 경우에만 허용
+
 
 ## Project Overview
 

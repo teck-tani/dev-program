@@ -1,0 +1,977 @@
+"use client";
+
+import { useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
+import { FaCopy, FaCheck, FaDice, FaSync, FaPalette } from "react-icons/fa";
+
+// ===== Data =====
+const KOREAN_SURNAMES = ['김', '이', '박', '최', '정', '강', '조', '윤', '장', '임', '한', '오', '서', '신', '권', '황', '안', '송', '류', '전'];
+const KOREAN_SYLLABLES = ['민', '서', '지', '현', '수', '영', '진', '은', '준', '하', '윤', '예', '도', '연', '아', '우', '호', '채', '성', '유'];
+
+const ENGLISH_FIRST_NAMES = [
+    'James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda',
+    'William', 'Elizabeth', 'David', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica',
+    'Thomas', 'Sarah', 'Daniel', 'Karen'
+];
+const ENGLISH_LAST_NAMES = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
+    'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
+    'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'
+];
+
+type TabKey = 'number' | 'name' | 'color' | 'dice' | 'coin';
+type DiceSides = 4 | 6 | 8 | 10 | 12 | 20;
+
+// ===== Helpers =====
+function randomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomFloat(min: number, max: number, decimals: number): number {
+    const val = Math.random() * (max - min) + min;
+    return Number(val.toFixed(decimals));
+}
+
+function randomKoreanName(): string {
+    const surname = KOREAN_SURNAMES[randomInt(0, KOREAN_SURNAMES.length - 1)];
+    const nameLen = randomInt(1, 2);
+    let firstName = '';
+    for (let i = 0; i < nameLen; i++) {
+        firstName += KOREAN_SYLLABLES[randomInt(0, KOREAN_SYLLABLES.length - 1)];
+    }
+    return surname + firstName;
+}
+
+function randomEnglishName(): string {
+    const first = ENGLISH_FIRST_NAMES[randomInt(0, ENGLISH_FIRST_NAMES.length - 1)];
+    const last = ENGLISH_LAST_NAMES[randomInt(0, ENGLISH_LAST_NAMES.length - 1)];
+    return `${first} ${last}`;
+}
+
+function randomHexColor(): string {
+    const hex = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+    return `#${hex}`;
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+    const val = parseInt(hex.replace('#', ''), 16);
+    return {
+        r: (val >> 16) & 255,
+        g: (val >> 8) & 255,
+        b: val & 255,
+    };
+}
+
+function rgbToHsl(r: number, g: number, b: number): { h: number; s: number; l: number } {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    let h = 0, s = 0;
+    if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+            case g: h = ((b - r) / d + 2) / 6; break;
+            case b: h = ((r - g) / d + 4) / 6; break;
+        }
+    }
+    return {
+        h: Math.round(h * 360),
+        s: Math.round(s * 100),
+        l: Math.round(l * 100),
+    };
+}
+
+// Dice dot positions for d6
+const DICE_DOT_POSITIONS: Record<number, number[][]> = {
+    1: [[50, 50]],
+    2: [[25, 25], [75, 75]],
+    3: [[25, 25], [50, 50], [75, 75]],
+    4: [[25, 25], [75, 25], [25, 75], [75, 75]],
+    5: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]],
+    6: [[25, 25], [75, 25], [25, 50], [75, 50], [25, 75], [75, 75]],
+};
+
+interface ColorResult {
+    hex: string;
+    rgb: { r: number; g: number; b: number };
+    hsl: { h: number; s: number; l: number };
+}
+
+export default function RandomGeneratorClient() {
+    const t = useTranslations('RandomGenerator');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+
+    const [activeTab, setActiveTab] = useState<TabKey>('number');
+    const [toast, setToast] = useState(false);
+    const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Number state
+    const [numMin, setNumMin] = useState(1);
+    const [numMax, setNumMax] = useState(100);
+    const [numIsInteger, setNumIsInteger] = useState(true);
+    const [numDecimals, setNumDecimals] = useState(2);
+    const [numCount, setNumCount] = useState(1);
+    const [numResults, setNumResults] = useState<number[]>([]);
+
+    // Name state
+    const [nameType, setNameType] = useState<'korean' | 'english'>('korean');
+    const [nameCount, setNameCount] = useState(5);
+    const [nameResults, setNameResults] = useState<string[]>([]);
+
+    // Color state
+    const [colorCount, setColorCount] = useState(5);
+    const [colorResults, setColorResults] = useState<ColorResult[]>([]);
+
+    // Dice state
+    const [diceSides, setDiceSides] = useState<DiceSides>(6);
+    const [diceCount, setDiceCount] = useState(2);
+    const [diceResults, setDiceResults] = useState<number[]>([]);
+    const [diceRolling, setDiceRolling] = useState(false);
+
+    // Coin state
+    const [coinResult, setCoinResult] = useState<'heads' | 'tails' | null>(null);
+    const [coinFlipping, setCoinFlipping] = useState(false);
+    const [coinHistory, setCoinHistory] = useState<('heads' | 'tails')[]>([]);
+
+    const showToast = useCallback(() => {
+        setToast(true);
+        if (toastTimeout.current) clearTimeout(toastTimeout.current);
+        toastTimeout.current = setTimeout(() => setToast(false), 2000);
+    }, []);
+
+    const copyText = useCallback(async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            showToast();
+        } catch { /* fallback */ }
+    }, [showToast]);
+
+    // ===== Generators =====
+    const generateNumbers = useCallback(() => {
+        const results: number[] = [];
+        for (let i = 0; i < numCount; i++) {
+            if (numIsInteger) {
+                results.push(randomInt(numMin, numMax));
+            } else {
+                results.push(randomFloat(numMin, numMax, numDecimals));
+            }
+        }
+        setNumResults(results);
+    }, [numMin, numMax, numIsInteger, numDecimals, numCount]);
+
+    const generateNames = useCallback(() => {
+        const results: string[] = [];
+        for (let i = 0; i < nameCount; i++) {
+            results.push(nameType === 'korean' ? randomKoreanName() : randomEnglishName());
+        }
+        setNameResults(results);
+    }, [nameType, nameCount]);
+
+    const generateColors = useCallback(() => {
+        const results: ColorResult[] = [];
+        for (let i = 0; i < colorCount; i++) {
+            const hex = randomHexColor();
+            const rgb = hexToRgb(hex);
+            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+            results.push({ hex, rgb, hsl });
+        }
+        setColorResults(results);
+    }, [colorCount]);
+
+    const rollDice = useCallback(() => {
+        setDiceRolling(true);
+        // Animate for 500ms
+        const animationInterval = setInterval(() => {
+            const tempResults: number[] = [];
+            for (let i = 0; i < diceCount; i++) {
+                tempResults.push(randomInt(1, diceSides));
+            }
+            setDiceResults(tempResults);
+        }, 50);
+
+        setTimeout(() => {
+            clearInterval(animationInterval);
+            const finalResults: number[] = [];
+            for (let i = 0; i < diceCount; i++) {
+                finalResults.push(randomInt(1, diceSides));
+            }
+            setDiceResults(finalResults);
+            setDiceRolling(false);
+        }, 500);
+    }, [diceCount, diceSides]);
+
+    const flipCoin = useCallback(() => {
+        setCoinFlipping(true);
+        setCoinResult(null);
+
+        let flipCount = 0;
+        const flipInterval = setInterval(() => {
+            setCoinResult(Math.random() > 0.5 ? 'heads' : 'tails');
+            flipCount++;
+            if (flipCount >= 10) {
+                clearInterval(flipInterval);
+                const finalResult: 'heads' | 'tails' = Math.random() > 0.5 ? 'heads' : 'tails';
+                setCoinResult(finalResult);
+                setCoinHistory(prev => [finalResult, ...prev].slice(0, 20));
+                setCoinFlipping(false);
+            }
+        }, 80);
+    }, []);
+
+    // ===== Styles =====
+    const cardStyle: React.CSSProperties = {
+        background: isDark ? "#1e293b" : "white",
+        borderRadius: "16px",
+        padding: "24px",
+        boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)",
+        marginBottom: "20px",
+    };
+
+    const labelStyle: React.CSSProperties = {
+        fontWeight: "600",
+        fontSize: "0.9rem",
+        color: isDark ? "#e2e8f0" : "#333",
+        marginBottom: "6px",
+        display: "block",
+    };
+
+    const inputStyle: React.CSSProperties = {
+        width: "100%",
+        padding: "10px 14px",
+        borderRadius: "10px",
+        border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+        background: isDark ? "#0f172a" : "#f9fafb",
+        color: isDark ? "#e2e8f0" : "#333",
+        fontSize: "0.95rem",
+        outline: "none",
+        boxSizing: "border-box",
+    };
+
+    const selectStyle: React.CSSProperties = {
+        ...inputStyle,
+        cursor: "pointer",
+    };
+
+    const btnPrimary: React.CSSProperties = {
+        width: "100%",
+        padding: "14px",
+        background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+        color: "white",
+        border: "none",
+        borderRadius: "12px",
+        fontSize: "1rem",
+        fontWeight: "700",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "8px",
+        boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
+        transition: "all 0.2s",
+    };
+
+    const copyBtnStyle: React.CSSProperties = {
+        padding: "6px 10px",
+        background: isDark ? "#334155" : "#e5e7eb",
+        color: isDark ? "#94a3b8" : "#666",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        gap: "4px",
+        fontSize: "0.75rem",
+        flexShrink: 0,
+        transition: "background 0.2s",
+    };
+
+    const tabs: { key: TabKey; icon: React.ReactNode }[] = [
+        { key: 'number', icon: <span style={{ fontSize: "1.1rem" }}>#</span> },
+        { key: 'name', icon: <span style={{ fontSize: "1.1rem" }}>A</span> },
+        { key: 'color', icon: <FaPalette size={14} /> },
+        { key: 'dice', icon: <FaDice size={14} /> },
+        { key: 'coin', icon: <span style={{ fontSize: "1.1rem" }}>&#x1FA99;</span> },
+    ];
+
+    return (
+        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "16px" }}>
+            {/* Toast */}
+            {toast && (
+                <div style={{
+                    position: "fixed",
+                    top: "80px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    background: "#22c55e",
+                    color: "white",
+                    padding: "10px 24px",
+                    borderRadius: "8px",
+                    fontWeight: "600",
+                    fontSize: "0.9rem",
+                    zIndex: 9999,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                    animation: "fadeInDown 0.3s ease",
+                }}>
+                    <FaCheck style={{ marginRight: "6px", verticalAlign: "middle" }} />
+                    {t('copied')}
+                </div>
+            )}
+
+            {/* Tab Navigation */}
+            <div style={{
+                display: "flex",
+                gap: "6px",
+                marginBottom: "20px",
+                background: isDark ? "#0f172a" : "#f1f5f9",
+                borderRadius: "14px",
+                padding: "6px",
+                overflowX: "auto",
+            }}>
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        style={{
+                            flex: 1,
+                            padding: "10px 8px",
+                            borderRadius: "10px",
+                            border: "none",
+                            background: activeTab === tab.key
+                                ? (isDark ? "#2563eb" : "#2563eb")
+                                : "transparent",
+                            color: activeTab === tab.key
+                                ? "white"
+                                : (isDark ? "#94a3b8" : "#64748b"),
+                            fontWeight: activeTab === tab.key ? "700" : "500",
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: "4px",
+                            transition: "all 0.2s",
+                            whiteSpace: "nowrap",
+                            minWidth: "0",
+                        }}
+                    >
+                        {tab.icon}
+                        <span style={{ fontSize: "0.75rem" }}>{t(`tabs.${tab.key}`)}</span>
+                    </button>
+                ))}
+            </div>
+
+            {/* ===== Number Tab ===== */}
+            {activeTab === 'number' && (
+                <div style={cardStyle}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                        <div>
+                            <label style={labelStyle}>{t('number.min')}</label>
+                            <input
+                                type="number"
+                                value={numMin}
+                                onChange={(e) => setNumMin(Number(e.target.value))}
+                                style={inputStyle}
+                            />
+                        </div>
+                        <div>
+                            <label style={labelStyle}>{t('number.max')}</label>
+                            <input
+                                type="number"
+                                value={numMax}
+                                onChange={(e) => setNumMax(Number(e.target.value))}
+                                style={inputStyle}
+                            />
+                        </div>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                        <div>
+                            <label style={labelStyle}>{t('number.type')}</label>
+                            <select
+                                value={numIsInteger ? 'integer' : 'decimal'}
+                                onChange={(e) => setNumIsInteger(e.target.value === 'integer')}
+                                style={selectStyle}
+                            >
+                                <option value="integer">{t('number.integer')}</option>
+                                <option value="decimal">{t('number.decimal')}</option>
+                            </select>
+                        </div>
+                        {!numIsInteger && (
+                            <div>
+                                <label style={labelStyle}>{t('number.decimals')}</label>
+                                <select
+                                    value={numDecimals}
+                                    onChange={(e) => setNumDecimals(Number(e.target.value))}
+                                    style={selectStyle}
+                                >
+                                    {[1, 2, 3, 4, 5].map((n) => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        {numIsInteger && (
+                            <div>
+                                <label style={labelStyle}>{t('number.count')}</label>
+                                <select
+                                    value={numCount}
+                                    onChange={(e) => setNumCount(Number(e.target.value))}
+                                    style={selectStyle}
+                                >
+                                    {[1, 2, 3, 5, 10, 20, 50].map((n) => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                    </div>
+
+                    {!numIsInteger && (
+                        <div style={{ marginBottom: "16px" }}>
+                            <label style={labelStyle}>{t('number.count')}</label>
+                            <select
+                                value={numCount}
+                                onChange={(e) => setNumCount(Number(e.target.value))}
+                                style={{ ...selectStyle, width: "auto", minWidth: "100px" }}
+                            >
+                                {[1, 2, 3, 5, 10, 20, 50].map((n) => (
+                                    <option key={n} value={n}>{n}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
+                    <button onClick={generateNumbers} style={btnPrimary}>
+                        <FaSync size={14} />
+                        {t('number.generate')}
+                    </button>
+
+                    {numResults.length > 0 && (
+                        <div style={{ marginTop: "20px" }}>
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: "10px",
+                            }}>
+                                <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "#333" }}>
+                                    {t('number.result')}
+                                </span>
+                                <button
+                                    onClick={() => copyText(numResults.join(', '))}
+                                    style={copyBtnStyle}
+                                >
+                                    <FaCopy size={11} /> {t('copyAll')}
+                                </button>
+                            </div>
+                            <div style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: "8px",
+                            }}>
+                                {numResults.map((num, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => copyText(String(num))}
+                                        style={{
+                                            padding: "10px 18px",
+                                            background: isDark ? "#0f172a" : "#eff6ff",
+                                            border: isDark ? "1px solid #334155" : "1px solid #bfdbfe",
+                                            borderRadius: "10px",
+                                            color: "#2563eb",
+                                            fontWeight: "700",
+                                            fontSize: "1.1rem",
+                                            cursor: "pointer",
+                                            fontFamily: "'Fira Code', monospace",
+                                            transition: "all 0.15s",
+                                        }}
+                                        title={t('clickToCopy')}
+                                    >
+                                        {num}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ===== Name Tab ===== */}
+            {activeTab === 'name' && (
+                <div style={cardStyle}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                        <div>
+                            <label style={labelStyle}>{t('name.type')}</label>
+                            <select
+                                value={nameType}
+                                onChange={(e) => setNameType(e.target.value as 'korean' | 'english')}
+                                style={selectStyle}
+                            >
+                                <option value="korean">{t('name.korean')}</option>
+                                <option value="english">{t('name.english')}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style={labelStyle}>{t('name.count')}</label>
+                            <select
+                                value={nameCount}
+                                onChange={(e) => setNameCount(Number(e.target.value))}
+                                style={selectStyle}
+                            >
+                                {[1, 3, 5, 10, 20].map((n) => (
+                                    <option key={n} value={n}>{n}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onClick={generateNames} style={btnPrimary}>
+                        <FaSync size={14} />
+                        {t('name.generate')}
+                    </button>
+
+                    {nameResults.length > 0 && (
+                        <div style={{ marginTop: "20px" }}>
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: "10px",
+                            }}>
+                                <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "#333" }}>
+                                    {t('name.result')}
+                                </span>
+                                <button
+                                    onClick={() => copyText(nameResults.join('\n'))}
+                                    style={copyBtnStyle}
+                                >
+                                    <FaCopy size={11} /> {t('copyAll')}
+                                </button>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                {nameResults.map((name, i) => (
+                                    <div
+                                        key={i}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            padding: "12px 16px",
+                                            background: isDark ? "#0f172a" : "#f9fafb",
+                                            borderRadius: "10px",
+                                            border: isDark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                        }}
+                                    >
+                                        <span style={{
+                                            fontSize: "1.05rem",
+                                            fontWeight: "600",
+                                            color: isDark ? "#e2e8f0" : "#333",
+                                        }}>
+                                            {name}
+                                        </span>
+                                        <button
+                                            onClick={() => copyText(name)}
+                                            style={copyBtnStyle}
+                                        >
+                                            <FaCopy size={11} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ===== Color Tab ===== */}
+            {activeTab === 'color' && (
+                <div style={cardStyle}>
+                    <div style={{ marginBottom: "16px" }}>
+                        <label style={labelStyle}>{t('color.count')}</label>
+                        <select
+                            value={colorCount}
+                            onChange={(e) => setColorCount(Number(e.target.value))}
+                            style={{ ...selectStyle, width: "auto", minWidth: "100px" }}
+                        >
+                            {[1, 3, 5, 10, 20].map((n) => (
+                                <option key={n} value={n}>{n}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <button onClick={generateColors} style={btnPrimary}>
+                        <FaPalette size={14} />
+                        {t('color.generate')}
+                    </button>
+
+                    {colorResults.length > 0 && (
+                        <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                            {colorResults.map((color, i) => (
+                                <div
+                                    key={i}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "14px",
+                                        padding: "14px 16px",
+                                        background: isDark ? "#0f172a" : "#f9fafb",
+                                        borderRadius: "12px",
+                                        border: isDark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                    }}
+                                >
+                                    {/* Color Swatch */}
+                                    <div
+                                        style={{
+                                            width: "56px",
+                                            height: "56px",
+                                            borderRadius: "12px",
+                                            background: color.hex,
+                                            flexShrink: 0,
+                                            border: "2px solid " + (isDark ? "#475569" : "#d1d5db"),
+                                            boxShadow: `0 2px 8px ${color.hex}44`,
+                                        }}
+                                    />
+                                    {/* Color Info */}
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{
+                                            fontWeight: "700",
+                                            fontSize: "1rem",
+                                            color: isDark ? "#e2e8f0" : "#1f2937",
+                                            fontFamily: "'Fira Code', monospace",
+                                            marginBottom: "4px",
+                                        }}>
+                                            {color.hex.toUpperCase()}
+                                        </div>
+                                        <div style={{
+                                            fontSize: "0.78rem",
+                                            color: isDark ? "#64748b" : "#999",
+                                            fontFamily: "'Fira Code', monospace",
+                                            lineHeight: 1.6,
+                                        }}>
+                                            <div>RGB({color.rgb.r}, {color.rgb.g}, {color.rgb.b})</div>
+                                            <div>HSL({color.hsl.h}, {color.hsl.s}%, {color.hsl.l}%)</div>
+                                        </div>
+                                    </div>
+                                    {/* Copy Button */}
+                                    <button
+                                        onClick={() => copyText(color.hex.toUpperCase())}
+                                        style={copyBtnStyle}
+                                    >
+                                        <FaCopy size={11} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ===== Dice Tab ===== */}
+            {activeTab === 'dice' && (
+                <div style={cardStyle}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                        <div>
+                            <label style={labelStyle}>{t('dice.sides')}</label>
+                            <select
+                                value={diceSides}
+                                onChange={(e) => setDiceSides(Number(e.target.value) as DiceSides)}
+                                style={selectStyle}
+                            >
+                                {[4, 6, 8, 10, 12, 20].map((n) => (
+                                    <option key={n} value={n}>D{n}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label style={labelStyle}>{t('dice.count')}</label>
+                            <select
+                                value={diceCount}
+                                onChange={(e) => setDiceCount(Number(e.target.value))}
+                                style={selectStyle}
+                            >
+                                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                                    <option key={n} value={n}>{n}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={rollDice}
+                        disabled={diceRolling}
+                        style={{
+                            ...btnPrimary,
+                            opacity: diceRolling ? 0.7 : 1,
+                            cursor: diceRolling ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        <FaDice size={16} />
+                        {diceRolling ? t('dice.rolling') : t('dice.roll')}
+                    </button>
+
+                    {diceResults.length > 0 && (
+                        <div style={{ marginTop: "20px" }}>
+                            <div style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: "12px",
+                                justifyContent: "center",
+                                marginBottom: "16px",
+                            }}>
+                                {diceResults.map((value, i) => (
+                                    <div key={i} style={{ textAlign: "center" }}>
+                                        {diceSides === 6 ? (
+                                            /* Visual d6 with dots */
+                                            <div style={{
+                                                width: "72px",
+                                                height: "72px",
+                                                borderRadius: "14px",
+                                                background: isDark
+                                                    ? "linear-gradient(145deg, #1e293b, #334155)"
+                                                    : "linear-gradient(145deg, #ffffff, #f1f5f9)",
+                                                border: isDark ? "2px solid #475569" : "2px solid #cbd5e1",
+                                                position: "relative",
+                                                boxShadow: isDark
+                                                    ? "4px 4px 12px rgba(0,0,0,0.4), -2px -2px 8px rgba(255,255,255,0.05)"
+                                                    : "4px 4px 12px rgba(0,0,0,0.1), -2px -2px 8px rgba(255,255,255,0.8)",
+                                                animation: diceRolling ? "diceShake 0.1s infinite" : "none",
+                                            }}>
+                                                {(DICE_DOT_POSITIONS[value] || []).map((pos, di) => (
+                                                    <div
+                                                        key={di}
+                                                        style={{
+                                                            position: "absolute",
+                                                            left: `${pos[0]}%`,
+                                                            top: `${pos[1]}%`,
+                                                            transform: "translate(-50%, -50%)",
+                                                            width: "12px",
+                                                            height: "12px",
+                                                            borderRadius: "50%",
+                                                            background: isDark ? "#e2e8f0" : "#1e293b",
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            /* Other dice: number display */
+                                            <div style={{
+                                                width: "72px",
+                                                height: "72px",
+                                                borderRadius: diceSides === 4 ? "4px" : "14px",
+                                                background: isDark
+                                                    ? "linear-gradient(145deg, #1e293b, #334155)"
+                                                    : "linear-gradient(145deg, #ffffff, #f1f5f9)",
+                                                border: isDark ? "2px solid #475569" : "2px solid #cbd5e1",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                boxShadow: isDark
+                                                    ? "4px 4px 12px rgba(0,0,0,0.4)"
+                                                    : "4px 4px 12px rgba(0,0,0,0.1)",
+                                                animation: diceRolling ? "diceShake 0.1s infinite" : "none",
+                                            }}>
+                                                <span style={{
+                                                    fontSize: "1.6rem",
+                                                    fontWeight: "800",
+                                                    color: "#2563eb",
+                                                    fontFamily: "'Fira Code', monospace",
+                                                }}>
+                                                    {value}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Sum display */}
+                            {diceResults.length > 1 && (
+                                <div style={{
+                                    textAlign: "center",
+                                    padding: "12px",
+                                    background: isDark ? "#0f172a" : "#eff6ff",
+                                    borderRadius: "10px",
+                                    border: isDark ? "1px solid #334155" : "1px solid #bfdbfe",
+                                }}>
+                                    <span style={{
+                                        fontSize: "0.85rem",
+                                        color: isDark ? "#94a3b8" : "#64748b",
+                                    }}>
+                                        {t('dice.total')}:
+                                    </span>
+                                    <span style={{
+                                        fontSize: "1.3rem",
+                                        fontWeight: "800",
+                                        color: "#2563eb",
+                                        marginLeft: "8px",
+                                        fontFamily: "'Fira Code', monospace",
+                                    }}>
+                                        {diceResults.reduce((a, b) => a + b, 0)}
+                                    </span>
+                                    <span style={{
+                                        fontSize: "0.8rem",
+                                        color: isDark ? "#64748b" : "#999",
+                                        marginLeft: "12px",
+                                    }}>
+                                        ({diceResults.join(' + ')})
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ===== Coin Tab ===== */}
+            {activeTab === 'coin' && (
+                <div style={cardStyle}>
+                    <button
+                        onClick={flipCoin}
+                        disabled={coinFlipping}
+                        style={{
+                            ...btnPrimary,
+                            opacity: coinFlipping ? 0.7 : 1,
+                            cursor: coinFlipping ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        <span style={{ fontSize: "1.2rem" }}>&#x1FA99;</span>
+                        {coinFlipping ? t('coin.flipping') : t('coin.flip')}
+                    </button>
+
+                    {/* Coin Result */}
+                    {coinResult && (
+                        <div style={{
+                            marginTop: "24px",
+                            textAlign: "center",
+                        }}>
+                            <div style={{
+                                width: "140px",
+                                height: "140px",
+                                borderRadius: "50%",
+                                margin: "0 auto 16px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                background: coinResult === 'heads'
+                                    ? "linear-gradient(145deg, #fbbf24, #f59e0b)"
+                                    : "linear-gradient(145deg, #94a3b8, #64748b)",
+                                boxShadow: coinResult === 'heads'
+                                    ? "0 8px 32px rgba(245, 158, 11, 0.4), inset 0 2px 4px rgba(255,255,255,0.3)"
+                                    : "0 8px 32px rgba(100, 116, 139, 0.4), inset 0 2px 4px rgba(255,255,255,0.2)",
+                                animation: coinFlipping ? "coinSpin 0.15s infinite" : "none",
+                                border: coinResult === 'heads'
+                                    ? "4px solid #d97706"
+                                    : "4px solid #475569",
+                            }}>
+                                <span style={{
+                                    fontSize: "3rem",
+                                    fontWeight: "900",
+                                    color: coinResult === 'heads' ? "#78350f" : "#1e293b",
+                                    textShadow: "0 1px 2px rgba(255,255,255,0.3)",
+                                }}>
+                                    {coinResult === 'heads' ? 'H' : 'T'}
+                                </span>
+                            </div>
+                            <div style={{
+                                fontSize: "1.4rem",
+                                fontWeight: "800",
+                                color: coinResult === 'heads' ? "#f59e0b" : (isDark ? "#94a3b8" : "#64748b"),
+                                marginBottom: "4px",
+                            }}>
+                                {coinResult === 'heads' ? t('coin.heads') : t('coin.tails')}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Coin History */}
+                    {coinHistory.length > 0 && (
+                        <div style={{ marginTop: "24px" }}>
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: "10px",
+                            }}>
+                                <span style={{
+                                    fontWeight: "600",
+                                    fontSize: "0.9rem",
+                                    color: isDark ? "#e2e8f0" : "#333",
+                                }}>
+                                    {t('coin.history')}
+                                </span>
+                                <span style={{
+                                    fontSize: "0.8rem",
+                                    color: isDark ? "#64748b" : "#999",
+                                }}>
+                                    {t('coin.heads')}: {coinHistory.filter(r => r === 'heads').length} / {t('coin.tails')}: {coinHistory.filter(r => r === 'tails').length}
+                                </span>
+                            </div>
+                            <div style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: "6px",
+                            }}>
+                                {coinHistory.map((result, i) => (
+                                    <div
+                                        key={i}
+                                        style={{
+                                            width: "36px",
+                                            height: "36px",
+                                            borderRadius: "50%",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "0.75rem",
+                                            fontWeight: "700",
+                                            background: result === 'heads'
+                                                ? (isDark ? "#78350f" : "#fef3c7")
+                                                : (isDark ? "#1e293b" : "#f1f5f9"),
+                                            color: result === 'heads'
+                                                ? "#f59e0b"
+                                                : (isDark ? "#94a3b8" : "#64748b"),
+                                            border: result === 'heads'
+                                                ? "2px solid #f59e0b"
+                                                : isDark ? "2px solid #475569" : "2px solid #cbd5e1",
+                                        }}
+                                    >
+                                        {result === 'heads' ? 'H' : 'T'}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Animation Keyframes */}
+            <style jsx>{`
+                @keyframes fadeInDown {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                }
+                @keyframes diceShake {
+                    0% { transform: rotate(0deg) scale(1); }
+                    25% { transform: rotate(-5deg) scale(1.05); }
+                    50% { transform: rotate(5deg) scale(0.95); }
+                    75% { transform: rotate(-3deg) scale(1.02); }
+                    100% { transform: rotate(0deg) scale(1); }
+                }
+                @keyframes coinSpin {
+                    0% { transform: rotateY(0deg); }
+                    50% { transform: rotateY(180deg); }
+                    100% { transform: rotateY(360deg); }
+                }
+            `}</style>
+        </div>
+    );
+}

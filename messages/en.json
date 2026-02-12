@@ -57,7 +57,16 @@
       "uuidGenerator": "UUID Generator",
       "hashGenerator": "Hash Generator",
       "timestampConverter": "Timestamp Converter",
-      "discountCalculator": "Discount Calculator"
+      "discountCalculator": "Discount Calculator",
+      "insuranceCalculator": "Social Insurance Calculator",
+      "freelancerTax": "Freelancer 3.3% Tax Calculator",
+      "stockCalculator": "Stock Return Calculator",
+      "htmlEntity": "HTML Entity Converter",
+      "markdownPreview": "Markdown Preview",
+      "cssMinifier": "CSS Minifier",
+      "randomGenerator": "Random Generator",
+      "compatibilityChecker": "Compatibility Checker",
+      "businessDayCalculator": "Business Day Calculator"
     }
   },
   "Header": {
@@ -3095,7 +3104,9 @@
       "words": "Words",
       "readTime": "Read Time",
       "min": "min",
-      "sec": "sec"
+      "sec": "sec",
+      "manuscript200": "200-char Pages",
+      "manuscript400": "400-char Pages"
     },
     "input": {
       "title": "Text Input",
@@ -4542,6 +4553,19 @@
     "mapTitle": "Approximate Location",
     "mapDesc": "This is an estimated location based on IP. Actual location may differ.",
     "refreshBtn": "Refresh",
+    "uaTitle": "Browser / Device Info",
+    "uaString": "User-Agent",
+    "uaBrowser": "Browser",
+    "uaOS": "Operating System",
+    "uaPlatform": "Platform",
+    "uaLanguage": "Language",
+    "uaScreen": "Screen Resolution",
+    "uaCookies": "Cookies",
+    "uaDNT": "Do Not Track",
+    "uaEnabled": "Enabled",
+    "uaDisabled": "Disabled",
+    "uaNotSet": "Not Set",
+    "uaCopied": "Copied!",
     "infoTitle": "About IP Addresses",
     "info": {
       "whatIs": {
@@ -6503,6 +6527,1392 @@
       "privacy": {
         "title": "Privacy Notice",
         "text": "This discount and margin calculator processes all calculations in your browser. Entered amounts and calculation results are never sent to any server. No pricing data is stored externally, so you can use it with complete confidence."
+      }
+    }
+  },
+  "UuidGenerator": {
+    "meta": {
+      "title": "UUID Generator - Free Online UUID v4 Generator | teck-tani.com",
+      "description": "Generate UUID v4 quickly and securely with this free online tool. Supports bulk generation up to 100, case conversion, and hyphen options. Powered by Web Crypto API.",
+      "keywords": "UUID generator, UUID v4, GUID generator, unique identifier, online UUID, bulk UUID, free UUID tool",
+      "ogTitle": "UUID Generator - Free Online UUID v4 Generator",
+      "ogDescription": "Generate UUID v4 quickly and securely. Supports bulk generation up to 100, case and hyphen options."
+    },
+    "count": "Count",
+    "uppercase": "Uppercase",
+    "hyphens": "Include Hyphens",
+    "generate": "Generate UUID",
+    "result": "Results",
+    "copy": "Copy",
+    "copyAll": "Copy All",
+    "copied": "Copied",
+    "history": "History",
+    "clear": "Clear",
+    "seo": {
+      "description": {
+        "title": "What is a UUID Generator?",
+        "p1": "A UUID (Universally Unique Identifier) is a 128-bit (32 hex digit) unique identifier. It is used in software development for database records, API keys, session IDs, and anywhere unique identification is needed.",
+        "p2": "This tool generates the most widely used UUID v4 (random-based) using the Web Crypto API for cryptographic security. You can generate up to 100 UUIDs at once, with options for case conversion and hyphen inclusion."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "UUID v4 Generation", "desc": "Generates cryptographically secure UUID v4 using the Web Crypto API." },
+          "feat2": { "title": "Bulk Generation", "desc": "Generate up to 100 UUIDs at once with a single click." },
+          "feat3": { "title": "Format Options", "desc": "Choose uppercase/lowercase and include/remove hyphens." },
+          "feat4": { "title": "Clipboard Copy", "desc": "Copy individual UUIDs or all UUIDs at once to clipboard." },
+          "feat5": { "title": "Generation History", "desc": "Automatically saves up to 100 recently generated UUIDs in history." },
+          "feat6": { "title": "Browser-based", "desc": "All processing is done in the browser. Nothing is sent to a server." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Set Options</strong> — Configure the number of UUIDs (1-100), case format, and hyphen inclusion.",
+          "step2": "<strong>Generate</strong> — Click the generate button to create UUID v4 identifiers.",
+          "step3": "<strong>View Results</strong> — Review the generated list of UUIDs.",
+          "step4": "<strong>Copy & Use</strong> — Copy individual UUIDs or use Copy All to copy everything at once."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "Database Keys", "desc": "Use UUIDs as primary keys for database records." },
+          "uc2": { "title": "API Keys & Tokens", "desc": "Generate unique identifiers for API authentication keys and session tokens." },
+          "uc3": { "title": "File & Resource IDs", "desc": "Assign unique IDs to uploaded files, images, and documents." },
+          "uc4": { "title": "Distributed Systems", "desc": "Generate unique IDs in microservices and distributed databases without a central server." },
+          "uc5": { "title": "Test Data", "desc": "Quickly generate unique IDs for dummy data in development and testing environments." }
+        }
+      },
+      "faq": {
+        "title": "FAQ",
+        "q1": {
+          "q": "What is a UUID?",
+          "a": "UUID (Universally Unique Identifier) is a 128-bit number used to uniquely identify information in computer systems. It is designed to be unique across all systems without requiring a central authority."
+        },
+        "q2": {
+          "q": "How is UUID v4 generated?",
+          "a": "UUID v4 is generated using cryptographically secure random numbers. Of the 128 bits, 6 bits are fixed for version and variant, and the remaining 122 bits are randomly generated."
+        },
+        "q3": {
+          "q": "Can I remove hyphens from a UUID?",
+          "a": "Yes, hyphens are only for readability and do not affect the uniqueness of the UUID. Storing UUIDs without hyphens as 32 characters can save storage space."
+        },
+        "q4": {
+          "q": "Are UUIDs sequential?",
+          "a": "UUID v4 is completely random and not sequential. If you need sequential IDs, consider UUID v7 or other methods."
+        },
+        "q5": {
+          "q": "Can I generate multiple UUIDs at once?",
+          "a": "Yes, this tool allows you to generate up to 100 UUIDs at once. Set the desired count and click the generate button."
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This UUID generator processes everything in your browser. Generated UUIDs are never sent to any server and are completely deleted when you close the page."
+      }
+    }
+  },
+  "JwtDecoder": {
+    "meta": {
+      "title": "JWT Decoder - Free Online JSON Web Token Analyzer | teck-tani.com",
+      "description": "Decode JWT (JSON Web Token) and analyze Header, Payload, and Signature with this free online tool. Supports automatic timestamp conversion and expiration check.",
+      "keywords": "JWT decoder, JSON Web Token, JWT analyzer, JWT parser, token decoder, JWT expiration check, free JWT tool",
+      "ogTitle": "JWT Decoder - Free Online JWT Analyzer",
+      "ogDescription": "Decode JWT tokens and analyze Header, Payload, and Signature. Automatic timestamp conversion and expiration check."
+    },
+    "input": {
+      "label": "JWT Token",
+      "placeholder": "Paste your JWT token here... (e.g., eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)"
+    },
+    "action": {
+      "sample": "Sample JWT",
+      "clear": "Clear",
+      "copy": "Copy",
+      "copied": "Copied"
+    },
+    "error": {
+      "structure": "Invalid JWT structure. A JWT must have 3 parts separated by dots (.).",
+      "header": "Unable to decode JWT Header.",
+      "payload": "Unable to decode JWT Payload.",
+      "generic": "Failed to decode JWT."
+    },
+    "status": {
+      "label": "Token Status",
+      "expired": "Expired",
+      "valid": "Valid",
+      "noExp": "No Expiration"
+    },
+    "payload": {
+      "claims": "claims",
+      "timestamps": "Timestamp Information",
+      "exp": "Expiration (exp)",
+      "iat": "Issued At (iat)",
+      "nbf": "Not Before (nbf)",
+      "authTime": "Auth Time (auth_time)"
+    },
+    "signature": {
+      "note": "The signature must be verified with a secret key. This tool only decodes the token and does not verify the signature."
+    },
+    "seo": {
+      "description": {
+        "title": "What is a JWT Decoder?",
+        "p1": "JWT (JSON Web Token) is a web standard (RFC 7519) for securely transmitting information between parties. It consists of three parts: Header, Payload, and Signature, and is mainly used for authentication and information exchange.",
+        "p2": "This tool automatically decodes a JWT token when pasted, displaying each part in a readable format. Timestamps (exp, iat, nbf) are converted to human-readable dates, and expiration status is checked in real-time."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "Real-time Decoding", "desc": "Instantly separates and displays Header, Payload, and Signature as you paste a JWT token." },
+          "feat2": { "title": "Timestamp Conversion", "desc": "Automatically converts Unix timestamps like exp, iat, nbf to readable date/time." },
+          "feat3": { "title": "Expiration Check", "desc": "Determines token expiration in real-time, showing 'Valid' or 'Expired' status." },
+          "feat4": { "title": "Section Copy", "desc": "Copy Header, Payload, or Signature individually to the clipboard." },
+          "feat5": { "title": "Sample JWT", "desc": "Provides a sample JWT token to quickly test the tool." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter JWT Token</strong> — Paste the JWT token to decode or click the sample button.",
+          "step2": "<strong>View Header</strong> — Check the decoded Header for algorithm (alg) and token type (typ).",
+          "step3": "<strong>View Payload</strong> — Review claims in the Payload. Timestamps are automatically converted.",
+          "step4": "<strong>Check Expiration & Copy</strong> — Verify token expiration status and copy needed sections."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "API Development Debugging", "desc": "Quickly inspect JWT token contents and expiration during API authentication." },
+          "uc2": { "title": "Auth Troubleshooting", "desc": "Diagnose authentication issues like login failures and token expiration." },
+          "uc3": { "title": "Security Audit", "desc": "Verify that JWTs don't contain sensitive information that shouldn't be exposed." },
+          "uc4": { "title": "Learning & Education", "desc": "Use as a learning tool to understand JWT structure and how it works." }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This JWT decoder processes all decoding in your browser. The JWT token you enter is never sent to any server and is completely deleted when you close the page."
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": {
+        "q": "What is JWT?",
+        "a": "JWT (JSON Web Token) is a standard (RFC 7519) for securely transmitting information between parties as a JSON object. It consists of Header, Payload, and Signature, used for authentication and information exchange."
+      },
+      "q2": {
+        "q": "Is it safe to decode a JWT?",
+        "a": "JWT Header and Payload are only Base64Url-encoded, not encrypted. Anyone can decode and view the contents. Sensitive information should not be included in the JWT Payload."
+      },
+      "q3": {
+        "q": "What are exp, iat, and nbf?",
+        "a": "exp (Expiration Time) is the token expiration time, iat (Issued At) is the issuance time, and nbf (Not Before) is the start time when the token becomes valid. All are Unix timestamps in seconds."
+      },
+      "q4": {
+        "q": "How do I check if a JWT has expired?",
+        "a": "Compare the 'exp' claim with the current time. This decoder automatically determines expiration and displays the status."
+      },
+      "q5": {
+        "q": "Is my JWT stored on the server?",
+        "a": "No. All decoding is done in the browser. The JWT token is never sent to any server and is deleted when you close the page."
+      }
+    }
+  },
+  "InsuranceCalculator": {
+    "meta": {
+      "title": "Social Insurance Calculator - Korean 4 Major Insurance Premiums | teck-tani.com",
+      "description": "Calculate Korean 4 major social insurance premiums (National Pension, Health Insurance, Long-term Care, Employment Insurance) based on 2026 rates. Compare employee and employer contributions.",
+      "keywords": "Korean social insurance calculator, 4 major insurance, national pension, health insurance, employment insurance, long-term care, 2026 rates",
+      "ogTitle": "Social Insurance Calculator - Korean 4 Major Insurance",
+      "ogDescription": "Calculate Korean social insurance premiums with 2026 rates. Employee & employer contributions comparison."
+    },
+    "label": {
+      "monthlySalary": "Monthly Salary (Pre-tax)",
+      "companySize": "Company Size",
+      "employee": "Employee",
+      "employer": "Employer",
+      "total": "Total",
+      "totalEmployee": "Total Employee Deduction",
+      "totalEmployer": "Total Employer Contribution",
+      "totalCombined": "Employee + Employer Combined",
+      "netSalary": "Estimated Net Salary",
+      "netSalaryDesc": "Monthly salary - employee insurance premiums (income tax excluded)"
+    },
+    "placeholder": {
+      "salary": "Enter monthly salary"
+    },
+    "unit": " KRW",
+    "companySize": {
+      "small": {
+        "label": "Under 150",
+        "desc": "Employer EI: 1.15%"
+      },
+      "medium": {
+        "label": "150-999",
+        "desc": "Employer EI: 1.35%"
+      },
+      "large": {
+        "label": "1,000+",
+        "desc": "Employer EI: 1.65%"
+      },
+      "priority": {
+        "label": "Priority Support",
+        "desc": "Employer EI: 0.9%"
+      }
+    },
+    "insurance": {
+      "nationalPension": "National Pension",
+      "healthInsurance": "Health Insurance",
+      "longTermCare": "Long-term Care",
+      "longTermCareNote": "12.95% of Health Ins.",
+      "employmentInsurance": "Employment Ins."
+    },
+    "table": {
+      "type": "Insurance Type",
+      "rate": "Rate"
+    },
+    "result": {
+      "title": "Insurance Premium Results"
+    },
+    "button": {
+      "reset": "Reset",
+      "copy": "Copy Results",
+      "copied": "Copied!"
+    },
+    "rateNote": "* 2026 rates applied. National Pension capped at 390K-6,170K KRW/month. Actual premiums may vary by standard remuneration and non-taxable items.",
+    "seo": {
+      "description": {
+        "title": "What is the Social Insurance Calculator?",
+        "p1": "Korean social insurance consists of 4 mandatory insurances: National Pension, Health Insurance, Long-term Care Insurance, and Employment Insurance. Both employees and employers contribute a set percentage, deducted monthly from salary.",
+        "p2": "This calculator uses 2026 rates to automatically compute all 4 insurance premiums based on your monthly salary. It also reflects different employment insurance rates based on company size."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "2026 Latest Rates", "desc": "Reflects 2026 rates: National Pension 4.5%, Health 3.545%, Long-term Care 12.95%, Employment 0.9%." },
+          "feat2": { "title": "Employee vs Employer", "desc": "Compare employee and employer contributions side by side." },
+          "feat3": { "title": "Company Size Options", "desc": "Reflects different employment insurance rates by company size." },
+          "feat4": { "title": "Net Salary Estimate", "desc": "Instantly see estimated net salary after all deductions." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Salary</strong> — Enter your pre-tax monthly salary. Commas are automatically added.",
+          "step2": "<strong>Select Company Size</strong> — Choose company size for employment insurance rate.",
+          "step3": "<strong>View Results</strong> — Check premiums for each insurance type for employee and employer.",
+          "step4": "<strong>Check Net Salary & Copy</strong> — Review total deductions and net salary, copy results to clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "Salary Negotiation", "desc": "Calculate actual take-home pay during salary negotiations." },
+          "uc2": { "title": "Labor Cost Planning", "desc": "Employers calculate total labor costs including employer contributions." },
+          "uc3": { "title": "Job Preparation", "desc": "New graduates estimate expected salary and insurance deductions." },
+          "uc4": { "title": "Job Change Comparison", "desc": "Compare insurance changes when switching jobs with different salaries." }
+        }
+      },
+      "faq": {
+        "title": "FAQ",
+        "list": {
+          "q1": {
+            "q": "What are the 4 major social insurances in Korea?",
+            "a": "They are National Pension, Health Insurance, Long-term Care Insurance, and Employment Insurance. These are mandatory for all employers hiring workers in Korea."
+          },
+          "q2": {
+            "q": "Who pays the premiums?",
+            "a": "National Pension, Health Insurance, and Long-term Care are split 50/50 between employee and employer. Employment Insurance is 0.9% for employees, and 0.9%-1.65% for employers depending on company size."
+          },
+          "q3": {
+            "q": "What are the 2026 rates?",
+            "a": "National Pension 9% (4.5% each), Health 7.09% (3.545% each), Long-term Care 12.95% of health premium, Employment 0.9% for employees."
+          },
+          "q4": {
+            "q": "Is long-term care insurance separate?",
+            "a": "Long-term care is calculated as a percentage of health insurance premiums (12.95% in 2026) and paid together with health insurance."
+          },
+          "q5": {
+            "q": "Are these calculations accurate?",
+            "a": "This calculator uses standard 2026 rates. Actual premiums may vary based on standard monthly remuneration, caps, and non-taxable items."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This social insurance calculator processes all calculations in your browser. Your salary information is never sent to any server and no personal data is stored."
+      }
+    }
+  },
+  "FreelancerTax": {
+    "meta": {
+      "title": "Freelancer 3.3% Tax Calculator - Withholding Tax | teck-tani.com",
+      "description": "Calculate Korean freelancer 3.3% withholding tax (3% income tax + 0.3% local tax). Bidirectional: contract amount to net, or net to contract amount.",
+      "keywords": "freelancer tax calculator, 3.3% withholding tax, Korean freelancer tax, income tax, local tax, net payment calculator, contract amount",
+      "ogTitle": "Freelancer 3.3% Tax Calculator - Withholding Tax",
+      "ogDescription": "Calculate Korean freelancer 3.3% withholding tax. Contract ↔ net amount bidirectional conversion."
+    },
+    "mode": {
+      "contractToNet": "Contract → Net Amount",
+      "netToContract": "Net Amount → Contract"
+    },
+    "label": {
+      "contractAmount": "Contract Amount",
+      "incomeTax": "Income Tax",
+      "localTax": "Local Tax",
+      "totalTax": "Total Withholding",
+      "netAmount": "Net Amount"
+    },
+    "button": {
+      "copy": "Copy",
+      "copied": "Copied!",
+      "copyAll": "Copy All",
+      "reset": "Reset"
+    },
+    "result": {
+      "title": "Calculation Results"
+    },
+    "summary": {
+      "title": "Monthly / Yearly Summary",
+      "monthly": "Monthly",
+      "yearly": "Yearly (x12)"
+    },
+    "info": {
+      "taxBreakdown": "Income Tax 3.0% + Local Tax 0.3% (10% of Income Tax) = Total 3.3% Withholding"
+    },
+    "formula": {
+      "title": "Calculation Formula",
+      "incomeTaxLabel": "Income Tax",
+      "incomeTaxFormula": "Contract Amount x 3.0%",
+      "localTaxLabel": "Local Tax",
+      "localTaxFormula": "Income Tax x 10% (= Contract Amount x 0.3%)",
+      "totalTaxLabel": "Total Withholding",
+      "totalTaxFormula": "Income Tax + Local Tax (= Contract Amount x 3.3%)",
+      "netAmountLabel": "Net Amount",
+      "netAmountFormula": "Contract Amount - Total Withholding (= Contract Amount x 96.7%)"
+    },
+    "unit": "KRW",
+    "seo": {
+      "description": {
+        "title": "What is the Freelancer 3.3% Tax Calculator?",
+        "p1": "In Korea, freelancers (business income earners) have 3.3% withheld from their income: 3.0% income tax and 0.3% local income tax (10% of income tax). The payer deducts this amount before payment and remits it to the National Tax Service.",
+        "p2": "This calculator quickly computes the bidirectional conversion between contract amount and net amount. Enter the contract amount to see net payment after 3.3% deduction, or enter desired net amount to find the required contract amount. Monthly and yearly summaries are also provided."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "Bidirectional Calculation", "desc": "Convert contract→net or net→contract amount automatically." },
+          "feat2": { "title": "Tax Breakdown", "desc": "Shows income tax (3.0%) and local tax (0.3%) separately with exact amounts." },
+          "feat3": { "title": "Monthly/Yearly Summary", "desc": "Displays yearly estimates (x12) for contract amount, tax, and net payment." },
+          "feat4": { "title": "Real-time Calculation & Copy", "desc": "Results update instantly as you type, with individual and full copy buttons for each item." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Direction</strong> — Choose 'Contract → Net Amount' or 'Net Amount → Contract' mode.",
+          "step2": "<strong>Enter Amount</strong> — Enter contract amount or desired net amount. Commas are added automatically.",
+          "step3": "<strong>View Results</strong> — Check income tax, local tax, total withholding, net amount, and monthly/yearly summary.",
+          "step4": "<strong>Copy & Use</strong> — Use individual copy buttons or the copy all button to copy results to clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "Rate Negotiation", "desc": "Reverse-calculate the contract rate based on your desired net payment for freelance projects." },
+          "uc2": { "title": "Income Management", "desc": "Pre-calculate net income from monthly freelance earnings to plan expenses and savings." },
+          "uc3": { "title": "Invoice Preparation", "desc": "Calculate the exact invoice amount needed to receive your desired net payment." },
+          "uc4": { "title": "Tax Filing Prep", "desc": "Track annual withholding totals to prepare for May comprehensive income tax filing." }
+        }
+      },
+      "faq": {
+        "title": "FAQ",
+        "list": {
+          "q1": {
+            "q": "What is the 3.3% freelancer withholding tax?",
+            "a": "When paying freelancers (business income earners), the payer withholds 3.0% income tax and 0.3% local tax, totaling 3.3%, and remits it to the tax office."
+          },
+          "q2": {
+            "q": "Is 3.3% the final tax?",
+            "a": "No. 3.3% is a prepaid tax (withholding). The actual tax is settled through comprehensive income tax filing in May. You may receive a refund after applying expenses and deductions."
+          },
+          "q3": {
+            "q": "Can freelancers deduct business expenses?",
+            "a": "Yes. Freelancers can deduct necessary business expenses such as equipment, office rent, transportation, and communication costs. Standard expense rates or actual bookkeeping can be used."
+          },
+          "q4": {
+            "q": "Do freelancers need social insurance?",
+            "a": "Freelancers are not eligible for employment or industrial accident insurance. However, they must enroll in National Pension and Health Insurance as regional subscribers, paying premiums based on income level."
+          },
+          "q5": {
+            "q": "Can I get a tax refund on withheld taxes?",
+            "a": "Yes. If your actual tax after deductions and credits is less than total withholding, you receive a refund. This is common for those with low income or high business expenses. Apply during May tax filing."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This freelancer tax calculator processes all calculations in your browser. Your financial information is never sent to any server and no personal data is stored."
+      }
+    }
+  },
+  "StockCalculator": {
+    "meta": {
+      "title": "Stock Return Calculator - Commission, Tax, Break-even | Tani DevTool",
+      "description": "Calculate net profit and return rate for stock trades with commission fees and transaction tax. Automatically find the break-even selling price.",
+      "keywords": "stock return calculator, stock calculator, securities transaction tax, trading commission, break-even point, stock profit, investment calculator, tax calculator",
+      "ogTitle": "Stock Return Calculator - With Fees & Tax | Tani DevTool",
+      "ogDescription": "Enter buy price, sell price, commission, and tax to instantly calculate net profit, return rate, and break-even selling price."
+    },
+    "label": {
+      "buyPrice": "Buy Price (per share)",
+      "quantity": "Quantity",
+      "sellPrice": "Sell Price (per share)",
+      "commissionRate": "Commission Rate",
+      "taxRate": "Transaction Tax Rate"
+    },
+    "placeholder": {
+      "buyPrice": "e.g. 50,000",
+      "quantity": "e.g. 10",
+      "sellPrice": "e.g. 55,000"
+    },
+    "unit": "KRW",
+    "shares": "shares",
+    "result": {
+      "title": "Calculation Results",
+      "investment": "Total Investment",
+      "sellTotal": "Total Sell Amount",
+      "buyCommission": "Buy Commission",
+      "sellCommission": "Sell Commission",
+      "totalCommission": "Total Commission",
+      "tax": "Transaction Tax",
+      "totalCost": "Total Cost (Commission+Tax)",
+      "netProfit": "Net Profit",
+      "returnRate": "Return Rate",
+      "profitLabel": "Profit",
+      "lossLabel": "Loss"
+    },
+    "breakeven": {
+      "title": "Break-even Sell Price",
+      "description": "Minimum sell price considering fees and tax",
+      "price": "Break-even Price",
+      "info": "You must sell at or above this price to avoid a loss."
+    },
+    "info": {
+      "taxNote": "2026 Korea securities transaction tax: 0.18% (KOSPI & KOSDAQ). Commission varies by broker; default is based on online trading.",
+      "disclaimer": "These results are for reference only. Actual fees and tax rates may vary by broker."
+    },
+    "button": {
+      "reset": "Reset",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyAll": "Copy All"
+    },
+    "formula": {
+      "title": "Calculation Formula",
+      "buyCommission": "Buy Commission = Buy Price x Quantity x Commission Rate",
+      "sellCommission": "Sell Commission = Sell Price x Quantity x Commission Rate",
+      "tax": "Transaction Tax = Sell Price x Quantity x Tax Rate",
+      "netProfit": "Net Profit = (Sell Price - Buy Price) x Quantity - Total Commission - Tax",
+      "returnRate": "Return Rate = Net Profit / Investment x 100",
+      "breakeven": "Break-even Price = Buy Price x (1 + Commission Rate) / (1 - Commission Rate - Tax Rate)"
+    },
+    "seo": {
+      "description": {
+        "title": "What is the Stock Return Calculator?",
+        "p1": "The Stock Return Calculator is a tool that accurately calculates your actual net profit and return rate by factoring in trading commissions and securities transaction tax. Instead of just looking at the difference between buy and sell prices, you can see the real amount you take home.",
+        "p2": "It provides default values for Korea's 2026 securities transaction tax (0.18%) and online trading commission (0.015%), which you can freely adjust. It also automatically calculates the break-even selling price so you know the minimum price to sell at to avoid losses."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-time P&L Calculation",
+            "desc": "Enter buy price, sell price, and quantity to instantly calculate net profit and return rate including all fees and taxes."
+          },
+          "feat2": {
+            "title": "Commission & Tax Included",
+            "desc": "Reflects both buy/sell commissions and securities transaction tax for accurate real-world profit calculation."
+          },
+          "feat3": {
+            "title": "Auto Break-even Calculation",
+            "desc": "Automatically calculates the minimum sell price (break-even point) considering all commissions and taxes."
+          },
+          "feat4": {
+            "title": "Comma-formatted Numbers",
+            "desc": "Large amounts are automatically formatted with thousand separators for easy reading, and results can be copied."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Buy Info</strong> — Input the buy price per share and the number of shares.",
+          "step2": "<strong>Enter Sell Price</strong> — Input the actual or expected sell price per share.",
+          "step3": "<strong>Check Fees & Tax</strong> — Review defaults (commission 0.015%, tax 0.18%) and adjust if needed.",
+          "step4": "<strong>View Results</strong> — Check net profit, return rate, and break-even sell price."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Pre-sell Profit Simulation",
+            "desc": "Calculate how much actual profit you would make if you sold your shares at a specific price."
+          },
+          "uc2": {
+            "title": "Target Return Reverse Calculation",
+            "desc": "Find out the minimum sell price needed to achieve your desired profit target."
+          },
+          "uc3": {
+            "title": "Broker Fee Comparison",
+            "desc": "Compare actual profits across different brokers by entering their respective commission rates."
+          },
+          "uc4": {
+            "title": "Break-even Point Check",
+            "desc": "Identify the minimum sell price after fees and taxes to prevent losses."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "q1": {
+          "q": "What is securities transaction tax?",
+          "a": "Securities transaction tax is a tax imposed when selling stocks. As of 2026 in Korea, both KOSPI and KOSDAQ have a 0.18% tax rate. No tax is charged on purchases — only on the sell amount."
+        },
+        "q2": {
+          "q": "How is commission calculated?",
+          "a": "Commission is charged on both buy and sell transactions. It is calculated by multiplying the trade amount (price x quantity) by the commission rate. Rates vary from 0.003% to 0.5% depending on the broker and trading method (online/offline/mobile). The default 0.015% represents the online trading average."
+        },
+        "q3": {
+          "q": "What is the break-even point (BEP)?",
+          "a": "The break-even point is the price at which you neither profit nor lose, after accounting for all fees and taxes. You must sell above this price to generate actual profit. It factors in buy commission, sell commission, and securities transaction tax."
+        },
+        "q4": {
+          "q": "What is the 2026 transaction tax rate?",
+          "a": "As of 2026, both KOSPI and KOSDAQ have a securities transaction tax rate of 0.18%. This has been gradually reduced from 0.20% in 2023. Note that the special rural development tax is separate. This calculator only reflects the securities transaction tax."
+        },
+        "q5": {
+          "q": "Is my data stored?",
+          "a": "No. This calculator processes all calculations in your browser. Your trading information is never sent to any server. All data is cleared when you close the page."
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This stock return calculator processes all calculations in your browser. Your buy/sell information is never sent to any server, and no investment data is stored."
+      }
+    }
+  },
+  "HtmlEntity": {
+    "meta": {
+      "title": "HTML Entity Converter - Encode/Decode Online Tool | Tani DevTool",
+      "description": "Free online tool for real-time HTML entity encoding and decoding. Supports named entities (&lt; &amp; &copy;), numeric (&#60;), and hex (&#x3C;) entities. Essential developer tool.",
+      "keywords": "HTML entity, HTML encoding, HTML decoding, HTML converter, special characters, HTML escape, XSS prevention, web development, frontend",
+      "ogTitle": "HTML Entity Converter - Real-time Encode/Decode | Tani DevTool",
+      "ogDescription": "Convert special characters to HTML entities or decode entities back to text. Supports named, numeric, and hex entities. Free online tool."
+    },
+    "encode": "Encode",
+    "decode": "Decode",
+    "inputLabel": "Input Text",
+    "outputLabel": "Conversion Result",
+    "inputPlaceholderEncode": "Enter text to convert to HTML entities...\nExample: <div class=\"hello\">Hello & Welcome</div>",
+    "inputPlaceholderDecode": "Enter HTML entities to decode to original text...\nExample: &lt;div class=&quot;hello&quot;&gt;",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "clear": "Clear",
+    "swap": "Swap Input/Output",
+    "characters": "Characters",
+    "error": {
+      "decode": "An error occurred during decoding. Please check if the input contains valid HTML entities."
+    },
+    "referenceTitle": "Common HTML Entities Reference",
+    "refCharacter": "Character",
+    "refEntityName": "Named",
+    "refEntityNumber": "Numeric",
+    "refDescription": "Description",
+    "seo": {
+      "description": {
+        "title": "What is an HTML Entity Converter?",
+        "p1": "An HTML Entity Converter is a tool that converts characters with special meaning in HTML documents (<, >, &, \", etc.) into safe entity codes, or restores entity codes back to their original characters.",
+        "p2": "It is essential in web development for preventing XSS (Cross-Site Scripting) attacks, displaying HTML source code, and safely inserting special characters. This tool supports Named entities (&amp;), Numeric entities (&#38;), and Hex entities (&#x26;)."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-time Conversion",
+            "desc": "Results are displayed instantly as you type. No need to press a separate convert button — encoding/decoding results appear immediately."
+          },
+          "feat2": {
+            "title": "Named Entity Support",
+            "desc": "Fully supports W3C standard named entities such as &lt; &gt; &amp; &quot; &copy; &reg; &trade; and more."
+          },
+          "feat3": {
+            "title": "Numeric/Hex Entity Support",
+            "desc": "Encode and decode both decimal (&#60;) and hexadecimal (&#x3C;) numeric entities."
+          },
+          "feat4": {
+            "title": "Encode/Decode Mode Toggle",
+            "desc": "Switch between encode and decode modes with a single click. A swap feature is also available to exchange input and output."
+          },
+          "feat5": {
+            "title": "Entity Reference Table",
+            "desc": "Provides a reference table with 23+ common HTML entities showing Named and Numeric formats at a glance."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Mode</strong> — Choose the conversion direction using the Encode/Decode toggle at the top.",
+          "step2": "<strong>Enter Text</strong> — Type or paste the text or HTML entities you want to convert in the left input area.",
+          "step3": "<strong>View Results</strong> — The conversion result appears in real-time in the right output area as you type.",
+          "step4": "<strong>Copy Result</strong> — Click the copy button to copy the conversion result to your clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "XSS Attack Prevention",
+            "desc": "Convert special characters to entities when displaying user input in HTML to prevent script injection attacks."
+          },
+          "uc2": {
+            "title": "Display HTML Source Code",
+            "desc": "Convert HTML tags to entities when showing code in blogs or documentation so they render as text instead of being executed."
+          },
+          "uc3": {
+            "title": "Email Address Obfuscation",
+            "desc": "Convert email addresses to HTML entities to make it harder for web crawlers to automatically harvest them."
+          },
+          "uc4": {
+            "title": "Insert Special Characters",
+            "desc": "Safely insert special characters like copyright (©), registered trademark (®), and euro sign (€) that aren't on the keyboard."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This HTML Entity Converter processes all conversions in your browser. No text you enter is ever sent to any server, and no data is stored externally."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "What are HTML entities?",
+        "a": "HTML entities are codes used to represent characters with special meaning in HTML or characters that are difficult to display. For example, '<' is represented as '&lt;' and '&' as '&amp;'. There are three forms: Named (&amp;), Numeric (&#38;), and Hex (&#x26;)."
+      },
+      "q2": {
+        "q": "Why is HTML entity conversion necessary?",
+        "a": "In HTML, characters like <, >, and & are interpreted as the start of tags or entities. To display these characters as text, they must be converted to entities. It's also essential for XSS prevention, source code display, and special character insertion."
+      },
+      "q3": {
+        "q": "What's the difference between Named and Numeric entities?",
+        "a": "Named entities use descriptive names like &lt; and &copy;, while Numeric entities use Unicode code point numbers like &#60; and &#169;. Named entities are easier to remember, while Numeric entities can represent any Unicode character."
+      },
+      "q4": {
+        "q": "Do I need to convert all characters to entities?",
+        "a": "No. Only 4 characters must be converted: <, >, &, and \". Other special characters can be optionally converted as needed. This tool automatically converts the essential characters."
+      },
+      "q5": {
+        "q": "Where is my input data stored?",
+        "a": "Your input data is processed entirely within your browser and is never sent to any server. All data is cleared when you close the page."
+      }
+    }
+  },
+  "CssMinifier": {
+    "meta": {
+      "title": "CSS Minifier / Beautifier - Online CSS Compress & Format Tool",
+      "description": "Free online tool to minify or beautify CSS code in real-time. Removes comments, compresses whitespace, shows file size savings. No external libraries, processed entirely in your browser.",
+      "keywords": "CSS Minifier, CSS compress, CSS Beautifier, CSS formatter, CSS optimizer, minify CSS online, CSS code compressor, web developer tool, CSS optimization, CSS minification",
+      "ogTitle": "CSS Minifier / Beautifier | Free Online CSS Compression Tool",
+      "ogDescription": "Minify or beautify CSS code in real-time. Remove comments, optimize whitespace, and see savings percentage. Free online tool."
+    },
+    "mode": "Mode",
+    "minify": "Minify",
+    "beautify": "Beautify",
+    "inputLabel": "CSS Input",
+    "inputPlaceholder": "Paste your CSS code here...",
+    "outputLabel": "Result",
+    "outputPlaceholder": "Processed CSS will appear here.",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "clear": "Clear",
+    "loadSample": "Load Sample CSS",
+    "stats": "Statistics",
+    "originalSize": "Original Size",
+    "resultSize": "Result Size",
+    "savings": "Savings",
+    "bytes": "bytes",
+    "noInput": "Please enter CSS code.",
+    "seo": {
+      "description": {
+        "title": "What is CSS Minifier?",
+        "p1": "CSS Minifier is a tool that minimizes CSS (Cascading Style Sheets) file size by removing unnecessary whitespace, line breaks, and comments. It helps improve website loading speed and save bandwidth.",
+        "p2": "Beautify mode allows you to reformat compressed CSS into a readable format with proper indentation, which is useful for code analysis and debugging. All processing happens in your browser and nothing is sent to external servers."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-time CSS Compression",
+            "desc": "CSS code is automatically compressed as you type. Removes comments, optimizes whitespace, and eliminates unnecessary semicolons."
+          },
+          "feat2": {
+            "title": "Beautify Mode",
+            "desc": "Restores compressed CSS to a readable format with proper indentation and line breaks."
+          },
+          "feat3": {
+            "title": "Size Savings Statistics",
+            "desc": "Displays original size, result size, and savings in both bytes and percentage in real-time."
+          },
+          "feat4": {
+            "title": "Sample CSS Provided",
+            "desc": "Load sample CSS with a single click to immediately test the tool's features."
+          },
+          "feat5": {
+            "title": "Clipboard Copy",
+            "desc": "Copy the processed result to your clipboard with a single click."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Mode</strong> — Choose Minify or Beautify mode.",
+          "step2": "<strong>Enter CSS</strong> — Paste CSS code in the input area or click the 'Load Sample CSS' button.",
+          "step3": "<strong>View Results</strong> — Check the processed result and size savings statistics in real-time.",
+          "step4": "<strong>Copy Result</strong> — Click the copy button to copy the result to your clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Website Deployment Optimization",
+            "desc": "Compress CSS files before production deployment to improve loading speed and save bandwidth."
+          },
+          "uc2": {
+            "title": "Analyze Compressed CSS",
+            "desc": "Use Beautify mode to format compressed CSS from other sites to understand code structure."
+          },
+          "uc3": {
+            "title": "Code Review Preparation",
+            "desc": "Share formatted CSS with team members or unify formatting before code review."
+          },
+          "uc4": {
+            "title": "Email Template Optimization",
+            "desc": "Compress CSS in email templates with inline styles to reduce email size."
+          }
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "How does CSS Minifier work?",
+        "a": "It applies rules such as removing comments (/* ... */), removing unnecessary whitespace/line breaks, removing spaces around braces/colons/semicolons, and removing trailing semicolons to minimize CSS code."
+      },
+      "q2": {
+        "q": "Does CSS still work properly after minification?",
+        "a": "Yes. CSS Minifier only removes unnecessary characters without changing the meaning of the code. Browsers interpret minified CSS identically to the original."
+      },
+      "q3": {
+        "q": "When should I use the Beautify feature?",
+        "a": "Use it when debugging compressed CSS or analyzing code structure. It adds indentation and line breaks to improve readability."
+      },
+      "q4": {
+        "q": "Is the CSS I enter sent to a server?",
+        "a": "No. All processing is done with JavaScript in your browser. The CSS code you enter is never sent to any server."
+      },
+      "q5": {
+        "q": "How much can CSS file size be reduced?",
+        "a": "Typically, file size can be reduced by 20-50%. CSS with many comments or deep indentation will see greater savings."
+      }
+    },
+    "seoPrivacy": {
+      "title": "Privacy Notice",
+      "text": "This CSS Minifier processes everything in your browser. The CSS code you enter is never sent to any external server, and no data is stored."
+    }
+  },
+  "BusinessDayCalculator": {
+    "meta": {
+      "title": "Business Day Calculator - Exclude Weekends & Holidays | Tani DevTool",
+      "description": "Free online business day calculator excluding weekends and Korean public holidays. Add/subtract business days, count days between dates, D-day calculation. 2025-2027 Korean holidays included.",
+      "keywords": "business day calculator, working days calculator, exclude weekends, exclude holidays, business days between dates, workday calculator, deadline calculator, Korean holidays, D-day business days",
+      "ogTitle": "Business Day Calculator - Exclude Weekends & Holidays | Tani DevTool",
+      "ogDescription": "Calculate business days accurately excluding weekends and Korean holidays. Supports adding/subtracting days, counting between dates, and D-day calculations."
+    },
+    "modeAdd": "Add/Subtract Days",
+    "modeBetween": "Days Between",
+    "modeDday": "D-day",
+    "includeWorkersDay": "Include Workers' Day",
+    "workersDayHint": "Workers' Day (May 1) is a paid leave for private sector, not a national holiday. Government offices operate normally.",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "direction": "Direction",
+    "directionAdd": "Add (+)",
+    "directionSubtract": "Subtract (-)",
+    "businessDaysInput": "Business Days",
+    "businessDaysPlaceholder": "Enter number of business days",
+    "resultTitle": "Result",
+    "calendarDays": "Calendar Days",
+    "weekendsSkipped": "Weekends",
+    "holidaysSkipped": "Holidays",
+    "daysUnit": " days",
+    "holidayList": "Holidays in Period",
+    "businessDaysResult": "Business Days",
+    "businessDaysLabel": "business days",
+    "ddayToday": "Today",
+    "ddayTarget": "Target Date",
+    "ddayBusinessDays": "Business Days Left",
+    "upcomingHolidays": "Upcoming Holidays",
+    "copy": "Copy",
+    "copied": "Copied to clipboard!",
+    "seo": {
+      "description": {
+        "title": "What is a Business Day Calculator?",
+        "p1": "A business day calculator is a tool that computes actual working days (business days) excluding weekends (Saturday, Sunday) and Korean public holidays. It accurately calculates delivery deadlines, contract terms, and administrative processing periods.",
+        "p2": "All Korean public holidays for 2025-2027 are included (New Year's Day, Lunar New Year, Independence Movement Day, Children's Day, Buddha's Birthday, Memorial Day, Liberation Day, Chuseok, National Foundation Day, Hangul Day, Christmas) along with substitute holidays. Workers' Day (May 1st) can be separately toggled on or off."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Add/Subtract Business Days",
+            "desc": "Calculate the exact date N business days after (or before) a start date. Automatically skips weekends and holidays to give you the actual working day date."
+          },
+          "feat2": {
+            "title": "Count Days Between Dates",
+            "desc": "Calculate the number of business days, weekends, and holidays between two dates. Useful for project duration and contract term calculations."
+          },
+          "feat3": {
+            "title": "D-day Business Day Count",
+            "desc": "Shows the remaining business days from today to a target date in real-time. Perfect for managing deadlines and due dates."
+          },
+          "feat4": {
+            "title": "Workers' Day Toggle",
+            "desc": "Since Workers' Day (May 1) only applies to private sector employees, government and financial institutions can exclude it from calculations."
+          },
+          "feat5": {
+            "title": "Holiday Details",
+            "desc": "Displays a list of holidays with dates and names within the calculation period, plus upcoming holidays for reference."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "s1": "<strong>Select Mode</strong> — Choose from 'Add/Subtract Days', 'Days Between', or 'D-day' calculation mode.",
+          "s2": "<strong>Configure Workers' Day</strong> — Toggle whether to include Workers' Day (May 1). Include for private companies, exclude for government offices.",
+          "s3": "<strong>Enter Dates and Days</strong> — Input the start date and number of business days (or end date / target date).",
+          "s4": "<strong>Review Results</strong> — Check the calculated date, total calendar days, weekends/holidays count, and the holiday list."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Delivery & Deadline Calculation",
+            "desc": "When contracts specify 'within 10 business days', automatically calculate the exact delivery date accounting for weekends and holidays."
+          },
+          "uc2": {
+            "title": "Administrative Processing Period",
+            "desc": "Calculate completion dates for permits, approvals, and registrations that are regulated as 'within N business days'."
+          },
+          "uc3": {
+            "title": "Project Schedule Management",
+            "desc": "Determine the actual available working days from project start to end for resource allocation and milestone planning."
+          },
+          "uc4": {
+            "title": "Financial/Insurance Period Calculation",
+            "desc": "Calculate business day periods for banking operations, insurance claim deadlines, and loan processing timelines."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "What is a Business Day Calculator?",
+            "a": "A business day calculator computes the actual number of working days excluding weekends (Saturday, Sunday) and Korean public holidays. You can calculate the date after N business days from a start date, or count the business days between two dates."
+          },
+          "q2": {
+            "q": "Is Workers' Day included as a holiday?",
+            "a": "Workers' Day (May 1st) is a paid leave day for private sector employees, not a national public holiday. Government offices, banks, and financial institutions operate normally. This calculator provides a toggle to include or exclude it."
+          },
+          "q3": {
+            "q": "How are substitute holidays handled?",
+            "a": "Substitute holidays are designated when a public holiday falls on a weekend. This calculator includes all substitute holidays for 2025-2027, ensuring accurate business day calculations."
+          },
+          "q4": {
+            "q": "Which holidays are reflected?",
+            "a": "All Korean public holidays are included: New Year's Day, Lunar New Year, Independence Movement Day, Children's Day, Buddha's Birthday, Memorial Day, Liberation Day, Chuseok, National Foundation Day, Hangul Day, Christmas, and substitute holidays. Workers' Day is managed via a separate toggle."
+          },
+          "q5": {
+            "q": "Is my data safe?",
+            "a": "Yes, all calculations are processed in your browser and your date information is never sent to any server. No personal data is collected or stored."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This business day calculator processes all calculations in your browser. Your date information is never sent to any server, and no data is collected or stored."
+      }
+    }
+  },
+  "MarkdownPreview": {
+    "meta": {
+      "title": "Markdown Preview | Live Markdown Editor | Tani DevTool",
+      "description": "Free online Markdown editor with real-time preview. Supports headings, bold, italic, code blocks, tables, links, images, and all standard Markdown syntax.",
+      "keywords": "markdown preview, markdown editor, live markdown, markdown to html, markdown converter, online markdown, markdown renderer, markdown syntax",
+      "ogTitle": "Markdown Preview - Live Markdown Editor",
+      "ogDescription": "Convert and preview Markdown text to HTML in real-time. Free online tool supporting all standard Markdown syntax."
+    },
+    "title": "Markdown Preview",
+    "subtitle": "Enter Markdown text to see <strong>real-time HTML conversion results</strong>.",
+    "editor": {
+      "label": "Markdown Input",
+      "placeholder": "Type your Markdown text here..."
+    },
+    "preview": {
+      "label": "Preview",
+      "empty": "Enter Markdown text in the editor to see a preview here."
+    },
+    "action": {
+      "copyMd": "Copy MD",
+      "copyHtml": "Copy HTML",
+      "sample": "Load Sample",
+      "clear": "Clear",
+      "copied": "Copied!"
+    },
+    "toast": {
+      "copiedMd": "Markdown copied to clipboard.",
+      "copiedHtml": "HTML copied to clipboard.",
+      "cleared": "Editor has been cleared."
+    },
+    "seo": {
+      "description": {
+        "title": "What is Markdown Preview?",
+        "p1": "Markdown Preview is an online editor that converts Markdown syntax into HTML in real-time. Type Markdown in the left editor and instantly see the rendered result in the right preview panel.",
+        "p2": "Using a custom regex-based parser without any external libraries, it supports all standard Markdown syntax including headings, bold, italic, strikethrough, code blocks, tables, blockquotes, links, images, lists, and horizontal rules. A useful free tool for developers, bloggers, and technical writers."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "Real-time Preview", "desc": "See HTML rendering results instantly as you type, enabling fast document creation." },
+          "feat2": { "title": "Split-screen Editor", "desc": "Side-by-side layout on desktop, stacked layout on mobile for convenient use on any device." },
+          "feat3": { "title": "Copy HTML Output", "desc": "Copy converted HTML code with a single click for immediate use in blogs, emails, or websites." },
+          "feat4": { "title": "Full Markdown Support", "desc": "Supports headings, bold, italic, code blocks, tables, blockquotes, lists, links, images, strikethrough, and more." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Markdown</strong> — Type Markdown syntax in the left editor panel.",
+          "step2": "<strong>Check Live Preview</strong> — Instantly view the HTML-converted result in the right panel.",
+          "step3": "<strong>Load Sample</strong> — Click 'Load Sample' to explore various Markdown syntax examples.",
+          "step4": "<strong>Copy Result</strong> — Use 'Copy MD' or 'Copy HTML' buttons to copy your preferred format to clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "Writing README Files", "desc": "Preview and edit GitHub README.md files in real-time as you write." },
+          "uc2": { "title": "Technical Documentation", "desc": "Write API docs, guides, and wikis in Markdown and instantly verify the output." },
+          "uc3": { "title": "Blog Posting", "desc": "Draft posts for Markdown-supported blog platforms and convert them to HTML." },
+          "uc4": { "title": "Emails & Reports", "desc": "Quickly write structured documents and copy the HTML for use in emails or reports." }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This Markdown Preview tool processes all conversions in your browser. Your text is never sent to any server and no data is stored."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "list": {
+        "q1": {
+          "q": "What is Markdown?",
+          "a": "Markdown is a lightweight text-based markup language that is easy to read and write. Using simple symbols (#, *, -, [], etc.), you can format headings, bold text, lists, links, and more. It converts easily to HTML."
+        },
+        "q2": {
+          "q": "What Markdown syntax does this tool support?",
+          "a": "It supports headings (h1-h6), bold, italic, strikethrough, inline code, code blocks, tables, blockquotes, ordered lists, unordered lists, links, images, horizontal rules, and more standard Markdown syntax."
+        },
+        "q3": {
+          "q": "Where can I use the converted HTML?",
+          "a": "You can use it for blog posts, email content, web page content, technical documentation, and more. Click the 'Copy HTML' button to copy the converted HTML code to your clipboard."
+        },
+        "q4": {
+          "q": "Does this tool use external libraries?",
+          "a": "No. This tool uses a custom regex-based parser without any external Markdown libraries. It is lightweight yet faithfully supports standard Markdown syntax."
+        },
+        "q5": {
+          "q": "Is my text stored on a server?",
+          "a": "No. All conversions are processed in your browser, and the text you enter is never sent to or stored on any server. Use it with confidence."
+        }
+      }
+    }
+  },
+  "RandomGenerator": {
+    "meta": {
+      "title": "Random Generator - Numbers, Names, Colors, Dice, Coins | Tani DevTool",
+      "description": "Free online random generator. Generate random numbers, Korean/English names, HEX colors, dice rolls (D4-D20), and coin flips all in one place.",
+      "keywords": "random generator, random number, random name generator, random color, dice roller, coin flipper, RNG, random picker, randomizer",
+      "ogTitle": "Random Generator - Numbers/Names/Colors/Dice/Coins",
+      "ogDescription": "Free online tool for generating random numbers, names, colors, dice rolls, and coin flips."
+    },
+    "tabs": {
+      "number": "Number",
+      "name": "Name",
+      "color": "Color",
+      "dice": "Dice",
+      "coin": "Coin"
+    },
+    "copied": "Copied!",
+    "copyAll": "Copy All",
+    "clickToCopy": "Click to copy",
+    "number": {
+      "min": "Minimum",
+      "max": "Maximum",
+      "type": "Number Type",
+      "integer": "Integer",
+      "decimal": "Decimal",
+      "decimals": "Decimal Places",
+      "count": "Count",
+      "generate": "Generate Numbers",
+      "result": "Results"
+    },
+    "name": {
+      "type": "Name Type",
+      "korean": "Korean Name",
+      "english": "English Name",
+      "count": "Count",
+      "generate": "Generate Names",
+      "result": "Results"
+    },
+    "color": {
+      "count": "Count",
+      "generate": "Generate Colors",
+      "result": "Results"
+    },
+    "dice": {
+      "sides": "Dice Sides",
+      "count": "Number of Dice",
+      "roll": "Roll Dice",
+      "rolling": "Rolling...",
+      "total": "Total"
+    },
+    "coin": {
+      "flip": "Flip Coin",
+      "flipping": "Flipping...",
+      "heads": "Heads",
+      "tails": "Tails",
+      "history": "History"
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Random Generator?",
+        "p1": "A random generator is an online tool that can randomly generate various items including numbers, names, colors, dice rolls, and coin flips. It is useful when you need to make difficult decisions in daily life, need fair draws for games or events, or need fresh color inspiration for design work.",
+        "p2": "All generation is processed instantly in your browser, and you can use it for free without any installation or registration. Try generating random results that match your desired conditions through various options."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Random Number Generation",
+            "desc": "Generate integers or decimals by specifying minimum and maximum values. Bulk generation of up to 50 numbers at once is supported."
+          },
+          "feat2": {
+            "title": "Random Name Generation",
+            "desc": "Randomly generate Korean and English names. Combines common surnames with frequently used name syllables to create natural-sounding names."
+          },
+          "feat3": {
+            "title": "Random Color Generation",
+            "desc": "Generate random HEX color codes with RGB and HSL values displayed alongside. Features color preview and one-click copy functionality."
+          },
+          "feat4": {
+            "title": "Dice Rolling",
+            "desc": "Roll up to 10 dice simultaneously with various sides from D4 to D20. D6 features visual dot display for an authentic experience."
+          },
+          "feat5": {
+            "title": "Coin Flipping",
+            "desc": "Shows heads and tails results with animations. Track flip history and statistics to see your results over time."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Mode</strong> — Choose your desired random generation mode from the tabs: Number, Name, Color, Dice, or Coin.",
+          "step2": "<strong>Configure Options</strong> — Set detailed options such as range, count, and type.",
+          "step3": "<strong>Generate</strong> — Click the generate button to instantly display random results.",
+          "step4": "<strong>Copy Results</strong> — Click on results or use the copy button to copy to clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Drawings & Events",
+            "desc": "Use random numbers for fair drawings at meetings or events. Set participant numbers and pick winners randomly."
+          },
+          "uc2": {
+            "title": "Board Games / TRPG",
+            "desc": "Roll D4-D20 dice digitally for TRPG games like D&D. Perfect when physical dice are not available."
+          },
+          "uc3": {
+            "title": "Design Inspiration",
+            "desc": "Generate random colors for new color palette ideas when working on web or app designs."
+          },
+          "uc4": {
+            "title": "Character Names",
+            "desc": "Generate random Korean or English names for novel characters or game characters to spark creative ideas."
+          },
+          "uc5": {
+            "title": "Decision Helper",
+            "desc": "Quickly make decisions about meal choices, travel destinations, etc. using coin flips or number generation."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "q1": {
+          "q": "What features does the random generator have?",
+          "a": "It provides 5 random generation features: random numbers (integer/decimal), random names (Korean/English), random colors (HEX/RGB/HSL), dice rolling (D4-D20), and coin flipping."
+        },
+        "q2": {
+          "q": "Are the generated numbers truly random?",
+          "a": "The tool uses the browser's Math.random() function to generate pseudo-random numbers. They are sufficiently random for general purposes (drawings, games, etc.) but not suitable for cryptographic security."
+        },
+        "q3": {
+          "q": "How are Korean names generated?",
+          "a": "Korean names are generated by combining 20 common Korean surnames with 20 frequently used name syllables to create natural-sounding names."
+        },
+        "q4": {
+          "q": "What types of dice are available?",
+          "a": "The tool supports D4 (4 sides), D6 (6 sides), D8 (8 sides), D10 (10 sides), D12 (12 sides), and D20 (20 sides) - all commonly used in TRPG games."
+        },
+        "q5": {
+          "q": "Is any personal data collected?",
+          "a": "No, all random generation happens in your browser and no data is sent to any server."
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This random generator processes everything in your browser. Generated results are never sent to any external server, and all data disappears when you close the page. Use it with confidence."
+      }
+    }
+  },
+  "CompatibilityChecker": {
+    "meta": {
+      "title": "Compatibility Checker - Zodiac, Star Sign, MBTI | Teck-Tani",
+      "description": "Check Chinese zodiac, star sign, and MBTI compatibility for free. Get compatibility scores based on Samhap/Yukhap theory, elemental astrology, and MBTI golden pairs with detailed analysis.",
+      "keywords": "compatibility checker, Chinese zodiac compatibility, star sign compatibility, MBTI compatibility, zodiac match, astrology, golden pair, horoscope compatibility, love match, couple test",
+      "ogTitle": "Compatibility Checker - Zodiac / Star Sign / MBTI",
+      "ogDescription": "Check Chinese zodiac, star sign, and MBTI compatibility in one place! Free compatibility scores and detailed analysis."
+    },
+    "tabs": {
+      "zodiac": "Zodiac",
+      "star": "Star Sign",
+      "mbti": "MBTI"
+    },
+    "checkBtn": "Check",
+    "resetBtn": "Reset",
+    "zodiac": {
+      "person1": "Person 1",
+      "person2": "Person 2",
+      "birthYear": "Birth Year",
+      "yearPlaceholder": "e.g. 1995",
+      "yearSuffix": " born",
+      "tableTitle": "Chinese Zodiac Reference",
+      "tableType": "Type",
+      "tableCombination": "Combination",
+      "tableScore": "Score",
+      "samhapList": "Rat-Dragon-Monkey, Ox-Snake-Rooster, Tiger-Horse-Dog, Rabbit-Goat-Pig",
+      "yukhapList": "Rat-Ox, Tiger-Pig, Rabbit-Dog, Dragon-Rooster, Snake-Monkey, Horse-Goat",
+      "sangchungList": "Rat-Horse, Ox-Goat, Tiger-Monkey, Rabbit-Rooster, Dragon-Dog, Snake-Pig",
+      "animals": {
+        "rat": "Rat",
+        "ox": "Ox",
+        "tiger": "Tiger",
+        "rabbit": "Rabbit",
+        "dragon": "Dragon",
+        "snake": "Snake",
+        "horse": "Horse",
+        "goat": "Goat",
+        "monkey": "Monkey",
+        "rooster": "Rooster",
+        "dog": "Dog",
+        "pig": "Pig"
+      },
+      "types": {
+        "samhap": "Three Harmony (Best)",
+        "yukhap": "Six Harmony (Great)",
+        "sangchung": "Clash (Caution)",
+        "same": "Same Sign",
+        "neutral": "Average"
+      },
+      "descriptions": {
+        "samhap": "A Three Harmony relationship, where both partners understand and complement each other perfectly. Being together creates synergy and natural harmony.",
+        "yukhap": "A Six Harmony relationship, where both partners exchange positive energy. This pairing forms deep bonds and maintains a stable relationship.",
+        "sangchung": "A Clash relationship where personalities and values may conflict. However, acknowledging differences and making effort can turn this into an opportunity for growth.",
+        "same": "Same zodiac signs share similar tendencies, making it easy to understand each other, but similar weaknesses may also be amplified. Focus on bringing out each other's strengths.",
+        "neutral": "An average compatibility that is neither particularly good nor bad. With mutual effort, you can build a wonderful relationship."
+      }
+    },
+    "star": {
+      "person1": "Person 1",
+      "person2": "Person 2",
+      "birthDate": "Birth Date",
+      "tableTitle": "Star Sign Elements",
+      "signs": {
+        "aries": "Aries",
+        "taurus": "Taurus",
+        "gemini": "Gemini",
+        "cancer": "Cancer",
+        "leo": "Leo",
+        "virgo": "Virgo",
+        "libra": "Libra",
+        "scorpio": "Scorpio",
+        "sagittarius": "Sagittarius",
+        "capricorn": "Capricorn",
+        "aquarius": "Aquarius",
+        "pisces": "Pisces"
+      },
+      "elements": {
+        "fire": "Fire",
+        "earth": "Earth",
+        "air": "Air",
+        "water": "Water"
+      },
+      "types": {
+        "sameElement": "Same Element (Best)",
+        "compatible": "Compatible Elements (Great)",
+        "neutral": "Neutral Elements (Average)",
+        "opposing": "Opposing Elements (Caution)"
+      },
+      "descriptions": {
+        "sameElement": "Star signs of the same element instinctively understand each other. They share similar values and sensibilities, forming a comfortable and natural relationship when together.",
+        "compatible": "A compatible element combination where partners complement and exchange positive energy. Like fire and air, or earth and water, this relationship has a positive influence on both.",
+        "neutral": "Without particularly strong attraction or repulsion, this relationship offers new perspectives through differences. With effort, it can develop into a great partnership.",
+        "opposing": "An opposing element combination where different energies may clash. However, understanding and respecting these differences can create a relationship of growth where each fills what the other lacks."
+      }
+    },
+    "mbti": {
+      "person1": "Person 1",
+      "person2": "Person 2",
+      "selectType": "Select MBTI Type",
+      "placeholder": "Choose MBTI",
+      "tableTitle": "MBTI Golden Pairs (Best Match)",
+      "tablePair": "Pair",
+      "tableScore": "Score",
+      "types": {
+        "golden": "Golden Pair (Best)",
+        "complementary": "Complementary (Great)",
+        "same": "Same Type",
+        "similar": "Similar Type",
+        "neutral": "Average",
+        "different": "Different Type"
+      },
+      "descriptions": {
+        "golden": "The ideal Golden Pair in MBTI theory! This combination naturally complements each other's weaknesses and maximizes strengths. A relationship built on deep understanding and mutual respect.",
+        "complementary": "A complementary pairing that balances well. Sharing similar basic tendencies with just enough differences to grow together.",
+        "same": "Same MBTI types deeply understand each other, but similar weaknesses may be amplified. Seek new perspectives for mutual growth.",
+        "similar": "With three matching dimensions, this relationship has high basic understanding. The one difference can actually add freshness to the relationship.",
+        "neutral": "Average compatibility with a mix of similarities and differences. Respecting differences and communicating well can lead to a great relationship.",
+        "different": "A very different personality combination, but this is not necessarily a disadvantage. It provides completely new perspectives, and with effort, can become a relationship of significant growth."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Compatibility Checker?",
+        "p1": "A compatibility checker is a fun tool that analyzes relationship compatibility between two people using various criteria. You can check compatibility in three ways: Eastern zodiac (Chinese zodiac), Western astrology (star signs), and modern MBTI personality type compatibility.",
+        "p2": "Based on traditional zodiac theories like Samhap, Yukhap, and Sangchung, elemental star sign compatibility (fire/earth/air/water), and MBTI golden pair theory, it provides accurate scores and detailed analysis."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Chinese Zodiac (12 Animals)",
+            "desc": "Enter birth years to automatically calculate zodiac animals, then get compatibility scores based on Samhap/Yukhap/Sangchung traditional theory."
+          },
+          "feat2": {
+            "title": "Star Sign Compatibility",
+            "desc": "Enter birth dates to auto-detect star signs, then analyze compatibility based on element (fire/earth/air/water) combinations."
+          },
+          "feat3": {
+            "title": "MBTI Compatibility",
+            "desc": "Select MBTI types for two people to get compatibility scores and relationship analysis based on golden pair theory."
+          },
+          "feat4": {
+            "title": "Visual Score Display",
+            "desc": "Displays compatibility scores with animated circular gauges and progress bars, with colors changing based on the score."
+          },
+          "feat5": {
+            "title": "Reference Tables",
+            "desc": "Provides detailed reference tables for each compatibility type, allowing you to explore various combinations at a glance."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Check Compatibility",
+        "steps": {
+          "s1": "<strong>Choose Compatibility Type</strong> — Select from Chinese Zodiac, Star Sign, or MBTI tabs at the top.",
+          "s2": "<strong>Enter Information</strong> — Enter information for two people: birth years for zodiac, birth dates for star signs, or personality types for MBTI.",
+          "s3": "<strong>Check Compatibility</strong> — Click the 'Check' button to see animated compatibility scores.",
+          "s4": "<strong>Review Results</strong> — Check the compatibility score, type classification, detailed description, and reference tables below."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Romantic Compatibility",
+            "desc": "Check compatibility with your partner or crush using zodiac, star sign, and MBTI all three ways for fun."
+          },
+          "uc2": {
+            "title": "Friend/Colleague Compatibility",
+            "desc": "Check compatibility with friends or coworkers to better understand relationships and improve communication."
+          },
+          "uc3": {
+            "title": "Dates & Meetups",
+            "desc": "Use as a conversation starter on dates or group meetups. It makes a great icebreaker to lighten the mood."
+          },
+          "uc4": {
+            "title": "Family Compatibility",
+            "desc": "Check compatibility among family members to understand each other's tendencies and use it as an opportunity for better relationships."
+          }
+        }
+      },
+      "faq": {
+        "title": "FAQ",
+        "list": {
+          "q1": {
+            "q": "Are compatibility test results scientific?",
+            "a": "Compatibility tests are entertainment tools based on traditional Eastern zodiac, Western astrology, and personality type theory (MBTI). They are meant for cultural tradition and entertainment purposes rather than scientific accuracy."
+          },
+          "q2": {
+            "q": "What is 'Samhap' in Chinese zodiac compatibility?",
+            "a": "Samhap (Three Harmony) refers to the three animal combinations most compatible in the Chinese zodiac. Rat-Dragon-Monkey, Ox-Snake-Rooster, Tiger-Horse-Dog, and Rabbit-Goat-Pig score the highest at 95%."
+          },
+          "q3": {
+            "q": "How is star sign compatibility determined?",
+            "a": "Star sign compatibility is based on elemental combinations: same elements (90%), complementary elements (Fire-Air, Earth-Water: 75%), neutral (60%), and opposing elements (Fire-Water, Earth-Air: 45%)."
+          },
+          "q4": {
+            "q": "What are MBTI Golden Pairs?",
+            "a": "MBTI Golden Pairs are the most ideal combinations in personality type theory. There are 8 pairs including INFP-ENFJ, INFJ-ENFP, INTP-ENTJ, and INTJ-ENTP, known for complementing each other's weaknesses and maximizing strengths."
+          },
+          "q5": {
+            "q": "Is my data saved?",
+            "a": "No. This compatibility checker processes all calculations in your browser. Your birth dates and MBTI information are never sent to any server. No personal data is collected or stored."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This compatibility checker processes all calculations in your browser. Birth dates, MBTI information, and other inputs are never sent to any server, and no personal data is collected or stored."
       }
     }
   }

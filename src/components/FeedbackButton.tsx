@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { FaCommentDots, FaTimes, FaPaperPlane } from "react-icons/fa";
@@ -71,9 +71,35 @@ export default function FeedbackButton() {
     const [message, setMessage] = useState("");
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+    const [hidden, setHidden] = useState(false);
+    const observerRef = useRef<IntersectionObserver | null>(null);
     const pathname = usePathname();
     const locale = (useLocale() as Locale) || 'ko';
     const t = i18n[locale];
+
+    // data-hide-feedback 요소가 화면에 보이면 피드백 버튼 숨기기
+    useEffect(() => {
+        const targets = document.querySelectorAll('[data-hide-feedback]');
+        if (targets.length === 0) {
+            setHidden(false);
+            return;
+        }
+
+        observerRef.current = new IntersectionObserver(
+            (entries) => {
+                // 하나라도 화면에 보이면 숨김
+                const anyVisible = entries.some(entry => entry.isIntersecting);
+                setHidden(anyVisible);
+            },
+            { threshold: 0.1 }
+        );
+
+        targets.forEach(el => observerRef.current?.observe(el));
+
+        return () => {
+            observerRef.current?.disconnect();
+        };
+    }, [pathname]);
 
     // 현재 페이지명 가져오기
     const getPageName = useCallback(() => {
@@ -147,6 +173,11 @@ export default function FeedbackButton() {
                 className="feedback-floating-btn"
                 onClick={() => setIsOpen(true)}
                 aria-label="Feedback"
+                style={{
+                    opacity: hidden ? 0 : 1,
+                    pointerEvents: hidden ? 'none' : 'auto',
+                    transition: 'opacity 0.3s ease',
+                }}
             >
                 <FaCommentDots />
             </button>

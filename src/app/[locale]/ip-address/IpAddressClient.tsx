@@ -36,6 +36,7 @@ export default function IpAddressClient() {
     const [error, setError] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [copiedIpv6, setCopiedIpv6] = useState(false);
+    const [copiedUA, setCopiedUA] = useState(false);
 
     // Custom lookup state
     const [searchQuery, setSearchQuery] = useState('');
@@ -591,6 +592,11 @@ export default function IpAddressClient() {
                 </div>
             )}
 
+            {/* User-Agent / Browser Info */}
+            {!isCustomLookup && (
+                <UserAgentSection isDark={isDark} t={t} copiedUA={copiedUA} setCopiedUA={setCopiedUA} handleCopy={handleCopy} />
+            )}
+
             {/* Refresh Button */}
             {!loading && !lookupLoading && (
                 <div style={{ textAlign: "center", marginBottom: "30px" }}>
@@ -677,6 +683,124 @@ export default function IpAddressClient() {
                     50% { opacity: 0.4; }
                 }
             `}</style>
+        </div>
+    );
+}
+
+// ===== User-Agent Section Component =====
+function parseBrowser(ua: string): string {
+    if (ua.includes('Edg/')) return 'Microsoft Edge ' + (ua.match(/Edg\/([\d.]+)/)?.[1] || '');
+    if (ua.includes('OPR/') || ua.includes('Opera')) return 'Opera ' + (ua.match(/OPR\/([\d.]+)/)?.[1] || '');
+    if (ua.includes('SamsungBrowser/')) return 'Samsung Browser ' + (ua.match(/SamsungBrowser\/([\d.]+)/)?.[1] || '');
+    if (ua.includes('Firefox/')) return 'Firefox ' + (ua.match(/Firefox\/([\d.]+)/)?.[1] || '');
+    if (ua.includes('Chrome/') && ua.includes('Safari/')) return 'Chrome ' + (ua.match(/Chrome\/([\d.]+)/)?.[1] || '');
+    if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari ' + (ua.match(/Version\/([\d.]+)/)?.[1] || '');
+    return ua.substring(0, 50);
+}
+
+function parseOS(ua: string): string {
+    if (ua.includes('Windows NT 10.0')) return 'Windows 10/11';
+    if (ua.includes('Windows NT 6.3')) return 'Windows 8.1';
+    if (ua.includes('Windows NT 6.1')) return 'Windows 7';
+    if (ua.includes('Mac OS X')) {
+        const ver = ua.match(/Mac OS X ([\d_]+)/)?.[1]?.replace(/_/g, '.') || '';
+        return 'macOS ' + ver;
+    }
+    if (ua.includes('Android')) return 'Android ' + (ua.match(/Android ([\d.]+)/)?.[1] || '');
+    if (ua.includes('iPhone OS')) return 'iOS ' + (ua.match(/iPhone OS ([\d_]+)/)?.[1]?.replace(/_/g, '.') || '');
+    if (ua.includes('iPad')) return 'iPadOS';
+    if (ua.includes('Linux')) return 'Linux';
+    if (ua.includes('CrOS')) return 'Chrome OS';
+    return 'Unknown';
+}
+
+function UserAgentSection({ isDark, t, copiedUA, setCopiedUA, handleCopy }: {
+    isDark: boolean;
+    t: ReturnType<typeof import("next-intl").useTranslations>;
+    copiedUA: boolean;
+    setCopiedUA: (v: boolean) => void;
+    handleCopy: (text: string, setter: (v: boolean) => void) => void;
+}) {
+    const [ua, setUa] = useState('');
+    const [browserInfo, setBrowserInfo] = useState({ browser: '', os: '', platform: '', language: '', screen: '', cookies: false, dnt: '' });
+
+    useEffect(() => {
+        const userAgent = navigator.userAgent;
+        setUa(userAgent);
+        setBrowserInfo({
+            browser: parseBrowser(userAgent),
+            os: parseOS(userAgent),
+            platform: navigator.platform || 'Unknown',
+            language: navigator.language || 'Unknown',
+            screen: `${window.screen.width} x ${window.screen.height} (${window.devicePixelRatio}x)`,
+            cookies: navigator.cookieEnabled,
+            dnt: navigator.doNotTrack === '1' ? 'enabled' : navigator.doNotTrack === '0' ? 'disabled' : 'notSet',
+        });
+    }, []);
+
+    const rows = [
+        { label: t('uaBrowser'), value: browserInfo.browser },
+        { label: t('uaOS'), value: browserInfo.os },
+        { label: t('uaPlatform'), value: browserInfo.platform },
+        { label: t('uaLanguage'), value: browserInfo.language },
+        { label: t('uaScreen'), value: browserInfo.screen },
+        { label: t('uaCookies'), value: browserInfo.cookies ? t('uaEnabled') : t('uaDisabled') },
+        { label: t('uaDNT'), value: browserInfo.dnt === 'enabled' ? t('uaEnabled') : browserInfo.dnt === 'disabled' ? t('uaDisabled') : t('uaNotSet') },
+    ];
+
+    return (
+        <div style={{
+            background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+            boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)",
+            padding: "25px", marginBottom: "20px"
+        }}>
+            <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#333", marginBottom: "20px" }}>
+                {t('uaTitle')}
+            </h2>
+
+            {/* User-Agent string */}
+            <div style={{
+                padding: "12px 16px", marginBottom: "16px",
+                background: isDark ? "#0f172a" : "#f8f9fa",
+                borderRadius: "10px",
+                border: isDark ? "1px solid #334155" : "1px solid #e5e7eb"
+            }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <span style={{ fontSize: "0.8rem", color: isDark ? "#64748b" : "#999", fontWeight: 600 }}>{t('uaString')}</span>
+                    <button
+                        onClick={() => handleCopy(ua, setCopiedUA)}
+                        style={{
+                            padding: "4px 12px", fontSize: "0.75rem", fontWeight: 600,
+                            background: copiedUA ? "#22c55e" : (isDark ? "#1e3a5f" : "#e8f0fe"),
+                            color: copiedUA ? "white" : (isDark ? "#93c5fd" : "#1a73e8"),
+                            border: "none", borderRadius: "4px", cursor: "pointer"
+                        }}
+                    >
+                        {copiedUA ? t('uaCopied') : t('copyBtn')}
+                    </button>
+                </div>
+                <code style={{
+                    fontSize: "0.8rem", color: isDark ? "#94a3b8" : "#555",
+                    wordBreak: "break-all", lineHeight: 1.5,
+                    fontFamily: "'Fira Code', 'Cascadia Code', monospace"
+                }}>
+                    {ua}
+                </code>
+            </div>
+
+            {/* Browser info table */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
+                {rows.map((row, i) => (
+                    <div key={i} style={{ display: "contents" }}>
+                        <div style={{ padding: "12px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ color: isDark ? "#64748b" : "#888", fontSize: "0.85rem" }}>{row.label}</span>
+                        </div>
+                        <div style={{ padding: "12px 16px", borderBottom: `1px solid ${isDark ? "#334155" : "#f0f0f0"}` }}>
+                            <span style={{ fontWeight: 600, color: isDark ? "#e2e8f0" : "inherit", fontSize: "0.9rem" }}>{row.value}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

@@ -280,7 +280,9 @@ export default function BarcodeGenerator() {
         setFontBold(DEFAULT_SETTINGS.fontBold);
         setEclevel(DEFAULT_SETTINGS.eclevel);
         setDpi(DEFAULT_SETTINGS.dpi);
-        setBarcodes(isSimple ? [{ id: "sample", value: "SAMPLE-001", type: DEFAULT_SETTINGS.barcodeType }] : []);
+        if (isSimple) {
+            setBarcodes([{ id: "sample", value: "SAMPLE-001", type: DEFAULT_SETTINGS.barcodeType }]);
+        }
         setBarcodeValue("");
         setExcelData("");
         setError("");

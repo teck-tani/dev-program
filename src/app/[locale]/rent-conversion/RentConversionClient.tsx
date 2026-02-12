@@ -525,9 +525,9 @@ export default function RentConversionClient() {
                             }}
                         >
                             {mode === "jeonseToMonthly" && "convertedMonthlyRent" in result
-                                ? formatNumber(result.convertedMonthlyRent)
+                                ? formatNumber(result.convertedMonthlyRent ?? 0)
                                 : "convertedDeposit" in result
-                                ? formatNumber(result.convertedDeposit)
+                                ? formatNumber(result.convertedDeposit ?? 0)
                                 : ""}
                             <span style={{ fontSize: "0.9rem", fontWeight: 500, marginLeft: 4 }}>
                                 {t("input.amountUnit")}
@@ -564,7 +564,7 @@ export default function RentConversionClient() {
                                             color: isDark ? "#e2e8f0" : "#1e293b",
                                         }}
                                     >
-                                        {formatNumber(result.jeonse)}
+                                        {formatNumber(result.jeonse ?? 0)}
                                     </div>
                                 </div>
                                 <div
@@ -592,7 +592,7 @@ export default function RentConversionClient() {
                                             color: isDark ? "#e2e8f0" : "#1e293b",
                                         }}
                                     >
-                                        {formatNumber(result.deposit)}
+                                        {formatNumber(result.deposit ?? 0)}
                                     </div>
                                 </div>
                             </>
@@ -624,7 +624,7 @@ export default function RentConversionClient() {
                                             color: isDark ? "#e2e8f0" : "#1e293b",
                                         }}
                                     >
-                                        {formatNumber(result.deposit)}
+                                        {formatNumber(result.deposit ?? 0)}
                                     </div>
                                 </div>
                                 <div
@@ -652,7 +652,7 @@ export default function RentConversionClient() {
                                             color: isDark ? "#e2e8f0" : "#1e293b",
                                         }}
                                     >
-                                        {formatNumber(result.monthlyRent)}
+                                        {formatNumber(result.monthlyRent ?? 0)}
                                     </div>
                                 </div>
                             </>
@@ -683,7 +683,7 @@ export default function RentConversionClient() {
                                     color: isDark ? "#fbbf24" : "#d97706",
                                 }}
                             >
-                                {formatNumber(result.depositDifference)}{" "}
+                                {formatNumber(result.depositDifference ?? 0)}{" "}
                                 <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>
                                     {t("input.amountUnit")}
                                 </span>
