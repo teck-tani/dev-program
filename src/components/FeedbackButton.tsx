@@ -78,26 +78,37 @@ export default function FeedbackButton() {
     const t = i18n[locale];
 
     // data-hide-feedback 요소가 화면에 보이면 피드백 버튼 숨기기
+    // 동적 로딩 컴포넌트 대응: MutationObserver로 DOM 변화 감지
     useEffect(() => {
-        const targets = document.querySelectorAll('[data-hide-feedback]');
-        if (targets.length === 0) {
-            setHidden(false);
-            return;
-        }
+        const setupIntersection = () => {
+            observerRef.current?.disconnect();
+            const targets = document.querySelectorAll('[data-hide-feedback]');
+            if (targets.length === 0) {
+                setHidden(false);
+                return;
+            }
+            observerRef.current = new IntersectionObserver(
+                (entries) => {
+                    const anyVisible = entries.some(entry => entry.isIntersecting);
+                    setHidden(anyVisible);
+                },
+                { threshold: 0.1 }
+            );
+            targets.forEach(el => observerRef.current?.observe(el));
+        };
 
-        observerRef.current = new IntersectionObserver(
-            (entries) => {
-                // 하나라도 화면에 보이면 숨김
-                const anyVisible = entries.some(entry => entry.isIntersecting);
-                setHidden(anyVisible);
-            },
-            { threshold: 0.1 }
-        );
+        // 초기 실행
+        setupIntersection();
 
-        targets.forEach(el => observerRef.current?.observe(el));
+        // DOM 변화 감지 (동적 로딩 컴포넌트가 나중에 마운트될 때)
+        const mutationObs = new MutationObserver(() => {
+            setupIntersection();
+        });
+        mutationObs.observe(document.body, { childList: true, subtree: true });
 
         return () => {
             observerRef.current?.disconnect();
+            mutationObs.disconnect();
         };
     }, [pathname]);
 

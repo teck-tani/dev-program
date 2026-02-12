@@ -362,16 +362,18 @@ const ScientificCalculator = () => {
     label: React.ReactNode; onClick: () => void; className?: string; styleType?: string; ariaLabel?: string; tooltip?: string;
   }) => {
     const handleClick = () => { vibrate(); onClick(); };
-    const baseStyle = "h-12 sm:h-14 rounded-lg font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none shadow-sm cursor-pointer";
+    const baseStyle = dark
+      ? "h-12 sm:h-14 rounded-xl font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none cursor-pointer"
+      : "h-12 sm:h-14 rounded-lg font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none shadow-sm cursor-pointer";
     const styles: Record<string, string> = dark ? {
-      default: "bg-slate-700 text-slate-100 font-bold border border-slate-600 hover:bg-slate-600",
-      number: "bg-slate-700 text-slate-100 font-bold border border-slate-600 hover:bg-slate-600",
-      operator: "bg-blue-900/50 text-blue-300 border border-blue-800 hover:bg-blue-900/70 font-semibold",
-      function: "bg-slate-600 text-slate-200 border border-slate-500 hover:bg-slate-500 text-base font-medium",
-      action: "bg-blue-600 text-white hover:bg-blue-500 shadow-md border-transparent",
-      warning: "bg-red-900/40 text-red-400 hover:bg-red-900/60 border border-red-800",
-      hyp: "bg-indigo-600 text-white hover:bg-indigo-500 shadow-md border-transparent",
-      memory: "bg-emerald-900/40 text-emerald-300 border border-emerald-800 hover:bg-emerald-900/60 text-sm font-semibold",
+      default: "bg-white/[0.08] text-gray-100 font-bold backdrop-blur-sm border border-white/[0.06] hover:bg-white/[0.14] hover:border-white/10 shadow-lg shadow-black/20",
+      number: "bg-white/[0.08] text-gray-100 font-bold backdrop-blur-sm border border-white/[0.06] hover:bg-white/[0.14] hover:border-white/10 shadow-lg shadow-black/20",
+      operator: "bg-indigo-500/20 text-indigo-300 border border-indigo-400/20 hover:bg-indigo-500/30 hover:border-indigo-400/30 font-semibold shadow-lg shadow-indigo-900/20",
+      function: "bg-white/[0.05] text-gray-300 border border-white/[0.05] hover:bg-white/[0.10] hover:border-white/[0.08] text-base font-medium",
+      action: "bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:from-blue-400 hover:to-blue-500 shadow-lg shadow-blue-500/30 border border-blue-400/30",
+      warning: "bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 border border-rose-400/20 hover:border-rose-400/30",
+      hyp: "bg-gradient-to-br from-violet-500 to-indigo-600 text-white hover:from-violet-400 hover:to-indigo-500 shadow-lg shadow-violet-500/30 border border-violet-400/30",
+      memory: "bg-emerald-500/15 text-emerald-300 border border-emerald-400/20 hover:bg-emerald-500/25 hover:border-emerald-400/30 text-sm font-semibold",
     } : {
       default: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
       number: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
@@ -409,29 +411,29 @@ const ScientificCalculator = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto p-4">
-      <div className={`rounded-2xl shadow-xl overflow-hidden ${dark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}>
+      <div className={`rounded-2xl overflow-hidden ${dark ? 'bg-[#0f1420] border border-white/[0.08] shadow-2xl shadow-black/50' : 'bg-white border border-gray-200 shadow-xl'}`}>
 
         {/* Display Area */}
-        <div className={`relative p-6 text-right min-h-[140px] flex flex-col justify-end ${dark ? 'bg-slate-900 border-b border-slate-700' : 'bg-gray-50 border-b border-gray-200'}`}>
+        <div className={`relative p-6 text-right min-h-[140px] flex flex-col justify-end ${dark ? 'bg-gradient-to-b from-[#141b2d] to-[#0f1420] border-b border-white/[0.06]' : 'bg-gray-50 border-b border-gray-200'}`}>
 
           {/* Top-left: History + Keyboard Help + Memory indicator */}
           <div className="absolute top-4 left-4 flex items-center gap-1">
             <button
               onClick={() => setShowHistory(!showHistory)}
-              className={`p-2 rounded-full transition-colors ${dark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'}`}
+              className={`p-2 rounded-full transition-colors ${dark ? 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.08]' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'}`}
               title="History" aria-label="View history" type="button"
             >
               <LuHistory size={20} />
             </button>
             <button
               onClick={() => setShowKeyboardHelp(true)}
-              className={`p-2 rounded-full transition-colors ${dark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-700' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'}`}
+              className={`p-2 rounded-full transition-colors ${dark ? 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.08]' : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'}`}
               title="Keyboard shortcuts" aria-label="Keyboard shortcuts" type="button"
             >
               <LuInfo size={18} />
             </button>
             {memory !== 0 && (
-              <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${dark ? 'bg-emerald-900/60 text-emerald-300' : 'bg-emerald-100 text-emerald-700'}`}
+              <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${dark ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-400/20' : 'bg-emerald-100 text-emerald-700'}`}
                 title={`Memory: ${memory}`}>
                 M
               </span>
@@ -440,15 +442,15 @@ const ScientificCalculator = () => {
 
           {/* Deg/Rad Toggle */}
           <div
-            className={`absolute top-4 right-4 flex rounded-md p-0.5 text-xs font-medium ${dark ? 'bg-slate-700' : 'bg-gray-200'}`}
+            className={`absolute top-4 right-4 flex rounded-lg p-0.5 text-xs font-medium ${dark ? 'bg-white/[0.06] border border-white/[0.06]' : 'bg-gray-200'}`}
             role="radiogroup" aria-label="Angle mode"
           >
             <button onClick={() => setIsDegree(true)} role="radio" aria-checked={isDegree} type="button"
-              className={`px-2 py-1 rounded ${isDegree ? (dark ? 'bg-slate-500 text-blue-300 shadow-sm font-bold' : 'bg-white text-blue-800 shadow-sm font-bold') : (dark ? 'text-slate-400' : 'text-gray-700')}`}>
+              className={`px-2.5 py-1 rounded-md transition-all ${isDegree ? (dark ? 'bg-blue-500/25 text-blue-300 shadow-sm font-bold border border-blue-400/20' : 'bg-white text-blue-800 shadow-sm font-bold') : (dark ? 'text-gray-500 hover:text-gray-400 border border-transparent' : 'text-gray-700')}`}>
               DEG
             </button>
             <button onClick={() => setIsDegree(false)} role="radio" aria-checked={!isDegree} type="button"
-              className={`px-2 py-1 rounded ${!isDegree ? (dark ? 'bg-slate-500 text-blue-300 shadow-sm font-bold' : 'bg-white text-blue-800 shadow-sm font-bold') : (dark ? 'text-slate-400' : 'text-gray-700')}`}>
+              className={`px-2.5 py-1 rounded-md transition-all ${!isDegree ? (dark ? 'bg-blue-500/25 text-blue-300 shadow-sm font-bold border border-blue-400/20' : 'bg-white text-blue-800 shadow-sm font-bold') : (dark ? 'text-gray-500 hover:text-gray-400 border border-transparent' : 'text-gray-700')}`}>
               RAD
             </button>
           </div>
@@ -456,12 +458,12 @@ const ScientificCalculator = () => {
           {/* Expression + Parentheses Counter */}
           <div className="flex items-end gap-1">
             <div ref={inputRef}
-              className={`flex-1 text-lg font-medium whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll mb-2 min-h-[28px] pb-1 leading-tight ${dark ? 'text-slate-300' : 'text-gray-700'}`}
+              className={`flex-1 text-lg font-medium whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll mb-2 min-h-[28px] pb-1 leading-tight ${dark ? 'text-gray-400' : 'text-gray-700'}`}
               role="region" aria-live="polite" aria-label="Expression">
               {input || ''}
             </div>
             {openParens > 0 && (
-              <span className={`text-xs mb-2 whitespace-nowrap font-mono ${dark ? 'text-amber-400' : 'text-amber-600'}`}>
+              <span className={`text-xs mb-2 whitespace-nowrap font-mono ${dark ? 'text-amber-400/80' : 'text-amber-600'}`}>
                 {')'}&times;{openParens}
               </span>
             )}
@@ -470,14 +472,14 @@ const ScientificCalculator = () => {
           {/* Result + Copy */}
           <div className="flex items-center gap-2">
             <div ref={resultRef}
-              className={`flex-1 min-w-0 text-3xl font-bold tracking-tight whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll pb-1 leading-tight ${error ? 'text-red-500 text-2xl' : (dark ? 'text-slate-100' : 'text-gray-900')}`}
+              className={`flex-1 min-w-0 text-3xl font-bold tracking-tight whitespace-nowrap overflow-x-auto overflow-y-hidden custom-scroll pb-1 leading-tight ${error ? 'text-red-400 text-2xl' : (dark ? 'text-white' : 'text-gray-900')}`}
               aria-label="Result" aria-live="polite">
               {error ? result : formatWithCommas(result)}
             </div>
             {result && result !== '0' && !error && (
               <button
                 onClick={() => { navigator.clipboard.writeText(result); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-                className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${copied ? (dark ? 'text-green-400' : 'text-green-600') : (dark ? 'text-slate-500 hover:text-slate-300 hover:bg-slate-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-200')}`}
+                className={`flex-shrink-0 p-1.5 rounded-lg transition-colors ${copied ? (dark ? 'text-emerald-400' : 'text-green-600') : (dark ? 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.08]' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-200')}`}
                 aria-label="Copy result" title={copied ? 'Copied!' : 'Copy'} type="button">
                 {copied ? <LuCheck size={16} /> : <LuCopy size={16} />}
               </button>
@@ -494,20 +496,20 @@ const ScientificCalculator = () => {
             transition-all duration-300 ease-in-out transform
             ${showHistory ? 'translate-x-0' : '-translate-x-full md:hidden'}
             flex flex-col
-            ${dark ? 'bg-slate-800 border-r border-slate-700' : 'bg-white border-r border-gray-200'}
+            ${dark ? 'bg-[#0f1420] border-r border-white/[0.06]' : 'bg-white border-r border-gray-200'}
           `}>
-            <div className={`flex justify-between items-center p-4 ${dark ? 'border-b border-slate-700 bg-slate-900' : 'border-b border-gray-100 bg-gray-50'}`}>
-              <span className={`font-semibold flex items-center gap-2 ${dark ? 'text-slate-200' : 'text-gray-800'}`}>
+            <div className={`flex justify-between items-center p-4 ${dark ? 'border-b border-white/[0.06] bg-[#141b2d]' : 'border-b border-gray-100 bg-gray-50'}`}>
+              <span className={`font-semibold flex items-center gap-2 ${dark ? 'text-gray-200' : 'text-gray-800'}`}>
                 <LuHistory aria-hidden="true" /> History
               </span>
               <div className="flex gap-2">
                 <button onClick={handleClearHistory}
-                  className={`p-1.5 rounded ${dark ? 'text-red-400 hover:bg-red-900/40' : 'text-red-600 hover:bg-red-50'}`}
+                  className={`p-1.5 rounded ${dark ? 'text-rose-400 hover:bg-rose-500/15' : 'text-red-600 hover:bg-red-50'}`}
                   title="Clear History" aria-label="Clear history" type="button">
                   <LuTrash2 size={18} />
                 </button>
                 <button onClick={() => setShowHistory(false)}
-                  className={`md:hidden p-1.5 rounded ${dark ? 'text-slate-400 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-200'}`}
+                  className={`md:hidden p-1.5 rounded ${dark ? 'text-gray-400 hover:bg-white/[0.08]' : 'text-gray-600 hover:bg-gray-200'}`}
                   aria-label="Close history" type="button">
                   <LuX size={18} />
                 </button>
@@ -515,16 +517,16 @@ const ScientificCalculator = () => {
             </div>
             <div className="flex-1 overflow-y-auto p-2" role={history.length > 0 ? "list" : undefined}>
               {history.length === 0 ? (
-                <div className={`text-center mt-10 text-sm ${dark ? 'text-slate-400' : 'text-gray-600'}`}>No history yet</div>
+                <div className={`text-center mt-10 text-sm ${dark ? 'text-gray-500' : 'text-gray-600'}`}>No history yet</div>
               ) : (
                 history.map((item, idx) => (
                   <div key={idx}
-                    className={`p-3 mb-2 rounded-lg cursor-pointer border border-transparent transition-all ${dark ? 'hover:bg-slate-700 hover:border-slate-600' : 'hover:bg-gray-50 hover:border-gray-100'}`}
+                    className={`p-3 mb-2 rounded-lg cursor-pointer border border-transparent transition-all ${dark ? 'hover:bg-white/[0.06] hover:border-white/[0.06]' : 'hover:bg-gray-50 hover:border-gray-100'}`}
                     onClick={() => { setInput(item.expression); setResult(item.result); }}
                     role="listitem" tabIndex={0}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setInput(item.expression); setResult(item.result); } }}>
-                    <div className={`text-sm text-right font-mono truncate ${dark ? 'text-slate-400' : 'text-gray-600'}`}>{item.expression}</div>
-                    <div className={`text-lg text-right font-bold ${dark ? 'text-slate-100' : 'text-gray-900'}`}>= {formatWithCommas(item.result)}</div>
+                    <div className={`text-sm text-right font-mono truncate ${dark ? 'text-gray-500' : 'text-gray-600'}`}>{item.expression}</div>
+                    <div className={`text-lg text-right font-bold ${dark ? 'text-gray-100' : 'text-gray-900'}`}>= {formatWithCommas(item.result)}</div>
                   </div>
                 ))
               )}
@@ -535,25 +537,25 @@ const ScientificCalculator = () => {
           {showKeyboardHelp && (
             <div className="absolute z-30 inset-0 flex items-center justify-center"
               onClick={() => setShowKeyboardHelp(false)}>
-              <div className={`mx-4 p-5 rounded-xl shadow-2xl max-w-sm w-full ${dark ? 'bg-slate-800 border border-slate-600' : 'bg-white border border-gray-200'}`}
+              <div className={`mx-4 p-5 rounded-xl shadow-2xl max-w-sm w-full ${dark ? 'bg-[#1a2236] border border-white/[0.08] shadow-black/60' : 'bg-white border border-gray-200'}`}
                 onClick={(e) => e.stopPropagation()}>
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className={`font-bold text-lg ${dark ? 'text-slate-100' : 'text-gray-900'}`}>
+                  <h3 className={`font-bold text-lg ${dark ? 'text-gray-100' : 'text-gray-900'}`}>
                     Keyboard Shortcuts
                   </h3>
                   <button onClick={() => setShowKeyboardHelp(false)}
-                    className={`p-1 rounded ${dark ? 'text-slate-400 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-200'}`}
+                    className={`p-1 rounded ${dark ? 'text-gray-400 hover:bg-white/[0.08]' : 'text-gray-600 hover:bg-gray-200'}`}
                     type="button" aria-label="Close">
                     <LuX size={18} />
                   </button>
                 </div>
                 <div className="space-y-1.5">
                   {shortcuts.map((s, i) => (
-                    <div key={i} className={`flex justify-between items-center py-1.5 px-2 rounded ${dark ? 'even:bg-slate-700/50' : 'even:bg-gray-50'}`}>
-                      <kbd className={`px-2 py-0.5 rounded text-xs font-mono font-bold min-w-[80px] text-center ${dark ? 'bg-slate-700 text-slate-200 border border-slate-600' : 'bg-gray-100 text-gray-800 border border-gray-300'}`}>
+                    <div key={i} className={`flex justify-between items-center py-1.5 px-2 rounded ${dark ? 'even:bg-white/[0.04]' : 'even:bg-gray-50'}`}>
+                      <kbd className={`px-2 py-0.5 rounded text-xs font-mono font-bold min-w-[80px] text-center ${dark ? 'bg-white/[0.08] text-gray-200 border border-white/[0.08]' : 'bg-gray-100 text-gray-800 border border-gray-300'}`}>
                         {s.key}
                       </kbd>
-                      <span className={`text-sm ${dark ? 'text-slate-300' : 'text-gray-600'}`}>{s.desc}</span>
+                      <span className={`text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>{s.desc}</span>
                     </div>
                   ))}
                 </div>
@@ -562,7 +564,7 @@ const ScientificCalculator = () => {
           )}
 
           {/* Keypad - 9 rows × 5 cols */}
-          <div className={`flex-1 p-4 ${dark ? 'bg-slate-800' : 'bg-white'}`} data-hide-feedback>
+          <div className={`flex-1 p-4 ${dark ? 'bg-[#0f1420]' : 'bg-white'}`} data-hide-feedback>
             <div className="grid grid-cols-5 gap-2 sm:gap-3">
 
               {/* Row 1: Mode Toggle & Trig */}
@@ -645,7 +647,7 @@ const ScientificCalculator = () => {
       </div>
 
       {!showHistory && (
-        <div className={`md:hidden mt-4 text-center text-sm ${dark ? 'text-slate-400' : 'text-gray-600'}`}>
+        <div className={`md:hidden mt-4 text-center text-sm ${dark ? 'text-gray-500' : 'text-gray-600'}`}>
           Press the history icon <LuHistory className="inline" aria-hidden="true" /> to view past calculations
         </div>
       )}
