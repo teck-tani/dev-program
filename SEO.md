@@ -11,21 +11,13 @@
 
 ## 즉시 할 일 (5~10분)
 
-- [ ] **네이버 서치어드바이저** 등록 + sitemap 제출
-  - https://searchadvisor.naver.com
-  - 사이트 소유 확인 → sitemap.xml 제출
+- [x] **네이버 서치어드바이저** 등록 + sitemap 제출 — 2026-02-12
 
-- [ ] **Bing 웹마스터 도구** 등록 + sitemap 제출
-  - https://www.bing.com/webmasters
-  - Google Search Console 연동으로 간편 등록 가능
+- [x] **Bing 웹마스터 도구** 등록 + sitemap 제출 — 2026-02-12
 
-- [ ] **구글 비즈니스 프로필** 등록
-  - https://business.google.com
-  - 비즈니스 유형: "온라인 서비스" 또는 "소프트웨어 회사"
-  - 웹사이트 URL에 https://teck-tani.com 등록
-  - Google 자체 서비스에서 백링크 효과
+- [x] **구글 비즈니스 프로필** 등록 — 2026-02-12
 
-- [ ] **Google Search Console** 주요 페이지 색인 요청 (10개)
+- [x] **Google Search Console** 주요 페이지 색인 요청 (10개) — 2026-02-12
   - https://teck-tani.com/ko (홈)
   - https://teck-tani.com/ko/calculator
   - https://teck-tani.com/ko/money-converter

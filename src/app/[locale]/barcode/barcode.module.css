@@ -110,6 +110,7 @@
     border-radius: 8px;
     background-color: #fafafa;
     position: relative;
+    overflow-x: auto;
 }
 .controlsContainer {
     padding: 0;
@@ -408,12 +409,13 @@
 
 /* ── Barcode Grid ── */
 .barcodeGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 16px;
     padding: 10px;
     width: 100%;
     min-height: 200px;
+    align-items: flex-start;
 }
 
 /* ── Barcode Item ── */
@@ -428,17 +430,16 @@
     cursor: move;
     user-select: none;
     transition: all 0.2s ease;
-    min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
     gap: 6px;
+    flex-shrink: 0;
 }
 .barcodeItem canvas {
-    max-width: 100%;
-    height: auto;
+    display: block;
 }
 .barcodeItem.dragging {
     opacity: 0.7;
@@ -635,20 +636,32 @@
 /* Print Styles                                               */
 /* ═══════════════════════════════════════════════════════════ */
 @media print {
+    /* Hide everything except barcode images */
     .controlsContainer,
     .tabBar,
     .copyButtonRow,
     .downloadButtonLarge,
     .simpleDownloadRow,
+    .simplePreview .simpleDownloadRow,
+    .resetButton,
     .actionRow { display: none !important; }
+
+    /* Hide SEO article, header, footer, settings gear */
+    .articleSection { display: none !important; }
+    :global(header),
+    :global(footer),
+    :global(.sr-only),
+    :global(nav) { display: none !important; }
 
     .barcodeWrapper {
         box-shadow: none;
         padding: 0;
+        max-width: 100%;
     }
     .barcodeContainer {
         border: none;
         padding: 0;
+        overflow: visible;
     }
     .barcodeItem {
         break-inside: avoid;
@@ -658,11 +671,11 @@
     .removeBarcode, .barcodeNumber, .itemActions {
         display: none !important;
     }
-    /* Print layouts */
-    .print_auto .barcodeGrid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-    .print_1x1 .barcodeGrid { grid-template-columns: 1fr; }
-    .print_2x5 .barcodeGrid { grid-template-columns: repeat(2, 1fr); }
-    .print_3x10 .barcodeGrid { grid-template-columns: repeat(3, 1fr); }
+    /* Print layouts — override flex to grid for fixed column counts */
+    .print_auto .barcodeGrid { display: flex; flex-wrap: wrap; }
+    .print_1x1 .barcodeGrid { display: grid; grid-template-columns: 1fr; }
+    .print_2x5 .barcodeGrid { display: grid; grid-template-columns: repeat(2, 1fr); }
+    .print_3x10 .barcodeGrid { display: grid; grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ═══════════════════════════════════════════════════════════ */
@@ -750,7 +763,7 @@
     }
 
     .barcodeGrid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         padding: 0;
         min-height: auto;
         gap: 0;

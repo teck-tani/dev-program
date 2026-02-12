@@ -249,7 +249,7 @@
       "ruleEvenLength": "짝수 자릿수",
       "ruleRange": "{min}~{max} 범위",
       "rule2D": "텍스트/URL 가능",
-      "btnBulk": "일괄 생성",
+      "btnBulk": "바코드 생성",
       "btnCSV": "CSV 파일 가져오기",
       "btnResetSettings": "설정 초기화",
       "btnClear": "모두 지우기",

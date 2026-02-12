@@ -249,7 +249,7 @@
       "ruleEvenLength": "Even-length",
       "ruleRange": "Range {min}–{max}",
       "rule2D": "Text/URL supported",
-      "btnBulk": "Bulk Generate",
+      "btnBulk": "Generate Barcodes",
       "btnCSV": "Import CSV File",
       "btnResetSettings": "Reset Settings",
       "btnClear": "Clear All",

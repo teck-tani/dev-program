@@ -85,6 +85,7 @@ interface HistoryEntry {
 // ─── Constants ───────────────────────────────────────────
 const HISTORY_KEY = "barcode_history";
 const SETTINGS_KEY = "barcode_settings";
+const BARCODES_KEY = "barcode_items";
 const MAX_HISTORY = 20;
 
 interface BarcodeSettings {
@@ -209,26 +210,43 @@ export default function BarcodeGenerator() {
     const [showHistory, setShowHistory] = useState(false);
     useEffect(() => { setHistory(loadHistory()); }, []);
 
-    // ── Load saved settings on mount ──
+    // ── Load saved settings & barcodes on mount ──
     useEffect(() => {
         const s = loadSettings();
-        if (Object.keys(s).length === 0) return;
-        if (s.barcodeCategory !== undefined) setBarcodeCategory(s.barcodeCategory);
-        if (s.barcodeType !== undefined) setBarcodeType(s.barcodeType);
-        if (s.scale !== undefined) setScale(s.scale);
-        if (s.barHeight !== undefined) setBarHeight(s.barHeight);
-        if (s.displayValue !== undefined) setDisplayValue(s.displayValue);
-        if (s.barColor !== undefined) setBarColor(s.barColor);
-        if (s.bgColor !== undefined) setBgColor(s.bgColor);
-        if (s.textColor !== undefined) setTextColor(s.textColor);
-        if (s.rotation !== undefined) setRotation(s.rotation);
-        if (s.margin !== undefined) setMargin(s.margin);
-        if (s.fontFamily !== undefined) setFontFamily(s.fontFamily);
-        if (s.fontSize !== undefined) setFontSize(s.fontSize);
-        if (s.fontBold !== undefined) setFontBold(s.fontBold);
-        if (s.eclevel !== undefined) setEclevel(s.eclevel);
-        if (s.dpi !== undefined) setDpi(s.dpi);
+        if (Object.keys(s).length > 0) {
+            if (s.barcodeCategory !== undefined) setBarcodeCategory(s.barcodeCategory);
+            if (s.barcodeType !== undefined) setBarcodeType(s.barcodeType);
+            if (s.scale !== undefined) setScale(s.scale);
+            if (s.barHeight !== undefined) setBarHeight(s.barHeight);
+            if (s.displayValue !== undefined) setDisplayValue(s.displayValue);
+            if (s.barColor !== undefined) setBarColor(s.barColor);
+            if (s.bgColor !== undefined) setBgColor(s.bgColor);
+            if (s.textColor !== undefined) setTextColor(s.textColor);
+            if (s.rotation !== undefined) setRotation(s.rotation);
+            if (s.margin !== undefined) setMargin(s.margin);
+            if (s.fontFamily !== undefined) setFontFamily(s.fontFamily);
+            if (s.fontSize !== undefined) setFontSize(s.fontSize);
+            if (s.fontBold !== undefined) setFontBold(s.fontBold);
+            if (s.eclevel !== undefined) setEclevel(s.eclevel);
+            if (s.dpi !== undefined) setDpi(s.dpi);
+        }
+        try {
+            const saved = localStorage.getItem(BARCODES_KEY);
+            if (saved) {
+                const items: BarcodeItem[] = JSON.parse(saved);
+                if (items.length > 0) setBarcodes(items);
+            }
+        } catch { /* ignore */ }
     }, []);
+
+    // ── Auto-save barcodes on change ──
+    const barcodesInitRef = useRef(false);
+    useEffect(() => {
+        if (!barcodesInitRef.current) { barcodesInitRef.current = true; return; }
+        try {
+            localStorage.setItem(BARCODES_KEY, JSON.stringify(barcodes));
+        } catch { /* ignore */ }
+    }, [barcodes]);
 
     // ── Auto-save settings on change ──
     const settingsInitRef = useRef(false);
@@ -258,7 +276,11 @@ export default function BarcodeGenerator() {
         setFontBold(DEFAULT_SETTINGS.fontBold);
         setEclevel(DEFAULT_SETTINGS.eclevel);
         setDpi(DEFAULT_SETTINGS.dpi);
+        setBarcodes([{ id: "sample", value: "SAMPLE-001", type: DEFAULT_SETTINGS.barcodeType }]);
+        setBarcodeValue("");
+        setError("");
         localStorage.removeItem(SETTINGS_KEY);
+        localStorage.removeItem(BARCODES_KEY);
     }, []);
 
     // ── Scroll-lock during slider drag ──
@@ -780,6 +802,26 @@ export default function BarcodeGenerator() {
                 </div>
             )}
 
+            {/* ══════ BULK TAB: Barcode Grid at TOP ══════ */}
+            {!isSimple && barcodes.length > 0 && (
+                <div className={`${styles.barcodeContainer} ${styles[`print_${printLayout}`] || ""}`} ref={barcodeRef}>
+                    <div className={styles.barcodeGrid}>
+                        {barcodes.map((item, index) => (
+                            <BarcodeItemComponent
+                                key={item.id} item={item} index={index} options={barcodeOptions}
+                                onRemove={removeBarcode}
+                                onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop}
+                                isMobile={false}
+                                onDownloadPNG={downloadPNG}
+                                onDownloadSVG={downloadSVG}
+                                onEmbed={generateEmbedCode}
+                                t={t}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* ══════ SIMPLE TAB: Preview at TOP (desktop + mobile) ══════ */}
             {isSimple && (
                 <div className={styles.simplePreview}>
@@ -834,17 +876,70 @@ export default function BarcodeGenerator() {
                     )}
                 </div>
 
-                {/* ── Value Input (common) ── */}
-                <div className={styles.inputGroup}>
-                    <input id="barcodeValue" value={barcodeValue} onChange={handleValueChange}
-                        placeholder={isSimple ? "SAMPLE-001" : t("placeholderValue")} />
-                    {/* Add button: bulk tab desktop only */}
-                    {!isSimple && (
-                        <button onClick={addBarcode} className={`${styles.actionButton} ${styles.addButton}`}>
-                            {t("btnAdd")}
-                        </button>
-                    )}
-                </div>
+                {/* ── Value Input (simple mode only) ── */}
+                {isSimple && (
+                    <div className={styles.inputGroup}>
+                        <input id="barcodeValue" value={barcodeValue} onChange={handleValueChange}
+                            placeholder="SAMPLE-001" />
+                    </div>
+                )}
+
+                {/* ── Bulk Input (bulk mode: right after type selector) ── */}
+                {!isSimple && (
+                    <>
+                        {/* ── Bulk Textarea ── */}
+                        <div className={styles.inputGroup}>
+                            <div className={styles.bulkGuide}>
+                                <span>{t("bulkGuide")}</span>
+                                {typeRuleHint && <span className={styles.typeRule}>{typeRuleHint}</span>}
+                            </div>
+                            <textarea value={excelData} onChange={(e) => setExcelData(e.target.value)}
+                                placeholder={bulkPlaceholder} />
+                            {bulkLineCount > 0 && (
+                                <div className={styles.bulkCounter}>{t("bulkCount", { count: bulkLineCount })}</div>
+                            )}
+                            <button onClick={generateFromExcel} className={`${styles.actionButton} ${styles.generateButton}`}>
+                                {t("btnBulk")}
+                            </button>
+                        </div>
+
+                        {/* ── CSV Import ── */}
+                        <div className={styles.inputGroup}>
+                            <input ref={csvInputRef} type="file" accept=".csv,.tsv,.txt"
+                                onChange={handleCsvFile} style={{ display: "none" }} />
+                            <button onClick={() => csvInputRef.current?.click()}
+                                className={`${styles.actionButton}`}
+                                style={{ background: "#059669", color: "#fff" }}>
+                                {t("btnCSV")}
+                            </button>
+                        </div>
+
+                        {/* ── Action Buttons ── */}
+                        {barcodes.length > 0 && (
+                            <div className={styles.actionRow}>
+                                <button onClick={downloadAllZIP} disabled={isZipping}
+                                    className={styles.actionButton}
+                                    style={{ background: isZipping ? "#94a3b8" : "#7c3aed", color: "#fff" }}>
+                                    {isZipping ? t("zipping") : t("downloadZip")}
+                                </button>
+                                <button onClick={downloadPDF}
+                                    className={styles.actionButton}
+                                    style={{ background: "#dc2626", color: "#fff" }}>
+                                    {t("downloadPDF")}
+                                </button>
+                                <button onClick={handlePrint}
+                                    className={styles.actionButton}
+                                    style={{ background: "#0ea5e9", color: "#fff" }}>
+                                    {t("btnPrint")}
+                                </button>
+                                <button onClick={clearAll}
+                                    className={`${styles.actionButton} ${styles.clearButton}`}>
+                                    {t("btnClear")}
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
 
                 {/* ── QR Error Correction (common) ── */}
                 {showEclevel && (
@@ -925,9 +1020,42 @@ export default function BarcodeGenerator() {
                     {t("btnResetSettings")}
                 </button>
 
-                {/* ══════ BULK-ONLY CONTROLS ══════ */}
+                {/* ══════ BULK-ONLY CONTROLS (options only) ══════ */}
                 {!isSimple && (
                     <>
+                        {/* ── Sequence Mode ── */}
+                        <div className={styles.inputGroup}>
+                            <button className={styles.modeToggle} onClick={() => setSequenceMode(!sequenceMode)}>
+                                {sequenceMode ? "▲" : "▼"} {t("labelSequence")}
+                            </button>
+                            {sequenceMode && (
+                                <div className={styles.sequencePanel}>
+                                    <div className={styles.seqRow}>
+                                        <input placeholder={t("seqPrefix")} value={seqPrefix}
+                                            onChange={(e) => setSeqPrefix(e.target.value)} />
+                                        <input type="number" placeholder={t("seqStart")} value={seqStart}
+                                            onChange={(e) => setSeqStart(parseInt(e.target.value) || 0)} />
+                                        <input type="number" placeholder={t("seqEnd")} value={seqEnd}
+                                            onChange={(e) => setSeqEnd(parseInt(e.target.value) || 0)} />
+                                    </div>
+                                    <div className={styles.seqRow}>
+                                        <input type="number" placeholder={t("seqStep")} value={seqStep} min={1}
+                                            onChange={(e) => setSeqStep(Math.max(1, parseInt(e.target.value) || 1))} />
+                                        <input type="number" placeholder={t("seqPadding")} value={seqPadding} min={1} max={10}
+                                            onChange={(e) => setSeqPadding(parseInt(e.target.value) || 1)} />
+                                        <input placeholder={t("seqSuffix")} value={seqSuffix}
+                                            onChange={(e) => setSeqSuffix(e.target.value)} />
+                                    </div>
+                                    <div className={styles.seqPreview}>
+                                        {t("seqPreview")}: {seqPrefix}{String(seqStart).padStart(seqPadding, "0")}{seqSuffix} ~ {seqPrefix}{String(seqEnd).padStart(seqPadding, "0")}{seqSuffix}
+                                    </div>
+                                    <button onClick={generateSequenceBarcodes} className={`${styles.actionButton} ${styles.generateButton}`}>
+                                        {t("btnSequence")}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
                         {/* ── Advanced Toggle ── */}
                         <button className={styles.advancedToggle} onClick={() => setShowAdvanced(!showAdvanced)}>
                             {showAdvanced ? "▲" : "▼"} {t("labelAdvanced")}
@@ -984,93 +1112,6 @@ export default function BarcodeGenerator() {
                             </div>
                         )}
 
-                        {/* ── Sequence Mode ── */}
-                        <div className={styles.inputGroup}>
-                            <button className={styles.modeToggle} onClick={() => setSequenceMode(!sequenceMode)}>
-                                {sequenceMode ? "▲" : "▼"} {t("labelSequence")}
-                            </button>
-                            {sequenceMode && (
-                                <div className={styles.sequencePanel}>
-                                    <div className={styles.seqRow}>
-                                        <input placeholder={t("seqPrefix")} value={seqPrefix}
-                                            onChange={(e) => setSeqPrefix(e.target.value)} />
-                                        <input type="number" placeholder={t("seqStart")} value={seqStart}
-                                            onChange={(e) => setSeqStart(parseInt(e.target.value) || 0)} />
-                                        <input type="number" placeholder={t("seqEnd")} value={seqEnd}
-                                            onChange={(e) => setSeqEnd(parseInt(e.target.value) || 0)} />
-                                    </div>
-                                    <div className={styles.seqRow}>
-                                        <input type="number" placeholder={t("seqStep")} value={seqStep} min={1}
-                                            onChange={(e) => setSeqStep(Math.max(1, parseInt(e.target.value) || 1))} />
-                                        <input type="number" placeholder={t("seqPadding")} value={seqPadding} min={1} max={10}
-                                            onChange={(e) => setSeqPadding(parseInt(e.target.value) || 1)} />
-                                        <input placeholder={t("seqSuffix")} value={seqSuffix}
-                                            onChange={(e) => setSeqSuffix(e.target.value)} />
-                                    </div>
-                                    <div className={styles.seqPreview}>
-                                        {t("seqPreview")}: {seqPrefix}{String(seqStart).padStart(seqPadding, "0")}{seqSuffix} ~ {seqPrefix}{String(seqEnd).padStart(seqPadding, "0")}{seqSuffix}
-                                    </div>
-                                    <button onClick={generateSequenceBarcodes} className={`${styles.actionButton} ${styles.generateButton}`}>
-                                        {t("btnSequence")}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* ── Excel Bulk Input ── */}
-                        {!sequenceMode && (
-                            <div className={styles.inputGroup}>
-                                <div className={styles.bulkGuide}>
-                                    <span>{t("bulkGuide")}</span>
-                                    {typeRuleHint && <span className={styles.typeRule}>{typeRuleHint}</span>}
-                                </div>
-                                <textarea value={excelData} onChange={(e) => setExcelData(e.target.value)}
-                                    placeholder={bulkPlaceholder} />
-                                {bulkLineCount > 0 && (
-                                    <div className={styles.bulkCounter}>{t("bulkCount", { count: bulkLineCount })}</div>
-                                )}
-                                <button onClick={generateFromExcel} className={`${styles.actionButton} ${styles.generateButton}`}>
-                                    {t("btnBulk")}
-                                </button>
-                            </div>
-                        )}
-
-                        {/* ── CSV Import ── */}
-                        <div className={styles.inputGroup}>
-                            <input ref={csvInputRef} type="file" accept=".csv,.tsv,.txt"
-                                onChange={handleCsvFile} style={{ display: "none" }} />
-                            <button onClick={() => csvInputRef.current?.click()}
-                                className={`${styles.actionButton}`}
-                                style={{ background: "#059669", color: "#fff" }}>
-                                {t("btnCSV")}
-                            </button>
-                        </div>
-
-                        {/* ── Action Buttons ── */}
-                        {barcodes.length > 0 && (
-                            <div className={styles.actionRow}>
-                                <button onClick={downloadAllZIP} disabled={isZipping}
-                                    className={styles.actionButton}
-                                    style={{ background: isZipping ? "#94a3b8" : "#7c3aed", color: "#fff" }}>
-                                    {isZipping ? t("zipping") : t("downloadZip")}
-                                </button>
-                                <button onClick={downloadPDF}
-                                    className={styles.actionButton}
-                                    style={{ background: "#dc2626", color: "#fff" }}>
-                                    {t("downloadPDF")}
-                                </button>
-                                <button onClick={handlePrint}
-                                    className={styles.actionButton}
-                                    style={{ background: "#0ea5e9", color: "#fff" }}>
-                                    {t("btnPrint")}
-                                </button>
-                                <button onClick={clearAll}
-                                    className={`${styles.actionButton} ${styles.clearButton}`}>
-                                    {t("btnClear")}
-                                </button>
-                            </div>
-                        )}
-
                         {/* ── History ── */}
                         {history.length > 0 && (
                             <div className={styles.inputGroup}>
@@ -1112,25 +1153,6 @@ export default function BarcodeGenerator() {
                 </button>
             )}
 
-            {/* ══════ BULK TAB: Barcode Grid ══════ */}
-            {!isSimple && (
-                <div className={`${styles.barcodeContainer} ${styles[`print_${printLayout}`] || ""}`} ref={barcodeRef}>
-                    <div className={styles.barcodeGrid}>
-                        {barcodes.map((item, index) => (
-                            <BarcodeItemComponent
-                                key={item.id} item={item} index={index} options={barcodeOptions}
-                                onRemove={removeBarcode}
-                                onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop}
-                                isMobile={false}
-                                onDownloadPNG={downloadPNG}
-                                onDownloadSVG={downloadSVG}
-                                onEmbed={generateEmbedCode}
-                                t={t}
-                            />
-                        ))}
-                    </div>
-                </div>
-            )}
 
             {/* ── CSV Column Dialog ── */}
             {showCsvDialog && (
