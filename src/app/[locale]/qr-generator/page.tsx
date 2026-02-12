@@ -234,41 +234,41 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
                 <QRGeneratorClient />
 
                 {/* 하단 설명글 섹션 */}
-                <article className={styles.articleSection}>
+                <article className={`${styles.articleSection} seo-article`}>
                     {/* 1. Description */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.description.title')}</h2>
-                        <p style={{ lineHeight: 1.8, marginBottom: 12 }}>{t('seo.description.p1')}</p>
-                        <p style={{ lineHeight: 1.8 }}>{t('seo.description.p2')}</p>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.description.title')}</h2>
+                        <p className="seo-text">{t('seo.description.p1')}</p>
+                        <p className="seo-text">{t('seo.description.p2')}</p>
                     </section>
 
                     {/* 2. Features */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.features.title')}</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.features.title')}</h2>
+                        <div className="seo-card-grid">
                             {['wifi', 'vcard', 'logo', 'svg', 'color'].map((key) => (
-                                <div key={key} style={{ padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
-                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 8 }}>{t(`seo.features.list.${key}.title`)}</h3>
-                                    <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>{t(`seo.features.list.${key}.desc`)}</p>
+                                <div key={key} className="seo-card">
+                                    <h3 className="seo-card-title">{t(`seo.features.list.${key}.title`)}</h3>
+                                    <p className="seo-card-desc">{t(`seo.features.list.${key}.desc`)}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
 
-                    {/* 3. Why Use (existing) */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>
+                    {/* 3. Why Use */}
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">
                             {t('whyUse.title')}
                         </h2>
-                        <p style={{ lineHeight: 1.8 }}>{t.rich('whyUse.desc', { strong: (chunks) => <strong>{chunks}</strong> })}</p>
+                        <p className="seo-text">{t.rich('whyUse.desc', { strong: (chunks) => <strong>{chunks}</strong> })}</p>
                     </section>
 
-                    {/* 4. Use Cases (existing) */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>
+                    {/* 4. Use Cases */}
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">
                             {t('useCases.title')}
                         </h2>
-                        <ul style={{ lineHeight: 1.8, paddingLeft: 20 }}>
+                        <ul className="seo-usecase-list">
                             <li>{t('useCases.url')}</li>
                             <li>{t('useCases.contact')}</li>
                             <li>{t('useCases.wifi')}</li>
@@ -278,10 +278,10 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
                     </section>
 
                     {/* 5. FAQ */}
-                    <section className={styles.faqSection} style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16, textAlign: 'center' }}>{t('faq.title')}</h2>
+                    <section className={`${styles.faqSection} seo-section`}>
+                        <h2 className="seo-section-title" style={{ textAlign: 'center' }}>{t('faq.title')}</h2>
                         {['free', 'expiry', 'korean', 'color', 'logo'].map((key) => (
-                            <details key={key}>
+                            <details key={key} className="seo-faq-item">
                                 <summary>{t(`faq.${key}.q`)}</summary>
                                 <p>{t(`faq.${key}.a`)}</p>
                             </details>
@@ -289,9 +289,9 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
                     </section>
 
                     {/* 6. Privacy */}
-                    <section style={{ marginBottom: 20 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.privacy.title')}</h2>
-                        <p style={{ lineHeight: 1.8 }}>{t('seo.privacy.text')}</p>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.privacy.title')}</h2>
+                        <p className="seo-text">{t('seo.privacy.text')}</p>
                     </section>
                 </article>
             </div>

@@ -46,7 +46,18 @@
       "qrGenerator": "QR Code Generator",
       "alarm": "Online Alarm Clock",
       "serverTime": "Server Time / Ticketing",
-      "ddayCounter": "D-day Countdown"
+      "ddayCounter": "D-day Countdown",
+      "vatCalculator": "VAT Calculator",
+      "regexTester": "Regex Tester",
+      "bmiCalculator": "BMI Calculator",
+      "loanCalculator": "Loan Calculator",
+      "passwordGenerator": "Password Generator",
+      "rentConversion": "Rent Conversion Calculator",
+      "jwtDecoder": "JWT Decoder",
+      "uuidGenerator": "UUID Generator",
+      "hashGenerator": "Hash Generator",
+      "timestampConverter": "Timestamp Converter",
+      "discountCalculator": "Discount Calculator"
     }
   },
   "Header": {
@@ -5074,6 +5085,1424 @@
       "privacy": {
         "title": "Privacy Notice",
         "text": "This D-day countdown tool stores all data only in your browser's localStorage and does not transmit anything to a server. Event information (title, date, category, memo) is processed only on your device."
+      }
+    }
+  },
+  "RegexTester": {
+    "meta": {
+      "title": "Regex Tester - Real-time Pattern Matching & Replace | Tani DevTool",
+      "description": "Test regular expressions in real-time and see matching results instantly. Supports flags, capture groups, replace functionality, and common regex presets for free.",
+      "keywords": "regex tester, regular expression, regex online, regex matcher, regex replace, pattern matching, regex validator, developer tools",
+      "ogTitle": "Regex Tester - Real-time Pattern Matching & Replace",
+      "ogDescription": "Test regular expressions in real-time and see matching results instantly. Supports flags, capture groups, and replace functionality."
+    },
+    "input": {
+      "pattern": "Regex Pattern",
+      "patternPlaceholder": "Enter a regex pattern (e.g. \\d+)",
+      "flags": "Flags",
+      "testString": "Test String",
+      "testStringPlaceholder": "Enter a test string...",
+      "replacement": "Replacement Pattern",
+      "replacementPlaceholder": "Replacement string (e.g. $1-$2)"
+    },
+    "flags": {
+      "g": "Global",
+      "i": "Case-Insensitive",
+      "m": "Multiline",
+      "s": "DotAll (. matches newline)",
+      "u": "Unicode"
+    },
+    "result": {
+      "matches": "Match Results",
+      "noMatch": "No matches found",
+      "matchCount": "{count} match(es)",
+      "groups": "Capture Groups",
+      "group": "Group {n}",
+      "fullMatch": "Full Match",
+      "index": "Index",
+      "replace": "Replace Result",
+      "replaceTitle": "Replace",
+      "replaceResult": "Replace Result",
+      "highlighted": "Highlighted Result"
+    },
+    "preset": {
+      "title": "Common Patterns",
+      "email": "Email",
+      "phone": "Phone (Korean)",
+      "url": "URL",
+      "ip": "IPv4 Address",
+      "korean": "Korean Characters",
+      "number": "Numbers",
+      "date": "Date (YYYY-MM-DD)",
+      "hexColor": "HEX Color Code"
+    },
+    "error": {
+      "invalid": "Invalid regular expression"
+    },
+    "action": {
+      "copy": "Copy",
+      "copied": "Copied!",
+      "clear": "Clear",
+      "reset": "Reset"
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Regex Tester?",
+        "p1": "A regular expression (regex) is a powerful pattern matching language used to find, validate, extract, or replace specific patterns in strings. It is essential in programming, data analysis, text processing, and many other fields.",
+        "p2": "This online regex tester allows you to enter a regular expression and instantly see matching results in real-time. It supports capture group analysis, string replacement, and various flag settings. Test your patterns directly in your web browser without any complex development environment."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-time Matching",
+            "desc": "Enter your regex and test string to instantly see highlighted matching results."
+          },
+          "feat2": {
+            "title": "Capture Group Analysis",
+            "desc": "View detailed capture groups, index positions, and matched values for each match."
+          },
+          "feat3": {
+            "title": "Replace Functionality",
+            "desc": "Instantly see the result of replacing matched patterns with your desired string."
+          },
+          "feat4": {
+            "title": "Preset Patterns",
+            "desc": "Apply commonly used regex patterns for email, phone, URL, IP, Korean characters with one click."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Regex</strong> — Type your regular expression pattern in the input field at the top.",
+          "step2": "<strong>Set Flags</strong> — Enable flags like g (global), i (case-insensitive), m (multiline), s (dotAll), u (unicode) as needed.",
+          "step3": "<strong>Enter Test String</strong> — Type the string you want to test against and see real-time matching results.",
+          "step4": "<strong>Check Results</strong> — Review match highlights, capture group details, and replacement results."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Input Validation",
+            "desc": "Validate email, phone number, and password formats in registration forms using regex."
+          },
+          "uc2": {
+            "title": "Log Analysis",
+            "desc": "Extract specific patterns like IP addresses, error codes, and timestamps from server logs."
+          },
+          "uc3": {
+            "title": "Data Cleaning",
+            "desc": "Remove unwanted characters or convert formats in CSV and text data."
+          },
+          "uc4": {
+            "title": "Code Refactoring",
+            "desc": "Use regex in your IDE's find/replace to batch-modify code patterns."
+          }
+        }
+      },
+      "faq": {
+        "title": "FAQ",
+        "q1": {
+          "q": "What is a regular expression?",
+          "a": "A regular expression (regex) is a formal language for defining and searching patterns in strings. It is supported by most programming languages and text editors, and is used for data validation, extraction, and replacement."
+        },
+        "q2": {
+          "q": "What are flags and what types are available?",
+          "a": "Flags modify how a regex behaves. Common flags include g (global search), i (case-insensitive), m (multiline mode), s (dotAll - dot matches newline), and u (unicode support)."
+        },
+        "q3": {
+          "q": "What are capture groups?",
+          "a": "Capture groups are parts of a regex enclosed in parentheses (). They allow you to extract specific portions of matched strings and reference them as $1, $2, etc. during replacement."
+        },
+        "q4": {
+          "q": "Is this tool free?",
+          "a": "Yes, it is completely free with no registration or installation required. Your input data is never sent to any server."
+        },
+        "q5": {
+          "q": "What regex syntax is supported?",
+          "a": "This tool uses JavaScript's (ECMAScript) regex engine. It supports most standard regex syntax including character classes, quantifiers, anchors, lookahead/lookbehind, and more."
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This regex tester performs all processing in your browser. Your regular expressions and test strings are never sent to any server. You can safely test sensitive data."
+      }
+    }
+  },
+  "BmiCalculator": {
+    "meta": {
+      "title": "BMI Calculator - Free Body Mass Index | Tani DevTool",
+      "description": "Enter your height and weight to instantly calculate your BMI (Body Mass Index). Check your health status with WHO classification, normal weight range, and visual gauge.",
+      "keywords": "BMI calculator, body mass index, BMI measurement, obesity calculation, normal weight, weight management, health calculator",
+      "ogTitle": "BMI Calculator - Body Mass Index | Tani DevTool",
+      "ogDescription": "Instantly calculate your BMI with height and weight. Check WHO obesity classification, normal weight range, and visual gauge."
+    },
+    "input": {
+      "height": "Height (cm)",
+      "weight": "Weight (kg)",
+      "calculate": "Calculate BMI",
+      "reset": "Reset",
+      "heightPlaceholder": "e.g. 170",
+      "weightPlaceholder": "e.g. 65"
+    },
+    "result": {
+      "title": "Result",
+      "bmi": "BMI (Body Mass Index)",
+      "classification": "Classification",
+      "normalRange": "Normal Weight Range",
+      "underweight": "Underweight",
+      "normal": "Normal",
+      "overweight": "Overweight",
+      "obese": "Obese",
+      "obeseClass1": "Obese Class I",
+      "obeseClass2": "Obese Class II",
+      "obeseClass3": "Obese Class III",
+      "unit": "kg/m²",
+      "weightUnit": "kg",
+      "to": "~"
+    },
+    "table": {
+      "title": "WHO BMI Classification",
+      "category": "Category",
+      "bmiRange": "BMI Range",
+      "underweight": "Underweight",
+      "normal": "Normal",
+      "overweight": "Overweight",
+      "obeseClass1": "Obese Class I",
+      "obeseClass2": "Obese Class II",
+      "obeseClass3": "Obese Class III"
+    },
+    "seo": {
+      "description": {
+        "title": "What is BMI (Body Mass Index)?",
+        "p1": "BMI (Body Mass Index) is an internationally standardized indicator that uses the relationship between height and weight to determine whether body weight is appropriate. Devised by Belgian mathematician Adolphe Quetelet in 1832, this index is currently used by the World Health Organization (WHO) as the basic criterion for obesity assessment.",
+        "p2": "BMI is calculated by dividing weight (kg) by the square of height (m). For example, a person who is 170cm tall and weighs 65kg has a BMI of 65 / (1.70)^2 = 22.49. This value is used to classify underweight, normal, overweight, and obesity."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Instant BMI Calculation",
+            "desc": "Simply enter your height and weight to get your BMI calculated in real-time with instant results."
+          },
+          "feat2": {
+            "title": "Visual BMI Gauge",
+            "desc": "Intuitively see your current BMI position on a color gradient bar from blue to red."
+          },
+          "feat3": {
+            "title": "WHO Classification",
+            "desc": "Provides 6-level obesity classification based on official World Health Organization (WHO) standards."
+          },
+          "feat4": {
+            "title": "Normal Weight Range",
+            "desc": "Shows the normal weight range (BMI 18.5-24.9) based on your entered height."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "s1": "<strong>Enter Height</strong> — Enter your height in the height (cm) field. (e.g. 170)",
+          "s2": "<strong>Enter Weight</strong> — Enter your current weight in the weight (kg) field. (e.g. 65)",
+          "s3": "<strong>Click Calculate</strong> — Press the 'Calculate BMI' button to see results.",
+          "s4": "<strong>Check Results</strong> — Review your BMI value, obesity classification, and normal weight range."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Setting Diet Goals",
+            "desc": "Check your current BMI and set a healthy diet plan targeting a weight within the normal range."
+          },
+          "uc2": {
+            "title": "Pre-Health Checkup",
+            "desc": "Calculate your BMI before a health checkup to assess the need for obesity-related tests in advance."
+          },
+          "uc3": {
+            "title": "Exercise Program Design",
+            "desc": "Use BMI results as reference to create a customized exercise plan for weight loss or muscle gain."
+          },
+          "uc4": {
+            "title": "Weight Change Tracking",
+            "desc": "Regularly measure your BMI to numerically track weight management results and maintain motivation."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "Does a normal BMI mean I'm healthy?",
+            "a": "BMI is calculated solely from the ratio of weight to height, so it doesn't reflect muscle mass, body fat percentage, or visceral fat. Even with a normal BMI, body fat percentage may be high. For an accurate health assessment, it's recommended to get a comprehensive evaluation at a medical facility."
+          },
+          "q2": {
+            "q": "Do muscular people get a high BMI?",
+            "a": "Yes, since BMI is calculated only from weight and height, athletes and bodybuilders with high muscle mass may show overweight or obese BMI values. In such cases, measuring body fat percentage alongside BMI provides a more accurate picture."
+          },
+          "q3": {
+            "q": "Do the same BMI criteria apply to children and adolescents?",
+            "a": "No. Since children and adolescents are still growing, adult BMI criteria cannot be directly applied. For pediatric populations, obesity is determined by percentile compared to others of the same age and sex."
+          },
+          "q4": {
+            "q": "Are BMI criteria different for Asians?",
+            "a": "While WHO general criteria are universal, Asians tend to have a higher body fat percentage at the same BMI. Some Asian countries classify BMI 23+ as overweight and 25+ as obese. This calculator uses international WHO standards."
+          },
+          "q5": {
+            "q": "Is my data safe with this calculator?",
+            "a": "Yes, all calculations are processed in your browser and your height and weight information is never sent to any server. No personal health data is collected or stored."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This BMI calculator processes all calculations in your browser. Your height and weight information is never transmitted to or stored on any server. Personal health data is processed only on your device."
+      }
+    }
+  },
+  "VatCalculator": {
+    "meta": {
+      "title": "VAT Calculator | Supply Amount ↔ Total ↔ VAT Auto Calculation",
+      "description": "Enter any one of supply amount, total, or VAT and the rest are calculated automatically. Default 10% Korean VAT rate, customizable. Free online VAT calculator for businesses.",
+      "keywords": "VAT calculator, value added tax calculator, supply amount calculator, VAT reverse calculation, tax invoice, 10% VAT, Korean VAT",
+      "ogTitle": "VAT Calculator | Supply · VAT · Total Auto Calculation",
+      "ogDescription": "Enter just one amount and instantly calculate supply amount, VAT, and total! Free online VAT calculator for businesses."
+    },
+    "mode": {
+      "fromSupply": "Supply Amount → VAT",
+      "fromTotal": "Total Amount → VAT",
+      "fromVat": "VAT → Supply Amount"
+    },
+    "label": {
+      "supplyAmount": "Supply Amount",
+      "vatAmount": "VAT",
+      "totalAmount": "Total Amount",
+      "vatRate": "VAT Rate (%)",
+      "vatRateDesc": "The standard Korean VAT rate is 10%"
+    },
+    "button": {
+      "calculate": "Calculate",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "reset": "Reset"
+    },
+    "result": {
+      "title": "Calculation Result"
+    },
+    "history": {
+      "title": "Calculation History",
+      "empty": "No calculation history yet",
+      "clear": "Clear All"
+    },
+    "unit": "",
+    "seo": {
+      "description": {
+        "title": "What is a VAT Calculator?",
+        "p1": "Value Added Tax (VAT) is a tax imposed on the added value generated during the transaction of goods or services. In South Korea, a 10% VAT rate applies to most goods and services, and businesses must separately list the supply amount and VAT when issuing tax invoices.",
+        "p2": "This VAT calculator automatically computes the remaining amounts when you enter any one of the supply amount, total amount, or VAT. You can also change the tax rate to accommodate various situations such as exports, tax-exempt items, and simplified taxation."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "3 Calculation Modes",
+            "desc": "Enter any amount - supply amount, total, or VAT - and the remaining values are automatically calculated."
+          },
+          "feat2": {
+            "title": "Customizable Tax Rate",
+            "desc": "Beyond the standard Korean 10%, you can freely change the rate to handle tax-exempt, zero-rated, or international tax rates."
+          },
+          "feat3": {
+            "title": "Comma-Formatted Amounts",
+            "desc": "Large amounts are displayed with thousand separators (1,000,000) for readability, and each result can be copied with a single click."
+          },
+          "feat4": {
+            "title": "Calculation History",
+            "desc": "The last 5 calculations are automatically saved so you can quickly review previous results."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Calculation Mode</strong> — Choose the type of amount you want to enter from the tabs at the top: Supply Amount, Total Amount, or VAT.",
+          "step2": "<strong>Enter Amount</strong> — Enter the amount for your selected mode. Commas are automatically added as you type.",
+          "step3": "<strong>Check/Change Tax Rate</strong> — The default rate is set to 10%. Change it as needed for your situation.",
+          "step4": "<strong>View Results & Copy</strong> — Check the supply amount, VAT, and total in the results, and use the copy button to copy any amount to your clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Issuing Tax Invoices",
+            "desc": "Accurately separate supply amount and VAT from transaction amounts when issuing tax invoices."
+          },
+          "uc2": {
+            "title": "Creating Quotations",
+            "desc": "Quickly calculate VAT-inclusive or VAT-exclusive amounts for customer quotations."
+          },
+          "uc3": {
+            "title": "VAT Filing Preparation",
+            "desc": "Quickly reverse-calculate sales and purchase tax amounts for quarterly VAT filing preparation."
+          },
+          "uc4": {
+            "title": "Consumer Price Setting",
+            "desc": "Set VAT-inclusive consumer prices or separate VAT from consumer prices to calculate cost prices."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "What is the VAT rate in South Korea?",
+            "a": "The standard VAT rate in South Korea is 10%. This applies to most goods and services. However, some items such as unprocessed food, medical and educational services are exempt from VAT."
+          },
+          "q2": {
+            "q": "What is the difference between supply amount and total amount?",
+            "a": "The supply amount is the net transaction amount excluding VAT, while the total amount is the supply amount plus VAT. For example, if the supply amount is 1,000,000 won, adding 100,000 won VAT gives a total of 1,100,000 won."
+          },
+          "q3": {
+            "q": "How do I reverse-calculate VAT from the total amount?",
+            "a": "To reverse-calculate VAT from the total (VAT-inclusive) amount: Total / 1.1 = Supply Amount, Total - Supply Amount = VAT. Use the 'Total Amount → VAT' mode in this calculator for automatic calculation."
+          },
+          "q4": {
+            "q": "Is the VAT rate different for simplified taxpayers?",
+            "a": "Simplified taxpayers have value-added rates of 1.5% to 4% depending on the business type. You can change the tax rate in this calculator to compute VAT for simplified taxpayers."
+          },
+          "q5": {
+            "q": "When is VAT filing due?",
+            "a": "General taxpayers file final returns in January (for Jul-Dec) and July (for Jan-Jun), with preliminary returns in April and October. Simplified taxpayers file once a year in January."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This VAT calculator processes all calculations in your browser. Entered amounts and calculation results are never sent to any server. Calculation history is stored only in your browser's localStorage, so you can use it safely without concerns about financial data being exposed."
+      }
+    }
+  },
+  "LoanCalculator": {
+    "meta": {
+      "title": "Loan Repayment Calculator - Equal Payment, Equal Principal, Bullet",
+      "description": "Compare monthly payments, total interest, and repayment schedules for equal payment, equal principal, and bullet repayment methods. Free online loan calculator.",
+      "keywords": "loan calculator, loan repayment calculator, equal payment, equal principal, bullet repayment, mortgage calculator, monthly payment calculator, interest calculator, amortization schedule",
+      "ogTitle": "Loan Repayment Calculator | Compare 3 Repayment Methods",
+      "ogDescription": "Compare monthly payments and total interest across equal payment, equal principal, and bullet repayment methods with this free online loan calculator."
+    },
+    "input": {
+      "amount": "Loan Amount",
+      "amountPlaceholder": "Enter loan amount",
+      "amountUnit": "KRW",
+      "interestRate": "Annual Interest Rate",
+      "interestRatePlaceholder": "Enter annual interest rate",
+      "period": "Loan Period",
+      "periodYear": "Years",
+      "periodMonth": "Months",
+      "calculate": "Calculate",
+      "reset": "Reset"
+    },
+    "method": {
+      "equalPayment": "Equal Payment",
+      "equalPrincipal": "Equal Principal",
+      "bullet": "Bullet"
+    },
+    "result": {
+      "title": "Calculation Results",
+      "monthlyPayment": "Monthly Payment",
+      "monthlyPaymentFirst": "First Month Payment",
+      "monthlyPaymentLast": "Last Month Payment",
+      "totalPayment": "Total Payment",
+      "totalInterest": "Total Interest",
+      "principal": "Loan Principal"
+    },
+    "schedule": {
+      "title": "Monthly Repayment Schedule",
+      "show": "Show Repayment Schedule",
+      "hide": "Hide Repayment Schedule",
+      "month": "Month",
+      "principal": "Principal",
+      "interest": "Interest",
+      "payment": "Payment",
+      "balance": "Remaining Balance"
+    },
+    "compare": {
+      "title": "Repayment Method Comparison",
+      "method": "Method",
+      "monthlyFirst": "First Month Payment",
+      "totalPayment": "Total Payment",
+      "totalInterest": "Total Interest",
+      "description": "Equal Payment pays the same amount every month. Equal Principal has higher initial payments but less total interest. Bullet pays only interest during the term and repays principal at maturity."
+    },
+    "validation": {
+      "amountRequired": "Please enter the loan amount.",
+      "rateRequired": "Please enter the annual interest rate.",
+      "periodRequired": "Please enter the loan period."
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Loan Repayment Calculator?",
+        "p1": "A loan repayment calculator automatically computes how much you need to pay each month and the total interest on your loan. It can be used for various loan products including mortgages, personal loans, and auto loans.",
+        "p2": "This calculator supports three major repayment methods: Equal Payment (amortized), Equal Principal, and Bullet (interest-only). You can compare monthly payments and total interest for each method at a glance."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "3 Repayment Methods",
+            "desc": "Supports equal payment, equal principal, and bullet repayment methods to help you find the best option for your situation."
+          },
+          "feat2": {
+            "title": "Monthly Repayment Schedule",
+            "desc": "View detailed breakdown of principal, interest, payment amount, and remaining balance for each month."
+          },
+          "feat3": {
+            "title": "Method Comparison",
+            "desc": "Compare monthly payments and total interest side by side across all three repayment methods to choose the optimal one."
+          },
+          "feat4": {
+            "title": "Auto Number Formatting",
+            "desc": "Amounts are automatically formatted with thousand separators for easy reading of large numbers."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter Loan Amount</strong> -- Enter the total loan principal amount.",
+          "step2": "<strong>Enter Interest Rate</strong> -- Enter the annual interest rate (%) for the loan product.",
+          "step3": "<strong>Set Loan Period</strong> -- Enter the loan period in years or months.",
+          "step4": "<strong>Select Method and View Results</strong> -- Click on the Equal Payment, Equal Principal, or Bullet tab to see monthly payment, total payment, and total interest. Click Show Repayment Schedule for monthly details."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Mortgage Comparison",
+            "desc": "Compare monthly payments and total interest across different bank rates when purchasing a home to find the best loan terms."
+          },
+          "uc2": {
+            "title": "Auto Loan Planning",
+            "desc": "Calculate monthly payments based on different loan periods and interest rates when buying a car to plan your budget."
+          },
+          "uc3": {
+            "title": "Rental Deposit Loan Review",
+            "desc": "Compare monthly burden across different repayment methods for rental deposit loans to set an appropriate loan limit."
+          },
+          "uc4": {
+            "title": "Refinancing Analysis",
+            "desc": "Calculate and compare interest on your current loan vs. a new loan to see how much you can save by refinancing."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "What is the difference between Equal Payment and Equal Principal?",
+            "a": "Equal Payment (amortized) pays the same total amount (principal + interest) every month. Initial burden is lower but total interest is higher. Equal Principal pays the same principal amount each month plus interest on the remaining balance. Initial payments are higher but decrease over time, resulting in less total interest."
+          },
+          "q2": {
+            "q": "When is Bullet repayment advantageous?",
+            "a": "Bullet repayment pays only interest during the loan period and repays the full principal at maturity. Monthly burden is the lowest but total interest is the highest. It is suitable when you need short-term funds or expect a lump sum at maturity."
+          },
+          "q3": {
+            "q": "Which repayment method is best for a mortgage?",
+            "a": "Equal Payment is the most common for long-term mortgages. It makes household budget management easy since you pay the same amount each month. If you can afford higher initial payments, Equal Principal can reduce your total interest."
+          },
+          "q4": {
+            "q": "Are early repayment fees included in the calculation?",
+            "a": "This calculator provides basic principal and interest repayment calculations. Early repayment fees, origination fees, and other charges are not included. Please check with your bank for actual loan details."
+          },
+          "q5": {
+            "q": "Can the calculation results differ from actual bank loans?",
+            "a": "This calculator uses standard formulas. Actual bank products may differ due to interest calculation dates, fees, preferential rate applications, etc. Please contact the specific financial institution for exact figures."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This loan repayment calculator processes all calculations in your browser. No entered amounts or interest rates are sent to any server. You can use it with confidence."
+      }
+    }
+  },
+  "PasswordGenerator": {
+    "meta": {
+      "title": "Password Generator - Create Strong Random Passwords | Tani DevTool",
+      "description": "Generate strong, secure random passwords instantly. Customize length, uppercase, lowercase, numbers, symbols. Password strength indicator, generate up to 10 at once. Free online password generator.",
+      "keywords": "password generator, random password, strong password, secure password, password maker, password creator, online password generator, password tool",
+      "ogTitle": "Password Generator - Secure Random Passwords | Tani DevTool",
+      "ogDescription": "Generate strong, secure random passwords instantly. Customize length and character options, strength indicator, generate up to 10 at once."
+    },
+    "input": {
+      "length": "Password Length",
+      "uppercase": "Uppercase",
+      "lowercase": "Lowercase",
+      "numbers": "Numbers",
+      "symbols": "Symbols",
+      "count": "Count",
+      "generate": "Generate Password",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "copyAll": "Copy All",
+      "history": "Generation History",
+      "clear": "Clear"
+    },
+    "strength": {
+      "label": "Password Strength",
+      "weak": "Weak",
+      "fair": "Fair",
+      "strong": "Strong",
+      "veryStrong": "Very Strong"
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Password Generator?",
+        "p1": "A password generator is a tool that creates unpredictable random passwords using cryptographically secure random numbers. When creating passwords manually, unconscious patterns tend to emerge, but this tool generates hack-resistant passwords through completely random combinations.",
+        "p2": "It uses the browser's Web Crypto API to generate passwords securely on your local device without going through any server. You can freely customize combinations of uppercase, lowercase, numbers, and special characters along with length, and check password strength in real-time."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Cryptographically Secure",
+            "desc": "Uses Web Crypto API (crypto.getRandomValues) to generate truly unpredictable random passwords."
+          },
+          "feat2": {
+            "title": "Strength Indicator",
+            "desc": "Calculates password entropy and displays strength in real-time as Weak, Fair, Strong, or Very Strong."
+          },
+          "feat3": {
+            "title": "Flexible Character Options",
+            "desc": "Freely choose from uppercase (A-Z), lowercase (a-z), numbers (0-9), and symbols (!@#$%...) in any combination."
+          },
+          "feat4": {
+            "title": "Bulk Generation & History",
+            "desc": "Generate up to 10 passwords at once and review your generation history within the current session."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Set Length</strong> — Use the slider to set password length between 8 and 128 characters. 16 or more is recommended.",
+          "step2": "<strong>Select Character Options</strong> — Toggle which character types to include: uppercase, lowercase, numbers, and symbols.",
+          "step3": "<strong>Click Generate</strong> — Press the 'Generate Password' button to instantly create a password matching your settings.",
+          "step4": "<strong>Copy and Use</strong> — Click the copy button next to the password to copy it to your clipboard. Paste it into the service you need."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Website Registration",
+            "desc": "Create unique, strong passwords when signing up for new websites or apps to keep your accounts secure."
+          },
+          "uc2": {
+            "title": "Wi-Fi Password Setup",
+            "desc": "Set a strong random password for your home or office Wi-Fi to prevent unauthorized access."
+          },
+          "uc3": {
+            "title": "Development & Testing",
+            "desc": "Quickly generate random strings for API keys, secret tokens, test passwords, and other development needs."
+          },
+          "uc4": {
+            "title": "Regular Password Changes",
+            "desc": "Easily generate new strong passwords when regularly updating passwords according to security policies."
+          }
+        }
+      },
+      "faq": {
+        "title": "FAQ",
+        "q1": {
+          "q": "Is this password generator secure?",
+          "a": "Yes, this password generator uses the browser's Web Crypto API (crypto.getRandomValues) to generate cryptographically secure random numbers. All processing occurs in your browser and nothing is sent to any server."
+        },
+        "q2": {
+          "q": "What makes a password secure?",
+          "a": "A secure password is at least 12 characters long and includes uppercase letters, lowercase letters, numbers, and special characters. Avoid dictionary words and personal information (birthdays, names), and use a unique password for each service."
+        },
+        "q3": {
+          "q": "What is the ideal password length?",
+          "a": "A minimum of 12 characters is recommended, and 16 or more is even better. Longer passwords exponentially increase resistance to brute force attacks. Use 20+ characters for critical accounts."
+        },
+        "q4": {
+          "q": "Where are the generated passwords stored?",
+          "a": "Generated passwords are only displayed in the current browser session history and disappear when you close the page. Nothing is stored on servers or transmitted externally. We recommend using a password manager for secure password storage."
+        },
+        "q5": {
+          "q": "Can I generate multiple passwords at once?",
+          "a": "Yes, you can generate up to 10 passwords at once. Set the desired count and click the generate button to create multiple passwords with the same options (length, character types) simultaneously."
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This password generator performs all processing in your browser. Generated passwords are never sent to any server, and the history is completely cleared when you close the page. No data is stored externally, so you can use it with complete confidence."
+      }
+    }
+  },
+  "RentConversion": {
+    "meta": {
+      "title": "Rent Conversion Calculator - Jeonse to Monthly Rent | Tani DevTool",
+      "description": "Easily convert between Korean Jeonse (lump-sum deposit) and monthly rent. Automatically calculate deposit and monthly rent using the Bank of Korea standard conversion rate (4.5%). Free online rent conversion calculator.",
+      "keywords": "rent conversion calculator, jeonse to monthly rent, monthly rent to jeonse, conversion rate calculator, Korean rent calculator, deposit conversion, housing lease calculator, Bank of Korea rate",
+      "ogTitle": "Rent Conversion Calculator | Jeonse ↔ Monthly Rent",
+      "ogDescription": "Easily convert between Korean Jeonse and monthly rent. Calculate deposit and monthly rent using the standard conversion rate (4.5%)."
+    },
+    "mode": {
+      "jeonseToMonthly": "Jeonse → Monthly",
+      "monthlyToJeonse": "Monthly → Jeonse"
+    },
+    "input": {
+      "jeonseDeposit": "Jeonse Deposit",
+      "jeonseDepositPlaceholder": "Enter Jeonse deposit amount",
+      "monthlyDeposit": "Deposit (Monthly Rent)",
+      "monthlyDepositPlaceholder": "Enter monthly rent deposit",
+      "monthlyRent": "Monthly Rent",
+      "monthlyRentPlaceholder": "Enter monthly rent amount",
+      "conversionRate": "Conversion Rate (Annual %)",
+      "conversionRatePlaceholder": "Enter conversion rate",
+      "conversionRateHint": "Based on Bank of Korea base rate (default 4.5%)",
+      "amountUnit": "KRW",
+      "calculate": "Calculate",
+      "reset": "Reset"
+    },
+    "result": {
+      "title": "Calculation Result",
+      "convertedMonthlyRent": "Converted Monthly Rent",
+      "convertedDeposit": "Converted Deposit (Jeonse)",
+      "depositDifference": "Deposit Difference",
+      "formula": "Applied Formula",
+      "formulaJeonseToMonthly": "Monthly Rent = (Jeonse - Deposit) × Rate ÷ 12",
+      "formulaMonthlyToJeonse": "Jeonse = Deposit + (Monthly Rent × 12 ÷ Rate)"
+    },
+    "validation": {
+      "jeonseRequired": "Please enter the Jeonse deposit.",
+      "depositRequired": "Please enter the deposit.",
+      "rentRequired": "Please enter the monthly rent.",
+      "rateRequired": "Please enter the conversion rate.",
+      "depositExceedsJeonse": "Deposit cannot exceed the Jeonse amount."
+    },
+    "info": {
+      "title": "Rent Conversion Formula",
+      "formula1Title": "Jeonse → Monthly Rent",
+      "formula1": "Monthly Rent = (Jeonse - Deposit) × (Rate / 100) ÷ 12",
+      "formula2Title": "Monthly Rent → Jeonse",
+      "formula2": "Jeonse = Deposit + (Monthly Rent × 12 ÷ (Rate / 100))",
+      "note": "※ The conversion rate is determined by the Bank of Korea base rate + presidential decree surcharge (2%). As of 2024, it is approximately 4.5%."
+    },
+    "seo": {
+      "description": {
+        "title": "What is a Rent Conversion Calculator?",
+        "p1": "A rent conversion calculator is a tool that helps you determine the appropriate amount when converting a Jeonse (lump-sum deposit) to monthly rent, or vice versa. It applies the conversion rate according to the Korean Housing Lease Protection Act to calculate fair conversion amounts.",
+        "p2": "It is useful when converting from Jeonse to semi-monthly rent (ban-jeonse), adjusting deposit ratios, or comparing Jeonse and monthly rent conditions for a new home. The legal conversion rate based on the Bank of Korea base rate (default 4.5%) is applied, and you can also modify the rate manually."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Two-Way Conversion",
+            "desc": "Supports both Jeonse→Monthly and Monthly→Jeonse conversions for instant calculations in any scenario."
+          },
+          "feat2": {
+            "title": "Legal Conversion Rate",
+            "desc": "Provides the legal conversion rate (Bank of Korea base rate + 2% surcharge) as the default value."
+          },
+          "feat3": {
+            "title": "Real-Time Calculation",
+            "desc": "Results are displayed instantly as you enter deposit, rent, and conversion rate values."
+          },
+          "feat4": {
+            "title": "Formula Guide",
+            "desc": "Provides detailed explanation of the formulas used in rent conversion to help you understand the calculation principles."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Conversion Direction</strong> — Choose between 'Jeonse→Monthly' or 'Monthly→Jeonse' conversion.",
+          "step2": "<strong>Enter Amounts</strong> — Enter the Jeonse deposit, monthly rent deposit, and monthly rent in KRW.",
+          "step3": "<strong>Check Conversion Rate</strong> — The default rate (4.5%) is applied. You can modify it if needed.",
+          "step4": "<strong>View Results</strong> — Click the calculate button to see the converted monthly rent or Jeonse deposit."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Jeonse to Semi-Monthly Conversion",
+            "desc": "When a landlord requests conversion from Jeonse to semi-monthly rent, calculate the appropriate monthly rent for fair negotiation."
+          },
+          "uc2": {
+            "title": "Comparing Rental Properties",
+            "desc": "Convert multiple properties with different deposit-to-rent ratios into Jeonse equivalents to compare actual costs."
+          },
+          "uc3": {
+            "title": "Lease Renewal",
+            "desc": "Calculate the appropriate monthly rent increase based on the conversion rate during lease renewal for reasonable negotiation."
+          },
+          "uc4": {
+            "title": "Jeonse vs Monthly Rent Decision",
+            "desc": "Compare Jeonse loan interest with monthly rent to determine which rental method is more advantageous."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "How is the conversion rate determined?",
+            "a": "The conversion rate is determined by the Bank of Korea base rate plus a surcharge rate set by presidential decree (currently 2%), according to the Enforcement Decree of the Housing Lease Protection Act. As of 2024, it is approximately 4.5% and may change with base rate adjustments."
+          },
+          "q2": {
+            "q": "Is there a cap on the conversion rate?",
+            "a": "Yes, under the Housing Lease Protection Act, there is an upper limit on the conversion rate. Landlords cannot charge monthly rent exceeding the base rate + surcharge (currently 2%). Tenants can request a refund for any excess charges."
+          },
+          "q3": {
+            "q": "What is ban-jeonse (semi-monthly rent)?",
+            "a": "Ban-jeonse is a hybrid between Jeonse and monthly rent, where you pay a certain deposit and monthly rent for the remaining amount. It can be seen as converting part of the Jeonse deposit into monthly rent payments."
+          },
+          "q4": {
+            "q": "Can the calculation differ from the actual contract?",
+            "a": "This calculator uses the legal conversion rate. Actual contracts may vary based on landlord-tenant negotiation, market conditions, and local pricing. Please use the results as a reference."
+          },
+          "q5": {
+            "q": "What is Jeonse deposit return insurance?",
+            "a": "Jeonse deposit return insurance protects tenants in case the landlord cannot return the deposit. It can be purchased from HUG, SGI Seoul Guarantee, or HF Korea Housing Finance Corporation. It is recommended when converting between rent types to protect your deposit."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This rent conversion calculator processes all calculations in your browser. No information such as amounts or conversion rates is sent to any server. Use it with confidence."
+      }
+    }
+  },
+  "UuidGenerator": {
+    "meta": {
+      "title": "UUID Generator - Free Online UUID v4 Generator | Tani DevTool",
+      "description": "Free online tool to quickly generate UUID v4 identifiers. Supports bulk generation (up to 100), case conversion, and hyphen options. Generated securely in your browser.",
+      "keywords": "UUID generator, UUID v4, GUID generator, unique identifier, online UUID, bulk UUID generation, free UUID tool",
+      "ogTitle": "UUID Generator - Free Online UUID v4 Generator",
+      "ogDescription": "Free online tool to quickly generate UUID v4. Supports bulk generation, case conversion, and hyphen options."
+    },
+    "count": "Count",
+    "uppercase": "Uppercase",
+    "hyphens": "Include Hyphens",
+    "generate": "Generate UUID",
+    "result": "Results",
+    "copy": "Copy",
+    "copyAll": "Copy All",
+    "copied": "Copied!",
+    "history": "History",
+    "clear": "Clear",
+    "validate": {
+      "title": "UUID Validation",
+      "placeholder": "Enter a UUID to validate...",
+      "button": "Validate",
+      "valid": "Valid UUID",
+      "invalid": "Invalid UUID",
+      "version": "Version",
+      "variant": "Variant"
+    },
+    "seo": {
+      "description": {
+        "title": "What is a UUID Generator?",
+        "p1": "UUID (Universally Unique Identifier) is a 128-bit number used to uniquely identify information in computer systems. It is widely used wherever unique identifiers are needed, such as database records, API keys, and session IDs.",
+        "p2": "This tool generates the most widely used UUID version 4 (v4). Version 4 is based on cryptographically secure random numbers, with an extremely low probability of collision, making it safe for production use."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "UUID v4 Generation",
+            "desc": "Instantly generate cryptographically secure random-based UUID v4 identifiers."
+          },
+          "feat2": {
+            "title": "Bulk Generation",
+            "desc": "Generate up to 100 UUIDs at once with a single click."
+          },
+          "feat3": {
+            "title": "Case Conversion",
+            "desc": "Freely switch between uppercase (A-F) and lowercase (a-f) formats."
+          },
+          "feat4": {
+            "title": "Hyphen Options",
+            "desc": "Output UUIDs with or without hyphens based on your preference."
+          },
+          "feat5": {
+            "title": "One-Click Copy",
+            "desc": "Copy individual UUIDs or the entire list to your clipboard instantly."
+          },
+          "feat6": {
+            "title": "Generation History",
+            "desc": "View and re-copy all UUIDs generated during your current session."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Set Count</strong> — Use the slider to set the number of UUIDs you want to generate (1-100).",
+          "step2": "<strong>Configure Options</strong> — Choose uppercase/lowercase and hyphen inclusion/removal options.",
+          "step3": "<strong>Generate UUIDs</strong> — Click the 'Generate' button to instantly create UUIDs.",
+          "step4": "<strong>Copy Results</strong> — Use individual copy buttons or the copy all button to save to clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Database Primary Keys",
+            "desc": "Use as Primary Keys (PK) in database tables to uniquely identify records even in distributed systems."
+          },
+          "uc2": {
+            "title": "API Keys / Token Generation",
+            "desc": "Generate secure identifiers for API authentication keys, session tokens, and temporary access keys."
+          },
+          "uc3": {
+            "title": "File Name Generation",
+            "desc": "Automatically generate unique file names for uploads to prevent naming conflicts."
+          },
+          "uc4": {
+            "title": "Test Data",
+            "desc": "Use as unique IDs for mock data in development and testing environments."
+          },
+          "uc5": {
+            "title": "Microservice Tracking",
+            "desc": "Use as unique Correlation IDs to track requests across distributed systems."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "q1": {
+          "q": "What is a UUID?",
+          "a": "UUID (Universally Unique Identifier) is a 128-bit number used to uniquely identify information in computer systems. It is designed to be unique across all systems without requiring a central authority."
+        },
+        "q2": {
+          "q": "How is UUID v4 generated?",
+          "a": "UUID v4 is generated using cryptographically secure random numbers. Of the 128 bits, 6 bits are fixed for version and variant information, and the remaining 122 bits are randomly generated. The probability of collision is extremely low."
+        },
+        "q3": {
+          "q": "Can I remove hyphens from a UUID?",
+          "a": "Yes, hyphens are only for readability and do not affect the uniqueness of the UUID. Storing UUIDs without hyphens as 32 characters can save storage space in databases."
+        },
+        "q4": {
+          "q": "Are UUIDs sequential?",
+          "a": "UUID v4 is completely random and not sequential. If you need sequential IDs, consider UUID v7 or other methods."
+        },
+        "q5": {
+          "q": "Can I generate multiple UUIDs at once?",
+          "a": "Yes, this tool allows you to generate up to 100 UUIDs at once. Set the desired count and click the generate button. You can also toggle uppercase/lowercase and hyphen inclusion."
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This UUID generator performs all processing in your browser. Generated UUIDs are never sent to any server, and the history is completely cleared when you close the page. No data is stored externally, so you can use it with complete confidence."
+      }
+    }
+  },
+  "HashGenerator": {
+    "meta": {
+      "title": "Hash Generator - MD5, SHA-256, SHA-512 Hash Tool | Tani DevTool",
+      "description": "Free online tool to generate hash values for text and files using MD5, SHA-1, SHA-256, SHA-384, SHA-512. Real-time computation, case toggle, and file hash support.",
+      "keywords": "hash generator, MD5 hash, SHA-256, SHA-512, hash converter, checksum, file hash, hash calculator, online hash, hash tool",
+      "ogTitle": "Hash Generator | MD5, SHA-256, SHA-512 Hash Tool",
+      "ogDescription": "Instantly generate hash values for text and files using MD5, SHA-1, SHA-256, SHA-384, SHA-512. Free online hash generator."
+    },
+    "mode": {
+      "text": "Text",
+      "file": "File"
+    },
+    "input": {
+      "label": "Enter text to hash",
+      "placeholder": "Enter text to generate hash values...",
+      "chars": "chars"
+    },
+    "file": {
+      "dropzone": "Drag & drop a file here or click to select",
+      "or": "or click to select a file",
+      "processing": "Computing hashes..."
+    },
+    "options": {
+      "uppercase": "Uppercase (ABC)",
+      "lowercase": "Lowercase (abc)"
+    },
+    "results": {
+      "title": "Hash Results"
+    },
+    "copied": "Copied",
+    "copy": "Copy",
+    "seo": {
+      "description": {
+        "title": "What is a Hash Generator?",
+        "p1": "A hash generator is a tool that takes arbitrary text or file input and produces a fixed-length unique string (hash value). Hash functions always produce the same output for the same input, but it is practically impossible to reverse-engineer the original data from the hash.",
+        "p2": "This tool supports 5 hash algorithms: MD5, SHA-1, SHA-256, SHA-384, and SHA-512. It computes all hash values simultaneously in real-time as you type. Using the Web Crypto API, all processing is done securely in your browser, with file hash calculation also supported."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "5 Hash Algorithms",
+            "desc": "Compute MD5, SHA-1, SHA-256, SHA-384, and SHA-512 simultaneously for easy comparison at a glance."
+          },
+          "feat2": {
+            "title": "Real-time Computation",
+            "desc": "All hash values are computed instantly as you type. See results in real-time without clicking any buttons."
+          },
+          "feat3": {
+            "title": "File Hash Support",
+            "desc": "Drag and drop or select a file to upload, and hash values will be computed for all algorithms."
+          },
+          "feat4": {
+            "title": "Case Toggle & Copy",
+            "desc": "Switch hash values between uppercase and lowercase, and copy any algorithm's result with a single click."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Input Mode</strong> — Choose between text or file mode.",
+          "step2": "<strong>Enter Data</strong> — Type text or drag & drop / select a file to upload.",
+          "step3": "<strong>View Hash Results</strong> — MD5, SHA-1, SHA-256, SHA-384, SHA-512 hash values are displayed simultaneously.",
+          "step4": "<strong>Copy and Use</strong> — Click the copy button next to the desired hash value to copy it to the clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "File Integrity Verification",
+            "desc": "Compare the hash value of a downloaded file with the original to verify it hasn't been tampered with. Essential for software distribution and ISO image verification."
+          },
+          "uc2": {
+            "title": "Data Unique Identification",
+            "desc": "Generate hash values for text or data to use as unique identifiers. Used for duplicate data detection, cache key generation, and more."
+          },
+          "uc3": {
+            "title": "Password Hashing",
+            "desc": "Convert passwords to hashes for secure storage. Storing hash values instead of original passwords protects them even in case of data breaches."
+          },
+          "uc4": {
+            "title": "Blockchain & Digital Signatures",
+            "desc": "Each block in a blockchain contains the hash of the previous block to form the chain. Hashes are also used in digital signatures to ensure data integrity."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "q1": {
+          "q": "What is a hash?",
+          "a": "A hash is a function that converts data of any length into a fixed-length unique string. The same input always produces the same hash value, but it is practically impossible to recover the original data from the hash."
+        },
+        "q2": {
+          "q": "What is the difference between MD5 and SHA-256?",
+          "a": "MD5 produces a 128-bit (32-character) hash and is fast, but collisions have been found making it unsuitable for security. SHA-256 produces a 256-bit (64-character) hash with no known collisions, making it suitable for security applications."
+        },
+        "q3": {
+          "q": "Can I check the hash of a file?",
+          "a": "Yes, switch to file mode and drag & drop or select a file. Hash values for MD5, SHA-1, SHA-256, SHA-384, and SHA-512 will all be computed simultaneously."
+        },
+        "q4": {
+          "q": "Is hashing the same as encryption?",
+          "a": "No. Encryption uses a key to transform data and can be reversed, while hashing is a one-way function that cannot recover the original. Hashing is used for integrity checks, password storage, checksums, and more."
+        },
+        "q5": {
+          "q": "Which hash algorithm should I use?",
+          "a": "SHA-256 is the most common for file integrity checks. For security-critical applications, use SHA-256 or higher. MD5 and SHA-1 are not recommended for security but can still be used for quick checksums."
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This hash generator performs all hash computations in your browser. The text you enter or files you upload are never sent to any server, and the Web Crypto API is used for secure processing. No data is stored externally."
+      }
+    }
+  },
+  "TimestampConverter": {
+    "meta": {
+      "title": "Unix Timestamp Converter - Epoch Time Converter | Tani DevTool",
+      "description": "Free online tool to convert Unix timestamps (Epoch Time) to date/time and vice versa. Auto-detection of seconds/milliseconds, ISO 8601, UTC, local time and more formats supported.",
+      "keywords": "Unix timestamp, Epoch Time, timestamp converter, Unix Time converter, seconds converter, milliseconds converter, ISO 8601, UTC converter, date converter, developer tools",
+      "ogTitle": "Unix Timestamp Converter | Epoch Time to Date/Time",
+      "ogDescription": "Convert Unix timestamps to date/time and vice versa. Auto-detection of seconds/milliseconds with multiple output formats."
+    },
+    "title": "Unix Timestamp Converter",
+    "mobileTitle": "Timestamp Converter",
+    "currentTimestamp": "Current Unix Timestamp",
+    "milliseconds": "Milliseconds",
+    "copySeconds": "Copy Seconds",
+    "copyMilliseconds": "Copy Milliseconds",
+    "modeToDate": "Timestamp to Date",
+    "modeToTimestamp": "Date to Timestamp",
+    "now": "Now",
+    "inputTimestamp": "Enter Unix Timestamp",
+    "inputTimestampPlaceholder": "e.g. 1707696000 or 1707696000000",
+    "inputDate": "Select Date & Time",
+    "unit_auto": "Auto Detect",
+    "unit_seconds": "Seconds (s)",
+    "unit_milliseconds": "Milliseconds (ms)",
+    "detected": "Detected",
+    "result": "Conversion Result",
+    "resultSeconds": "Seconds (s)",
+    "resultMilliseconds": "Milliseconds (ms)",
+    "resultLocal": "Local Time",
+    "resultRelative": "Relative Time",
+    "copy": "Copy",
+    "copied": "Copied",
+    "invalidTimestamp": "Invalid timestamp.",
+    "infoTitle": "What is a Unix Timestamp?",
+    "infoText": "A Unix timestamp (Epoch Time) is the number of seconds elapsed since January 1, 1970 00:00:00 UTC (Unix Epoch). It is a standard way to represent time in programming, databases, and APIs, providing consistent time representation worldwide regardless of timezone.",
+    "seo": {
+      "description": {
+        "title": "What is a Unix Timestamp Converter?",
+        "p1": "A Unix Timestamp (Epoch Time) Converter is a tool that converts computer-used Unix timestamps into human-readable date/time formats, and vice versa.",
+        "p2": "It is useful for quickly checking and converting timestamps in various development tasks such as programming, database management, API debugging, and log analysis. It automatically detects seconds and milliseconds units, and provides results in multiple formats including ISO 8601, UTC, and local time."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-Time Current Timestamp",
+            "desc": "Displays the current Unix timestamp in both seconds and milliseconds in real-time. One-click copy available."
+          },
+          "feat2": {
+            "title": "Two-Way Conversion",
+            "desc": "Supports both timestamp-to-date and date-to-timestamp conversion."
+          },
+          "feat3": {
+            "title": "Auto-Detection of Seconds/Milliseconds",
+            "desc": "Automatically distinguishes between seconds (10 digits) and milliseconds (13 digits) by analyzing the input."
+          },
+          "feat4": {
+            "title": "Multiple Output Formats",
+            "desc": "View conversion results in various formats including ISO 8601, UTC, local time, and relative time."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Choose Conversion Direction</strong> — Click 'Timestamp to Date' or 'Date to Timestamp' to select the conversion mode.",
+          "step2": "<strong>Enter a Value</strong> — Enter a Unix timestamp number or select a date/time. Use the 'Now' button to quickly input the current time.",
+          "step3": "<strong>View Results</strong> — Conversion results are instantly displayed in multiple formats: ISO 8601, UTC, local time, and relative time.",
+          "step4": "<strong>Copy Results</strong> — Click the 'Copy' button next to any format to copy it to your clipboard."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "case1": {
+            "title": "API Response Debugging",
+            "desc": "Quickly convert Unix timestamps in REST API responses to human-readable date/time for verification."
+          },
+          "case2": {
+            "title": "Database Management",
+            "desc": "Convert timestamp values stored in MySQL, PostgreSQL, and other databases to dates for data analysis."
+          },
+          "case3": {
+            "title": "Log File Analysis",
+            "desc": "Convert Epoch Time recorded in server logs to actual date/time to precisely identify when events occurred."
+          },
+          "case4": {
+            "title": "JWT Token Verification",
+            "desc": "Convert timestamp claims like exp (expiration time) and iat (issued at) in JWT tokens to dates to verify token validity."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "q1": {
+          "q": "What is a Unix timestamp?",
+          "a": "A Unix timestamp (Epoch Time) is the number of seconds (or milliseconds) elapsed since January 1, 1970 00:00:00 UTC (Unix Epoch). It is a standard way to represent time across operating systems, programming languages, and databases."
+        },
+        "q2": {
+          "q": "How do I distinguish between seconds and milliseconds?",
+          "a": "Typically, a 10-digit number represents seconds, while a 13-digit number represents milliseconds. This tool includes auto-detection that analyzes the number of digits in your input, and you can also manually select the unit."
+        },
+        "q3": {
+          "q": "What is the Year 2038 problem (Y2K38)?",
+          "a": "On 32-bit systems, the Unix timestamp will experience integer overflow on January 19, 2038 at 03:14:07 UTC. 64-bit systems are not affected, and most modern systems have already transitioned to 64-bit."
+        },
+        "q4": {
+          "q": "What is the difference between UTC and local time?",
+          "a": "UTC (Coordinated Universal Time) is the global standard time, while local time is adjusted for the user's timezone. For example, KST (Korea Standard Time) is UTC+9, meaning it is 9 hours ahead of UTC. Unix timestamps themselves are always UTC-based regardless of timezone."
+        },
+        "q5": {
+          "q": "Is my data sent to any server?",
+          "a": "No. All conversions are processed with JavaScript in your browser. No data is transmitted to any server. Use it with confidence."
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This timestamp converter performs all processing in your browser. Timestamps and date information you enter are never sent to any server, and no data is stored externally. Use it with complete confidence."
+      }
+    }
+  },
+  "JwtDecoder": {
+    "meta": {
+      "title": "JWT Decoder - Analyze JWT Token, View Header/Payload | Tani DevTool",
+      "description": "Decode JWT (JSON Web Token) to analyze Header, Payload, and Signature. Free online JWT decoder with automatic timestamp conversion, expiration check, and copy functionality.",
+      "keywords": "JWT decoder, JWT token analyzer, JSON Web Token, JWT payload, JWT header, JWT expiration check, token decoding, JWT parser, JWT validator, developer tools",
+      "ogTitle": "JWT Decoder | JWT Token Analysis Tool",
+      "ogDescription": "Decode JWT (JSON Web Token) to analyze Header, Payload, and Signature. Automatic timestamp conversion and expiration check."
+    },
+    "input": {
+      "label": "Enter JWT Token",
+      "placeholder": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi..."
+    },
+    "action": {
+      "clear": "Clear",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "sample": "Sample Token"
+    },
+    "error": {
+      "structure": "Invalid JWT format. JWT must consist of three parts: Header.Payload.Signature.",
+      "header": "Cannot decode JWT Header. Please verify it's valid Base64Url format.",
+      "payload": "Cannot decode JWT Payload. Please verify it's valid Base64Url format.",
+      "generic": "Invalid JWT token."
+    },
+    "status": {
+      "label": "Token Status",
+      "expired": "Expired",
+      "valid": "Valid",
+      "noExp": "No Expiration"
+    },
+    "payload": {
+      "claims": "claims",
+      "timestamps": "Timestamp Conversion",
+      "exp": "Expiration Time (exp)",
+      "iat": "Issued At (iat)",
+      "nbf": "Not Before (nbf)",
+      "authTime": "Auth Time (auth_time)"
+    },
+    "signature": {
+      "note": "The Signature cannot be verified without the Secret Key. This tool only decodes; signature verification must be performed server-side."
+    },
+    "seo": {
+      "description": {
+        "title": "What is a JWT Decoder?",
+        "p1": "A JWT (JSON Web Token) decoder analyzes JWT tokens by separating them into Header, Payload, and Signature parts, displaying each in human-readable JSON format. JWT is a widely-used standard (RFC 7519) for authentication and information exchange in web applications.",
+        "p2": "This tool performs Base64Url decoding directly in the browser without any external libraries. It automatically converts token timestamps (exp, iat, nbf) to human-readable dates and checks expiration status in real-time."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "3-Part Separated Display",
+            "desc": "Precisely separates JWT tokens into Header, Payload, and Signature parts, displaying each in formatted JSON for easy reading."
+          },
+          "feat2": {
+            "title": "Automatic Timestamp Conversion",
+            "desc": "Automatically converts Unix timestamp values like exp, iat, and nbf to human-readable date/time format."
+          },
+          "feat3": {
+            "title": "Expiration Status Display",
+            "desc": "Compares the token's exp claim with the current time to instantly show Expired or Valid status."
+          },
+          "feat4": {
+            "title": "Copy Each Part",
+            "desc": "Copy Header, Payload, or Signature to clipboard directly for convenient use during development."
+          },
+          "feat5": {
+            "title": "Browser-Only Processing",
+            "desc": "All decoding is performed in the browser, so JWT tokens are never sent to any server. Analyze even security-sensitive tokens with confidence."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Enter JWT Token</strong> — Paste the JWT token you want to decode into the input field. You can also try a sample using the 'Sample Token' button.",
+          "step2": "<strong>View Header</strong> — Check the algorithm (alg) and token type (typ) information in the decoded JWT Header.",
+          "step3": "<strong>Analyze Payload</strong> — Review the claims information in the Payload. Timestamps are automatically converted to dates.",
+          "step4": "<strong>Use Results</strong> — Check the expiration status and copy any section to clipboard using the copy button."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "API Debugging",
+            "desc": "Quickly inspect JWT token contents returned from REST APIs to debug authentication issues."
+          },
+          "uc2": {
+            "title": "Token Expiration Check",
+            "desc": "Instantly verify when a JWT token expires and whether it's currently valid to diagnose authentication errors."
+          },
+          "uc3": {
+            "title": "Claims Verification",
+            "desc": "Quickly review user information (sub, name, role, etc.) and permission-related claims contained in the token."
+          },
+          "uc4": {
+            "title": "Learning & Education",
+            "desc": "Visually understand JWT structure and how it works. See firsthand what information each part contains."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This JWT decoder performs all decoding in your browser. JWT tokens you enter are never sent to any server and are completely deleted when you close the page. Analyze even security-sensitive tokens with confidence."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "What is JWT?",
+        "a": "JWT (JSON Web Token) is a standard (RFC 7519) for securely transmitting information between parties as a JSON object. It consists of three parts: Header, Payload, and Signature, and is mainly used for authentication and information exchange."
+      },
+      "q2": {
+        "q": "Is it safe to decode a JWT?",
+        "a": "JWT Header and Payload are only Base64Url-encoded, not encrypted. Anyone can decode and view the contents. Sensitive information should not be included in the JWT Payload."
+      },
+      "q3": {
+        "q": "What are exp, iat, and nbf?",
+        "a": "exp (Expiration Time) is the token expiration time, iat (Issued At) is the token issuance time, and nbf (Not Before) is the start time when the token becomes valid. All are recorded as Unix timestamps (in seconds)."
+      },
+      "q4": {
+        "q": "How do I check if a JWT token has expired?",
+        "a": "Compare the 'exp' claim in the JWT Payload with the current time. This decoder automatically determines expiration and displays 'Expired' or 'Valid' status."
+      },
+      "q5": {
+        "q": "Is my JWT token stored on the server?",
+        "a": "No. This tool performs all decoding in the browser. The JWT token you enter is never sent to any server, and is completely deleted when you close the page."
+      }
+    }
+  },
+  "DiscountCalculator": {
+    "meta": {
+      "title": "Discount Calculator | Discount Rate · Sale Price · Margin Auto Calculation",
+      "description": "Calculate discount rate from original and sale prices, compute discounted price from rate, or find margin rate and profit from cost and selling prices. Free online discount & margin calculator.",
+      "keywords": "discount calculator, margin calculator, markup calculator, discount rate calculator, sale price calculator, profit margin, price calculator, cost calculation",
+      "ogTitle": "Discount & Margin Calculator | Rate · Price · Margin Auto Calculation",
+      "ogDescription": "Enter original and sale/selling prices to instantly calculate discount rate, discount amount, margin rate, and profit! Free online discount & margin calculator."
+    },
+    "mode": {
+      "discountRate": "Discount Rate",
+      "discountPrice": "Sale Price",
+      "margin": "Margin"
+    },
+    "label": {
+      "originalPrice": "Original Price",
+      "discountedPrice": "Discounted Price",
+      "discountRate": "Discount Rate (%)",
+      "costPrice": "Cost Price",
+      "sellingPrice": "Selling Price"
+    },
+    "button": {
+      "reset": "Reset"
+    },
+    "result": {
+      "title": "Calculation Result",
+      "discountRate": "Discount Rate",
+      "discountAmount": "Discount Amount",
+      "finalPrice": "Sale Price (Final)",
+      "marginRate": "Margin Rate",
+      "marginAmount": "Margin Amount",
+      "markupRate": "Markup Rate"
+    },
+    "formula": {
+      "title": "Formulas",
+      "discountRate": "Discount Rate",
+      "discountRateFormula": "(Original - Discounted) / Original x 100",
+      "discountPrice": "Sale Price",
+      "discountPriceFormula": "Original x (1 - Discount Rate / 100)",
+      "marginRate": "Margin Rate",
+      "marginRateFormula": "(Selling - Cost) / Selling x 100"
+    },
+    "unit": "",
+    "seo": {
+      "description": {
+        "title": "What is a Discount & Margin Calculator?",
+        "p1": "A discount calculator is a tool that automatically computes the discount rate, discount amount, margin rate, and margin amount using a product's original price and discounted (or selling) price. It is essential for online store management, sale planning, and pricing strategy development.",
+        "p2": "This calculator supports 3 modes: (1) Calculate discount rate from original and discounted prices, (2) Calculate discounted price from original price and discount rate, (3) Calculate margin rate and margin amount from cost and selling prices. Results are displayed in real-time as you type, with automatic comma formatting for amounts."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "3 Calculation Modes",
+            "desc": "Choose between discount rate, sale price, and margin calculation modes to quickly compute what you need for any situation."
+          },
+          "feat2": {
+            "title": "Real-Time Auto Calculation",
+            "desc": "Results update instantly as you type numbers. No need for a separate calculate button - see results immediately."
+          },
+          "feat3": {
+            "title": "Comma-Formatted Amounts",
+            "desc": "Large amounts are displayed with thousand separators (1,000,000) for high readability, reducing errors in price verification."
+          },
+          "feat4": {
+            "title": "Markup Rate Display",
+            "desc": "In margin calculation mode, the markup rate (profit relative to cost) is also displayed alongside the margin rate for comprehensive price analysis."
+          }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Calculation Mode</strong> — Choose your desired mode from the tabs at the top: Discount Rate, Sale Price, or Margin calculation.",
+          "step2": "<strong>Enter Original Price</strong> — Enter the original (list) price or cost price. Commas are automatically added as you type.",
+          "step3": "<strong>Enter Additional Information</strong> — Depending on the mode, enter the discounted price, discount rate (%), or selling price.",
+          "step4": "<strong>View Results</strong> — Results including discount rate, discount amount, margin rate, and margin amount are calculated and displayed in real-time as you type."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Planning Store Sales",
+            "desc": "Set the original price and target discount rate to pre-calculate sale prices, verify margins, and plan your sales events."
+          },
+          "uc2": {
+            "title": "Competitor Price Analysis",
+            "desc": "Enter competitors' pre- and post-discount prices to analyze actual discount rates and reflect them in your pricing strategy."
+          },
+          "uc3": {
+            "title": "Wholesale to Retail Pricing",
+            "desc": "Use wholesale purchase prices and desired margin rates to calculate appropriate retail selling prices."
+          },
+          "uc4": {
+            "title": "Clearance Sale Pricing",
+            "desc": "When setting clearance prices, pre-calculate loss rates and discount rates relative to cost to support decision-making."
+          }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "What is the difference between discount rate and margin rate?",
+            "a": "Discount rate represents how much a product is discounted relative to its original price. For example, selling a $100 item for $80 is a 20% discount. Margin rate is the ratio of profit (margin) to the selling price - in the same example, the margin rate is 25% ($20/$80)."
+          },
+          "q2": {
+            "q": "Can I reverse-calculate the original price from the discounted price?",
+            "a": "Yes, if you know the discounted price and discount rate, you can calculate the original price. The formula is 'Original Price = Discounted Price / (1 - Discount Rate/100)'. For example, if a 30% discounted price is $70, the original price is $70 / 0.7 = $100."
+          },
+          "q3": {
+            "q": "Are 50% margin and 50% discount the same thing?",
+            "a": "No. Margin rate and discount rate have different bases. If the original price is $100 and it's discounted to $50, the discount rate is 50% (based on original). But if cost is $50 and selling price is $100, the margin rate is 50% (based on selling price)."
+          },
+          "q4": {
+            "q": "What is an appropriate margin rate?",
+            "a": "Appropriate margin rates vary by industry. Generally, retail is 20-50%, food service is 60-70%, manufacturing is 10-30%, and services are 30-60%. However, this can vary depending on competition and cost structure."
+          },
+          "q5": {
+            "q": "What is the difference between markup rate and margin rate?",
+            "a": "Markup rate is the ratio of profit to cost, while margin rate is the ratio of profit to selling price. If cost is $100 and selling price is $150, the markup rate is 50% ($50/$100) and the margin rate is 33.3% ($50/$150)."
+          }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This discount and margin calculator processes all calculations in your browser. Entered amounts and calculation results are never sent to any server. No pricing data is stored externally, so you can use it with complete confidence."
       }
     }
   }

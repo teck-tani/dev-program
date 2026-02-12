@@ -5,7 +5,9 @@ import {
     FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette,
     FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase,
     FaTerminal, FaYoutube, FaGlobe, FaQrcode, FaTools, FaBell,
-    FaServer, FaCalendarAlt
+    FaServer, FaCalendarAlt, FaSearch, FaWeight, FaFileInvoiceDollar, FaLock,
+    FaHandHoldingUsd, FaHome, FaFingerprint, FaShieldAlt, FaHistory, FaKey,
+    FaTag
 } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
@@ -26,7 +28,7 @@ export interface CategoryDef {
 // ===== 단일 소스 오브 트루스 =====
 // 새 도구 추가 시: 여기에 추가 + messages/ko.json & en.json에 번역만 추가하면 됨
 export const ALL_TOOLS: ToolDef[] = [
-    // 계산기 (8)
+    // 계산기 (11)
     { href: '/calculator', labelKey: 'calculator', icon: FaCalculator, category: 'calculators' },
     { href: '/money-converter', labelKey: 'exchange', icon: FaExchangeAlt, category: 'calculators' },
     { href: '/severance-calculator', labelKey: 'severance', icon: FaPiggyBank, category: 'calculators' },
@@ -35,8 +37,13 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/korean-age-calculator', labelKey: 'age', icon: FaUserClock, category: 'calculators' },
     { href: '/ovulation-calculator', labelKey: 'ovulationCalculator', icon: FaFemale, category: 'calculators' },
     { href: '/dutch-pay', labelKey: 'dutchPay', icon: FaUsers, category: 'calculators' },
+    { href: '/bmi-calculator', labelKey: 'bmiCalculator', icon: FaWeight, category: 'calculators' },
+    { href: '/vat-calculator', labelKey: 'vatCalculator', icon: FaFileInvoiceDollar, category: 'calculators' },
+    { href: '/loan-calculator', labelKey: 'loanCalculator', icon: FaHandHoldingUsd, category: 'calculators' },
+    { href: '/rent-conversion', labelKey: 'rentConversion', icon: FaHome, category: 'calculators' },
+    { href: '/discount-calculator', labelKey: 'discountCalculator', icon: FaTag, category: 'calculators' },
 
-    // 시간 (4)
+    // 시간 (6)
     { href: '/clock', labelKey: 'clock', icon: FaClock, category: 'time' },
     { href: '/stopwatch', labelKey: 'stopwatch', icon: FaStopwatch, category: 'time' },
     { href: '/timer', labelKey: 'timer', icon: FaHourglassHalf, category: 'time' },
@@ -62,10 +69,16 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/ladder-game', labelKey: 'ladderGame', icon: FaRandom, category: 'utilities' },
     { href: '/youtube-thumbnail', labelKey: 'youtubeThumbnail', icon: FaYoutube, category: 'utilities' },
     { href: '/ip-address', labelKey: 'ipAddress', icon: FaGlobe, category: 'utilities' },
+    { href: '/password-generator', labelKey: 'passwordGenerator', icon: FaLock, category: 'utilities' },
 
-    // 개발 도구 (2)
+    // 개발 도구 (5)
     { href: '/sql-formatter', labelKey: 'sqlFormatter', icon: FaDatabase, category: 'devtools' },
     { href: '/cron-generator', labelKey: 'cronGenerator', icon: FaTerminal, category: 'devtools' },
+    { href: '/regex-tester', labelKey: 'regexTester', icon: FaSearch, category: 'devtools' },
+    { href: '/uuid-generator', labelKey: 'uuidGenerator', icon: FaFingerprint, category: 'devtools' },
+    { href: '/hash-generator', labelKey: 'hashGenerator', icon: FaShieldAlt, category: 'devtools' },
+    { href: '/timestamp-converter', labelKey: 'timestampConverter', icon: FaHistory, category: 'devtools' },
+    { href: '/jwt-decoder', labelKey: 'jwtDecoder', icon: FaKey, category: 'devtools' },
 ];
 
 export const CATEGORIES: CategoryDef[] = [

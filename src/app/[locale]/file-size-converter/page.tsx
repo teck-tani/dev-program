@@ -191,8 +191,8 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
 
                 <article style={{ maxWidth: 700, margin: '60px auto 0', padding: '0 20px' }}>
                     {/* 1. Description (existing info table) */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">
                             {t('info.title')}
                         </h2>
                         <div style={{ background: '#f8fafc', padding: 20, borderRadius: 12, marginBottom: 16, overflowX: 'auto' }}>
@@ -225,43 +225,43 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
                     </section>
 
                     {/* 2. How to Use */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.howto.title')}</h2>
-                        <ol style={{ paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.howto.title')}</h2>
+                        <ol className="seo-howto-list">
                             {howtoKeys.map((key) => (
-                                <li key={key} style={{ lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
+                                <li key={key} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
                             ))}
                         </ol>
                     </section>
 
                     {/* 3. Use Cases */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.usecases.title')}</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.usecases.title')}</h2>
+                        <div className="seo-card-grid">
                             {usecaseKeys.map((key) => (
-                                <div key={key} style={{ padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
-                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 8 }}>{t(`seo.usecases.list.${key}.title`)}</h3>
-                                    <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>{t(`seo.usecases.list.${key}.desc`)}</p>
+                                <div key={key} className="seo-card">
+                                    <h3 className="seo-card-title">{t(`seo.usecases.list.${key}.title`)}</h3>
+                                    <p className="seo-card-desc">{t(`seo.usecases.list.${key}.desc`)}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
 
                     {/* 4. FAQ */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('faq.title')}</h2>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('faq.title')}</h2>
                         {[1, 2, 3, 4].map((i) => (
-                            <details key={i} style={{ marginBottom: 8, padding: '12px 16px', borderRadius: 10, border: '1px solid #e2e8f0' }}>
-                                <summary style={{ fontWeight: 600, cursor: 'pointer' }}>{t(`faq.q${i}`)}</summary>
-                                <p style={{ marginTop: 8, lineHeight: 1.7 }}>{t(`faq.a${i}`)}</p>
+                            <details key={i} className="seo-faq-item">
+                                <summary>{t(`faq.q${i}`)}</summary>
+                                <p>{t(`faq.a${i}`)}</p>
                             </details>
                         ))}
                     </section>
 
                     {/* 5. Privacy */}
-                    <section style={{ marginBottom: 20 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.privacy.title')}</h2>
-                        <p style={{ lineHeight: 1.8 }}>{t('seo.privacy.text')}</p>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.privacy.title')}</h2>
+                        <p className="seo-text">{t('seo.privacy.text')}</p>
                     </section>
                 </article>
             </div>

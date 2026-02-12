@@ -2486,4 +2486,152 @@ body[data-theme="dark"] .no-results {
     color: #64748b;
 }
 
+/* ============================================
+   Shared SEO Article Styles (all tool pages)
+   ============================================ */
+.seo-article {
+    max-width: 700px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+}
+
+.seo-section {
+    margin-bottom: 40px;
+}
+
+.seo-section:last-child {
+    margin-bottom: 20px;
+}
+
+.seo-section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1e293b;
+}
+
+.seo-text {
+    line-height: 1.8;
+    margin-bottom: 12px;
+    color: #334155;
+}
+
+.seo-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.seo-card {
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.seo-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+.seo-card-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #475569;
+}
+
+.seo-howto-list {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.seo-howto-list li {
+    line-height: 1.8;
+    color: #334155;
+}
+
+.seo-usecase-list {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.seo-usecase-list li {
+    line-height: 1.7;
+    color: #334155;
+}
+
+.seo-faq-item {
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.seo-faq-item summary {
+    font-weight: 600;
+    cursor: pointer;
+    color: #1e293b;
+}
+
+.seo-faq-item p {
+    margin-top: 8px;
+    line-height: 1.7;
+    color: #475569;
+}
+
+/* SEO Dark Mode */
+body[data-theme="dark"] .seo-section-title {
+    color: #f1f5f9;
+}
+
+body[data-theme="dark"] .seo-text {
+    color: #cbd5e1;
+}
+
+body[data-theme="dark"] .seo-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body[data-theme="dark"] .seo-card-title {
+    color: #e2e8f0;
+}
+
+body[data-theme="dark"] .seo-card-desc {
+    color: #94a3b8;
+}
+
+body[data-theme="dark"] .seo-howto-list li {
+    color: #cbd5e1;
+}
+
+body[data-theme="dark"] .seo-usecase-list li {
+    color: #cbd5e1;
+}
+
+body[data-theme="dark"] .seo-faq-item {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body[data-theme="dark"] .seo-faq-item summary {
+    color: #e2e8f0;
+}
+
+body[data-theme="dark"] .seo-faq-item p {
+    color: #94a3b8;
+}
+
+@media print {
+    .seo-article {
+        display: none !important;
+    }
+}
 

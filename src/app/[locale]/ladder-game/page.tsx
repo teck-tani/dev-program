@@ -324,87 +324,76 @@ export default async function LadderGamePage(props: { params: Promise<{ locale: 
 
             <LadderGameClient />
 
-            <article
-                aria-label={seo.ariaLabel}
-                style={{
-                    maxWidth: '800px',
-                    margin: '20px auto 40px',
-                    padding: '0 20px',
-                    lineHeight: '1.8',
-                    color: '#444'
-                }}
-            >
+            <article className="seo-article" aria-label={seo.ariaLabel}>
                 {/* 1. 도구 설명 */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.section1Title}
-                </h2>
-                <p style={{ marginBottom: '30px' }}>{seo.section1Desc}</p>
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{seo.section1Title}</h2>
+                    <p className="seo-text">{seo.section1Desc}</p>
+                </section>
 
                 {/* 2. 주요 기능 */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.featuresTitle}
-                </h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginBottom: '30px' }}>
-                    {seo.features.map((feature: { title: string; desc: string }, index: number) => (
-                        <div key={index} style={{ padding: '16px', background: '#f8f9fa', borderRadius: '10px', border: '1px solid #eee' }}>
-                            <strong style={{ display: 'block', marginBottom: '6px', color: '#333' }}>{feature.title}</strong>
-                            <span style={{ fontSize: '0.9rem', color: '#666' }}>{feature.desc}</span>
-                        </div>
-                    ))}
-                </div>
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{seo.featuresTitle}</h2>
+                    <div className="seo-card-grid">
+                        {seo.features.map((feature: { title: string; desc: string }, index: number) => (
+                            <div key={index} className="seo-card">
+                                <h3 className="seo-card-title">{feature.title}</h3>
+                                <p className="seo-card-desc">{feature.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
 
                 {/* 3. 사용법 */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.howToTitle}
-                </h2>
-                <ol style={{ marginBottom: '30px', paddingLeft: '20px' }}>
-                    {seo.howToSteps.map((step: { name: string; text: string }, index: number) => (
-                        <li key={index} style={{ marginBottom: '12px' }}>
-                            <strong>{step.name}</strong> &mdash; {step.text}
-                        </li>
-                    ))}
-                </ol>
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{seo.howToTitle}</h2>
+                    <ol className="seo-howto-list">
+                        {seo.howToSteps.map((step: { name: string; text: string }, index: number) => (
+                            <li key={index}>
+                                <strong>{step.name}</strong> &mdash; {step.text}
+                            </li>
+                        ))}
+                    </ol>
+                </section>
 
                 {/* 4. 활용 예시 */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.section2Title}
-                </h2>
-                <ul style={{ marginBottom: '30px', paddingLeft: '20px' }}>
-                    {seo.section2Items.map((item: string, index: number) => (
-                        <li key={index} style={{ marginBottom: '10px' }}>{item}</li>
-                    ))}
-                </ul>
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{seo.section2Title}</h2>
+                    <ul className="seo-usecase-list">
+                        {seo.section2Items.map((item: string, index: number) => (
+                            <li key={index}>{item}</li>
+                        ))}
+                    </ul>
+                </section>
 
                 {/* 5. FAQ */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.faqTitle}
-                </h2>
-                <div style={{ marginBottom: '30px' }}>
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{seo.faqTitle}</h2>
                     {seo.faqItems.map((faq: { q: string; a: string }, index: number) => (
-                        <details key={index} style={{ marginBottom: '8px', padding: '12px 16px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee', cursor: 'pointer' }}>
-                            <summary style={{ fontWeight: 600, color: '#333' }}>{faq.q}</summary>
-                            <p style={{ marginTop: '10px', color: '#555' }}>{faq.a}</p>
+                        <details key={index} className="seo-faq-item">
+                            <summary>{faq.q}</summary>
+                            <p>{faq.a}</p>
                         </details>
                     ))}
-                </div>
+                </section>
 
-                {/* 6. 팁 (보너스) */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.tipsTitle}
-                </h2>
-                <p style={{ marginBottom: '30px' }}>{seo.tipsDesc}</p>
+                {/* 6. 팁 */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{seo.tipsTitle}</h2>
+                    <p className="seo-text">{seo.tipsDesc}</p>
+                </section>
 
-                {/* 7. 공정성 보장 (보너스) */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.fairnessTitle}
-                </h2>
-                <p style={{ marginBottom: '30px' }}>{seo.fairnessDesc}</p>
+                {/* 7. 공정성 보장 */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{seo.fairnessTitle}</h2>
+                    <p className="seo-text">{seo.fairnessDesc}</p>
+                </section>
 
                 {/* 8. 개인정보 안내 */}
-                <h2 style={{ fontSize: '1.6rem', color: '#333', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                    {seo.privacyTitle}
-                </h2>
-                <p style={{ marginBottom: '30px' }}>{seo.privacyDesc}</p>
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{seo.privacyTitle}</h2>
+                    <p className="seo-text">{seo.privacyDesc}</p>
+                </section>
             </article>
         </>
     );

@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useLayoutEffect, memo, useCallback, useMem
 import styles from "@/app/[locale]/barcode/barcode.module.css";
 import { useTranslations } from "next-intl";
 import { HiOutlineSave } from "react-icons/hi";
-import { IoCopyOutline } from "react-icons/io5";
 import {
     BARCODE_CATEGORIES,
     findType,
@@ -213,9 +212,10 @@ export default function BarcodeGenerator() {
     // ── Load saved settings & barcodes on mount ──
     useEffect(() => {
         const s = loadSettings();
+        let loadedType = DEFAULT_SETTINGS.barcodeType;
         if (Object.keys(s).length > 0) {
             if (s.barcodeCategory !== undefined) setBarcodeCategory(s.barcodeCategory);
-            if (s.barcodeType !== undefined) setBarcodeType(s.barcodeType);
+            if (s.barcodeType !== undefined) { setBarcodeType(s.barcodeType); loadedType = s.barcodeType; }
             if (s.scale !== undefined) setScale(s.scale);
             if (s.barHeight !== undefined) setBarHeight(s.barHeight);
             if (s.displayValue !== undefined) setDisplayValue(s.displayValue);
@@ -234,9 +234,13 @@ export default function BarcodeGenerator() {
             const saved = localStorage.getItem(BARCODES_KEY);
             if (saved) {
                 const items: BarcodeItem[] = JSON.parse(saved);
-                if (items.length > 0) setBarcodes(items);
+                if (items.length > 0) { setBarcodes(items); return; }
             }
         } catch { /* ignore */ }
+        // No saved barcodes — create sample with loaded type
+        if (loadedType !== DEFAULT_SETTINGS.barcodeType) {
+            setBarcodes([{ id: "sample", value: "SAMPLE-001", type: loadedType }]);
+        }
     }, []);
 
     // ── Auto-save barcodes on change ──
@@ -276,12 +280,12 @@ export default function BarcodeGenerator() {
         setFontBold(DEFAULT_SETTINGS.fontBold);
         setEclevel(DEFAULT_SETTINGS.eclevel);
         setDpi(DEFAULT_SETTINGS.dpi);
-        setBarcodes([{ id: "sample", value: "SAMPLE-001", type: DEFAULT_SETTINGS.barcodeType }]);
+        setBarcodes(isSimple ? [{ id: "sample", value: "SAMPLE-001", type: DEFAULT_SETTINGS.barcodeType }] : []);
         setBarcodeValue("");
+        setExcelData("");
         setError("");
-        localStorage.removeItem(SETTINGS_KEY);
-        localStorage.removeItem(BARCODES_KEY);
-    }, []);
+        // Note: auto-save effects will persist the default values automatically
+    }, [isSimple]);
 
     // ── Scroll-lock during slider drag ──
     const controlsRef = useRef<HTMLDivElement>(null);
@@ -410,10 +414,12 @@ export default function BarcodeGenerator() {
     // ── Add to history ──
     const addToHistory = useCallback((type: string, value: string) => {
         const entry: HistoryEntry = { type, value, timestamp: Date.now() };
-        const updated = [entry, ...history.filter(h => !(h.type === type && h.value === value))].slice(0, MAX_HISTORY);
-        setHistory(updated);
-        saveHistory(updated);
-    }, [history]);
+        setHistory(prev => {
+            const updated = [entry, ...prev.filter(h => !(h.type === type && h.value === value))].slice(0, MAX_HISTORY);
+            saveHistory(updated);
+            return updated;
+        });
+    }, []);
 
     // ── Handlers ──
     const handleCategoryChange = (cat: string) => {
@@ -701,6 +707,21 @@ export default function BarcodeGenerator() {
     }, []);
 
     // ── CSV Import ──
+    const importValues = useCallback((values: string[]) => {
+        let errCount = 0;
+        const newBarcodes: BarcodeItem[] = [];
+        for (const val of values) {
+            if (barcodes.length + newBarcodes.length >= MAX_BARCODES) break;
+            const err = validateBarcodeValue(val, barcodeType);
+            if (err) { errCount++; continue; }
+            newBarcodes.push({ id: crypto.randomUUID(), value: val, type: barcodeType });
+        }
+        setBarcodes(prev => [...newBarcodes, ...prev]);
+        setShowCsvDialog(false);
+        setCsvColumns([]);
+        setError(errCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errCount }) : t("resultBulk", { count: newBarcodes.length }));
+    }, [barcodes.length, barcodeType, t]);
+
     const handleCsvFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -720,22 +741,7 @@ export default function BarcodeGenerator() {
         };
         reader.readAsText(file);
         e.target.value = "";
-    }, []);
-
-    const importValues = useCallback((values: string[]) => {
-        let errCount = 0;
-        const newBarcodes: BarcodeItem[] = [];
-        for (const val of values) {
-            if (barcodes.length + newBarcodes.length >= MAX_BARCODES) break;
-            const err = validateBarcodeValue(val, barcodeType);
-            if (err) { errCount++; continue; }
-            newBarcodes.push({ id: crypto.randomUUID(), value: val, type: barcodeType });
-        }
-        setBarcodes(prev => [...newBarcodes, ...prev]);
-        setShowCsvDialog(false);
-        setCsvColumns([]);
-        setError(errCount > 0 ? t("resultBulkError", { count: newBarcodes.length, error: errCount }) : t("resultBulk", { count: newBarcodes.length }));
-    }, [barcodes.length, barcodeType, t]);
+    }, [importValues]);
 
     const confirmCsvImport = useCallback(() => {
         const values = csvColumns.map(row => row[csvSelectedCol]?.trim()).filter(Boolean);

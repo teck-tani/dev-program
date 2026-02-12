@@ -1,0 +1,596 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
+import { useTheme } from "@/contexts/ThemeContext";
+import { IoCopyOutline, IoTrashOutline } from "react-icons/io5";
+
+type CalcMode = "fromSupply" | "fromTotal" | "fromVat";
+
+interface CalcResult {
+    supplyAmount: number;
+    vatAmount: number;
+    totalAmount: number;
+}
+
+interface HistoryEntry {
+    id: string;
+    mode: CalcMode;
+    inputValue: number;
+    vatRate: number;
+    result: CalcResult;
+}
+
+export default function VatCalculatorClient() {
+    const t = useTranslations('VatCalculator');
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+
+    const [mode, setMode] = useState<CalcMode>("fromSupply");
+    const [inputValue, setInputValue] = useState("");
+    const [vatRate, setVatRate] = useState("10");
+    const [result, setResult] = useState<CalcResult | null>(null);
+    const [copiedField, setCopiedField] = useState<string | null>(null);
+    const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+    // Load history from localStorage
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem("vat_calculator_history");
+            if (saved) setHistory(JSON.parse(saved));
+        } catch { /* ignore */ }
+    }, []);
+
+    const saveHistory = useCallback((entry: HistoryEntry) => {
+        setHistory(prev => {
+            const updated = [entry, ...prev].slice(0, 5);
+            try { localStorage.setItem("vat_calculator_history", JSON.stringify(updated)); } catch { /* ignore */ }
+            return updated;
+        });
+    }, []);
+
+    const clearHistory = () => {
+        setHistory([]);
+        try { localStorage.removeItem("vat_calculator_history"); } catch { /* ignore */ }
+    };
+
+    // Format number with commas
+    const formatNumber = (num: number): string => {
+        return Math.floor(num).toLocaleString("ko-KR");
+    };
+
+    // Parse comma-formatted string to number
+    const parseInput = (value: string): number => {
+        return parseInt(value.replace(/,/g, ""), 10) || 0;
+    };
+
+    // Handle input change with auto comma formatting
+    const handleInputChange = (value: string) => {
+        const numbersOnly = value.replace(/[^0-9]/g, "");
+        if (numbersOnly === "") {
+            setInputValue("");
+            setResult(null);
+            return;
+        }
+        const num = parseInt(numbersOnly, 10);
+        setInputValue(num.toLocaleString("ko-KR"));
+    };
+
+    // Calculate VAT
+    const calculate = useCallback(() => {
+        const amount = parseInput(inputValue);
+        if (amount <= 0) return;
+
+        const rate = parseFloat(vatRate) / 100;
+        if (isNaN(rate) || rate < 0) return;
+
+        let calcResult: CalcResult;
+
+        switch (mode) {
+            case "fromSupply": {
+                const vat = Math.floor(amount * rate);
+                calcResult = {
+                    supplyAmount: amount,
+                    vatAmount: vat,
+                    totalAmount: amount + vat,
+                };
+                break;
+            }
+            case "fromTotal": {
+                const supply = Math.floor(amount / (1 + rate));
+                const vat = amount - supply;
+                calcResult = {
+                    supplyAmount: supply,
+                    vatAmount: vat,
+                    totalAmount: amount,
+                };
+                break;
+            }
+            case "fromVat": {
+                const supply = rate > 0 ? Math.floor(amount / rate) : 0;
+                calcResult = {
+                    supplyAmount: supply,
+                    vatAmount: amount,
+                    totalAmount: supply + amount,
+                };
+                break;
+            }
+        }
+
+        setResult(calcResult);
+
+        // Save to history
+        saveHistory({
+            id: Date.now().toString(),
+            mode,
+            inputValue: amount,
+            vatRate: parseFloat(vatRate),
+            result: calcResult,
+        });
+    }, [inputValue, vatRate, mode, saveHistory]);
+
+    // Auto-calculate on input change
+    useEffect(() => {
+        const amount = parseInput(inputValue);
+        if (amount > 0) {
+            calculate();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [inputValue, vatRate, mode]);
+
+    // Copy to clipboard
+    const copyToClipboard = async (value: number, field: string) => {
+        try {
+            await navigator.clipboard.writeText(formatNumber(value));
+            setCopiedField(field);
+            setTimeout(() => setCopiedField(null), 1500);
+        } catch { /* ignore */ }
+    };
+
+    // Reset
+    const handleReset = () => {
+        setInputValue("");
+        setResult(null);
+        setVatRate("10");
+    };
+
+    // Get input label based on mode
+    const getInputLabel = (): string => {
+        switch (mode) {
+            case "fromSupply": return t("label.supplyAmount");
+            case "fromTotal": return t("label.totalAmount");
+            case "fromVat": return t("label.vatAmount");
+        }
+    };
+
+    // Mode label for history display
+    const getModeLabel = (m: CalcMode): string => {
+        return t(`mode.${m}`);
+    };
+
+    const modes: CalcMode[] = ["fromSupply", "fromTotal", "fromVat"];
+
+    return (
+        <div style={{ maxWidth: "600px", margin: "0 auto", padding: "0 16px" }}>
+            {/* Tab Navigation */}
+            <div style={{
+                display: "flex",
+                borderRadius: "12px",
+                overflow: "hidden",
+                marginBottom: "20px",
+                border: `1px solid ${isDark ? "#444" : "#ddd"}`,
+            }}>
+                {modes.map((m) => (
+                    <button
+                        key={m}
+                        onClick={() => {
+                            setMode(m);
+                            setInputValue("");
+                            setResult(null);
+                        }}
+                        style={{
+                            flex: 1,
+                            padding: "12px 8px",
+                            border: "none",
+                            cursor: "pointer",
+                            fontSize: "0.85rem",
+                            fontWeight: mode === m ? 700 : 400,
+                            background: mode === m
+                                ? (isDark ? "#3b82f6" : "#2563eb")
+                                : (isDark ? "#1e1e1e" : "#f9f9f9"),
+                            color: mode === m
+                                ? "#fff"
+                                : (isDark ? "#ccc" : "#555"),
+                            transition: "all 0.2s ease",
+                        }}
+                    >
+                        {t(`mode.${m}`)}
+                    </button>
+                ))}
+            </div>
+
+            {/* Input Section */}
+            <div style={{
+                background: isDark ? "#1e1e1e" : "#fff",
+                borderRadius: "12px",
+                padding: "20px",
+                marginBottom: "16px",
+                border: `1px solid ${isDark ? "#333" : "#e5e7eb"}`,
+            }}>
+                {/* Amount Input */}
+                <div style={{ marginBottom: "16px" }}>
+                    <label style={{
+                        display: "block",
+                        fontSize: "0.9rem",
+                        fontWeight: 600,
+                        marginBottom: "8px",
+                        color: isDark ? "#e0e0e0" : "#333",
+                    }}>
+                        {getInputLabel()}
+                    </label>
+                    <div style={{ position: "relative" }}>
+                        <input
+                            type="text"
+                            inputMode="numeric"
+                            value={inputValue}
+                            onChange={(e) => handleInputChange(e.target.value)}
+                            placeholder="0"
+                            style={{
+                                width: "100%",
+                                padding: "14px 50px 14px 16px",
+                                fontSize: "1.2rem",
+                                fontWeight: 600,
+                                border: `2px solid ${isDark ? "#444" : "#d1d5db"}`,
+                                borderRadius: "10px",
+                                background: isDark ? "#2a2a2a" : "#fafafa",
+                                color: isDark ? "#fff" : "#111",
+                                outline: "none",
+                                boxSizing: "border-box",
+                                transition: "border-color 0.2s",
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = isDark ? "#3b82f6" : "#2563eb";
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = isDark ? "#444" : "#d1d5db";
+                            }}
+                        />
+                        <span style={{
+                            position: "absolute",
+                            right: "16px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            fontSize: "0.95rem",
+                            color: isDark ? "#888" : "#999",
+                        }}>
+                            {t("unit")}
+                        </span>
+                    </div>
+                </div>
+
+                {/* VAT Rate Input */}
+                <div style={{ marginBottom: "16px" }}>
+                    <label style={{
+                        display: "block",
+                        fontSize: "0.9rem",
+                        fontWeight: 600,
+                        marginBottom: "8px",
+                        color: isDark ? "#e0e0e0" : "#333",
+                    }}>
+                        {t("label.vatRate")}
+                    </label>
+                    <input
+                        type="number"
+                        value={vatRate}
+                        onChange={(e) => setVatRate(e.target.value)}
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        style={{
+                            width: "120px",
+                            padding: "10px 14px",
+                            fontSize: "1rem",
+                            fontWeight: 600,
+                            border: `2px solid ${isDark ? "#444" : "#d1d5db"}`,
+                            borderRadius: "10px",
+                            background: isDark ? "#2a2a2a" : "#fafafa",
+                            color: isDark ? "#fff" : "#111",
+                            outline: "none",
+                            boxSizing: "border-box",
+                        }}
+                    />
+                    <span style={{
+                        marginLeft: "10px",
+                        fontSize: "0.8rem",
+                        color: isDark ? "#888" : "#999",
+                    }}>
+                        {t("label.vatRateDesc")}
+                    </span>
+                </div>
+
+                {/* Reset Button */}
+                <button
+                    onClick={handleReset}
+                    style={{
+                        padding: "8px 20px",
+                        fontSize: "0.85rem",
+                        border: `1px solid ${isDark ? "#555" : "#d1d5db"}`,
+                        borderRadius: "8px",
+                        background: isDark ? "#2a2a2a" : "#f3f4f6",
+                        color: isDark ? "#ccc" : "#555",
+                        cursor: "pointer",
+                        transition: "background 0.2s",
+                    }}
+                >
+                    {t("button.reset")}
+                </button>
+            </div>
+
+            {/* Result Cards */}
+            {result && (
+                <div style={{
+                    background: isDark ? "#1e1e1e" : "#fff",
+                    borderRadius: "12px",
+                    padding: "20px",
+                    marginBottom: "16px",
+                    border: `1px solid ${isDark ? "#333" : "#e5e7eb"}`,
+                }}>
+                    <h3 style={{
+                        fontSize: "0.95rem",
+                        fontWeight: 700,
+                        marginBottom: "16px",
+                        color: isDark ? "#e0e0e0" : "#333",
+                        margin: "0 0 16px 0",
+                    }}>
+                        {t("result.title")}
+                    </h3>
+
+                    {/* Supply Amount */}
+                    <ResultCard
+                        label={t("label.supplyAmount")}
+                        value={result.supplyAmount}
+                        unit={t("unit")}
+                        isDark={isDark}
+                        isHighlight={mode === "fromTotal" || mode === "fromVat"}
+                        onCopy={() => copyToClipboard(result.supplyAmount, "supply")}
+                        copied={copiedField === "supply"}
+                        copiedText={t("button.copied")}
+                        copyText={t("button.copy")}
+                    />
+
+                    {/* VAT Amount */}
+                    <ResultCard
+                        label={t("label.vatAmount")}
+                        value={result.vatAmount}
+                        unit={t("unit")}
+                        isDark={isDark}
+                        isHighlight={mode === "fromSupply" || mode === "fromTotal"}
+                        accentColor={isDark ? "#f59e0b" : "#d97706"}
+                        onCopy={() => copyToClipboard(result.vatAmount, "vat")}
+                        copied={copiedField === "vat"}
+                        copiedText={t("button.copied")}
+                        copyText={t("button.copy")}
+                    />
+
+                    {/* Total Amount */}
+                    <ResultCard
+                        label={t("label.totalAmount")}
+                        value={result.totalAmount}
+                        unit={t("unit")}
+                        isDark={isDark}
+                        isHighlight={mode === "fromSupply" || mode === "fromVat"}
+                        accentColor={isDark ? "#10b981" : "#059669"}
+                        onCopy={() => copyToClipboard(result.totalAmount, "total")}
+                        copied={copiedField === "total"}
+                        copiedText={t("button.copied")}
+                        copyText={t("button.copy")}
+                    />
+                </div>
+            )}
+
+            {/* History Section */}
+            <div style={{
+                background: isDark ? "#1e1e1e" : "#fff",
+                borderRadius: "12px",
+                padding: "20px",
+                marginBottom: "16px",
+                border: `1px solid ${isDark ? "#333" : "#e5e7eb"}`,
+            }}>
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "12px",
+                }}>
+                    <h3 style={{
+                        fontSize: "0.95rem",
+                        fontWeight: 700,
+                        color: isDark ? "#e0e0e0" : "#333",
+                        margin: 0,
+                    }}>
+                        {t("history.title")}
+                    </h3>
+                    {history.length > 0 && (
+                        <button
+                            onClick={clearHistory}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                padding: "4px 10px",
+                                fontSize: "0.75rem",
+                                border: "none",
+                                borderRadius: "6px",
+                                background: isDark ? "#3a2020" : "#fef2f2",
+                                color: isDark ? "#f87171" : "#dc2626",
+                                cursor: "pointer",
+                            }}
+                        >
+                            <IoTrashOutline size={12} />
+                            {t("history.clear")}
+                        </button>
+                    )}
+                </div>
+
+                {history.length === 0 ? (
+                    <p style={{
+                        textAlign: "center",
+                        fontSize: "0.85rem",
+                        color: isDark ? "#666" : "#999",
+                        margin: "20px 0",
+                    }}>
+                        {t("history.empty")}
+                    </p>
+                ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                        {history.map((entry) => (
+                            <div
+                                key={entry.id}
+                                onClick={() => {
+                                    setMode(entry.mode);
+                                    setVatRate(entry.vatRate.toString());
+                                    setInputValue(entry.inputValue.toLocaleString("ko-KR"));
+                                    setResult(entry.result);
+                                }}
+                                style={{
+                                    padding: "10px 14px",
+                                    borderRadius: "8px",
+                                    background: isDark ? "#2a2a2a" : "#f9fafb",
+                                    border: `1px solid ${isDark ? "#3a3a3a" : "#e5e7eb"}`,
+                                    cursor: "pointer",
+                                    transition: "background 0.15s",
+                                }}
+                            >
+                                <div style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    marginBottom: "4px",
+                                }}>
+                                    <span style={{
+                                        fontSize: "0.7rem",
+                                        padding: "2px 8px",
+                                        borderRadius: "4px",
+                                        background: isDark ? "#1e3a5f" : "#dbeafe",
+                                        color: isDark ? "#93c5fd" : "#1d4ed8",
+                                        fontWeight: 500,
+                                    }}>
+                                        {getModeLabel(entry.mode)}
+                                    </span>
+                                    <span style={{
+                                        fontSize: "0.7rem",
+                                        color: isDark ? "#888" : "#999",
+                                    }}>
+                                        {entry.vatRate}%
+                                    </span>
+                                </div>
+                                <div style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    fontSize: "0.8rem",
+                                    color: isDark ? "#ccc" : "#555",
+                                    gap: "8px",
+                                    flexWrap: "wrap",
+                                }}>
+                                    <span>{t("label.supplyAmount")}: {formatNumber(entry.result.supplyAmount)}</span>
+                                    <span>{t("label.vatAmount")}: {formatNumber(entry.result.vatAmount)}</span>
+                                    <span>{t("label.totalAmount")}: {formatNumber(entry.result.totalAmount)}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// Result Card Component
+function ResultCard({
+    label,
+    value,
+    unit,
+    isDark,
+    isHighlight,
+    accentColor,
+    onCopy,
+    copied,
+    copiedText,
+    copyText,
+}: {
+    label: string;
+    value: number;
+    unit: string;
+    isDark: boolean;
+    isHighlight: boolean;
+    accentColor?: string;
+    onCopy: () => void;
+    copied: boolean;
+    copiedText: string;
+    copyText: string;
+}) {
+    const defaultAccent = isDark ? "#3b82f6" : "#2563eb";
+    const color = accentColor || defaultAccent;
+
+    return (
+        <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "14px 16px",
+            marginBottom: "10px",
+            borderRadius: "10px",
+            background: isHighlight
+                ? (isDark ? "#1a2332" : "#f0f7ff")
+                : (isDark ? "#252525" : "#f9fafb"),
+            borderLeft: isHighlight ? `4px solid ${color}` : `4px solid transparent`,
+            transition: "all 0.2s",
+        }}>
+            <div>
+                <div style={{
+                    fontSize: "0.8rem",
+                    color: isDark ? "#999" : "#666",
+                    marginBottom: "4px",
+                }}>
+                    {label}
+                </div>
+                <div style={{
+                    fontSize: "1.3rem",
+                    fontWeight: 700,
+                    color: isHighlight ? color : (isDark ? "#e0e0e0" : "#333"),
+                    letterSpacing: "-0.02em",
+                }}>
+                    {Math.floor(value).toLocaleString("ko-KR")}
+                    {unit && <span style={{ fontSize: "0.85rem", fontWeight: 400, marginLeft: "4px" }}>{unit}</span>}
+                </div>
+            </div>
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onCopy();
+                }}
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    padding: "6px 12px",
+                    fontSize: "0.75rem",
+                    border: `1px solid ${isDark ? "#444" : "#d1d5db"}`,
+                    borderRadius: "6px",
+                    background: copied
+                        ? (isDark ? "#1a3a2a" : "#d1fae5")
+                        : (isDark ? "#2a2a2a" : "#fff"),
+                    color: copied
+                        ? (isDark ? "#6ee7b7" : "#059669")
+                        : (isDark ? "#ccc" : "#555"),
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    whiteSpace: "nowrap",
+                }}
+            >
+                <IoCopyOutline size={12} />
+                {copied ? copiedText : copyText}
+            </button>
+        </div>
+    );
+}

@@ -185,61 +185,61 @@ export default async function JsonFormatterPage({ params }: { params: Promise<{ 
 
                 <JsonFormatterClient />
 
-                <article style={{ maxWidth: 700, margin: '50px auto 0', padding: '0 20px' }}>
+                <article className="seo-article">
                     {/* 1. Description */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">
                             {t('info.title')}
                         </h2>
-                        <p style={{ lineHeight: 1.8, marginBottom: 12 }}>{t('info.desc')}</p>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+                        <p className="seo-text">{t('info.desc')}</p>
+                        <div className="seo-card-grid">
                             {(['format', 'validate', 'minify'] as const).map((key) => (
-                                <div key={key} style={{ padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
-                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 8 }}>{t(`info.${key}.title`)}</h3>
-                                    <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>{t(`info.${key}.desc`)}</p>
+                                <div key={key} className="seo-card">
+                                    <h3 className="seo-card-title">{t(`info.${key}.title`)}</h3>
+                                    <p className="seo-card-desc">{t(`info.${key}.desc`)}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
 
                     {/* 2. How to Use */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.howto.title')}</h2>
-                        <ol style={{ paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.howto.title')}</h2>
+                        <ol className="seo-howto-list">
                             {howtoKeys.map((key) => (
-                                <li key={key} style={{ lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
+                                <li key={key} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
                             ))}
                         </ol>
                     </section>
 
                     {/* 3. Use Cases */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.usecases.title')}</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 16 }}>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.usecases.title')}</h2>
+                        <div className="seo-card-grid">
                             {usecaseKeys.map((key) => (
-                                <div key={key} style={{ padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
-                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 8 }}>{t(`seo.usecases.list.${key}.title`)}</h3>
-                                    <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>{t(`seo.usecases.list.${key}.desc`)}</p>
+                                <div key={key} className="seo-card">
+                                    <h3 className="seo-card-title">{t(`seo.usecases.list.${key}.title`)}</h3>
+                                    <p className="seo-card-desc">{t(`seo.usecases.list.${key}.desc`)}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
 
                     {/* 4. FAQ */}
-                    <section style={{ marginBottom: 40 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('faq.title')}</h2>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('faq.title')}</h2>
                         {(['q1', 'q2', 'q3', 'q4', 'q5'] as const).map((qKey, i) => (
-                            <details key={qKey} style={{ marginBottom: 8, padding: '12px 16px', borderRadius: 10, border: '1px solid #e2e8f0' }}>
-                                <summary style={{ fontWeight: 600, cursor: 'pointer' }}>{t(`faq.${qKey}`)}</summary>
-                                <p style={{ marginTop: 8, lineHeight: 1.7 }}>{t(`faq.a${i + 1}`)}</p>
+                            <details key={qKey} className="seo-faq-item">
+                                <summary>{t(`faq.${qKey}`)}</summary>
+                                <p>{t(`faq.a${i + 1}`)}</p>
                             </details>
                         ))}
                     </section>
 
                     {/* 5. Privacy */}
-                    <section style={{ marginBottom: 20 }}>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: 16 }}>{t('seo.privacy.title')}</h2>
-                        <p style={{ lineHeight: 1.8 }}>{t('seo.privacy.text')}</p>
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.privacy.title')}</h2>
+                        <p className="seo-text">{t('seo.privacy.text')}</p>
                     </section>
                 </article>
             </div>
