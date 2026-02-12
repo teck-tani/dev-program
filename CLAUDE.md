@@ -115,3 +115,6 @@ t.raw('htmlContent')   // For HTML content (use with dangerouslySetInnerHTML)
 - 모든 텍스트는 `messages/ko.json`, `messages/en.json`에 번역 키로 관리 (하드코딩 금지)
 - HTML이 필요한 경우 `t.raw()` + `dangerouslySetInnerHTML` 패턴 사용
 - `<article>` 태그로 감싸서 시맨틱 HTML 유지
+
+
+공학용계산기 공학용계산기어플 무료공학용계산기 웹계산기 공대생필수템 기사자격증 엔지니어 반응형웹 다크모드 개발자블로그
