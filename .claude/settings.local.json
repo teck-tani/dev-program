@@ -44,7 +44,8 @@
       "mcp__plugin_playwright_playwright__browser_handle_dialog",
       "Bash(git:*)",
       "WebFetch(domain:www.barcodesinc.com)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(nslookup:*)"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

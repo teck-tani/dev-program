@@ -55,6 +55,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Tani DevTool" />
+        <meta name="naver-site-verification" content="a8001e16d325533ef7a17a89ea10e1fa9b2e4e3f" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         {/* 광고 및 분석 스크립트를 더 뒤로 미룸 */}
         <Script
