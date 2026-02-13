@@ -907,16 +907,19 @@ export default function TimerView() {
                             <div className={styles.chainTimeRow}>
                                 <div className={styles.chainTimeGroup}>
                                     <input type="number" value={chainNewHour} onChange={e => setChainNewHour(Math.max(0, Math.min(99, parseInt(e.target.value) || 0)))}
+                                        onFocus={e => e.target.select()}
                                         className={styles.chainTimeInput} min={0} max={99} />
                                     <span className={styles.chainTimeLabel}>{t('chain.hour')}</span>
                                 </div>
                                 <div className={styles.chainTimeGroup}>
                                     <input type="number" value={chainNewMin} onChange={e => setChainNewMin(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                                        onFocus={e => e.target.select()}
                                         className={styles.chainTimeInput} min={0} max={59} />
                                     <span className={styles.chainTimeLabel}>{t('chain.min')}</span>
                                 </div>
                                 <div className={styles.chainTimeGroup}>
                                     <input type="number" value={chainNewSec} onChange={e => setChainNewSec(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                                        onFocus={e => e.target.select()}
                                         className={styles.chainTimeInput} min={0} max={59} />
                                     <span className={styles.chainTimeLabel}>{t('chain.sec')}</span>
                                 </div>

@@ -3,7 +3,12 @@
 import { useState, useRef, useEffect, useLayoutEffect, memo, useCallback, useMemo } from "react";
 import styles from "@/app/[locale]/barcode/barcode.module.css";
 import { useTranslations } from "next-intl";
-import { HiOutlineSave } from "react-icons/hi";
+// Inline save icon — eliminates react-icons dependency from bundle
+const SaveIcon = () => (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+    </svg>
+);
 import {
     BARCODE_CATEGORIES,
     findType,
@@ -866,10 +871,10 @@ export default function BarcodeGenerator() {
                             />
                             <div className={styles.simpleDownloadRow}>
                                 <button className={styles.simpleDownloadBtn} onClick={() => downloadPNG(0)}>
-                                    <HiOutlineSave /> PNG
+                                    <SaveIcon /> PNG
                                 </button>
                                 <button className={styles.simpleDownloadBtn} onClick={() => downloadSVG(0)}>
-                                    <HiOutlineSave /> SVG
+                                    <SaveIcon /> SVG
                                 </button>
                             </div>
                         </>
@@ -1196,7 +1201,7 @@ export default function BarcodeGenerator() {
             {/* ══════ MOBILE: Download button ══════ */}
             {isMobile && barcodes.length > 0 && barcodes[0].id !== "sample" && (
                 <button className={styles.downloadButtonLarge} onClick={downloadBarcode}>
-                    <HiOutlineSave />
+                    <SaveIcon />
                     <span>{t("download")}</span>
                 </button>
             )}
