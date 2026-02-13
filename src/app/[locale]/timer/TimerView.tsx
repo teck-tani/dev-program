@@ -79,7 +79,7 @@ const PRESETS_KEY = 'timer_user_presets';
 const ALARM_AUTO_STOP_SEC = 30;
 
 interface UserPreset { name: string; seconds: number; }
-interface ChainStep { id: string; label: string; minutes: number; seconds: number; done: boolean; }
+interface ChainStep { id: string; label: string; hours: number; minutes: number; seconds: number; done: boolean; }
 interface MultiTimer { id: string; label: string; duration: number; timeLeft: number; isRunning: boolean; endTime: number; }
 
 function formatTime(seconds: number) {
@@ -141,6 +141,7 @@ export default function TimerView() {
     const [chainSteps, setChainSteps] = useState<ChainStep[]>([]);
     const [chainCurrentIdx, setChainCurrentIdx] = useState(-1);
     const [chainNewLabel, setChainNewLabel] = useState("");
+    const [chainNewHour, setChainNewHour] = useState(0);
     const [chainNewMin, setChainNewMin] = useState(5);
     const [chainNewSec, setChainNewSec] = useState(0);
 
@@ -307,7 +308,7 @@ export default function TimerView() {
                 if (nextIdx < steps.length) {
                     setChainCurrentIdx(nextIdx);
                     const nextStep = steps[nextIdx];
-                    const nextDur = nextStep.minutes * 60 + nextStep.seconds;
+                    const nextDur = nextStep.hours * 3600 + nextStep.minutes * 60 + nextStep.seconds;
                     setDuration(nextDur); setTimeLeft(nextDur);
                     endTimeRef.current = Date.now() + nextDur * 1000;
                     lastSecRef.current = nextDur;
@@ -523,9 +524,9 @@ export default function TimerView() {
 
     // Chain handlers
     const addChainStep = () => {
-        const dur = chainNewMin * 60 + chainNewSec;
+        const dur = chainNewHour * 3600 + chainNewMin * 60 + chainNewSec;
         if (dur === 0) return;
-        setChainSteps(prev => [...prev, { id: Date.now().toString(36), label: chainNewLabel || `${t('chain.step')} ${prev.length + 1}`, minutes: chainNewMin, seconds: chainNewSec, done: false }]);
+        setChainSteps(prev => [...prev, { id: Date.now().toString(36), label: chainNewLabel || `${t('chain.step')} ${prev.length + 1}`, hours: chainNewHour, minutes: chainNewMin, seconds: chainNewSec, done: false }]);
         setChainNewLabel("");
     };
     const removeChainStep = (id: string) => setChainSteps(prev => prev.filter(s => s.id !== id));
@@ -534,7 +535,7 @@ export default function TimerView() {
         setChainSteps(prev => prev.map(s => ({ ...s, done: false })));
         setChainCurrentIdx(0);
         const first = chainSteps[0];
-        const dur = first.minutes * 60 + first.seconds;
+        const dur = first.hours * 3600 + first.minutes * 60 + first.seconds;
         startTimer(dur);
     };
 
@@ -892,7 +893,7 @@ export default function TimerView() {
                                     <div key={step.id} className={`${styles.chainItem} ${i === chainCurrentIdx ? styles.chainItemActive : ''} ${step.done ? styles.chainItemDone : ''}`}>
                                         <span className={styles.chainStepNum}>{i + 1}</span>
                                         <span className={styles.chainItemLabel}>{step.label}</span>
-                                        <span className={styles.chainItemTime}>{formatTime(step.minutes * 60 + step.seconds)}</span>
+                                        <span className={styles.chainItemTime}>{formatTime(step.hours * 3600 + step.minutes * 60 + step.seconds)}</span>
                                         <button onClick={() => removeChainStep(step.id)} className={styles.chainItemRemove}>✕</button>
                                     </div>
                                 ))}
@@ -903,12 +904,24 @@ export default function TimerView() {
                         <div className={styles.chainAddRow}>
                             <input type="text" value={chainNewLabel} onChange={e => setChainNewLabel(e.target.value)}
                                 placeholder={t('chain.label')} className={styles.chainLabelInput} />
-                            <input type="number" value={chainNewMin} onChange={e => setChainNewMin(Math.max(0, parseInt(e.target.value) || 0))}
-                                className={styles.chainTimeInput} />
-                            <span className={styles.volumeLabel}>:</span>
-                            <input type="number" value={chainNewSec} onChange={e => setChainNewSec(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                                className={styles.chainTimeInput} />
-                            <button onClick={addChainStep} className={styles.chainAddBtn}>+</button>
+                            <div className={styles.chainTimeRow}>
+                                <div className={styles.chainTimeGroup}>
+                                    <input type="number" value={chainNewHour} onChange={e => setChainNewHour(Math.max(0, Math.min(99, parseInt(e.target.value) || 0)))}
+                                        className={styles.chainTimeInput} min={0} max={99} />
+                                    <span className={styles.chainTimeLabel}>{t('chain.hour')}</span>
+                                </div>
+                                <div className={styles.chainTimeGroup}>
+                                    <input type="number" value={chainNewMin} onChange={e => setChainNewMin(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                                        className={styles.chainTimeInput} min={0} max={59} />
+                                    <span className={styles.chainTimeLabel}>{t('chain.min')}</span>
+                                </div>
+                                <div className={styles.chainTimeGroup}>
+                                    <input type="number" value={chainNewSec} onChange={e => setChainNewSec(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                                        className={styles.chainTimeInput} min={0} max={59} />
+                                    <span className={styles.chainTimeLabel}>{t('chain.sec')}</span>
+                                </div>
+                                <button onClick={addChainStep} className={styles.chainAddBtn}>+</button>
+                            </div>
                         </div>
                         {chainSteps.length > 0 && chainCurrentIdx < 0 && (
                             <button onClick={startChain} className={styles.startBtn} style={{ marginTop: '10px', padding: '10px 24px', fontSize: '0.9rem' }}>

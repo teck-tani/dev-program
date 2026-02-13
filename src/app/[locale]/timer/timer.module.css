@@ -1335,6 +1335,7 @@
   border-radius: 10px;
   background: #f8f9fa;
   border: 1px solid #e5e7eb;
+  overflow: hidden;
 }
 
 .chainItem.chainItemActive {
@@ -1369,6 +1370,10 @@
   flex: 1;
   font-size: 0.82rem;
   color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .chainItemTime {
@@ -1376,6 +1381,8 @@
   font-weight: 600;
   color: #667eea;
   font-family: monospace;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .chainItemRemove {
@@ -1392,42 +1399,71 @@
 
 .chainAddRow {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chainLabelInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  outline: none;
+  background: #f8f9fa;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.chainTimeRow {
+  display: flex;
   gap: 6px;
   align-items: center;
 }
 
-.chainLabelInput {
+.chainTimeGroup {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   flex: 1;
-  padding: 6px 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  outline: none;
-  background: #f8f9fa;
-  color: #333;
 }
 
 .chainTimeInput {
-  width: 44px;
-  padding: 6px 4px;
+  width: 100%;
+  padding: 8px 4px;
   text-align: center;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
   outline: none;
   background: #f8f9fa;
   color: #333;
+  -moz-appearance: textfield;
+}
+
+.chainTimeInput::-webkit-outer-spin-button,
+.chainTimeInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.chainTimeLabel {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-weight: 500;
+  flex-shrink: 0;
 }
 
 .chainAddBtn {
-  padding: 6px 12px;
+  padding: 8px 14px;
   background: #667eea;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 0.78rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .chainEmpty {
@@ -1724,6 +1760,10 @@
   background: #0f172a;
   border-color: #334155;
   color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .chainTimeLabel {
+  color: #64748b;
 }
 
 /* === Responsive === */

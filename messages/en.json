@@ -989,7 +989,10 @@
         "step": "Step",
         "running": "Running",
         "label": "Label",
-        "empty": "Add steps to begin"
+        "empty": "Add steps to begin",
+        "hour": "h",
+        "min": "m",
+        "sec": "s"
       },
       "seo": {
         "title": "Online Timer & Pomodoro - Workout & Cooking Alarm",

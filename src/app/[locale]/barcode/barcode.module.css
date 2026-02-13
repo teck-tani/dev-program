@@ -691,6 +691,7 @@
 /* Mobile Responsive                                          */
 /* ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
+    .tabBar { display: none; }
     .barcodeWrapper {
         padding: 8px 10px;
         gap: 4px;
