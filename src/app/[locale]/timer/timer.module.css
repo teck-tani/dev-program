@@ -1803,3 +1803,109 @@
     font-size: 0.7rem;
   }
 }
+
+/* ===========================
+   SEO Content Section
+   =========================== */
+.seoWrapper {
+  --seo-bg: linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%);
+  --seo-card-bg: white;
+  --seo-title-color: #2c3e50;
+  --seo-text-color: #555;
+  --seo-accent: #667eea;
+  --seo-border: #eee;
+  --seo-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+  background: var(--seo-bg);
+  padding-bottom: 60px;
+}
+
+.seoArticle {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+  line-height: 1.7;
+}
+
+.seoSection {
+  margin-bottom: 36px;
+}
+
+.seoTitle {
+  font-size: 1.4rem;
+  color: var(--seo-title-color);
+  margin-bottom: 18px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.seoDesc {
+  color: var(--seo-text-color);
+  text-align: center;
+  font-size: 0.95rem;
+  margin-bottom: 0;
+}
+
+.seoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.seoCard {
+  background: var(--seo-card-bg);
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: var(--seo-shadow);
+}
+
+.seoCardTitle {
+  font-size: 0.95rem;
+  color: var(--seo-accent);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.seoCardDesc {
+  font-size: 0.88rem;
+  color: var(--seo-text-color);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.seoStep {
+  margin-bottom: 12px;
+  color: var(--seo-text-color);
+  font-size: 0.93rem;
+  line-height: 1.8;
+}
+
+.seoFaqItem {
+  padding: 14px 0;
+}
+
+.seoFaqQ {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--seo-title-color);
+  font-size: 0.95rem;
+}
+
+.seoFaqA {
+  margin-top: 10px;
+  color: var(--seo-text-color);
+  padding-left: 10px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* SEO Dark Mode */
+:global(body[data-theme="dark"]) .seoWrapper {
+  --seo-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --seo-card-bg: #1e293b;
+  --seo-title-color: #e2e8f0;
+  --seo-text-color: #94a3b8;
+  --seo-accent: #818cf8;
+  --seo-border: #334155;
+  --seo-shadow: none;
+}

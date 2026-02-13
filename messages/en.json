@@ -998,53 +998,177 @@
         "title": "Online Timer & Pomodoro - Workout & Cooking Alarm",
         "desc": "Use the Pomodoro technique with 25-min focus / 5-min break cycles, or set Tabata workout and kitchen timers. Features 5 alarm sounds (Classic/Digital/Chime/Bird/School Bell) and vibration alerts.",
         "ariaLabel": "Page description",
-        "description": {
-          "title": "Online Timer for Various Situations",
-          "p1": "An online timer that counts down from your set time and alerts you with an alarm when complete. Useful for Tabata workouts, interval training, cooking, break time management, and many everyday situations."
-        },
-        "features": {
-          "title": "Key Features",
-          "list": {
-            "presets": { "title": "Quick Presets", "desc": "Set frequently used times with a single click." },
-            "progress": { "title": "Progress Bar", "desc": "Visual progress bar shows remaining time at a glance." },
-            "pomodoro": { "title": "Pomodoro Mode", "desc": "Supports the Pomodoro technique with automatic 25-min focus + 5-min break cycles." },
-            "sounds": { "title": "5 Alarm Sounds", "desc": "Choose from Classic, Digital, Chime, Bird, and School Bell alarm sounds." },
-            "vibration": { "title": "Vibration Alert", "desc": "Vibration notification along with sound when timer completes. (Mobile supported)" },
-            "tabTitle": { "title": "Tab Title Countdown", "desc": "Remaining time is shown in the browser tab so you can check while doing other tasks." }
-          }
-        },
-        "howto": {
-          "title": "How to Use",
-          "steps": {
-            "step1": "<strong>Step 1:</strong> Enter your desired time in the Hour, Min, and Sec input fields.",
-            "step2": "<strong>Step 2:</strong> Click the Start button to begin the countdown.",
-            "step3": "<strong>Step 3:</strong> Use the Stop button to pause and Resume to continue.",
-            "step4": "<strong>Step 4:</strong> When the timer reaches 0, an alarm sounds and a popup appears."
-          }
-        },
-        "usecases": {
-          "title": "Use Cases",
-          "list": {
-            "tabata": { "title": "Tabata Workout", "desc": "20-second exercise + 10-second rest intervals" },
-            "interval": { "title": "Interval Training", "desc": "High-intensity workout and rest management" },
-            "noodle": { "title": "Noodle Timer", "desc": "Precise 3-minute, 4-minute cooking time" },
-            "cooking": { "title": "Cooking/Baking", "desc": "Check precise cooking times" },
-            "pomodoro": { "title": "Pomodoro Technique", "desc": "25-minute focus + 5-minute break" },
-            "break": { "title": "Break Reminder", "desc": "Take breaks at regular intervals" }
-          }
-        },
-        "faq": {
-          "title": "Frequently Asked Questions",
-          "list": {
-            "noSound": { "q": "I can't hear the timer alarm", "a": "Please check your browser's volume settings. Some browsers may restrict audio playback before user interaction (like clicking). The alarm will work normally after you click the Start button." },
-            "tabata": { "q": "What's the best timer setting for Tabata workout?", "a": "Tabata is a high-intensity interval training with 20 seconds of exercise + 10 seconds of rest, repeated for 8 sets. You can use this timer to set 20 or 10 seconds for each interval." },
-            "noodle": { "q": "How many minutes should I set for cooking noodles?", "a": "Standard instant noodles typically require 3 minutes. Some products may need 4-5 minutes. Enter the desired time in the Minutes field and press Start." },
-            "complete": { "q": "How does the timer notify me when it reaches zero?", "a": "When the timer completes, an alarm sound plays and a popup appears on screen. Click the OK button to stop the alarm and set a new timer." }
-          }
-        },
         "privacy": {
           "title": "Privacy Notice",
           "text": "Timer settings and records are processed only in your browser and are not transmitted to any server. Pomodoro session records and alarm settings are stored only in the browser's local storage, so there is no risk of your personal data being leaked."
+        },
+        "timer": {
+          "description": {
+            "title": "Countdown Timer",
+            "p1": "A countdown timer that alerts you when time is up. Use quick preset buttons (1m, 3m, 5m, etc.) for one-click start, or save your own custom presets for frequently used times. The chain timer feature lets you line up multiple steps that run automatically in sequence — perfect for managing complex routines."
+          },
+          "features": {
+            "title": "Timer Features",
+            "list": {
+              "f1": { "title": "⏱️ Quick Presets", "desc": "One-click start with 1m, 3m, 5m, 10m, 15m, 30m, and 1h preset buttons. No manual input needed." },
+              "f2": { "title": "💾 Save Custom Presets", "desc": "Name and save your frequently used times (up to 10). Load them instantly with a single click next time." },
+              "f3": { "title": "⛓️ Chain Timer", "desc": "Add multiple steps that run in sequence automatically. Example: 'Warm-up 30s → Exercise 3m → Cool-down 1m' in one setup." },
+              "f4": { "title": "⏳ +1m / +5m Extend", "desc": "Need more time? Extend the running timer instantly with +1 minute or +5 minute buttons." }
+            }
+          },
+          "howto": {
+            "title": "How to Use the Timer",
+            "steps": {
+              "step1": "<strong>Step 1 - Set Time:</strong> Click the hour/min/sec fields and enter your desired time, or tap a preset button like 1m, 3m, or 5m.",
+              "step2": "<strong>Step 2 - Start:</strong> Press the ▶ Start button to begin the countdown. You can also press the Space bar on your keyboard.",
+              "step3": "<strong>Step 3 - Pause & Extend:</strong> Pause with the Stop button, or tap +1m/+5m to add more time while running.",
+              "step4": "<strong>Step 4 - Alarm:</strong> When time is up, your chosen alarm sound plays and a popup appears. Tap OK to set a new timer."
+            }
+          },
+          "usecases": {
+            "title": "Use Cases",
+            "list": {
+              "u1": { "title": "🍜 Cooking Noodles", "desc": "Set 3 minutes for ramen, 4 minutes for cup noodles, or 2 minutes for instant rice." },
+              "u2": { "title": "🍳 Cooking & Baking", "desc": "Track oven preheating, dough rising, pasta boiling, and other cooking steps." },
+              "u3": { "title": "📚 Study & Focus", "desc": "Set a goal like '30 minutes of study' to boost your concentration." },
+              "u4": { "title": "⛓️ Multi-Step Routines", "desc": "Use chain timer for 'Stretch 5m → Workout 20m → Cool-down 5m' routines in one go." }
+            }
+          },
+          "faq": {
+            "title": "FAQ",
+            "list": {
+              "q1": { "q": "How do I save a custom preset?", "a": "Enter your desired time in the hour/min/sec fields, type a name in the input below, and click 'Save'. Your saved preset will appear in the preset list and can be loaded with one click." },
+              "q2": { "q": "What is the chain timer?", "a": "The chain timer lets you add multiple steps with custom names and durations. Press Start once and they run in sequence automatically — when one step ends, the next begins. Great for complex routines." },
+              "q3": { "q": "Can I extend time while the timer is running?", "a": "Yes! During countdown, +1 minute and +5 minute buttons appear. Click them to instantly add time to the remaining countdown." },
+              "q4": { "q": "I can't hear the alarm sound", "a": "Check your browser's volume settings. Some browsers restrict audio before user interaction. The alarm will work normally after you click the Start button." }
+            }
+          }
+        },
+        "pomodoro": {
+          "description": {
+            "title": "Pomodoro Timer",
+            "p1": "The Pomodoro Technique is a time management method based on '25 minutes of focus → 5 minutes of break' cycles. After 4 sessions, take a 15-minute long break. This timer offers everything you need: adjustable focus/break durations, automatic phase transitions, daily & weekly statistics, and task list management."
+          },
+          "features": {
+            "title": "Pomodoro Features",
+            "list": {
+              "f1": { "title": "🔴 Auto Phase Switching", "desc": "Automatically transitions from focus to break. Every 4 sessions, a long break (15 min) is applied." },
+              "f2": { "title": "⏰ Adjustable Durations", "desc": "Customize focus (1-90 min), short break (1-90 min), and long break (1-90 min) in ±5 minute increments." },
+              "f3": { "title": "📊 Session Statistics", "desc": "Track today's focus sessions, weekly graph, total focus time, and consecutive day streaks at a glance." },
+              "f4": { "title": "📝 Task Management", "desc": "Add tasks, set estimated pomodoros for each, and track progress with 🍅 badges." }
+            }
+          },
+          "howto": {
+            "title": "How to Use Pomodoro",
+            "steps": {
+              "step1": "<strong>Step 1 - Set Duration:</strong> Default is 25 min focus / 5 min break. Use the ± buttons to adjust to your preferred duration.",
+              "step2": "<strong>Step 2 - Add Tasks (Optional):</strong> Add your to-do items in the task list below and select the current task. You can set estimated pomodoros too.",
+              "step3": "<strong>Step 3 - Start Focus:</strong> Press ▶ Start to begin 🔴 Focus mode. When done, it automatically switches to 🟢 Break.",
+              "step4": "<strong>Step 4 - Check Stats:</strong> Completed sessions are automatically recorded. Check your daily and weekly focus stats in the graph."
+            }
+          },
+          "usecases": {
+            "title": "Use Cases",
+            "list": {
+              "u1": { "title": "📖 Exam Study", "desc": "Maintain focus during long study sessions by alternating 25 min focus with 5 min breaks." },
+              "u2": { "title": "💻 Coding & Development", "desc": "Set a goal of implementing one feature per pomodoro for systematic development." },
+              "u3": { "title": "✍️ Writing & Reports", "desc": "Focus 25 minutes on drafting, then refine after a break for efficient writing." },
+              "u4": { "title": "🎯 Remote Work", "desc": "Register today's tasks in the task list and manage your time in pomodoro units." }
+            }
+          },
+          "faq": {
+            "title": "FAQ",
+            "list": {
+              "q1": { "q": "What is the Pomodoro Technique?", "a": "Developed by Francesco Cirillo in the 1980s. One 'pomodoro' is 25 min focus + 5 min break. After 4 pomodoros, take a 15-30 min long break. Short focus periods with regular breaks maintain high productivity without fatigue." },
+              "q2": { "q": "Can I change the focus time from 25 minutes?", "a": "Yes, use the ± buttons next to the focus time to adjust from 1 to 90 minutes in 5-minute increments. Break times are adjustable too." },
+              "q3": { "q": "Where are statistics saved?", "a": "All statistics are stored in your browser's local storage. Records are kept for the last 90 days and can be viewed anytime in the same browser." },
+              "q4": { "q": "What is the auto-start feature?", "a": "When the 'Auto Start' checkbox is enabled, break starts automatically after focus ends, and the next focus starts automatically after break ends. No need to press buttons — your flow stays uninterrupted." }
+            }
+          }
+        },
+        "interval": {
+          "description": {
+            "title": "Interval Timer",
+            "p1": "An interval timer that automatically alternates between Work and Rest phases for a set number of rounds. Apply Tabata (20s work + 10s rest × 8 rounds) or HIIT (40s work + 20s rest × 6 rounds) presets with one click, or create custom settings with your own times and rounds."
+          },
+          "features": {
+            "title": "Interval Features",
+            "list": {
+              "f1": { "title": "🏃 Tabata Preset", "desc": "20s work + 10s rest × 8 rounds. One click applies the globally proven Tabata protocol." },
+              "f2": { "title": "💪 HIIT Preset", "desc": "40s work + 20s rest × 6 rounds. Optimized settings for high-intensity interval training." },
+              "f3": { "title": "🔧 Custom Settings", "desc": "Freely adjust work time (5-300s), rest time (5-120s), and rounds (1-20) to your needs." },
+              "f4": { "title": "🔄 Auto Transition", "desc": "Work → Rest → Next round transitions happen automatically. Just focus on your exercise!" }
+            }
+          },
+          "howto": {
+            "title": "How to Use Interval Timer",
+            "steps": {
+              "step1": "<strong>Step 1 - Choose Preset:</strong> Select Tabata, HIIT, or Custom. Custom mode lets you set your own times.",
+              "step2": "<strong>Step 2 - Adjust (Optional):</strong> Use ± buttons to fine-tune work time, rest time, and number of rounds.",
+              "step3": "<strong>Step 3 - Start:</strong> Press ▶ Start and the 💪 Work phase begins. It automatically switches to 😮‍💨 Rest when done.",
+              "step4": "<strong>Step 4 - Complete Rounds:</strong> The alarm sounds when all rounds are done. You can pause or reset at any time."
+            }
+          },
+          "usecases": {
+            "title": "Use Cases",
+            "list": {
+              "u1": { "title": "🏋️ Tabata Workout", "desc": "Do burpees, squats, mountain climbers — 20s all-out + 10s rest for 8 rounds." },
+              "u2": { "title": "🏃 HIIT Training", "desc": "Alternate high/low intensity for running, jump rope, cycling, and more." },
+              "u3": { "title": "🧘 Stretching & Yoga", "desc": "Set custom 30s hold + 10s transition for stretching routines." },
+              "u4": { "title": "🏠 Home Workout", "desc": "Bodyweight exercises with interval timing for an effective home training session." }
+            }
+          },
+          "faq": {
+            "title": "FAQ",
+            "list": {
+              "q1": { "q": "What is Tabata training?", "a": "Developed by Dr. Izumi Tabata in Japan. It's a high-intensity interval training of 20s all-out exercise + 10s rest for 8 sets (4 minutes total). It improves both aerobic and anaerobic capacity in a short time." },
+              "q2": { "q": "What's the difference between HIIT and Tabata?", "a": "Tabata is a specific type of HIIT. HIIT is the general term for high-intensity interval training with flexible work/rest times and rounds. Tabata is a fixed protocol of 20s/10s/8 rounds." },
+              "q3": { "q": "Can I change the number of rounds?", "a": "Yes, use the ± buttons to set anywhere from 1 to 20 rounds. Adjust based on your fitness level." },
+              "q4": { "q": "Can I pause during a workout?", "a": "Yes, press the Stop button or Space bar to pause. Resume to continue from where you left off." }
+            }
+          }
+        },
+        "multi": {
+          "description": {
+            "title": "Multi Timer",
+            "p1": "Run up to 4 independent timers simultaneously. Name each timer and start, stop, or reset them individually. Perfect for managing multiple tasks that need timing at the same time."
+          },
+          "features": {
+            "title": "Multi Timer Features",
+            "list": {
+              "f1": { "title": "🔢 Up to 4 Simultaneous Timers", "desc": "Add up to 4 independent timers and start/stop each one separately." },
+              "f2": { "title": "🏷️ Custom Names", "desc": "Label each timer so you can tell at a glance which timer is for what." },
+              "f3": { "title": "🎨 Status Colors", "desc": "Idle (purple), running (green), completed (red) — each timer's status is color-coded." },
+              "f4": { "title": "🎯 Individual Controls", "desc": "Each timer has its own start, stop, and reset buttons — completely independent of each other." }
+            }
+          },
+          "howto": {
+            "title": "How to Use Multi Timer",
+            "steps": {
+              "step1": "<strong>Step 1 - Add Timer:</strong> Click '+ Add Timer' to create a new timer. You can add up to 4.",
+              "step2": "<strong>Step 2 - Name & Set Time:</strong> Enter a name for each timer and set the desired time in the min:sec fields.",
+              "step3": "<strong>Step 3 - Start Individually:</strong> Press ▶ on each timer to start them individually. Start only the ones you need first.",
+              "step4": "<strong>Step 4 - Manage:</strong> Completed timers turn red with an alarm. Reset to reuse or tap ✕ to remove."
+            }
+          },
+          "usecases": {
+            "title": "Use Cases",
+            "list": {
+              "u1": { "title": "🍳 Complex Cooking", "desc": "Time pasta 8 min + sauce 15 min + garnish prep 3 min — all cooking steps simultaneously." },
+              "u2": { "title": "🧪 Lab Experiments", "desc": "When multiple experiment stages run at once, manage each stage with its own timer." },
+              "u3": { "title": "📋 Task Time Management", "desc": "Track deadlines for 'Check email 10m', 'Write report 30m', 'Meeting prep 15m' all at once." },
+              "u4": { "title": "🎲 Board Games & Quizzes", "desc": "Countdown time limits for multiple teams or participants simultaneously." }
+            }
+          },
+          "faq": {
+            "title": "FAQ",
+            "list": {
+              "q1": { "q": "How many timers can I add?", "a": "You can add up to 4 timers. A message will appear if you try to add more than 4." },
+              "q2": { "q": "What happens when multiple timers finish at the same time?", "a": "Each timer triggers its own alarm when complete and turns red. If they finish simultaneously, alarms sound in succession." },
+              "q3": { "q": "Can I pause just one timer?", "a": "Yes, each timer has its own stop button. Pause any timer while the others keep running." },
+              "q4": { "q": "Can I switch tabs while using multi timer?", "a": "You cannot switch to other tabs (Timer/Pomodoro/Interval) while multi timers are running. Stop or remove all timers first to switch." }
+            }
+          }
         }
       }
     }

@@ -2629,6 +2629,41 @@ body[data-theme="dark"] .seo-faq-item p {
     color: #94a3b8;
 }
 
+/* ===== Share Button (공통) ===== */
+.share-btn {
+    width: 100%;
+    max-width: 360px;
+    margin: 12px auto 0;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.share-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.share-btn:active {
+    transform: translateY(0);
+}
+
+body[data-theme="dark"] .share-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
 @media print {
     .seo-article {
         display: none !important;

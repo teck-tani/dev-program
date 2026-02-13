@@ -142,7 +142,7 @@ export default function TimerView() {
     const [chainCurrentIdx, setChainCurrentIdx] = useState(-1);
     const [chainNewLabel, setChainNewLabel] = useState("");
     const [chainNewHour, setChainNewHour] = useState(0);
-    const [chainNewMin, setChainNewMin] = useState(5);
+    const [chainNewMin, setChainNewMin] = useState(0);
     const [chainNewSec, setChainNewSec] = useState(0);
 
     // Presets
@@ -930,6 +930,89 @@ export default function TimerView() {
                     </>
                 )}
             </div>
+
+            {/* SEO Content Section - mode별 다른 콘텐츠 */}
+            <TimerSeoSection mode={mode} />
+        </div>
+    );
+}
+
+// ===== TimerSeoSection =====
+const featureKeys = ['f1', 'f2', 'f3', 'f4'] as const;
+const howToStepKeys = ['step1', 'step2', 'step3', 'step4'] as const;
+const useCaseKeys = ['u1', 'u2', 'u3', 'u4'] as const;
+const faqKeys = ['q1', 'q2', 'q3', 'q4'] as const;
+
+function TimerSeoSection({ mode }: { mode: string }) {
+    const t = useTranslations('Clock.Timer');
+    const seoMode = mode === 'multi-timer' ? 'multi' : mode;
+
+    return (
+        <div className={styles.seoWrapper}>
+            <article className={styles.seoArticle}>
+                {/* 도구 설명 */}
+                <section className={styles.seoSection}>
+                    <h2 className={styles.seoTitle}>{t(`seo.${seoMode}.description.title`)}</h2>
+                    <p className={styles.seoDesc}>{t(`seo.${seoMode}.description.p1`)}</p>
+                </section>
+
+                {/* 주요 기능 */}
+                <section className={styles.seoSection}>
+                    <h2 className={styles.seoTitle}>{t(`seo.${seoMode}.features.title`)}</h2>
+                    <div className={styles.seoGrid}>
+                        {featureKeys.map((key) => (
+                            <div key={key} className={styles.seoCard}>
+                                <h3 className={styles.seoCardTitle}>{t(`seo.${seoMode}.features.list.${key}.title`)}</h3>
+                                <p className={styles.seoCardDesc}>{t(`seo.${seoMode}.features.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* 사용 방법 */}
+                <section className={styles.seoSection}>
+                    <h2 className={styles.seoTitle}>{t(`seo.${seoMode}.howto.title`)}</h2>
+                    <div className={styles.seoCard} style={{ padding: '20px 24px' }}>
+                        {howToStepKeys.map((key) => (
+                            <p key={key} className={styles.seoStep} dangerouslySetInnerHTML={{ __html: t.raw(`seo.${seoMode}.howto.steps.${key}`) }} />
+                        ))}
+                    </div>
+                </section>
+
+                {/* 활용 사례 */}
+                <section className={styles.seoSection}>
+                    <h2 className={styles.seoTitle}>{t(`seo.${seoMode}.usecases.title`)}</h2>
+                    <div className={styles.seoGrid}>
+                        {useCaseKeys.map((key) => (
+                            <div key={key} className={styles.seoCard}>
+                                <h3 className={styles.seoCardTitle}>{t(`seo.${seoMode}.usecases.list.${key}.title`)}</h3>
+                                <p className={styles.seoCardDesc}>{t(`seo.${seoMode}.usecases.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* FAQ */}
+                <section className={styles.seoSection}>
+                    <h2 className={styles.seoTitle}>{t(`seo.${seoMode}.faq.title`)}</h2>
+                    <div className={styles.seoCard} style={{ padding: '24px' }}>
+                        {faqKeys.map((key, index) => (
+                            <details key={key} className={styles.seoFaqItem} style={{ borderBottom: index < faqKeys.length - 1 ? '1px solid var(--seo-border)' : 'none' }}>
+                                <summary className={styles.seoFaqQ}>{t(`seo.${seoMode}.faq.list.${key}.q`)}</summary>
+                                <p className={styles.seoFaqA}>{t(`seo.${seoMode}.faq.list.${key}.a`)}</p>
+                            </details>
+                        ))}
+                    </div>
+                </section>
+
+                {/* 개인정보 안내 */}
+                <section className={styles.seoSection}>
+                    <div className={styles.seoCard} style={{ padding: '20px 24px' }}>
+                        <h2 className={styles.seoCardTitle} style={{ marginBottom: '8px' }}>{t('seo.privacy.title')}</h2>
+                        <p className={styles.seoCardDesc}>{t('seo.privacy.text')}</p>
+                    </div>
+                </section>
+            </article>
         </div>
     );
 }
