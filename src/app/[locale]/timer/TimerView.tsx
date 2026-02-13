@@ -905,24 +905,9 @@ export default function TimerView() {
                             <input type="text" value={chainNewLabel} onChange={e => setChainNewLabel(e.target.value)}
                                 placeholder={t('chain.label')} className={styles.chainLabelInput} />
                             <div className={styles.chainTimeRow}>
-                                <div className={styles.chainTimeGroup}>
-                                    <input type="number" value={chainNewHour} onChange={e => setChainNewHour(Math.max(0, Math.min(99, parseInt(e.target.value) || 0)))}
-                                        onFocus={e => e.target.select()}
-                                        className={styles.chainTimeInput} min={0} max={99} />
-                                    <span className={styles.chainTimeLabel}>{t('chain.hour')}</span>
-                                </div>
-                                <div className={styles.chainTimeGroup}>
-                                    <input type="number" value={chainNewMin} onChange={e => setChainNewMin(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                                        onFocus={e => e.target.select()}
-                                        className={styles.chainTimeInput} min={0} max={59} />
-                                    <span className={styles.chainTimeLabel}>{t('chain.min')}</span>
-                                </div>
-                                <div className={styles.chainTimeGroup}>
-                                    <input type="number" value={chainNewSec} onChange={e => setChainNewSec(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                                        onFocus={e => e.target.select()}
-                                        className={styles.chainTimeInput} min={0} max={59} />
-                                    <span className={styles.chainTimeLabel}>{t('chain.sec')}</span>
-                                </div>
+                                <ChainTimeInput value={chainNewHour} onChange={setChainNewHour} label={t('chain.hour')} max={99} />
+                                <ChainTimeInput value={chainNewMin} onChange={setChainNewMin} label={t('chain.min')} />
+                                <ChainTimeInput value={chainNewSec} onChange={setChainNewSec} label={t('chain.sec')} />
                                 <button onClick={addChainStep} className={styles.chainAddBtn}>+</button>
                             </div>
                         </div>
@@ -959,6 +944,19 @@ function TimeInput({ value, onChange, label, max }: { value: number; onChange: (
                 onChange={e => { if (e.target.value === '') { onChange(0); return; } let val = parseInt(e.target.value); if (isNaN(val)) val = 0; if (val < 0) val = 0; if (max && val > max) val = max; onChange(val); }}
                 className={styles.timeInput} aria-label={label} />
             <span className={styles.inputLabel}>{label}</span>
+        </div>
+    );
+}
+
+function ChainTimeInput({ value, onChange, label, max = 59 }: { value: number; onChange: (v: number) => void; label: string; max?: number }) {
+    const [isFocused, setIsFocused] = useState(false);
+    return (
+        <div className={styles.chainTimeGroup}>
+            <input type="number" value={isFocused && value === 0 ? '' : value}
+                onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}
+                onChange={e => { if (e.target.value === '') { onChange(0); return; } let val = parseInt(e.target.value); if (isNaN(val)) val = 0; if (val < 0) val = 0; if (val > max) val = max; onChange(val); }}
+                className={styles.chainTimeInput} min={0} max={max} />
+            <span className={styles.chainTimeLabel}>{label}</span>
         </div>
     );
 }
