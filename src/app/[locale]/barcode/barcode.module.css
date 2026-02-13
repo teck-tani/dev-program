@@ -178,6 +178,14 @@
     resize: vertical;
 }
 
+/* ── Input Hint (GS1 format guide etc.) ── */
+.inputHint {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
 /* ── Bulk Input Guide & Counter ── */
 .bulkGuide {
     display: flex;
@@ -875,6 +883,7 @@
     color: white;
 }
 
+:global(body[data-theme="dark"]) .inputHint { color: #94a3b8; }
 :global(body[data-theme="dark"]) .inputGroup label { color: #94a3b8; }
 :global(body[data-theme="dark"]) .inputGroup select,
 :global(body[data-theme="dark"]) .inputGroup input[type="text"],

@@ -906,6 +906,16 @@ export default function BarcodeGenerator() {
                     <div className={styles.inputGroup}>
                         <input id="barcodeValue" value={barcodeValue} onChange={handleValueChange}
                             placeholder={getSampleValue(barcodeType)} />
+                        {barcodeCategory === "gs1" && (
+                            <p className={styles.inputHint}>
+                                {barcodeType === "databarexpanded" ? t("gs1ExpandedHint") : t("gs1FormatHint")}
+                            </p>
+                        )}
+                        {barcodeCategory === "postal" && (
+                            <p className={styles.inputHint}>
+                                {t(`postalHint_${barcodeType}`)}
+                            </p>
+                        )}
                     </div>
                 )}
 
