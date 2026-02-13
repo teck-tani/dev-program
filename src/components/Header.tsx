@@ -1,7 +1,7 @@
 "use client";
 
 import { Link, usePathname } from "@/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { FaHome, FaBars, FaTimes, FaCog, FaExpand, FaCompress, FaSun, FaMoon } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -19,6 +19,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const activeMenuRef = useRef<HTMLAnchorElement>(null);
 
   const showFullscreenBtn = FULLSCREEN_PAGES.some(page => pathname.includes(page));
 
@@ -31,6 +32,15 @@ export default function Header() {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
+
+  // 메뉴 열릴 때 현재 항목으로 스크롤
+  useEffect(() => {
+    if (mobileMenuOpen && activeMenuRef.current) {
+      setTimeout(() => {
+        activeMenuRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 100);
+    }
+  }, [mobileMenuOpen]);
 
   const toggleFullScreen = useCallback(() => {
     if (!document.fullscreenElement) {
@@ -146,11 +156,20 @@ export default function Header() {
                 <CategoryIcon />
                 <span>{t(`categories.${category.key}`)}</span>
               </div>
-              {category.tools.map((tool) => (
-                <Link key={tool.href} href={tool.href} onClick={handleLinkClick}>
-                  {tTools(tool.labelKey)}
-                </Link>
-              ))}
+              {category.tools.map((tool) => {
+                const isActive = pathname === tool.href || pathname.endsWith(tool.href);
+                return (
+                  <Link
+                    key={tool.href}
+                    href={tool.href}
+                    onClick={handleLinkClick}
+                    className={isActive ? 'mobile-menu-active' : ''}
+                    ref={isActive ? activeMenuRef : undefined}
+                  >
+                    {tTools(tool.labelKey)}
+                  </Link>
+                );
+              })}
             </div>
           );
         })}

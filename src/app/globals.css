@@ -889,6 +889,14 @@ body[data-theme="light"] .digital-text {
     color: #0ea5e9;
 }
 
+.mobile-menu-category a.mobile-menu-active {
+    background: #e0f2fe;
+    color: #0284c7;
+    font-weight: 600;
+    border-left: 3px solid #0284c7;
+    padding-left: 33px;
+}
+
 /* New Header Responsive */
 @media (max-width: 768px) {
     .header-center-title {
@@ -2226,6 +2234,14 @@ body[data-theme="dark"] .mobile-menu-category a {
 body[data-theme="dark"] .mobile-menu-category a:hover {
     background: rgba(56, 189, 248, 0.1);
     color: #38bdf8;
+}
+
+body[data-theme="dark"] .mobile-menu-category a.mobile-menu-active {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    font-weight: 600;
+    border-left: 3px solid #38bdf8;
+    padding-left: 33px;
 }
 
 body[data-theme="dark"] .settings-dropdown {

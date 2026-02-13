@@ -1,6 +1,6 @@
 {
   "Common": {
-    "share": "📤 Share Result",
+    "share": "Share Result",
     "copied": "✓ Copied!"
   },
   "Meta": {
@@ -802,7 +802,7 @@
         "avgLapTime": "Average Lap Time",
         "bestRecord": "Best Record",
         "worstRecord": "Worst Record",
-        "share": "📤 Share Results",
+        "share": "Share Results",
         "copied": "✓ Copied!",
         "lapSound": "Lap Sound",
         "vibration": "Vibration"
@@ -4094,6 +4094,7 @@
     "itemPrice": "Price",
     "sharedBy": "Shared by",
     "itemTotalSummary": "Item total: {total}",
+    "itemShareTitle": "Cost per Person",
     "historyTitle": "Recent History",
     "clearHistory": "Clear",
     "guideTitle": "How to Use",

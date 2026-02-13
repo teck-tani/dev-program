@@ -1094,6 +1094,7 @@
 
 .tasksInput {
   flex: 1;
+  min-width: 0;
   padding: 8px 12px;
   border: 1.5px solid #e5e7eb;
   border-radius: 10px;
@@ -1111,6 +1112,7 @@
   display: flex;
   align-items: center;
   gap: 2px;
+  flex-shrink: 0;
 }
 
 .tasksPomoBtn {
@@ -1145,6 +1147,7 @@
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tasksList {
@@ -1485,7 +1488,7 @@
 }
 
 :global(body[data-theme="dark"]) .modeBtn {
-  color: #94a3b8;
+  color: #e2e8f0;
 }
 
 :global(body[data-theme="dark"]) .mainCard {

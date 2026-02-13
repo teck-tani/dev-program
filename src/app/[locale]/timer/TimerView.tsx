@@ -374,8 +374,12 @@ export default function TimerView() {
             setMultiTimers(prev => prev.map(timer => {
                 if (!timer.isRunning) return timer;
                 const remaining = Math.max(0, Math.ceil((timer.endTime - Date.now()) / 1000));
+                if (remaining !== timer.timeLeft && remaining <= 5 && remaining > 0 && voiceRef.current) {
+                    try { if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(String(remaining)); u.rate = 1.2; u.volume = 0.8; window.speechSynthesis.speak(u); } } catch {}
+                }
                 if (remaining === 0 && timer.timeLeft > 0) {
-                    playSound();
+                    startAlarmLoop();
+                    setShowAlarmModal(true);
                     if (vibrationOn && navigator.vibrate) navigator.vibrate([300, 100, 300]);
                     return { ...timer, timeLeft: 0, isRunning: false };
                 }
@@ -654,11 +658,14 @@ export default function TimerView() {
                                     </div>
                                     {!timer.isRunning && timer.timeLeft === timer.duration ? (
                                         <div className={styles.multiInputRow}>
-                                            <input type="number" className={styles.multiInput} value={Math.floor(timer.duration / 60)}
-                                                onChange={e => setMultiDuration(timer.id, (parseInt(e.target.value) || 0) * 60 + timer.duration % 60)} />
+                                            <input type="number" className={styles.multiInput} value={Math.floor(timer.duration / 3600)}
+                                                onChange={e => { const h = Math.max(0, parseInt(e.target.value) || 0); setMultiDuration(timer.id, h * 3600 + Math.floor((timer.duration % 3600) / 60) * 60 + timer.duration % 60); }} />
+                                            <span className={styles.multiSep}>:</span>
+                                            <input type="number" className={styles.multiInput} value={Math.floor((timer.duration % 3600) / 60)}
+                                                onChange={e => { const m = Math.min(59, Math.max(0, parseInt(e.target.value) || 0)); setMultiDuration(timer.id, Math.floor(timer.duration / 3600) * 3600 + m * 60 + timer.duration % 60); }} />
                                             <span className={styles.multiSep}>:</span>
                                             <input type="number" className={styles.multiInput} value={timer.duration % 60}
-                                                onChange={e => setMultiDuration(timer.id, Math.floor(timer.duration / 60) * 60 + (parseInt(e.target.value) || 0))} />
+                                                onChange={e => { const s = Math.min(59, Math.max(0, parseInt(e.target.value) || 0)); setMultiDuration(timer.id, Math.floor(timer.duration / 3600) * 3600 + Math.floor((timer.duration % 3600) / 60) * 60 + s); }} />
                                         </div>
                                     ) : (
                                         <div className={styles.multiTimeDisplay} style={{ color: timer.timeLeft === 0 ? '#ef4444' : timer.isRunning ? '#22c55e' : '#667eea' }}>

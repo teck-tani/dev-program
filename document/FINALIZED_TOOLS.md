@@ -23,3 +23,5 @@
    - Barcode: `Barcode.*`, `Index.tools.barcode`
 3. **SEO 수정 금지**: 해당 도구의 `page.tsx` 내 JSON-LD, 메타데이터 수정 불가
 4. **예외**: 사용자가 명시적으로 "이 도구 수정해" 라고 요청한 경우에만 수정 가능
+
+

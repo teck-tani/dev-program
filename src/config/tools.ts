@@ -120,7 +120,7 @@ export function getCategoriesWithTools() {
 }
 
 export function findToolByPathname(pathname: string): ToolDef | undefined {
-    const slug = pathname.replace(/^\/(ko|en)/, '').replace(/^\//, '');
+    const slug = pathname.replace(/^\/(ko|en)(?=\/|$)/, '').replace(/^\//, '');
     return ALL_TOOLS.find(t => t.href === `/${slug}`);
 }
 

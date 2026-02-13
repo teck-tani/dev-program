@@ -36,7 +36,7 @@ interface HistoryEntry {
     settlements: Settlement[];
 }
 
-type SplitMode = "equal" | "custom" | "item";
+type SplitMode = "equal" | "item";
 
 export default function DutchPayClient() {
     const t = useTranslations('DutchPay');
@@ -53,6 +53,7 @@ export default function DutchPayClient() {
     const [settlements, setSettlements] = useState<Settlement[]>([]);
     const [calculated, setCalculated] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [itemShares, setItemShares] = useState<{ name: string; amount: number; items: string[] }[]>([]);
 
     // New: tip
     const [tipPercent, setTipPercent] = useState(0);
@@ -155,9 +156,7 @@ export default function DutchPayClient() {
         if (tipPercent > 0) {
             const base = splitMode === 'item'
                 ? items.reduce((sum, item) => sum + parseAmount(item.price), 0)
-                : splitMode === 'equal'
-                    ? parseAmount(totalAmount)
-                    : people.reduce((sum, p) => sum + parseAmount(p.paid), 0);
+                : parseAmount(totalAmount);
             return Math.round(base * tipPercent / 100);
         }
         return parseAmount(customTip);
@@ -180,17 +179,25 @@ export default function DutchPayClient() {
         let personShares: Record<number, number> = {};
 
         if (splitMode === 'item') {
-            // Item-based calculation
+            // Item-based: calculate each person's share
             const itemTotal = items.reduce((sum, item) => sum + parseAmount(item.price), 0);
             if (itemTotal === 0) { alert(t('alertNoAmount')); return; }
 
             namedPeople.forEach(p => { personShares[p.id] = 0; });
+            const personItemNames: Record<number, string[]> = {};
+            namedPeople.forEach(p => { personItemNames[p.id] = []; });
+
             items.forEach(item => {
                 const price = parseAmount(item.price);
                 const sharers = item.sharedBy.filter(pid => namedPeople.some(p => p.id === pid));
                 if (sharers.length === 0 || price === 0) return;
                 const perShare = price / sharers.length;
-                sharers.forEach(pid => { personShares[pid] = (personShares[pid] || 0) + perShare; });
+                sharers.forEach(pid => {
+                    personShares[pid] = (personShares[pid] || 0) + perShare;
+                    if (item.name.trim()) {
+                        personItemNames[pid] = [...(personItemNames[pid] || []), item.name.trim()];
+                    }
+                });
             });
 
             // Distribute tip proportionally
@@ -201,12 +208,33 @@ export default function DutchPayClient() {
             } else {
                 namedPeople.forEach(p => { personShares[p.id] = Math.round(personShares[p.id]); });
             }
-        } else {
-            // Equal or Custom
-            const baseTotal = splitMode === "equal"
-                ? parseAmount(totalAmount)
-                : namedPeople.reduce((sum, p) => sum + parseAmount(p.paid), 0);
 
+            // Build per-person share result (no settlement needed)
+            const shares = namedPeople.map(p => ({
+                name: p.name,
+                amount: personShares[p.id] || 0,
+                items: personItemNames[p.id] || [],
+            }));
+            setItemShares(shares);
+
+            const total = itemTotal + tip;
+            setPeople(namedPeople);
+            setSettlements([]);
+            setCalculated(true);
+
+            saveHistory({
+                id: Date.now().toString(),
+                date: new Date().toLocaleDateString(),
+                mode: splitMode,
+                total,
+                peopleCount: namedPeople.length,
+                perPerson: Math.round(total / namedPeople.length),
+                settlements: [],
+            });
+            return;
+        } else {
+            // Equal split
+            const baseTotal = parseAmount(totalAmount);
             if (baseTotal === 0) { alert(t('alertNoAmount')); return; }
 
             const totalWithTip = baseTotal + tip;
@@ -234,9 +262,7 @@ export default function DutchPayClient() {
             if (creditors[ci].balance === 0) ci++;
         }
 
-        const total = splitMode === 'item'
-            ? items.reduce((sum, item) => sum + parseAmount(item.price), 0) + tip
-            : (splitMode === 'equal' ? parseAmount(totalAmount) : namedPeople.reduce((sum, p) => sum + parseAmount(p.paid), 0)) + tip;
+        const total = parseAmount(totalAmount) + tip;
 
         setPeople(namedPeople);
         setSettlements(results);
@@ -264,12 +290,12 @@ export default function DutchPayClient() {
         setCustomTip("");
         setItems([{ id: 1, name: "", price: "", sharedBy: [1, 2] }]);
         setNextItemId(2);
+        setItemShares([]);
     };
 
     const tip = getTipAmount();
-    const totalPaid = people.reduce((sum, p) => sum + parseAmount(p.paid), 0);
     const itemTotal = items.reduce((sum, item) => sum + parseAmount(item.price), 0);
-    const effectiveTotal = (splitMode === 'item' ? itemTotal : splitMode === 'equal' ? parseAmount(totalAmount) : totalPaid) + tip;
+    const effectiveTotal = (splitMode === 'item' ? itemTotal : parseAmount(totalAmount)) + tip;
     const perPerson = effectiveTotal > 0 ? Math.round(effectiveTotal / people.length) : 0;
 
     const buildResultText = useCallback(() => {
@@ -278,14 +304,21 @@ export default function DutchPayClient() {
         text += `${t('resultPeople')}: ${people.length}${t('peopleUnit')}\n`;
         text += `${t('resultPerPerson')}: ${formatNumber(perPerson)}${t('currency')}\n`;
         if (tip > 0) text += `${t('tipLabel')}: ${formatNumber(tip)}${t('currency')}\n`;
-        if (settlements.length > 0) {
+        if (splitMode === 'item' && itemShares.length > 0) {
+            text += `\n${t('itemShareTitle')}\n`;
+            itemShares.forEach(share => {
+                text += `${share.name}: ${formatNumber(share.amount)}${t('currency')}`;
+                if (share.items.length > 0) text += ` (${share.items.join(', ')})`;
+                text += '\n';
+            });
+        } else if (settlements.length > 0) {
             text += `\n${t('settlementTitle')}\n`;
             settlements.forEach(s => { text += `${s.from} → ${s.to}: ${formatNumber(s.amount)}${t('currency')}\n`; });
         } else {
             text += `\n${t('noSettlement')}`;
         }
         return text;
-    }, [settlements, people, effectiveTotal, perPerson, tip, t]);
+    }, [settlements, itemShares, splitMode, people, effectiveTotal, perPerson, tip, t]);
 
     const handleCopyResult = async () => {
         try {
@@ -318,7 +351,7 @@ export default function DutchPayClient() {
             <div className="dutch-card" style={cardStyle}>
                 <label style={labelStyle}>{t('modeLabel')}</label>
                 <div className="dutch-toggle-group" style={{ display: 'flex', gap: '6px' }}>
-                    {(['equal', 'custom', 'item'] as SplitMode[]).map(mode => (
+                    {(['equal', 'item'] as SplitMode[]).map(mode => (
                         <button key={mode} className="dutch-toggle-btn"
                             onClick={() => { setSplitMode(mode); setCalculated(false); }}
                             style={{
@@ -329,7 +362,7 @@ export default function DutchPayClient() {
                                 fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontSize: '0.8rem',
                             }}
                         >
-                            {t(mode === 'equal' ? 'modeEqual' : mode === 'custom' ? 'modeCustom' : 'modeItem')}
+                            {t(mode === 'equal' ? 'modeEqual' : 'modeItem')}
                         </button>
                     ))}
                 </div>
@@ -495,17 +528,19 @@ export default function DutchPayClient() {
                                 placeholder={`${t('person')} ${index + 1}`}
                                 style={{ ...inputStyle, flex: 1, minWidth: 0 }}
                             />
-                            <div style={{ position: 'relative', flex: 1.5 }}>
-                                <input className="dutch-input" type="text" inputMode="numeric"
-                                    value={person.paid}
-                                    onChange={(e) => handleAmountInput(person.id, e.target.value)}
-                                    placeholder={t('paidPlaceholder')}
-                                    style={{ ...inputStyle, width: '100%', paddingRight: '32px' }}
-                                />
-                                <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: isDark ? "#64748b" : '#9ca3af', fontSize: '0.8rem' }}>
-                                    {t('currency')}
-                                </span>
-                            </div>
+                            {splitMode !== 'item' && (
+                                <div style={{ position: 'relative', flex: 1.5 }}>
+                                    <input className="dutch-input" type="text" inputMode="numeric"
+                                        value={person.paid}
+                                        onChange={(e) => handleAmountInput(person.id, e.target.value)}
+                                        placeholder={t('paidPlaceholder')}
+                                        style={{ ...inputStyle, width: '100%', paddingRight: '32px' }}
+                                    />
+                                    <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: isDark ? "#64748b" : '#9ca3af', fontSize: '0.8rem' }}>
+                                        {t('currency')}
+                                    </span>
+                                </div>
+                            )}
                             <button onClick={() => removePerson(person.id)} disabled={people.length <= 2}
                                 style={{
                                     padding: '8px 10px', background: people.length <= 2 ? (isDark ? "#334155" : '#eee') : '#ff6b6b',
@@ -515,11 +550,6 @@ export default function DutchPayClient() {
                         </div>
                     ))}
                 </div>
-                {splitMode === "custom" && totalPaid > 0 && (
-                    <p style={{ marginTop: '8px', color: isDark ? "#94a3b8" : '#6b7280', fontSize: '0.85rem' }}>
-                        {t('totalPaidSummary', { total: formatNumber(totalPaid), perPerson: formatNumber(perPerson) })}
-                    </p>
-                )}
             </div>
 
             {/* Calculate / Reset */}
@@ -586,7 +616,31 @@ export default function DutchPayClient() {
                         </div>
                     </div>
 
-                    {settlements.length > 0 ? (
+                    {splitMode === 'item' && itemShares.length > 0 ? (
+                        <div>
+                            <h3 style={{ marginBottom: '10px', fontSize: '0.95rem', color: 'rgba(255,255,255,0.8)' }}>{t('itemShareTitle')}</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {itemShares.map((share, i) => (
+                                    <div key={i} style={{
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px',
+                                    }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                            <span style={{ fontWeight: 600, color: '#60a5fa', fontSize: '0.9rem' }}>{share.name}</span>
+                                            {share.items.length > 0 && (
+                                                <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>
+                                                    {share.items.join(', ')}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span style={{ fontWeight: 700, fontSize: '1.05rem', color: '#fff', flexShrink: 0, marginLeft: '10px' }}>
+                                            {formatNumber(share.amount)}{t('currency')}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : settlements.length > 0 ? (
                         <div>
                             <h3 style={{ marginBottom: '10px', fontSize: '0.95rem', color: 'rgba(255,255,255,0.8)' }}>{t('settlementTitle')}</h3>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -641,7 +695,7 @@ export default function DutchPayClient() {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                                         <span style={{ fontSize: '0.8rem', color: isDark ? '#64748b' : '#9ca3af' }}>{entry.date}</span>
                                         <span style={{ fontSize: '0.75rem', color: '#4A90D9', fontWeight: 600 }}>
-                                            {entry.mode === 'equal' ? t('modeEqual') : entry.mode === 'custom' ? t('modeCustom') : t('modeItem')}
+                                            {entry.mode === 'item' ? t('modeItem') : t('modeEqual')}
                                         </span>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
