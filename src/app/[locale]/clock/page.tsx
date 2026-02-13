@@ -260,7 +260,7 @@ export default async function ClockPage(props: { params: Promise<{ locale: strin
     const webAppSchema = generateWebAppSchema(locale, t);
 
     return (
-        <main style={{ width: '100%' }}>
+        <div style={{ width: '100%' }}>
             {/* 구조화된 데이터 (JSON-LD) */}
             <script
                 type="application/ld+json"
@@ -381,6 +381,6 @@ export default async function ClockPage(props: { params: Promise<{ locale: strin
                     </section>
                 </article>
             </section>
-        </main>
+        </div>
     );
 }

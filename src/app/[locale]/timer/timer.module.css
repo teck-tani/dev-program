@@ -618,8 +618,10 @@
 
 .wakeLockBtn.wakeLockActive {
   border-color: #22c55e;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.08);
+  color: #fff;
+  background: #22c55e;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.35);
 }
 
 /* === Share / Voice / Presets row === */
@@ -649,8 +651,10 @@
 
 .featureBtn.featureActive {
   border-color: #667eea;
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.06);
+  color: #fff;
+  background: #667eea;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
 }
 
 /* === User Presets === */
@@ -1627,9 +1631,23 @@
   color: #94a3b8;
 }
 
+:global(body[data-theme="dark"]) .wakeLockBtn.wakeLockActive {
+  border-color: #22c55e;
+  color: #fff;
+  background: #16a34a;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
 :global(body[data-theme="dark"]) .featureBtn {
   border-color: #334155;
   color: #94a3b8;
+}
+
+:global(body[data-theme="dark"]) .featureBtn.featureActive {
+  border-color: #818cf8;
+  color: #fff;
+  background: #6366f1;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 :global(body[data-theme="dark"]) .presetSavedSection {

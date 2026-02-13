@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tani-devtool-v1';
+const CACHE_NAME = 'tani-devtool-v2';
 
 // 오프라인에서 캐시할 핵심 페이지들
 const PRECACHE_URLS = [
@@ -34,19 +34,21 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// 네트워크 요청 처리 (Network First, Cache Fallback)
+// 네트워크 요청 처리
 self.addEventListener('fetch', (event) => {
   // API 요청이나 외부 리소스는 캐시하지 않음
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
-  // HTML 페이지 요청
-  if (event.request.mode === 'navigate') {
+  const url = new URL(event.request.url);
+
+  // RSC 요청 (Next.js 클라이언트 네비게이션) - Network First
+  // RSC 헤더 또는 _rsc 파라미터가 있으면 항상 네트워크 우선
+  if (event.request.headers.get('RSC') === '1' || url.searchParams.has('_rsc')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          // 성공 시 캐시에 저장
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseClone);
@@ -54,7 +56,24 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // 오프라인 시 캐시에서 반환
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // HTML 페이지 요청 (직접 URL 접속) - Network First
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
           return caches.match(event.request).then((cached) => {
             return cached || caches.match('/ko/stopwatch');
           });
@@ -63,7 +82,25 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 정적 리소스 (JS, CSS, 이미지 등) - Cache First
+  // _next/ 리소스 - Network First (배포 후 캐시 불일치 방지)
+  if (url.pathname.startsWith('/_next/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // 기타 정적 리소스 (이미지, 폰트 등) - Cache First
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) {

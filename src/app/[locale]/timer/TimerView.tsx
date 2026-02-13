@@ -174,7 +174,7 @@ export default function TimerView() {
                 if (s.selectedSound) setSelectedSound(s.selectedSound);
                 if (s.vibrationOn !== undefined) setVibrationOn(s.vibrationOn);
                 if (s.volume !== undefined) setVolume(s.volume);
-                if (s.voiceCountdown) setVoiceCountdown(s.voiceCountdown);
+                // voiceCountdown는 항상 OFF 시작 (기본값 유지)
                 if (s.pomoWork) setPomoWork(s.pomoWork);
                 if (s.pomoBreak) setPomoBreak(s.pomoBreak);
                 if (s.pomoLongBreak) setPomoLongBreak(s.pomoLongBreak);
