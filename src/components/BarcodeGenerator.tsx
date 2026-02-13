@@ -42,12 +42,17 @@ interface RenderOptions {
 
 // ─── Hooks ───────────────────────────────────────────────
 const useIsMobile = () => {
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(() =>
+        typeof window !== 'undefined' ? window.innerWidth < 768 : false
+    );
     useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
+        let tid: ReturnType<typeof setTimeout>;
+        const checkMobile = () => {
+            clearTimeout(tid);
+            tid = setTimeout(() => setIsMobile(window.innerWidth < 768), 150);
+        };
         window.addEventListener("resize", checkMobile);
-        return () => window.removeEventListener("resize", checkMobile);
+        return () => { clearTimeout(tid); window.removeEventListener("resize", checkMobile); };
     }, []);
     return isMobile;
 };
@@ -155,6 +160,20 @@ function loadSettings(): Partial<BarcodeSettings> {
     }
 }
 
+// Lazy initializer — reads localStorage once at mount for all useState hooks
+function getInitialState(): { settings: Partial<BarcodeSettings>; savedBarcodes: BarcodeItem[] | null } {
+    if (typeof window === 'undefined') return { settings: {}, savedBarcodes: null };
+    try {
+        const settingsRaw = localStorage.getItem(SETTINGS_KEY);
+        const settings: Partial<BarcodeSettings> = settingsRaw ? JSON.parse(settingsRaw) : {};
+        const barcodesRaw = localStorage.getItem(BARCODES_KEY);
+        const savedBarcodes: BarcodeItem[] | null = barcodesRaw ? JSON.parse(barcodesRaw) : null;
+        return { settings, savedBarcodes };
+    } catch {
+        return { settings: {}, savedBarcodes: null };
+    }
+}
+
 function saveSettings(settings: BarcodeSettings) {
     try {
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
@@ -183,11 +202,18 @@ export default function BarcodeGenerator() {
     const t = useTranslations("Barcode.generator");
     const isMobile = useIsMobile();
 
+    // ── Lazy init: read localStorage once for all state ──
+    const [initState] = useState(getInitialState);
+    const initS = initState.settings;
+    const initType = initS.barcodeType ?? DEFAULT_SETTINGS.barcodeType;
+
     // ── Core State ──
-    const SAMPLE_BARCODE: BarcodeItem = { id: "sample", value: getSampleValue("code128"), type: "code128" };
-    const [barcodes, setBarcodes] = useState<BarcodeItem[]>([SAMPLE_BARCODE]);
-    const [barcodeCategory, setBarcodeCategory] = useState(DEFAULT_SETTINGS.barcodeCategory);
-    const [barcodeType, setBarcodeType] = useState(DEFAULT_SETTINGS.barcodeType);
+    const [barcodes, setBarcodes] = useState<BarcodeItem[]>(() => {
+        if (initState.savedBarcodes && initState.savedBarcodes.length > 0) return initState.savedBarcodes;
+        return [{ id: "sample", value: getSampleValue(initType), type: initType }];
+    });
+    const [barcodeCategory, setBarcodeCategory] = useState(initS.barcodeCategory ?? DEFAULT_SETTINGS.barcodeCategory);
+    const [barcodeType, setBarcodeType] = useState(initType);
     const [barcodeValue, setBarcodeValue] = useState("");
     const [excelData, setExcelData] = useState("");
     const [error, setError] = useState("");
@@ -196,19 +222,19 @@ export default function BarcodeGenerator() {
     const barcodeRef = useRef<HTMLDivElement>(null);
 
     // ── Visual Options ──
-    const [scale, setScale] = useState(DEFAULT_SETTINGS.scale);
-    const [barHeight, setBarHeight] = useState(DEFAULT_SETTINGS.barHeight);
-    const [displayValue, setDisplayValue] = useState(DEFAULT_SETTINGS.displayValue);
-    const [barColor, setBarColor] = useState(DEFAULT_SETTINGS.barColor);
-    const [bgColor, setBgColor] = useState(DEFAULT_SETTINGS.bgColor);
-    const [textColor, setTextColor] = useState(DEFAULT_SETTINGS.textColor);
-    const [rotation, setRotation] = useState(DEFAULT_SETTINGS.rotation);
-    const [margin, setMargin] = useState(DEFAULT_SETTINGS.margin);
-    const [fontFamily, setFontFamily] = useState(DEFAULT_SETTINGS.fontFamily);
-    const [fontSize, setFontSize] = useState(DEFAULT_SETTINGS.fontSize);
-    const [fontBold, setFontBold] = useState(DEFAULT_SETTINGS.fontBold);
-    const [eclevel, setEclevel] = useState(DEFAULT_SETTINGS.eclevel);
-    const [dpi, setDpi] = useState(DEFAULT_SETTINGS.dpi);
+    const [scale, setScale] = useState(initS.scale ?? DEFAULT_SETTINGS.scale);
+    const [barHeight, setBarHeight] = useState(initS.barHeight ?? DEFAULT_SETTINGS.barHeight);
+    const [displayValue, setDisplayValue] = useState(initS.displayValue ?? DEFAULT_SETTINGS.displayValue);
+    const [barColor, setBarColor] = useState(initS.barColor ?? DEFAULT_SETTINGS.barColor);
+    const [bgColor, setBgColor] = useState(initS.bgColor ?? DEFAULT_SETTINGS.bgColor);
+    const [textColor, setTextColor] = useState(initS.textColor ?? DEFAULT_SETTINGS.textColor);
+    const [rotation, setRotation] = useState(initS.rotation ?? DEFAULT_SETTINGS.rotation);
+    const [margin, setMargin] = useState(initS.margin ?? DEFAULT_SETTINGS.margin);
+    const [fontFamily, setFontFamily] = useState(initS.fontFamily ?? DEFAULT_SETTINGS.fontFamily);
+    const [fontSize, setFontSize] = useState(initS.fontSize ?? DEFAULT_SETTINGS.fontSize);
+    const [fontBold, setFontBold] = useState(initS.fontBold ?? DEFAULT_SETTINGS.fontBold);
+    const [eclevel, setEclevel] = useState(initS.eclevel ?? DEFAULT_SETTINGS.eclevel);
+    const [dpi, setDpi] = useState(initS.dpi ?? DEFAULT_SETTINGS.dpi);
 
     // ── Sequence Mode ──
     const [sequenceMode, setSequenceMode] = useState(false);
@@ -227,52 +253,16 @@ export default function BarcodeGenerator() {
     const [activeTab, setActiveTab] = useState<"simple" | "bulk">("simple");
     const isSimple = activeTab === "simple" || isMobile;
 
-    // ── History ──
+    // ── History (lazy: loaded on first toggle) ──
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [showHistory, setShowHistory] = useState(false);
-    useEffect(() => { setHistory(loadHistory()); }, []);
-
-    // ── Load saved settings & barcodes on mount ──
-    useEffect(() => {
-        const s = loadSettings();
-        let loadedType = DEFAULT_SETTINGS.barcodeType;
-        if (Object.keys(s).length > 0) {
-            if (s.barcodeCategory !== undefined) setBarcodeCategory(s.barcodeCategory);
-            if (s.barcodeType !== undefined) { setBarcodeType(s.barcodeType); loadedType = s.barcodeType; }
-            if (s.scale !== undefined) setScale(s.scale);
-            if (s.barHeight !== undefined) setBarHeight(s.barHeight);
-            if (s.displayValue !== undefined) setDisplayValue(s.displayValue);
-            if (s.barColor !== undefined) setBarColor(s.barColor);
-            if (s.bgColor !== undefined) setBgColor(s.bgColor);
-            if (s.textColor !== undefined) setTextColor(s.textColor);
-            if (s.rotation !== undefined) setRotation(s.rotation);
-            if (s.margin !== undefined) setMargin(s.margin);
-            if (s.fontFamily !== undefined) setFontFamily(s.fontFamily);
-            if (s.fontSize !== undefined) setFontSize(s.fontSize);
-            if (s.fontBold !== undefined) setFontBold(s.fontBold);
-            if (s.eclevel !== undefined) setEclevel(s.eclevel);
-            if (s.dpi !== undefined) setDpi(s.dpi);
-        }
-        try {
-            const saved = localStorage.getItem(BARCODES_KEY);
-            if (saved) {
-                const items: BarcodeItem[] = JSON.parse(saved);
-                if (items.length > 0) { setBarcodes(items); return; }
-            }
-        } catch { /* ignore */ }
-        // No saved barcodes — create sample with loaded type
-        if (loadedType !== DEFAULT_SETTINGS.barcodeType) {
-            setBarcodes([{ id: "sample", value: getSampleValue(loadedType), type: loadedType }]);
-        }
-    }, []);
+    const historyLoadedRef = useRef(false);
 
     // ── Auto-save barcodes on change ──
     const barcodesInitRef = useRef(false);
     useEffect(() => {
         if (!barcodesInitRef.current) { barcodesInitRef.current = true; return; }
-        try {
-            localStorage.setItem(BARCODES_KEY, JSON.stringify(barcodes));
-        } catch { /* ignore */ }
+        try { localStorage.setItem(BARCODES_KEY, JSON.stringify(barcodes)); } catch { /* ignore */ }
     }, [barcodes]);
 
     // ── Auto-save settings on change ──
@@ -438,6 +428,15 @@ export default function BarcodeGenerator() {
 
     // ── Add to history ──
     const addToHistory = useCallback((type: string, value: string) => {
+        if (!historyLoadedRef.current) {
+            historyLoadedRef.current = true;
+            const loaded = loadHistory();
+            const entry: HistoryEntry = { type, value, timestamp: Date.now() };
+            const updated = [entry, ...loaded.filter(h => !(h.type === type && h.value === value))].slice(0, MAX_HISTORY);
+            saveHistory(updated);
+            setHistory(updated);
+            return;
+        }
         const entry: HistoryEntry = { type, value, timestamp: Date.now() };
         setHistory(prev => {
             const updated = [entry, ...prev.filter(h => !(h.type === type && h.value === value))].slice(0, MAX_HISTORY);
@@ -1150,7 +1149,13 @@ export default function BarcodeGenerator() {
                         {/* ── History ── */}
                         {history.length > 0 && (
                             <div className={styles.inputGroup}>
-                                <button className={styles.modeToggle} onClick={() => setShowHistory(!showHistory)}>
+                                <button className={styles.modeToggle} onClick={() => {
+                                    if (!historyLoadedRef.current) {
+                                        setHistory(loadHistory());
+                                        historyLoadedRef.current = true;
+                                    }
+                                    setShowHistory(!showHistory);
+                                }}>
                                     {showHistory ? "▲" : "▼"} {t("labelHistory")} ({history.length})
                                 </button>
                                 {showHistory && (
@@ -1266,9 +1271,11 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
 
     useEffect(() => {
         if (!canvasRef.current) return;
+        let cancelled = false;
+
         import("bwip-js/browser").then((module) => {
+            if (cancelled || !canvasRef.current) return;
             const bwipjs = module.default;
-            if (!canvasRef.current) return;
             const renderOpts: RenderOptions = {
                 bcid: item.type,
                 text: item.value,
@@ -1295,18 +1302,19 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
             }
             try {
                 bwipjs.toCanvas(canvasRef.current, renderOpts);
-            } catch (renderErr) {
-                // Fallback: render sample value silently
+            } catch {
                 try {
                     const sampleValue = getSampleValue(item.type);
                     if (canvasRef.current) {
                         bwipjs.toCanvas(canvasRef.current, { ...renderOpts, text: sampleValue });
                     }
                 } catch {
-                    // Silent fail — don't show error to user
+                    // Silent fail
                 }
             }
         });
+
+        return () => { cancelled = true; };
     }, [item, options]);
 
     return (

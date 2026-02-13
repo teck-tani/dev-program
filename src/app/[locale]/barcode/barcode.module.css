@@ -435,6 +435,7 @@
     background-color: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     border-radius: 8px;
+    contain: content;
     cursor: move;
     user-select: none;
     transition: all 0.2s ease;
@@ -708,7 +709,11 @@
         font-size: 12px;
     }
     .inputGroup { margin-bottom: 6px; }
-    .colorRow { gap: 8px; }
+    .colorRow {
+        gap: 8px;
+        content-visibility: auto;
+        contain-intrinsic-size: 0 80px;
+    }
     .colorPicker { min-width: 80px; }
 
     .barcodeContainer {

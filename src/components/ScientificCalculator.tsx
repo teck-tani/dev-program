@@ -96,17 +96,17 @@ const tooltips: Record<string, string> = {
 const vibrate = () => { if (navigator.vibrate) navigator.vibrate(10); };
 
 // Button styles as module-level constants (avoids recreation on every render)
-const DARK_BASE = "h-12 sm:h-14 rounded-xl font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none cursor-pointer";
-const LIGHT_BASE = "h-12 sm:h-14 rounded-lg font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none shadow-sm cursor-pointer";
+const DARK_BASE = "h-12 sm:h-14 rounded-xl font-medium text-lg transition-colors duration-200 active:scale-95 flex items-center justify-center select-none cursor-pointer";
+const LIGHT_BASE = "h-12 sm:h-14 rounded-lg font-medium text-lg transition-colors duration-200 active:scale-95 flex items-center justify-center select-none shadow-sm cursor-pointer";
 const DARK_STYLES: Record<string, string> = {
-  default: "bg-white/[0.08] text-gray-100 font-bold backdrop-blur-sm border border-white/[0.06] hover:bg-white/[0.14] hover:border-white/10 shadow-lg shadow-black/20",
-  number: "bg-white/[0.08] text-gray-100 font-bold backdrop-blur-sm border border-white/[0.06] hover:bg-white/[0.14] hover:border-white/10 shadow-lg shadow-black/20",
-  operator: "bg-indigo-500/20 text-indigo-300 border border-indigo-400/20 hover:bg-indigo-500/30 hover:border-indigo-400/30 font-semibold shadow-lg shadow-indigo-900/20",
-  function: "bg-white/[0.05] text-gray-300 border border-white/[0.05] hover:bg-white/[0.10] hover:border-white/[0.08] text-base font-medium",
-  action: "bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:from-blue-400 hover:to-blue-500 shadow-lg shadow-blue-500/30 border border-blue-400/30",
-  warning: "bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 border border-rose-400/20 hover:border-rose-400/30",
-  hyp: "bg-gradient-to-br from-violet-500 to-indigo-600 text-white hover:from-violet-400 hover:to-indigo-500 shadow-lg shadow-violet-500/30 border border-violet-400/30",
-  memory: "bg-emerald-500/15 text-emerald-300 border border-emerald-400/20 hover:bg-emerald-500/25 hover:border-emerald-400/30 text-sm font-semibold",
+  default: "bg-white/[0.08] text-gray-100 font-bold border border-white/[0.15] hover:bg-white/[0.14] hover:border-white/25 shadow-lg shadow-black/20",
+  number: "bg-white/[0.08] text-gray-100 font-bold border border-white/[0.15] hover:bg-white/[0.14] hover:border-white/25 shadow-lg shadow-black/20",
+  operator: "bg-indigo-500/20 text-indigo-300 border border-indigo-400/35 hover:bg-indigo-500/30 hover:border-indigo-400/50 font-semibold shadow-lg shadow-indigo-900/20",
+  function: "bg-white/[0.05] text-gray-300 border border-white/[0.12] hover:bg-white/[0.10] hover:border-white/20 text-base font-medium",
+  action: "bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:from-blue-400 hover:to-blue-500 shadow-lg shadow-blue-500/30 border border-blue-400/40",
+  warning: "bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 border border-rose-400/35 hover:border-rose-400/50",
+  hyp: "bg-gradient-to-br from-violet-500 to-indigo-600 text-white hover:from-violet-400 hover:to-indigo-500 shadow-lg shadow-violet-500/30 border border-violet-400/40",
+  memory: "bg-emerald-500/15 text-emerald-300 border border-emerald-400/35 hover:bg-emerald-500/25 hover:border-emerald-400/50 text-sm font-semibold",
 };
 const LIGHT_STYLES: Record<string, string> = {
   default: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
@@ -121,11 +121,10 @@ const LIGHT_STYLES: Record<string, string> = {
 
 // Button at module level for stable React reconciliation
 // (When defined inside a component, React treats it as a new type each render → 45 unmount/remount)
-const Button = ({ label, onClick, className = "", styleType = "default", ariaLabel = "", tooltip = "" }: {
-  label: React.ReactNode; onClick: () => void; className?: string; styleType?: string; ariaLabel?: string; tooltip?: string;
+// dark prop eliminates 45 useTheme() context subscriptions (parent reads once, passes down)
+const Button = ({ label, onClick, dark, className = "", styleType = "default", ariaLabel = "", tooltip = "" }: {
+  label: React.ReactNode; onClick: () => void; dark: boolean; className?: string; styleType?: string; ariaLabel?: string; tooltip?: string;
 }) => {
-  const { theme } = useTheme();
-  const dark = theme === 'dark';
   const handleClick = () => { vibrate(); onClick(); };
   const baseStyle = dark ? DARK_BASE : LIGHT_BASE;
   const styles = dark ? DARK_STYLES : LIGHT_STYLES;
@@ -579,7 +578,7 @@ const ScientificCalculator = () => {
             <div className="grid grid-cols-5 gap-2 sm:gap-3">
 
               {/* Row 1: Mode Toggle & Trig */}
-              <Button
+              <Button dark={dark}
                 label={funcModeLabels[funcMode]}
                 onClick={() => setFuncMode(prev => (prev + 1) % 4)}
                 styleType={funcMode === 0 ? 'function' : (isHyp ? 'hyp' : 'action')}
@@ -587,7 +586,7 @@ const ScientificCalculator = () => {
                 tooltip="Cycle: 2nd → INV → HYP → H⁻¹"
               />
               {(['sin', 'cos', 'tan'] as const).map(fn => (
-                <Button key={fn}
+                <Button key={fn} dark={dark}
                   label={trigConfig[fn].labels[funcMode]}
                   onClick={() => { addToDisplay(trigConfig[fn].actions[funcMode]); setFuncMode(0); }}
                   styleType="function"
@@ -595,63 +594,63 @@ const ScientificCalculator = () => {
                   tooltip={tooltips[trigConfig[fn].labels[funcMode]]}
                 />
               ))}
-              <Button label="AC" onClick={handleClear} styleType="warning" ariaLabel="All Clear" tooltip="Clear all (Esc)" />
+              <Button dark={dark} label="AC" onClick={handleClear} styleType="warning" ariaLabel="All Clear" tooltip="Clear all (Esc)" />
 
               {/* Row 2: Powers & Logs */}
-              <Button label={isInverse ? "x³" : "x²"} onClick={() => addToDisplay(isInverse ? '^3' : '^2')} styleType="function" ariaLabel={isInverse ? "Cube" : "Square"} />
-              <Button label="n!" onClick={() => addToDisplay('!')} styleType="function" ariaLabel="Factorial" />
-              <Button label={isInverse ? "eˣ" : "ln"} onClick={() => { addToDisplay(isInverse ? 'e^(' : 'log('); setFuncMode(0); }} styleType="function" ariaLabel={isInverse ? "e to the power" : "Natural logarithm"} />
-              <Button label={isInverse ? "10ˣ" : "log"} onClick={() => { addToDisplay(isInverse ? '10^(' : 'log10('); setFuncMode(0); }} styleType="function" ariaLabel={isInverse ? "10 to the power" : "Logarithm base 10"} />
-              <Button label={<LuDelete size={20} />} onClick={handleBackspace} styleType="warning" ariaLabel="Backspace" tooltip="Delete (Backspace)" />
+              <Button dark={dark} label={isInverse ? "x³" : "x²"} onClick={() => addToDisplay(isInverse ? '^3' : '^2')} styleType="function" ariaLabel={isInverse ? "Cube" : "Square"} />
+              <Button dark={dark} label="n!" onClick={() => addToDisplay('!')} styleType="function" ariaLabel="Factorial" />
+              <Button dark={dark} label={isInverse ? "eˣ" : "ln"} onClick={() => { addToDisplay(isInverse ? 'e^(' : 'log('); setFuncMode(0); }} styleType="function" ariaLabel={isInverse ? "e to the power" : "Natural logarithm"} />
+              <Button dark={dark} label={isInverse ? "10ˣ" : "log"} onClick={() => { addToDisplay(isInverse ? '10^(' : 'log10('); setFuncMode(0); }} styleType="function" ariaLabel={isInverse ? "10 to the power" : "Logarithm base 10"} />
+              <Button dark={dark} label={<LuDelete size={20} />} onClick={handleBackspace} styleType="warning" ariaLabel="Backspace" tooltip="Delete (Backspace)" />
 
               {/* Row 3: New Functions */}
-              <Button label="|x|" onClick={() => addToDisplay('abs(')} styleType="function" ariaLabel="Absolute value" />
-              <Button label="EXP" onClick={() => addToDisplay('×10^(')} styleType="function" ariaLabel="Scientific notation" className="text-sm" />
-              <Button label="Ans" onClick={() => addToDisplay('Ans')} styleType="function" ariaLabel="Previous answer" />
-              <Button label="1/x" onClick={() => addToDisplay('^(-1)')} styleType="function" ariaLabel="Reciprocal" />
-              <Button label="+/−" onClick={handlePlusMinus} styleType="function" ariaLabel="Toggle sign" />
+              <Button dark={dark} label="|x|" onClick={() => addToDisplay('abs(')} styleType="function" ariaLabel="Absolute value" />
+              <Button dark={dark} label="EXP" onClick={() => addToDisplay('×10^(')} styleType="function" ariaLabel="Scientific notation" className="text-sm" />
+              <Button dark={dark} label="Ans" onClick={() => addToDisplay('Ans')} styleType="function" ariaLabel="Previous answer" />
+              <Button dark={dark} label="1/x" onClick={() => addToDisplay('^(-1)')} styleType="function" ariaLabel="Reciprocal" />
+              <Button dark={dark} label="+/−" onClick={handlePlusMinus} styleType="function" ariaLabel="Toggle sign" />
 
               {/* Row 4: Parentheses & Special */}
-              <Button label="(" onClick={() => addToDisplay('(')} styleType="function" ariaLabel="Open parenthesis" />
-              <Button label=")" onClick={() => addToDisplay(')')} styleType="function" ariaLabel="Close parenthesis" />
-              <Button label="," onClick={() => addToDisplay(',')} styleType="function" ariaLabel="Comma" tooltip="Separator for nPr, nCr" />
-              <Button label={isInverse ? "nCr" : "nPr"} onClick={() => { addToDisplay(isInverse ? 'nCr(' : 'nPr('); setFuncMode(0); }} styleType="function" ariaLabel={isInverse ? "Combinations" : "Permutations"} />
-              <Button label={isInverse ? "mod" : "%"} onClick={() => { if (isInverse) { addToDisplay('mod('); setFuncMode(0); } else { addToDisplay('/100'); } }} styleType="function" ariaLabel={isInverse ? "Modulo" : "Percent"} />
+              <Button dark={dark} label="(" onClick={() => addToDisplay('(')} styleType="function" ariaLabel="Open parenthesis" />
+              <Button dark={dark} label=")" onClick={() => addToDisplay(')')} styleType="function" ariaLabel="Close parenthesis" />
+              <Button dark={dark} label="," onClick={() => addToDisplay(',')} styleType="function" ariaLabel="Comma" tooltip="Separator for nPr, nCr" />
+              <Button dark={dark} label={isInverse ? "nCr" : "nPr"} onClick={() => { addToDisplay(isInverse ? 'nCr(' : 'nPr('); setFuncMode(0); }} styleType="function" ariaLabel={isInverse ? "Combinations" : "Permutations"} />
+              <Button dark={dark} label={isInverse ? "mod" : "%"} onClick={() => { if (isInverse) { addToDisplay('mod('); setFuncMode(0); } else { addToDisplay('/100'); } }} styleType="function" ariaLabel={isInverse ? "Modulo" : "Percent"} />
 
               {/* Row 5: Memory & Random */}
-              <Button label="MC" onClick={handleMemoryClear} styleType="memory" ariaLabel="Memory Clear" />
-              <Button label="MR" onClick={handleMemoryRecall} styleType="memory" ariaLabel="Memory Recall" />
-              <Button label="M+" onClick={handleMemoryAdd} styleType="memory" ariaLabel="Memory Add" />
-              <Button label="M−" onClick={handleMemorySubtract} styleType="memory" ariaLabel="Memory Subtract" />
-              <Button label="Rand" onClick={handleRandom} styleType="memory" ariaLabel="Random number" />
+              <Button dark={dark} label="MC" onClick={handleMemoryClear} styleType="memory" ariaLabel="Memory Clear" />
+              <Button dark={dark} label="MR" onClick={handleMemoryRecall} styleType="memory" ariaLabel="Memory Recall" />
+              <Button dark={dark} label="M+" onClick={handleMemoryAdd} styleType="memory" ariaLabel="Memory Add" />
+              <Button dark={dark} label="M−" onClick={handleMemorySubtract} styleType="memory" ariaLabel="Memory Subtract" />
+              <Button dark={dark} label="Rand" onClick={handleRandom} styleType="memory" ariaLabel="Random number" />
 
               {/* Row 6: Numbers */}
-              <Button label="π" onClick={() => addToDisplay('π')} styleType="function" ariaLabel="Pi" />
-              <Button label="7" onClick={() => addToDisplay('7')} styleType="number" />
-              <Button label="8" onClick={() => addToDisplay('8')} styleType="number" />
-              <Button label="9" onClick={() => addToDisplay('9')} styleType="number" />
-              <Button label="÷" onClick={() => addToDisplay('÷')} styleType="operator" ariaLabel="Divide" />
+              <Button dark={dark} label="π" onClick={() => addToDisplay('π')} styleType="function" ariaLabel="Pi" />
+              <Button dark={dark} label="7" onClick={() => addToDisplay('7')} styleType="number" />
+              <Button dark={dark} label="8" onClick={() => addToDisplay('8')} styleType="number" />
+              <Button dark={dark} label="9" onClick={() => addToDisplay('9')} styleType="number" />
+              <Button dark={dark} label="÷" onClick={() => addToDisplay('÷')} styleType="operator" ariaLabel="Divide" />
 
               {/* Row 7 */}
-              <Button label="e" onClick={() => addToDisplay('e')} styleType="function" ariaLabel="Euler's number" />
-              <Button label="4" onClick={() => addToDisplay('4')} styleType="number" />
-              <Button label="5" onClick={() => addToDisplay('5')} styleType="number" />
-              <Button label="6" onClick={() => addToDisplay('6')} styleType="number" />
-              <Button label="×" onClick={() => addToDisplay('×')} styleType="operator" ariaLabel="Multiply" />
+              <Button dark={dark} label="e" onClick={() => addToDisplay('e')} styleType="function" ariaLabel="Euler's number" />
+              <Button dark={dark} label="4" onClick={() => addToDisplay('4')} styleType="number" />
+              <Button dark={dark} label="5" onClick={() => addToDisplay('5')} styleType="number" />
+              <Button dark={dark} label="6" onClick={() => addToDisplay('6')} styleType="number" />
+              <Button dark={dark} label="×" onClick={() => addToDisplay('×')} styleType="operator" ariaLabel="Multiply" />
 
               {/* Row 8 */}
-              <Button label={isInverse ? "³√" : "√"} onClick={() => { addToDisplay(isInverse ? 'cbrt(' : '√('); setFuncMode(0); }} styleType="function" ariaLabel={isInverse ? "Cube root" : "Square root"} />
-              <Button label="1" onClick={() => addToDisplay('1')} styleType="number" />
-              <Button label="2" onClick={() => addToDisplay('2')} styleType="number" />
-              <Button label="3" onClick={() => addToDisplay('3')} styleType="number" />
-              <Button label="-" onClick={() => addToDisplay('-')} styleType="operator" ariaLabel="Subtract" />
+              <Button dark={dark} label={isInverse ? "³√" : "√"} onClick={() => { addToDisplay(isInverse ? 'cbrt(' : '√('); setFuncMode(0); }} styleType="function" ariaLabel={isInverse ? "Cube root" : "Square root"} />
+              <Button dark={dark} label="1" onClick={() => addToDisplay('1')} styleType="number" />
+              <Button dark={dark} label="2" onClick={() => addToDisplay('2')} styleType="number" />
+              <Button dark={dark} label="3" onClick={() => addToDisplay('3')} styleType="number" />
+              <Button dark={dark} label="-" onClick={() => addToDisplay('-')} styleType="operator" ariaLabel="Subtract" />
 
               {/* Row 9 */}
-              <Button label="x^y" onClick={() => addToDisplay('^')} styleType="function" ariaLabel="Power" />
-              <Button label="0" onClick={() => addToDisplay('0')} styleType="number" />
-              <Button label="." onClick={() => addToDisplay('.')} styleType="number" ariaLabel="Decimal point" />
-              <Button label="=" onClick={handleCalculate} styleType="action" ariaLabel="Calculate" tooltip="Calculate (Enter)" />
-              <Button label="+" onClick={() => addToDisplay('+')} styleType="operator" ariaLabel="Add" />
+              <Button dark={dark} label="x^y" onClick={() => addToDisplay('^')} styleType="function" ariaLabel="Power" />
+              <Button dark={dark} label="0" onClick={() => addToDisplay('0')} styleType="number" />
+              <Button dark={dark} label="." onClick={() => addToDisplay('.')} styleType="number" ariaLabel="Decimal point" />
+              <Button dark={dark} label="=" onClick={handleCalculate} styleType="action" ariaLabel="Calculate" tooltip="Calculate (Enter)" />
+              <Button dark={dark} label="+" onClick={() => addToDisplay('+')} styleType="operator" ariaLabel="Add" />
             </div>
           </div>
         </div>

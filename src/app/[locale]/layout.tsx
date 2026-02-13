@@ -7,7 +7,7 @@ import "../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GoogleAdsense from "@/components/GoogleAdsense";
-import FeedbackButton from "@/components/FeedbackButton";
+import LazyFeedbackButton from "@/components/LazyFeedbackButton";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { StopwatchSettingsProvider } from "@/contexts/StopwatchSettingsContext";
 import PWARegister from "@/components/PWARegister";
@@ -78,7 +78,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
               <div id="top-container"><Header /></div>
               <main>{children}</main>
               <div id="footer-container"><Footer /></div>
-              <FeedbackButton />
+              <LazyFeedbackButton />
             </StopwatchSettingsProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
