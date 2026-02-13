@@ -19,6 +19,11 @@ import {
     ECLEVEL_OPTIONS,
     PRINT_LAYOUTS,
 } from "@/utils/barcodeUtils";
+
+// Preload bwip-js at module level — starts loading as soon as this chunk is evaluated,
+// overlapping with React rendering instead of waiting for useEffect
+const bwipjsPromise = typeof window !== 'undefined' ? import("bwip-js/browser") : null;
+
 // bwip-js RenderOptions type (from bwip-js namespace - can't use named import)
 interface RenderOptions {
     bcid: string;
@@ -149,15 +154,6 @@ const SAMPLE_VALUES: Record<string, string> = {
 
 function getSampleValue(type: string): string {
     return SAMPLE_VALUES[type] || "SAMPLE-001";
-}
-
-function loadSettings(): Partial<BarcodeSettings> {
-    try {
-        const data = localStorage.getItem(SETTINGS_KEY);
-        return data ? JSON.parse(data) : {};
-    } catch {
-        return {};
-    }
 }
 
 // Lazy initializer — reads localStorage once at mount for all useState hooks
@@ -1270,48 +1266,52 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (!canvasRef.current) return;
+        if (!canvasRef.current || !bwipjsPromise) return;
         let cancelled = false;
 
-        import("bwip-js/browser").then((module) => {
+        bwipjsPromise.then((module) => {
             if (cancelled || !canvasRef.current) return;
-            const bwipjs = module.default;
-            const renderOpts: RenderOptions = {
-                bcid: item.type,
-                text: item.value,
-                scale: options.scale,
-                includetext: options.displayValue,
-                textxalign: "center",
-                rotate: options.rotation as 'N' | 'R' | 'I' | 'L',
-                paddingwidth: options.margin,
-                paddingheight: options.margin,
-                barcolor: options.barColor.replace("#", ""),
-                backgroundcolor: options.bgColor.replace("#", ""),
-                textcolor: options.textColor.replace("#", ""),
-            };
-            if (!is2DBarcode(item.type)) {
-                renderOpts.height = options.height;
-            }
-            if (options.displayValue) {
-                renderOpts.textfont = options.fontBold ? `Bold ${options.fontFamily}` : options.fontFamily;
-                renderOpts.textsize = options.fontSize;
-            }
-            const typeInfo = findType(item.type);
-            if (typeInfo?.hasEclevel) {
-                renderOpts.eclevel = options.eclevel;
-            }
-            try {
-                bwipjs.toCanvas(canvasRef.current, renderOpts);
-            } catch {
-                try {
-                    const sampleValue = getSampleValue(item.type);
-                    if (canvasRef.current) {
-                        bwipjs.toCanvas(canvasRef.current, { ...renderOpts, text: sampleValue });
-                    }
-                } catch {
-                    // Silent fail
+            // Yield to browser — toCanvas runs in a separate macrotask to avoid long tasks
+            setTimeout(() => {
+                if (cancelled || !canvasRef.current) return;
+                const bwipjs = module.default;
+                const renderOpts: RenderOptions = {
+                    bcid: item.type,
+                    text: item.value,
+                    scale: options.scale,
+                    includetext: options.displayValue,
+                    textxalign: "center",
+                    rotate: options.rotation as 'N' | 'R' | 'I' | 'L',
+                    paddingwidth: options.margin,
+                    paddingheight: options.margin,
+                    barcolor: options.barColor.replace("#", ""),
+                    backgroundcolor: options.bgColor.replace("#", ""),
+                    textcolor: options.textColor.replace("#", ""),
+                };
+                if (!is2DBarcode(item.type)) {
+                    renderOpts.height = options.height;
                 }
-            }
+                if (options.displayValue) {
+                    renderOpts.textfont = options.fontBold ? `Bold ${options.fontFamily}` : options.fontFamily;
+                    renderOpts.textsize = options.fontSize;
+                }
+                const typeInfo = findType(item.type);
+                if (typeInfo?.hasEclevel) {
+                    renderOpts.eclevel = options.eclevel;
+                }
+                try {
+                    bwipjs.toCanvas(canvasRef.current!, renderOpts);
+                } catch {
+                    try {
+                        const sampleValue = getSampleValue(item.type);
+                        if (canvasRef.current) {
+                            bwipjs.toCanvas(canvasRef.current, { ...renderOpts, text: sampleValue });
+                        }
+                    } catch {
+                        // Silent fail
+                    }
+                }
+            }, 0);
         });
 
         return () => { cancelled = true; };
