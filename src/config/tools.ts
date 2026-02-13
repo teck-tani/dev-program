@@ -4,15 +4,16 @@ import {
     FaUserClock, FaStopwatch, FaHourglassHalf, FaCode,
     FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette,
     FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase,
-    FaTerminal, FaYoutube, FaGlobe, FaQrcode, FaTools, FaBell,
+    FaTerminal, FaYoutube, FaGlobe, FaQrcode, FaBell,
     FaServer, FaCalendarAlt, FaSearch, FaWeight, FaFileInvoiceDollar, FaLock,
     FaHandHoldingUsd, FaHome, FaFingerprint, FaShieldAlt, FaHistory, FaKey,
     FaTag, FaIdCard, FaBriefcase, FaChartLine,
-    FaHashtag, FaAlignLeft, FaFileCode, FaCube, FaHeart, FaCalendarCheck
+    FaHashtag, FaAlignLeft, FaFileCode, FaCube, FaHeart, FaCalendarCheck,
+    FaExpand, FaFileImage, FaIcons
 } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
-export type CategoryKey = 'calculators' | 'time' | 'utilities' | 'devtools';
+export type CategoryKey = 'calculators' | 'time' | 'image' | 'text' | 'life' | 'devtools';
 
 export interface ToolDef {
     href: string;
@@ -55,30 +56,37 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/server-time', labelKey: 'serverTime', icon: FaServer, category: 'time' },
     { href: '/dday-counter', labelKey: 'ddayCounter', icon: FaCalendarAlt, category: 'time' },
 
-    // 유틸리티 (17)
-    { href: '/barcode', labelKey: 'barcode', icon: FaBarcode, category: 'utilities' },
-    { href: '/qr-generator', labelKey: 'qrGenerator', icon: FaQrcode, category: 'utilities' },
-    { href: '/special-characters', labelKey: 'emoji', icon: FaSmile, category: 'utilities' },
-    { href: '/lotto-generator', labelKey: 'lotto', icon: FaDice, category: 'utilities' },
-    { href: '/character-counter', labelKey: 'characterCounter', icon: FaFont, category: 'utilities' },
-    { href: '/unit-converter', labelKey: 'unitConverter', icon: FaRuler, category: 'utilities' },
-    { href: '/file-size-converter', labelKey: 'fileSizeConverter', icon: FaHdd, category: 'utilities' },
-    { href: '/image-compressor', labelKey: 'imageCompressor', icon: FaCompress, category: 'utilities' },
-    { href: '/base64-encoder', labelKey: 'base64', icon: FaCode, category: 'utilities' },
-    { href: '/color-converter', labelKey: 'colorConverter', icon: FaPalette, category: 'utilities' },
-    { href: '/json-formatter', labelKey: 'jsonFormatter', icon: FaCode, category: 'utilities' },
-    { href: '/pdf-manager', labelKey: 'pdfManager', icon: FaFilePdf, category: 'utilities' },
-    { href: '/url-encoder', labelKey: 'urlEncoder', icon: FaLink, category: 'utilities' },
-    { href: '/text-diff', labelKey: 'textDiff', icon: FaColumns, category: 'utilities' },
-    { href: '/ladder-game', labelKey: 'ladderGame', icon: FaRandom, category: 'utilities' },
-    { href: '/youtube-thumbnail', labelKey: 'youtubeThumbnail', icon: FaYoutube, category: 'utilities' },
-    { href: '/ip-address', labelKey: 'ipAddress', icon: FaGlobe, category: 'utilities' },
-    { href: '/password-generator', labelKey: 'passwordGenerator', icon: FaLock, category: 'utilities' },
-    { href: '/random-generator', labelKey: 'randomGenerator', icon: FaCube, category: 'utilities' },
-    { href: '/compatibility-checker', labelKey: 'compatibilityChecker', icon: FaHeart, category: 'utilities' },
-    { href: '/business-day-calculator', labelKey: 'businessDayCalculator', icon: FaCalendarCheck, category: 'utilities' },
+    // 이미지/미디어 (7)
+    { href: '/barcode', labelKey: 'barcode', icon: FaBarcode, category: 'image' },
+    { href: '/qr-generator', labelKey: 'qrGenerator', icon: FaQrcode, category: 'image' },
+    { href: '/image-compressor', labelKey: 'imageCompressor', icon: FaCompress, category: 'image' },
+    { href: '/image-resize', labelKey: 'imageResize', icon: FaExpand, category: 'image' },
+    { href: '/image-converter', labelKey: 'imageConverter', icon: FaFileImage, category: 'image' },
+    { href: '/favicon-generator', labelKey: 'faviconGenerator', icon: FaIcons, category: 'image' },
+    { href: '/youtube-thumbnail', labelKey: 'youtubeThumbnail', icon: FaYoutube, category: 'image' },
 
-    // 개발 도구 (5)
+    // 텍스트/변환 (8)
+    { href: '/special-characters', labelKey: 'emoji', icon: FaSmile, category: 'text' },
+    { href: '/character-counter', labelKey: 'characterCounter', icon: FaFont, category: 'text' },
+    { href: '/unit-converter', labelKey: 'unitConverter', icon: FaRuler, category: 'text' },
+    { href: '/file-size-converter', labelKey: 'fileSizeConverter', icon: FaHdd, category: 'text' },
+    { href: '/color-converter', labelKey: 'colorConverter', icon: FaPalette, category: 'text' },
+    { href: '/text-diff', labelKey: 'textDiff', icon: FaColumns, category: 'text' },
+    { href: '/pdf-manager', labelKey: 'pdfManager', icon: FaFilePdf, category: 'text' },
+    { href: '/business-day-calculator', labelKey: 'businessDayCalculator', icon: FaCalendarCheck, category: 'text' },
+
+    // 생활/재미 (6)
+    { href: '/lotto-generator', labelKey: 'lotto', icon: FaDice, category: 'life' },
+    { href: '/ladder-game', labelKey: 'ladderGame', icon: FaRandom, category: 'life' },
+    { href: '/compatibility-checker', labelKey: 'compatibilityChecker', icon: FaHeart, category: 'life' },
+    { href: '/random-generator', labelKey: 'randomGenerator', icon: FaCube, category: 'life' },
+    { href: '/password-generator', labelKey: 'passwordGenerator', icon: FaLock, category: 'life' },
+    { href: '/ip-address', labelKey: 'ipAddress', icon: FaGlobe, category: 'life' },
+
+    // 개발 도구 (13)
+    { href: '/base64-encoder', labelKey: 'base64', icon: FaCode, category: 'devtools' },
+    { href: '/json-formatter', labelKey: 'jsonFormatter', icon: FaCode, category: 'devtools' },
+    { href: '/url-encoder', labelKey: 'urlEncoder', icon: FaLink, category: 'devtools' },
     { href: '/sql-formatter', labelKey: 'sqlFormatter', icon: FaDatabase, category: 'devtools' },
     { href: '/cron-generator', labelKey: 'cronGenerator', icon: FaTerminal, category: 'devtools' },
     { href: '/regex-tester', labelKey: 'regexTester', icon: FaSearch, category: 'devtools' },
@@ -94,7 +102,9 @@ export const ALL_TOOLS: ToolDef[] = [
 export const CATEGORIES: CategoryDef[] = [
     { key: 'calculators', icon: FaCalculator },
     { key: 'time', icon: FaClock },
-    { key: 'utilities', icon: FaTools },
+    { key: 'image', icon: FaFileImage },
+    { key: 'text', icon: FaFont },
+    { key: 'life', icon: FaDice },
     { key: 'devtools', icon: FaCode },
 ];
 

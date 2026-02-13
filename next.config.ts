@@ -10,10 +10,11 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
   },
-  // React Icons 등 무거운 라이브러리의 임포트 최적화
+  // 무거운 라이브러리의 배럴 파일 임포트 최적화
   experimental: {
-    optimizePackageImports: ['react-icons'],
+    optimizePackageImports: ['react-icons', 'mathjs', 'recharts'],
   },
+  poweredByHeader: false,
   compress: true,
   redirects: async () => [
     {

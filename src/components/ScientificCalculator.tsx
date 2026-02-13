@@ -1,20 +1,23 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { create, all } from 'mathjs';
+import { create, all } from 'mathjs/number';
 import { LuHistory, LuDelete, LuTrash2, LuX, LuCopy, LuCheck, LuInfo } from 'react-icons/lu';
 import { useTheme } from '@/contexts/ThemeContext';
 
-// Initialize mathjs
-const config = { };
-const math = create(all, config);
-
-// Custom degree-output inverse trig functions
-math.import({
-  asind: (x: number) => Math.asin(x) * (180 / Math.PI),
-  acosd: (x: number) => Math.acos(x) * (180 / Math.PI),
-  atand: (x: number) => Math.atan(x) * (180 / Math.PI),
-}, { override: true });
+// Lazy mathjs initialization - defers heavy setup until first calculation
+let _math: ReturnType<typeof create> | null = null;
+function getMath() {
+  if (!_math) {
+    _math = create(all, {});
+    _math.import({
+      asind: (x: number) => Math.asin(x) * (180 / Math.PI),
+      acosd: (x: number) => Math.acos(x) * (180 / Math.PI),
+      atand: (x: number) => Math.atan(x) * (180 / Math.PI),
+    }, { override: true });
+  }
+  return _math;
+}
 
 interface HistoryItem {
   expression: string;
@@ -46,7 +49,7 @@ const detectError = (expression: string, lastResult: string): string => {
       .replace(/×/g, '*').replace(/÷/g, '/').replace(/π/g, 'pi').replace(/√\(/g, 'sqrt(')
       .replace(/nPr\(/g, 'permutations(').replace(/nCr\(/g, 'combinations(')
       .replace(/Ans/g, `(${lastResult})`);
-    const res = math.evaluate(expr);
+    const res = getMath().evaluate(expr);
     if (typeof res === 'number' && !isFinite(res)) return 'Divide by 0';
   } catch (e: unknown) {
     const msg = (e as Error)?.message || '';
@@ -88,6 +91,68 @@ const tooltips: Record<string, string> = {
   'M+': 'Add to memory', 'M\u2212': 'Subtract from memory',
   'Rand': 'Random (0~1)',
 };
+
+// Module-level vibrate (no state dependency)
+const vibrate = () => { if (navigator.vibrate) navigator.vibrate(10); };
+
+// Button styles as module-level constants (avoids recreation on every render)
+const DARK_BASE = "h-12 sm:h-14 rounded-xl font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none cursor-pointer";
+const LIGHT_BASE = "h-12 sm:h-14 rounded-lg font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none shadow-sm cursor-pointer";
+const DARK_STYLES: Record<string, string> = {
+  default: "bg-white/[0.08] text-gray-100 font-bold backdrop-blur-sm border border-white/[0.06] hover:bg-white/[0.14] hover:border-white/10 shadow-lg shadow-black/20",
+  number: "bg-white/[0.08] text-gray-100 font-bold backdrop-blur-sm border border-white/[0.06] hover:bg-white/[0.14] hover:border-white/10 shadow-lg shadow-black/20",
+  operator: "bg-indigo-500/20 text-indigo-300 border border-indigo-400/20 hover:bg-indigo-500/30 hover:border-indigo-400/30 font-semibold shadow-lg shadow-indigo-900/20",
+  function: "bg-white/[0.05] text-gray-300 border border-white/[0.05] hover:bg-white/[0.10] hover:border-white/[0.08] text-base font-medium",
+  action: "bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:from-blue-400 hover:to-blue-500 shadow-lg shadow-blue-500/30 border border-blue-400/30",
+  warning: "bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 border border-rose-400/20 hover:border-rose-400/30",
+  hyp: "bg-gradient-to-br from-violet-500 to-indigo-600 text-white hover:from-violet-400 hover:to-indigo-500 shadow-lg shadow-violet-500/30 border border-violet-400/30",
+  memory: "bg-emerald-500/15 text-emerald-300 border border-emerald-400/20 hover:bg-emerald-500/25 hover:border-emerald-400/30 text-sm font-semibold",
+};
+const LIGHT_STYLES: Record<string, string> = {
+  default: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
+  number: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
+  operator: "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 font-semibold",
+  function: "bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 text-base font-medium",
+  action: "bg-blue-600 text-white hover:bg-blue-700 shadow-md border-transparent",
+  warning: "bg-red-50 text-red-700 hover:bg-red-100 border border-red-300",
+  hyp: "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md border-transparent",
+  memory: "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 text-sm font-semibold",
+};
+
+// Button at module level for stable React reconciliation
+// (When defined inside a component, React treats it as a new type each render → 45 unmount/remount)
+const Button = ({ label, onClick, className = "", styleType = "default", ariaLabel = "", tooltip = "" }: {
+  label: React.ReactNode; onClick: () => void; className?: string; styleType?: string; ariaLabel?: string; tooltip?: string;
+}) => {
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
+  const handleClick = () => { vibrate(); onClick(); };
+  const baseStyle = dark ? DARK_BASE : LIGHT_BASE;
+  const styles = dark ? DARK_STYLES : LIGHT_STYLES;
+  const appliedStyle = styles[styleType] || styles.default;
+  const tooltipText = tooltip || (typeof label === 'string' ? tooltips[label] : undefined);
+  return (
+    <button onClick={handleClick} className={`${baseStyle} ${appliedStyle} ${className}`}
+      aria-label={ariaLabel || (typeof label === 'string' ? label : undefined)}
+      title={tooltipText} type="button">
+      {label}
+    </button>
+  );
+};
+
+// Keyboard shortcuts data (static)
+const shortcuts = [
+  { key: '0 – 9', desc: 'Numbers' },
+  { key: '+ − * /', desc: 'Operators' },
+  { key: '( )', desc: 'Parentheses' },
+  { key: '.', desc: 'Decimal' },
+  { key: '^', desc: 'Power (xʸ)' },
+  { key: '!', desc: 'Factorial' },
+  { key: '%', desc: 'Percent' },
+  { key: 'Enter / =', desc: 'Calculate' },
+  { key: 'Backspace', desc: 'Delete last' },
+  { key: 'Escape', desc: 'Clear all (AC)' },
+];
 
 const ScientificCalculator = () => {
   const { theme } = useTheme();
@@ -219,20 +284,20 @@ const ScientificCalculator = () => {
                    .replace(/acos\(/g, 'acosd(')
                    .replace(/atan\(/g, 'atand(');
 
-        // Forward trig → degree input (lookbehind avoids asind/sinh etc.)
+        // Forward trig → degree input (multiply by pi/180 instead of using deg unit)
         ['sin', 'cos', 'tan'].forEach(func => {
           const regex = new RegExp(`(?<![a-zA-Z])${func}\\(([0-9.]+)`, 'g');
-          expr = expr.replace(regex, `${func}($1 deg`);
+          expr = expr.replace(regex, `${func}($1*(pi/180)`);
         });
       }
 
-      const res = math.evaluate(expr);
+      const res = getMath().evaluate(expr);
       if (typeof res === 'number') {
         if (!isFinite(res)) return null;
-        return math.format(res, { precision: 14, notation: 'auto', upperExp: 15, lowerExp: -15 });
+        return getMath().format(res, { precision: 14, notation: 'auto', upperExp: 15, lowerExp: -15 });
       }
       if (typeof res === 'object') {
-        return math.format(res, { precision: 14, notation: 'auto', upperExp: 15, lowerExp: -15 });
+        return getMath().format(res, { precision: 14, notation: 'auto', upperExp: 15, lowerExp: -15 });
       }
       return String(res);
     } catch {
@@ -354,60 +419,6 @@ const ScientificCalculator = () => {
     const rand = parseFloat(Math.random().toFixed(10)).toString();
     addToDisplay(rand);
   };
-
-  const vibrate = () => { if (navigator.vibrate) navigator.vibrate(10); };
-
-  // Button component with tooltip support
-  const Button = ({ label, onClick, className = "", styleType = "default", ariaLabel = "", tooltip = "" }: {
-    label: React.ReactNode; onClick: () => void; className?: string; styleType?: string; ariaLabel?: string; tooltip?: string;
-  }) => {
-    const handleClick = () => { vibrate(); onClick(); };
-    const baseStyle = dark
-      ? "h-12 sm:h-14 rounded-xl font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none cursor-pointer"
-      : "h-12 sm:h-14 rounded-lg font-medium text-lg transition-all duration-200 active:scale-95 flex items-center justify-center select-none shadow-sm cursor-pointer";
-    const styles: Record<string, string> = dark ? {
-      default: "bg-white/[0.08] text-gray-100 font-bold backdrop-blur-sm border border-white/[0.06] hover:bg-white/[0.14] hover:border-white/10 shadow-lg shadow-black/20",
-      number: "bg-white/[0.08] text-gray-100 font-bold backdrop-blur-sm border border-white/[0.06] hover:bg-white/[0.14] hover:border-white/10 shadow-lg shadow-black/20",
-      operator: "bg-indigo-500/20 text-indigo-300 border border-indigo-400/20 hover:bg-indigo-500/30 hover:border-indigo-400/30 font-semibold shadow-lg shadow-indigo-900/20",
-      function: "bg-white/[0.05] text-gray-300 border border-white/[0.05] hover:bg-white/[0.10] hover:border-white/[0.08] text-base font-medium",
-      action: "bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:from-blue-400 hover:to-blue-500 shadow-lg shadow-blue-500/30 border border-blue-400/30",
-      warning: "bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 border border-rose-400/20 hover:border-rose-400/30",
-      hyp: "bg-gradient-to-br from-violet-500 to-indigo-600 text-white hover:from-violet-400 hover:to-indigo-500 shadow-lg shadow-violet-500/30 border border-violet-400/30",
-      memory: "bg-emerald-500/15 text-emerald-300 border border-emerald-400/20 hover:bg-emerald-500/25 hover:border-emerald-400/30 text-sm font-semibold",
-    } : {
-      default: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
-      number: "bg-white text-gray-900 font-bold border border-gray-300 hover:bg-gray-50",
-      operator: "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 font-semibold",
-      function: "bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 text-base font-medium",
-      action: "bg-blue-600 text-white hover:bg-blue-700 shadow-md border-transparent",
-      warning: "bg-red-50 text-red-700 hover:bg-red-100 border border-red-300",
-      hyp: "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md border-transparent",
-      memory: "bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 text-sm font-semibold",
-    };
-    const appliedStyle = styles[styleType] || styles.default;
-    const tooltipText = tooltip || (typeof label === 'string' ? tooltips[label] : undefined);
-    return (
-      <button onClick={handleClick} className={`${baseStyle} ${appliedStyle} ${className}`}
-        aria-label={ariaLabel || (typeof label === 'string' ? label : undefined)}
-        title={tooltipText} type="button">
-        {label}
-      </button>
-    );
-  };
-
-  // Keyboard shortcuts data
-  const shortcuts = [
-    { key: '0 – 9', desc: 'Numbers' },
-    { key: '+ − * /', desc: 'Operators' },
-    { key: '( )', desc: 'Parentheses' },
-    { key: '.', desc: 'Decimal' },
-    { key: '^', desc: 'Power (xʸ)' },
-    { key: '!', desc: 'Factorial' },
-    { key: '%', desc: 'Percent' },
-    { key: 'Enter / =', desc: 'Calculate' },
-    { key: 'Backspace', desc: 'Delete last' },
-    { key: 'Escape', desc: 'Clear all (AC)' },
-  ];
 
   return (
     <div className="w-full max-w-lg mx-auto p-4">

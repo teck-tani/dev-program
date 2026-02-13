@@ -123,6 +123,29 @@ const DEFAULT_SETTINGS: BarcodeSettings = {
     dpi: 150,
 };
 
+// Sample values per barcode type (used for preview when no user input)
+const SAMPLE_VALUES: Record<string, string> = {
+    code128: "ABC-001", code93: "CODE93-A", code39: "CODE39-01",
+    ean13: "4006381333931", ean8: "96385074",
+    upca: "012345678905", upce: "0123456",
+    interleaved2of5: "1234567890", itf14: "14901234567891",
+    "gs1-128": "(01)95012345678903",
+    rationalizedCodabar: "A12345B", msi: "123456",
+    pharmacode: "12345", isbn: "978-3-16-148410-0",
+    issn: "0378-5955", ismn: "979-0-060-11561-5",
+    qrcode: "https://example.com", datamatrix: "DM-DATA-001",
+    pdf417: "PDF417-DATA-001", azteccode: "AZTEC-001", microqrcode: "MQR-01",
+    databaromni: "(01)00012345678905", databarlimited: "(01)00012345678905",
+    databarexpanded: "(01)95012345678903", databarstacked: "(01)00012345678905",
+    postnet: "12345", onecode: "00040123456200800001987654321",
+    royalmail: "LE11AA1A", japanpost: "1530041",
+    auspost: "59564391113", kix: "1234AA",
+};
+
+function getSampleValue(type: string): string {
+    return SAMPLE_VALUES[type] || "SAMPLE-001";
+}
+
 function loadSettings(): Partial<BarcodeSettings> {
     try {
         const data = localStorage.getItem(SETTINGS_KEY);
@@ -161,7 +184,7 @@ export default function BarcodeGenerator() {
     const isMobile = useIsMobile();
 
     // ── Core State ──
-    const SAMPLE_BARCODE: BarcodeItem = { id: "sample", value: "SAMPLE-001", type: "code128" };
+    const SAMPLE_BARCODE: BarcodeItem = { id: "sample", value: getSampleValue("code128"), type: "code128" };
     const [barcodes, setBarcodes] = useState<BarcodeItem[]>([SAMPLE_BARCODE]);
     const [barcodeCategory, setBarcodeCategory] = useState(DEFAULT_SETTINGS.barcodeCategory);
     const [barcodeType, setBarcodeType] = useState(DEFAULT_SETTINGS.barcodeType);
@@ -239,7 +262,7 @@ export default function BarcodeGenerator() {
         } catch { /* ignore */ }
         // No saved barcodes — create sample with loaded type
         if (loadedType !== DEFAULT_SETTINGS.barcodeType) {
-            setBarcodes([{ id: "sample", value: "SAMPLE-001", type: loadedType }]);
+            setBarcodes([{ id: "sample", value: getSampleValue(loadedType), type: loadedType }]);
         }
     }, []);
 
@@ -281,7 +304,7 @@ export default function BarcodeGenerator() {
         setEclevel(DEFAULT_SETTINGS.eclevel);
         setDpi(DEFAULT_SETTINGS.dpi);
         if (isSimple) {
-            setBarcodes([{ id: "sample", value: "SAMPLE-001", type: DEFAULT_SETTINGS.barcodeType }]);
+            setBarcodes([{ id: "sample", value: getSampleValue(DEFAULT_SETTINGS.barcodeType), type: DEFAULT_SETTINGS.barcodeType }]);
         }
         setBarcodeValue("");
         setExcelData("");
@@ -341,33 +364,33 @@ export default function BarcodeGenerator() {
             code128: ["ABC-001", "ABC-002", "ABC-003"],
             code93: ["CODE93-A", "CODE93-B", "CODE93-C"],
             code39: ["CODE39-01", "CODE39-02", "CODE39-03"],
-            ean13: ["4901234567890", "4901234567906", "4901234567913"],
-            ean8: ["49012345", "49012352", "49012369"],
+            ean13: ["4006381333931", "8801234567893", "5901234123457"],
+            ean8: ["96385074", "55123457", "12345670"],
             upca: ["012345678905", "012345678912", "012345678929"],
             upce: ["0123456", "0123463", "0123470"],
             interleaved2of5: ["1234567890", "1234567906", "1234567913"],
             itf14: ["14901234567891", "14901234567907", "14901234567914"],
-            "gs1-128": ["(01)04901234567890", "(01)04901234567906", "(01)04901234567913"],
+            "gs1-128": ["(01)95012345678903", "(01)00012345678905", "(01)10012345678902"],
             rationalizedCodabar: ["A12345B", "A67890C", "A11111D"],
             msi: ["123456", "789012", "345678"],
             pharmacode: ["12345", "67890", "131070"],
-            isbn: ["9781234567890", "9781234567906", "9781234567913"],
-            issn: ["12345679", "98765432", "11223344"],
-            ismn: ["9790000000001", "9790000000002", "9790000000003"],
+            isbn: ["978-3-16-148410-0", "978-0-13-468599-1", "978-1-56619-909-4"],
+            issn: ["0378-5955", "0317-8471", "0028-0836"],
+            ismn: ["979-0-060-11561-5", "979-0-2600-0043-8", "979-0-9016791-7-7"],
             qrcode: ["https://example.com/1", "https://example.com/2", "https://example.com/3"],
             datamatrix: ["DM-DATA-001", "DM-DATA-002", "DM-DATA-003"],
             pdf417: ["PDF417-DATA-001", "PDF417-DATA-002", "PDF417-DATA-003"],
             azteccode: ["AZTEC-001", "AZTEC-002", "AZTEC-003"],
             microqrcode: ["MQR-01", "MQR-02", "MQR-03"],
-            databaromni: ["0123456789012", "0123456789029", "0123456789036"],
-            databarlimited: ["0123456789012", "0123456789029", "0123456789036"],
-            databarexpanded: ["(01)04901234567890", "(01)04901234567906", "(01)04901234567913"],
-            databarstacked: ["0123456789012", "0123456789029", "0123456789036"],
-            postnet: ["12345", "12345-6789", "98765-4321"],
+            databaromni: ["(01)00012345678905", "(01)95012345678903", "(01)10012345678902"],
+            databarlimited: ["(01)00012345678905", "(01)01012345678904", "(01)10012345678902"],
+            databarexpanded: ["(01)95012345678903", "(01)00012345678905", "(01)10012345678902"],
+            databarstacked: ["(01)00012345678905", "(01)95012345678903", "(01)10012345678902"],
+            postnet: ["12345", "123456789", "98765432109"],
             onecode: ["00040123456200800001987654321", "00040123456200800001987654322", "00040123456200800001987654323"],
             royalmail: ["LE11AA1A", "LE11AA1B", "LE11AA1C"],
             japanpost: ["1530041", "1530042", "1530043"],
-            auspost: ["12345678", "12345679", "12345680"],
+            auspost: ["59564391113", "59564391120", "59564391137"],
             kix: ["1234AA", "5678BB", "9012CC"],
         };
         return (samples[barcodeType] || ["SAMPLE-001", "SAMPLE-002", "SAMPLE-003"]).join("\n");
@@ -429,26 +452,20 @@ export default function BarcodeGenerator() {
         const firstType = BARCODE_CATEGORIES.find(c => c.key === cat)?.types[0];
         if (firstType) {
             setBarcodeType(firstType.bcid);
+            setBarcodeValue("");
+            setError("");
             if (isSimple) {
-                setBarcodeValue("");
-                setBarcodes([{ id: "sample", value: "SAMPLE-001", type: firstType.bcid }]);
+                setBarcodes([{ id: "sample", value: getSampleValue(firstType.bcid), type: firstType.bcid }]);
             }
         }
-        setError("");
     };
 
     const handleTypeChange = (newType: string) => {
         setBarcodeType(newType);
+        setBarcodeValue("");
         setError("");
         if (isSimple) {
-            if (barcodeValue) {
-                const err = validateBarcodeValue(barcodeValue, newType);
-                if (!err) {
-                    setBarcodes([{ id: crypto.randomUUID(), value: barcodeValue, type: newType }]);
-                }
-            } else {
-                setBarcodes([{ id: "sample", value: "SAMPLE-001", type: newType }]);
-            }
+            setBarcodes([{ id: "sample", value: getSampleValue(newType), type: newType }]);
         }
     };
 
@@ -457,12 +474,11 @@ export default function BarcodeGenerator() {
         setBarcodeValue(val);
         setError("");
         if (isSimple) {
-            if (!val) { setBarcodes([{ id: "sample", value: "SAMPLE-001", type: barcodeType }]); }
-            else {
-                const err = validateBarcodeValue(val, barcodeType);
-                if (!err) {
-                    setBarcodes([{ id: crypto.randomUUID(), value: val, type: barcodeType }]);
-                }
+            if (!val) {
+                setBarcodes([{ id: "sample", value: getSampleValue(barcodeType), type: barcodeType }]);
+            } else {
+                // Always try user's value — BarcodeItemComponent will fallback to sample if bwip-js fails
+                setBarcodes([{ id: crypto.randomUUID(), value: val, type: barcodeType }]);
             }
         }
     };
@@ -797,7 +813,7 @@ export default function BarcodeGenerator() {
                 <div className={styles.tabBar}>
                     <button
                         className={`${styles.tabBtn} ${activeTab === "simple" ? styles.tabActive : ""}`}
-                        onClick={() => { setActiveTab("simple"); setBarcodes([{ id: "sample", value: "SAMPLE-001", type: barcodeType }]); setBarcodeValue(""); setError(""); }}
+                        onClick={() => { setActiveTab("simple"); setBarcodes([{ id: "sample", value: getSampleValue(barcodeType), type: barcodeType }]); setBarcodeValue(""); setError(""); }}
                     >
                         {t("tabSimple")}
                     </button>
@@ -836,6 +852,7 @@ export default function BarcodeGenerator() {
                     {barcodes.length > 0 ? (
                         <>
                             <BarcodeItemComponent
+                                key={barcodes[0].id}
                                 item={barcodes[0]} index={0} options={barcodeOptions}
                                 onRemove={() => {}} onDragStart={() => {}} onDragOver={() => {}} onDrop={() => {}}
                                 isMobile={true} t={t}
@@ -888,7 +905,7 @@ export default function BarcodeGenerator() {
                 {isSimple && (
                     <div className={styles.inputGroup}>
                         <input id="barcodeValue" value={barcodeValue} onChange={handleValueChange}
-                            placeholder="SAMPLE-001" />
+                            placeholder={getSampleValue(barcodeType)} />
                     </div>
                 )}
 
@@ -1236,43 +1253,48 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
     isMobile, onDownloadPNG, onDownloadSVG, onEmbed, t,
 }: BarcodeItemProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [renderError, setRenderError] = useState("");
 
     useEffect(() => {
         if (!canvasRef.current) return;
-        setRenderError("");
-
         import("bwip-js/browser").then((module) => {
             const bwipjs = module.default;
             if (!canvasRef.current) return;
+            const renderOpts: RenderOptions = {
+                bcid: item.type,
+                text: item.value,
+                scale: options.scale,
+                includetext: options.displayValue,
+                textxalign: "center",
+                rotate: options.rotation as 'N' | 'R' | 'I' | 'L',
+                paddingwidth: options.margin,
+                paddingheight: options.margin,
+                barcolor: options.barColor.replace("#", ""),
+                backgroundcolor: options.bgColor.replace("#", ""),
+                textcolor: options.textColor.replace("#", ""),
+            };
+            if (!is2DBarcode(item.type)) {
+                renderOpts.height = options.height;
+            }
+            if (options.displayValue) {
+                renderOpts.textfont = options.fontBold ? `Bold ${options.fontFamily}` : options.fontFamily;
+                renderOpts.textsize = options.fontSize;
+            }
+            const typeInfo = findType(item.type);
+            if (typeInfo?.hasEclevel) {
+                renderOpts.eclevel = options.eclevel;
+            }
             try {
-                const renderOpts: RenderOptions = {
-                    bcid: item.type,
-                    text: item.value,
-                    scale: options.scale,
-                    includetext: options.displayValue,
-                    textxalign: "center",
-                    rotate: options.rotation as 'N' | 'R' | 'I' | 'L',
-                    paddingwidth: options.margin,
-                    paddingheight: options.margin,
-                    barcolor: options.barColor.replace("#", ""),
-                    backgroundcolor: options.bgColor.replace("#", ""),
-                    textcolor: options.textColor.replace("#", ""),
-                };
-                if (!is2DBarcode(item.type)) {
-                    renderOpts.height = options.height;
-                }
-                if (options.displayValue) {
-                    renderOpts.textfont = options.fontBold ? `Bold ${options.fontFamily}` : options.fontFamily;
-                    renderOpts.textsize = options.fontSize;
-                }
-                const typeInfo = findType(item.type);
-                if (typeInfo?.hasEclevel) {
-                    renderOpts.eclevel = options.eclevel;
-                }
                 bwipjs.toCanvas(canvasRef.current, renderOpts);
-            } catch (e) {
-                setRenderError(String(e));
+            } catch (renderErr) {
+                // Fallback: render sample value silently
+                try {
+                    const sampleValue = getSampleValue(item.type);
+                    if (canvasRef.current) {
+                        bwipjs.toCanvas(canvasRef.current, { ...renderOpts, text: sampleValue });
+                    }
+                } catch {
+                    // Silent fail — don't show error to user
+                }
             }
         });
     }, [item, options]);
@@ -1289,11 +1311,7 @@ const BarcodeItemComponent = memo(function BarcodeItemComponent({
             {!isMobile && (
                 <button className={styles.removeBarcode} onClick={() => onRemove(index)} aria-label={t("remove")} />
             )}
-            {renderError ? (
-                <div className={styles.renderError}>{renderError}</div>
-            ) : (
-                <canvas ref={canvasRef} />
-            )}
+            <canvas ref={canvasRef} />
             {!isMobile && (onDownloadPNG || onDownloadSVG || onEmbed) && (
                 <div className={styles.itemActions}>
                     {onDownloadPNG && (

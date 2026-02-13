@@ -66,7 +66,10 @@
       "cssMinifier": "CSS Minifier",
       "randomGenerator": "Random Generator",
       "compatibilityChecker": "Compatibility Checker",
-      "businessDayCalculator": "Business Day Calculator"
+      "businessDayCalculator": "Business Day Calculator",
+      "imageResize": "Image Resize",
+      "imageConverter": "Image Converter",
+      "faviconGenerator": "Favicon Generator"
     }
   },
   "Header": {
@@ -74,7 +77,9 @@
     "categories": {
       "calculators": "Calculators",
       "time": "Clock",
-      "utilities": "Utilities",
+      "image": "Image/Media",
+      "text": "Text/Convert",
+      "life": "Life/Fun",
       "devtools": "Dev Tools"
     },
     "settings": {
@@ -294,6 +299,7 @@
       "errorInvalid": "Invalid barcode value",
       "errorExcelEmpty": "Please enter Excel data",
       "errorCodabar": "Codabar must start/end with A-D and contain digits, -$:/.+",
+      "errorTypeChanged": "Input value was reset because it is not compatible with the selected barcode type",
       "resultBulk": "{count} barcodes generated",
       "resultBulkError": "{count} generated, {error} errors",
       "remove": "Remove Barcode",
@@ -7913,6 +7919,374 @@
       "privacy": {
         "title": "Privacy Notice",
         "text": "This compatibility checker processes all calculations in your browser. Birth dates, MBTI information, and other inputs are never sent to any server, and no personal data is collected or stored."
+      }
+    }
+  },
+  "ImageResize": {
+    "meta": {
+      "title": "Image Resize | Resize Photos Online - Free Tool",
+      "description": "Resize images freely by pixels or percentage. Aspect ratio lock, preview support. Processed in your browser without server upload.",
+      "keywords": "image resize,photo resize,resize image online,change image size,free image resizer,bulk resize",
+      "ogTitle": "Image Resize - Free Online Photo Resizer",
+      "ogDescription": "Resize images by pixel or percentage. Aspect ratio lock, multi-file batch processing."
+    },
+    "upload": {
+      "title": "Drag & drop or click to upload images",
+      "subtitle": "Supports JPG, PNG, WebP, GIF"
+    },
+    "settings": {
+      "title": "Resize Settings",
+      "mode": "Resize Mode",
+      "modePixel": "By Pixels",
+      "modePercent": "By Percentage",
+      "width": "Width (px)",
+      "height": "Height (px)",
+      "percent": "Scale (%)",
+      "lockRatio": "Lock Aspect Ratio",
+      "format": "Output Format",
+      "formatOriginal": "Keep Original",
+      "formatJpeg": "JPEG",
+      "formatPng": "PNG",
+      "formatWebp": "WebP"
+    },
+    "buttons": {
+      "resize": "Resize",
+      "resizing": "Processing...",
+      "download": "Download",
+      "downloadAll": "Download All",
+      "clearAll": "Clear All"
+    },
+    "summary": {
+      "images": "Images",
+      "original": "Original Size",
+      "resized": "Resized",
+      "dimensions": "Dimensions"
+    },
+    "list": {
+      "resizing": "Resizing...",
+      "error": "Error",
+      "download": "Save",
+      "originalSize": "Original",
+      "resizedSize": "Resized"
+    },
+    "info": {
+      "title": "Image Resize Info",
+      "privacy": {
+        "title": "Privacy Protected",
+        "desc": "All images are processed in your browser and never sent to any server."
+      },
+      "quality": {
+        "title": "High-Quality Resize",
+        "desc": "Uses Canvas API for crisp and clear resize results."
+      },
+      "bulk": {
+        "title": "Batch Processing",
+        "desc": "Upload multiple images and resize them all with the same settings at once."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "Does resizing reduce image quality?",
+        "a": "Downsizing has virtually no quality loss. Upscaling may cause slight quality degradation depending on the scale factor."
+      },
+      "q2": {
+        "q": "What is aspect ratio lock?",
+        "a": "When enabled, entering either width or height will automatically calculate the other dimension to maintain the original proportions."
+      },
+      "q3": {
+        "q": "What file formats are supported?",
+        "a": "JPG, PNG, WebP, GIF and most image formats are supported. You can also change the output format to JPG, PNG, or WebP."
+      },
+      "q4": {
+        "q": "Are images uploaded to any server?",
+        "a": "No, all resizing is performed locally using the browser's Canvas API. Images are never transmitted to any external server."
+      },
+      "q5": {
+        "q": "Can I resize multiple images at once?",
+        "a": "Yes, you can upload multiple images and batch resize them with the same settings simultaneously."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is Image Resize?",
+        "p1": "Image Resize is a free online tool that lets you change the width and height of photos and images. Perfect for web uploads, social media posts, email attachments, and more.",
+        "p2": "All processing happens in your browser — no server uploads needed. Features include aspect ratio lock, percentage scaling, and batch processing."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "Pixel/Percentage Resize", "desc": "Resize images by specifying exact pixel dimensions or a percentage scale." },
+          "feat2": { "title": "Aspect Ratio Lock", "desc": "Maintain original proportions while resizing to prevent image distortion." },
+          "feat3": { "title": "Batch Processing", "desc": "Upload and resize multiple images at once with the same settings." },
+          "feat4": { "title": "Format Conversion", "desc": "Convert to JPG, PNG, or WebP while resizing in one step." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Upload Images</strong> — Drag and drop or click to upload your images.",
+          "step2": "<strong>Set Dimensions</strong> — Enter desired size in pixels or percentage. Use aspect ratio lock for convenience.",
+          "step3": "<strong>Resize</strong> — Click the Resize button to process instantly.",
+          "step4": "<strong>Download</strong> — Save individual images or download all at once."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "Website Image Optimization", "desc": "Resize images to appropriate dimensions for faster page loading." },
+          "uc2": { "title": "Social Media Sizing", "desc": "Convert images to fit Instagram, Facebook, and other platform requirements." },
+          "uc3": { "title": "Email Attachment Size", "desc": "Reduce large images to fit within email attachment limits." },
+          "uc4": { "title": "Profile Photo Resize", "desc": "Precisely resize images to match profile picture specifications." }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This tool processes all images in your browser. Images are never sent to or stored on any server, and no personal data is collected."
+      }
+    }
+  },
+  "ImageConverter": {
+    "meta": {
+      "title": "Image Format Converter | PNG, JPG, WebP - Free Online",
+      "description": "Convert images between PNG, JPG, and WebP formats. Quality adjustment, batch conversion support. Processed in your browser without server upload.",
+      "keywords": "image converter,PNG to JPG,JPG to WebP,image format converter,photo format change,free image converter",
+      "ogTitle": "Image Format Converter - PNG, JPG, WebP Free Conversion",
+      "ogDescription": "Convert images between PNG, JPG, and WebP. Quality control, multi-file batch processing."
+    },
+    "upload": {
+      "title": "Drag & drop or click to upload images",
+      "subtitle": "Supports JPG, PNG, WebP, GIF, BMP and more"
+    },
+    "settings": {
+      "title": "Conversion Settings",
+      "format": "Output Format",
+      "formatJpeg": "JPEG (.jpg)",
+      "formatPng": "PNG (.png)",
+      "formatWebp": "WebP (.webp)",
+      "quality": "Quality",
+      "qualityHint": "PNG is lossless, so quality setting does not apply."
+    },
+    "buttons": {
+      "convert": "Convert",
+      "converting": "Converting...",
+      "download": "Download",
+      "downloadAll": "Download All",
+      "clearAll": "Clear All"
+    },
+    "summary": {
+      "images": "Images",
+      "original": "Original Size",
+      "converted": "Converted",
+      "saved": "Saved"
+    },
+    "list": {
+      "converting": "Converting...",
+      "error": "Error",
+      "download": "Save",
+      "reduced": "reduced"
+    },
+    "warnings": {
+      "transparency": "JPEG format does not support transparency. Transparent areas will be replaced with a white background."
+    },
+    "info": {
+      "title": "Image Format Converter Info",
+      "privacy": {
+        "title": "Privacy Protected",
+        "desc": "All conversions are processed in your browser and never sent to any server."
+      },
+      "quality": {
+        "title": "Quality Control",
+        "desc": "Adjust JPEG and WebP output quality from 1% to 100%."
+      },
+      "bulk": {
+        "title": "Batch Conversion",
+        "desc": "Upload multiple images and convert them all to the same format at once."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "What's the difference between PNG and JPG?",
+        "a": "PNG uses lossless compression with transparency support, ideal for logos/icons. JPG uses lossy compression, ideal for photos with smaller file sizes."
+      },
+      "q2": {
+        "q": "What is WebP?",
+        "a": "WebP is an image format developed by Google that provides 25-35% smaller files than JPG with the same quality. Supported by most modern browsers."
+      },
+      "q3": {
+        "q": "What happens when converting a transparent image to JPG?",
+        "a": "Since JPG doesn't support transparency, transparent areas will be replaced with a white background. Use PNG or WebP if you need transparency."
+      },
+      "q4": {
+        "q": "Does conversion reduce quality?",
+        "a": "PNG is lossless with no quality loss. For JPG/WebP, quality above 80% is virtually indistinguishable from the original."
+      },
+      "q5": {
+        "q": "Are images uploaded to any server?",
+        "a": "No, all conversions are performed locally using the browser's Canvas API. Images are never transmitted to any external server."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is Image Format Converter?",
+        "p1": "Image Format Converter is a free online tool that converts images between PNG, JPG, and WebP formats. All processing happens directly in your browser for speed and security.",
+        "p2": "Convert to WebP for web optimization, JPG for compatibility, or PNG for transparency — whatever your needs require."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "Multiple Formats", "desc": "Freely convert between PNG, JPG, and WebP formats." },
+          "feat2": { "title": "Quality Control", "desc": "Fine-tune JPG and WebP output quality from 1% to 100%." },
+          "feat3": { "title": "Batch Conversion", "desc": "Upload and convert multiple images at once with the same settings." },
+          "feat4": { "title": "Transparency Warning", "desc": "Displays a warning when converting transparent images to JPG." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Upload Images</strong> — Drag and drop or click to upload images to convert.",
+          "step2": "<strong>Select Format</strong> — Choose your desired output format: JPG, PNG, or WebP.",
+          "step3": "<strong>Adjust Quality</strong> — For JPG/WebP, use the quality slider to set output quality.",
+          "step4": "<strong>Convert & Download</strong> — Click Convert, then download individually or all at once."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "Website Performance", "desc": "Convert PNG/JPG images to WebP for significantly faster page loading." },
+          "uc2": { "title": "Compatibility", "desc": "Convert WebP images to JPG/PNG for environments that don't support WebP." },
+          "uc3": { "title": "Transparency Needs", "desc": "Convert JPG images to PNG to enable background editing with transparency." },
+          "uc4": { "title": "File Size Reduction", "desc": "Convert PNG to JPG/WebP to dramatically reduce file sizes." }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This tool processes all image conversions in your browser. Images are never sent to or stored on any server, and no personal data is collected."
+      }
+    }
+  },
+  "FaviconGenerator": {
+    "meta": {
+      "title": "Favicon Generator | Create ICO & PNG Favicons - Free Online",
+      "description": "Upload an image to generate favicons in multiple sizes. Supports 16x16 to 512x512, ICO and PNG formats. Processed in your browser without server upload.",
+      "keywords": "favicon generator,create favicon,ICO converter,favicon maker,website icon,free favicon generator",
+      "ogTitle": "Favicon Generator - Free Online ICO/PNG Favicon Creator",
+      "ogDescription": "Upload an image to generate favicons from 16x16 to 512x512 in ICO and PNG formats."
+    },
+    "upload": {
+      "title": "Drag & drop or click to upload an image",
+      "subtitle": "Square images recommended (JPG, PNG, WebP, SVG)"
+    },
+    "settings": {
+      "title": "Favicon Settings",
+      "sizes": "Sizes to Generate",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "format": "Output Format",
+      "formatIco": "ICO (Browser Tab Icon)",
+      "formatPng": "PNG (Web App / Mobile)"
+    },
+    "preview": {
+      "title": "Preview",
+      "original": "Original Image",
+      "generated": "Generated Favicons"
+    },
+    "buttons": {
+      "generate": "Generate Favicons",
+      "generating": "Generating...",
+      "downloadIco": "Download ICO",
+      "downloadPng": "Download PNG",
+      "downloadAll": "Download All",
+      "clearAll": "Reset"
+    },
+    "sizes": {
+      "s16": "16x16 (Browser Tab)",
+      "s32": "32x32 (High-DPI Tab)",
+      "s48": "48x48 (Windows Site Icon)",
+      "s64": "64x64 (Windows Taskbar)",
+      "s128": "128x128 (Chrome Web Store)",
+      "s192": "192x192 (Android Home Screen)",
+      "s512": "512x512 (PWA Splash Screen)"
+    },
+    "code": {
+      "title": "HTML Code",
+      "hint": "Add the following code to your HTML <head> tag."
+    },
+    "info": {
+      "title": "Favicon Generator Info",
+      "privacy": {
+        "title": "Privacy Protected",
+        "desc": "All processing happens in your browser. Images are never sent to any server."
+      },
+      "quality": {
+        "title": "High-Quality Conversion",
+        "desc": "Uses Canvas API to generate crisp, clear favicons."
+      },
+      "bulk": {
+        "title": "Multiple Sizes",
+        "desc": "Generate favicons from 16x16 to 512x512 — select only the sizes you need."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "q": "What is a favicon?",
+        "a": "A favicon is a small icon for a website, displayed in browser tabs, bookmarks, and home screens. It's an important element for brand identity."
+      },
+      "q2": {
+        "q": "What kind of image should I use?",
+        "a": "Square (1:1 ratio) images are recommended. Using a high-resolution image of 512x512 or larger will produce the best results."
+      },
+      "q3": {
+        "q": "Should I use ICO or PNG format?",
+        "a": "ICO is for browser tab icons (can contain multiple sizes), PNG is for web apps and mobile. It's best to provide both formats."
+      },
+      "q4": {
+        "q": "What is each favicon size used for?",
+        "a": "16x16 for browser tabs, 32x32 for high-DPI tabs, 192x192 for Android home screen, and 512x512 for PWA splash screens."
+      },
+      "q5": {
+        "q": "How do I apply a favicon to my website?",
+        "a": "Upload the generated favicon files to your website root and add <link> tags to the HTML <head> section. HTML code snippets are provided after generation."
+      }
+    },
+    "seo": {
+      "description": {
+        "title": "What is Favicon Generator?",
+        "p1": "Favicon Generator is a free online tool that creates website favicons in multiple sizes from an uploaded image.",
+        "p2": "Generate browser tab icons (16x16), Android home screen icons (192x192), PWA splash screen icons (512x512), and more — all at once in ICO and PNG formats."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "Multiple Sizes", "desc": "Supports 7 standard sizes from 16x16 to 512x512." },
+          "feat2": { "title": "ICO & PNG Formats", "desc": "Generate both ICO for browsers and PNG for web apps and mobile." },
+          "feat3": { "title": "Live Preview", "desc": "Preview generated favicons at each size before downloading." },
+          "feat4": { "title": "HTML Code Snippet", "desc": "Auto-generates HTML code ready to paste into your website." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Upload Image</strong> — Drag and drop or click to upload the image you want as a favicon.",
+          "step2": "<strong>Select Sizes</strong> — Choose which favicon sizes to generate. Select All is available.",
+          "step3": "<strong>Generate</strong> — Click Generate to create favicons in the selected sizes instantly.",
+          "step4": "<strong>Download</strong> — Download in ICO or PNG format, and apply the provided HTML code to your website."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "Website Branding", "desc": "Turn your company logo into a favicon to boost brand recognition." },
+          "uc2": { "title": "PWA App Icons", "desc": "Generate all required icon sizes for Progressive Web Apps at once." },
+          "uc3": { "title": "Blog Icons", "desc": "Apply a unique favicon to your personal blog for a professional look." },
+          "uc4": { "title": "Mobile Icons", "desc": "Create Apple Touch Icons and Android Chrome Icons for mobile home screens." }
+        }
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "This tool processes all favicon generation in your browser. Images are never sent to or stored on any server, and no personal data is collected."
       }
     }
   }
