@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaClipboard, FaTrash, FaCheck } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 type TextTransform = "uppercase" | "lowercase" | "capitalize" | "removeSpaces" | "trimLines";
 
@@ -62,6 +63,11 @@ export default function CharacterCounterClient() {
             .sort((a, b) => b[1] - a[1])
             .slice(0, 10);
     }, [text]);
+
+    const getShareText = () => {
+        if (!text) return '';
+        return `\uD83D\uDCDD Character Counter\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nCharacters: ${stats.charWithSpace} (${stats.charWithoutSpace} w/o spaces)\nWords: ${stats.words}\nLines: ${stats.lines}\nBytes: ${formatBytes(stats.bytes)}\n\n\uD83D\uDCCD teck-tani.com/character-counter`;
+    };
 
     const handleCopy = async () => {
         try {
@@ -163,6 +169,7 @@ export default function CharacterCounterClient() {
                                 <FaTrash />
                                 {t('input.clear')}
                             </button>
+                            <ShareButton shareText={getShareText()} disabled={!text} />
                         </div>
                     </div>
                     <textarea value={text} onChange={(e) => setText(e.target.value)}

@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 type RepaymentMethod = "equalPayment" | "equalPrincipal" | "bullet";
 type PeriodUnit = "year" | "month";
@@ -234,6 +235,11 @@ export default function LoanCalculatorClient() {
 
     const handleMethodChange = (m: RepaymentMethod) => {
         setMethod(m);
+    };
+
+    const getShareText = () => {
+        if (!result) return '';
+        return `🏦 ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("result.monthlyPayment")}: ${formatNumber(result.monthlyPaymentFirst)}${t("input.amountUnit")}\n${t("result.totalInterest")}: ${formatNumber(result.totalInterest)}${t("input.amountUnit")}\n${t("result.totalPayment")}: ${formatNumber(result.totalPayment)}${t("input.amountUnit")}\n${t("result.principal")}: ${formatNumber(principalNum)}${t("input.amountUnit")}\n\n📍 teck-tani.com/loan-calculator`;
     };
 
     const methods: RepaymentMethod[] = ["equalPayment", "equalPrincipal", "bullet"];
@@ -855,6 +861,11 @@ export default function LoanCalculatorClient() {
                             </div>
                         </div>
                     )}
+
+                    {/* Share Button */}
+                    <div style={{ marginBottom: 20 }}>
+                        <ShareButton shareText={getShareText()} disabled={!result} />
+                    </div>
 
                     {/* Comparison Table */}
                     {compareResults && (

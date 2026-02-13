@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaRedo, FaTrash, FaCheck } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 interface PasswordOptions {
     length: number;
@@ -161,6 +162,13 @@ export default function PasswordGeneratorClient() {
     };
 
     const noOptionSelected = !options.uppercase && !options.lowercase && !options.numbers && !options.symbols;
+
+    const getShareText = () => {
+        if (passwords.length === 0) return '';
+        const strengthLabel = strength ? t(`strength.${strength}`) : '';
+        const pwList = passwords.join('\n');
+        return `\u{1F510} ${t('input.generate')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${pwList}\n\n${strengthLabel ? `\u{1F4AA} ${t('strength.label')}: ${strengthLabel}` : ''}\n\u{1F4CD} teck-tani.com/password-generator`;
+    };
 
     return (
         <div style={{ maxWidth: "700px", margin: "0 auto", padding: "16px" }}>
@@ -482,6 +490,10 @@ export default function PasswordGeneratorClient() {
                             {t('input.copyAll')}
                         </button>
                     )}
+
+                    <div style={{ marginTop: "12px" }}>
+                        <ShareButton shareText={getShareText()} disabled={passwords.length === 0} />
+                    </div>
                 </div>
             )}
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 interface CalcResult {
     grossSeverance: number;
@@ -192,6 +193,11 @@ export default function SeveranceCalculatorClient() {
         if (nums.length <= 4) return nums;
         if (nums.length <= 6) return `${nums.slice(0, 4)}-${nums.slice(4)}`;
         return `${nums.slice(0, 4)}-${nums.slice(4, 6)}-${nums.slice(6, 8)}`;
+    };
+
+    const getShareText = () => {
+        if (!result) return '';
+        return `💼 ${tResult("netTitle")}\n━━━━━━━━━━━━━━\n${tResult("grossTitle")}: ${result.grossSeverance.toLocaleString("ko-KR")}${tResult("currency")}\n${tTax("totalTax")}: -${result.totalTax.toLocaleString("ko-KR")}${tResult("currency")}\n${tResult("netTitle")}: ${result.netSeverance.toLocaleString("ko-KR")}${tResult("currency")}\n${tResult("servicePeriod")}: ${result.workingYears}${tResult("year")} ${result.workingMonths}${tResult("months")}\n\n📍 teck-tani.com/severance-calculator`;
     };
 
     const fmtKRW = (n: number) => n.toLocaleString("ko-KR");
@@ -1136,6 +1142,11 @@ export default function SeveranceCalculatorClient() {
                     </div>
                 </>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: "24px" }}>
+                <ShareButton shareText={getShareText()} disabled={!result} />
+            </div>
 
             {/* SEO Content Section */}
             <article style={{ maxWidth: '100%', margin: '40px auto 0', lineHeight: '1.7' }}>

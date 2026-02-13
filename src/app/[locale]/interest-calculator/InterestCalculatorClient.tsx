@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { LuCopy, LuCheck, LuShare2, LuChevronDown, LuChevronUp } from "react-icons/lu";
+import { LuCopy, LuCheck, LuChevronDown, LuChevronUp } from "react-icons/lu";
+import ShareButton from "@/components/ShareButton";
 
 // Animated counter component
 function AnimatedNumber({ value, duration = 800 }: { value: number; duration?: number }) {
@@ -418,21 +419,10 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
         });
     };
 
-    const shareResult = async () => {
-        if (!result) return;
-
-        const text = `${tResult('title')}
-${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('currency')}`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({ text });
-            } catch (err) {
-                copyResult();
-            }
-        } else {
-            copyResult();
-        }
+    const getShareText = () => {
+        if (!result) return '';
+        const line = '━━━━━━━━━━━━━━';
+        return `💰 ${tResult('title')}\n${line}\n${tResult('totalPrincipal')}: ${result.totalPrincipal.toLocaleString()}${tResult('currency')}\n${tResult('beforeTax')}: ${result.beforeTaxInterest.toLocaleString()}${tResult('currency')}\n${tResult('tax')}: ${result.tax.toLocaleString()}${tResult('currency')}\n${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('currency')}\n\n📍 teck-tani.com/ko/interest-calculator`;
     };
 
     return (
@@ -1128,26 +1118,12 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 {copied ? <LuCheck size={16} /> : <LuCopy size={16} />}
                                 {copied ? tResult('copied') : tResult('copyResult')}
                             </button>
-                            <button
-                                onClick={shareResult}
-                                style={{
-                                    padding: '8px 12px',
-                                    background: 'rgba(255,255,255,0.1)',
-                                    border: '1px solid rgba(255,255,255,0.2)',
-                                    borderRadius: '8px',
-                                    color: '#fff',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    fontSize: '0.85rem',
-                                    fontWeight: '600',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                <LuShare2 size={16} />
-                                {tResult('shareResult')}
-                            </button>
+                            <ShareButton
+                                shareText={getShareText()}
+                                shareTitle={tResult('title')}
+                                className=""
+                                disabled={!result}
+                            />
                         </div>
                     </div>
 

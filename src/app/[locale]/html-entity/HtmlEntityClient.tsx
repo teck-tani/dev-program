@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaExchangeAlt, FaTrash } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 // Named entity encode map: character -> entity name
 const ENCODE_MAP: Record<string, string> = {
@@ -235,6 +236,15 @@ export default function HtmlEntityClient() {
     const cardShadow = isDark ? "none" : "0 2px 15px rgba(0,0,0,0.08)";
     const isKo = t('encode') === '인코딩';
 
+    const getShareText = () => {
+        const modeLabel = mode === 'encode' ? 'Encode' : 'Decode';
+        return `📝 HTML Entity ${modeLabel}
+━━━━━━━━━━━━━━
+${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleString()}자
+
+📍 teck-tani.com/ko/html-entity`;
+    };
+
     return (
         <div className="container" style={{ maxWidth: "800px", padding: "20px" }}>
             {/* Mode Toggle */}
@@ -375,6 +385,7 @@ export default function HtmlEntityClient() {
                             {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
                             {copied ? t('copied') : t('copy')}
                         </button>
+                        <ShareButton shareText={getShareText()} disabled={!output} />
                     </div>
                     <textarea
                         value={output}

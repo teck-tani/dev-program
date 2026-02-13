@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
+import ShareButton from "@/components/ShareButton";
 import styles from "./servertime.module.css";
 
 // ===== Types =====
@@ -291,6 +292,17 @@ export default function ServerTimeClient() {
     return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}.${String(milli).padStart(3, "0")}`;
   };
 
+  // ===== Share Text =====
+  const getShareText = () => {
+    if (currentTime === null) return '';
+    const now = new Date(currentTime);
+    const h = String(now.getHours()).padStart(2, "0");
+    const m = String(now.getMinutes()).padStart(2, "0");
+    const s = String(now.getSeconds()).padStart(2, "0");
+    const dateStr = formatDate(currentTime);
+    return `\u23F0 Server Time\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${h}:${m}:${s}\n${dateStr}\nOffset: ${sync.offset > 0 ? "+" : ""}${sync.offset}ms\n\n\uD83D\uDCCD teck-tani.com/server-time`;
+  };
+
   // ===== Computed =====
   const remainingMs = currentTime !== null && targetActive
     ? getRemainingMs(currentTime, targetHour, targetMinute, targetSecond)
@@ -358,6 +370,8 @@ export default function ServerTimeClient() {
           <button className={`${styles.copyBtn} ${copied ? styles.copyBtnCopied : ""}`} onClick={handleCopyTime}>
             {copied ? t("copied") : t("copyTime")}
           </button>
+          <span className={styles.infoDivider}>·</span>
+          <ShareButton shareText={getShareText()} className={styles.copyBtn} />
         </div>
       </div>
 

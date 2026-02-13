@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaExchangeAlt, FaTrash } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 type EncodeMode = 'component' | 'uri';
 
@@ -196,6 +197,16 @@ export default function UrlEncoderClient() {
     const cardBg = isDark ? "#1e293b" : "white";
     const cardShadow = isDark ? "none" : "0 2px 15px rgba(0,0,0,0.08)";
 
+    const getShareText = () => {
+        const modeLabel = mode === 'encode' ? 'Encode' : 'Decode';
+        const typeLabel = encodeType === 'url' ? 'URL' : 'HTML Entity';
+        return `🔗 ${typeLabel} ${modeLabel}
+━━━━━━━━━━━━━━
+${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleString()}자
+
+📍 teck-tani.com/ko/url-encoder`;
+    };
+
     return (
         <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
             {/* Encode Type Toggle (URL vs HTML) */}
@@ -352,6 +363,7 @@ export default function UrlEncoderClient() {
                             <FaCopy size={12} />
                             {copied ? t('copied') : t('copy')}
                         </button>
+                        <ShareButton shareText={getShareText()} disabled={!output} />
                     </div>
                     <textarea value={output} readOnly placeholder={t('placeholder.result')}
                         style={{

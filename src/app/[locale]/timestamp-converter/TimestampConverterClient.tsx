@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 type ConvertMode = "toDate" | "toTimestamp";
 
@@ -180,6 +181,14 @@ export default function TimestampConverterClient() {
             setDateInput(toLocalDatetimeString(new Date()));
         }
     }, [mode]);
+
+    const getShareText = () => {
+        const result = mode === "toDate" ? tsToDateResult : dateToTsResult;
+        if (!result) return '';
+        return `\u23F0 Timestamp Converter\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nTimestamp: ${result.seconds}\nISO 8601: ${result.iso8601}\nLocal: ${result.local}\n\n\uD83D\uDCCD teck-tani.com/timestamp-converter`;
+    };
+
+    const hasConversionResult = mode === "toDate" ? !!tsToDateResult : !!dateToTsResult;
 
     // Styles
     const containerStyle: React.CSSProperties = {
@@ -448,6 +457,11 @@ export default function TimestampConverterClient() {
                     )}
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16 }}>
+                <ShareButton shareText={getShareText()} disabled={!hasConversionResult} />
+            </div>
 
             {/* Info box */}
             <div

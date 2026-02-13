@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { IoShareOutline, IoCopyOutline, IoCheckmark } from "react-icons/io5";
 
 interface ShareButtonProps {
@@ -16,12 +17,16 @@ export default function ShareButton({
     shareText,
     shareTitle,
     className = "share-btn",
-    buttonLabel = "📤 결과 공유하기",
-    copiedLabel = "✓ 복사됨!",
+    buttonLabel,
+    copiedLabel,
     disabled = false,
 }: ShareButtonProps) {
+    const t = useTranslations("Common");
     const [hasWebShare, setHasWebShare] = useState(false);
     const [status, setStatus] = useState<"idle" | "copied">("idle");
+
+    const defaultLabel = buttonLabel ?? t("share");
+    const defaultCopied = copiedLabel ?? t("copied");
 
     useEffect(() => {
         setHasWebShare(typeof navigator !== "undefined" && !!navigator.share);
@@ -54,7 +59,7 @@ export default function ShareButton({
     };
 
     const Icon = status === "copied" ? IoCheckmark : hasWebShare ? IoShareOutline : IoCopyOutline;
-    const label = status === "copied" ? copiedLabel : buttonLabel;
+    const label = status === "copied" ? defaultCopied : defaultLabel;
 
     return (
         <button

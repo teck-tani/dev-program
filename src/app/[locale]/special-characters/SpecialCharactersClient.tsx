@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 const SPECIAL_CHARS_DATA: Record<string, string[]> = {
     math: ["±", "×", "÷", "=", "≠", "≈", "≤", "≥", "<", ">", "∞", "π", "√", "∑", "∫", "∂", "Δ", "∇", "∈", "∉", "⊂", "⊃", "∪", "∩", "∧", "∨", "¬", "∀", "∃", "∅"],
@@ -117,6 +118,16 @@ export default function SpecialCharactersClient() {
         return filtered;
     }, [searchQuery]);
 
+    const getShareText = () => {
+        const chars = bulkMode && selectedChars.size > 0
+            ? Array.from(selectedChars).join('')
+            : copiedEmoji;
+        if (!chars) return '';
+        return `\u2728 Special Characters\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${chars}\n\n\uD83D\uDCCD teck-tani.com/special-characters`;
+    };
+
+    const hasShareContent = (bulkMode && selectedChars.size > 0) || !!copiedEmoji;
+
     const renderCharGrid = (categoryKey: string, chars: string[]) => (
         <div key={categoryKey} style={{ marginBottom: "30px" }}>
             <h2 style={{ fontSize: "1.15rem", marginBottom: "12px", color: isDark ? "#f1f5f9" : "#333", borderBottom: "2px solid #74ebd5", paddingBottom: "6px" }}>
@@ -180,6 +191,7 @@ export default function SpecialCharactersClient() {
                 >
                     {t('bulkMode')}
                 </button>
+                <ShareButton shareText={getShareText()} disabled={!hasShareContent} />
             </div>
 
             {/* Bulk copy bar */}

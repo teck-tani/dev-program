@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaRedo } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 type CompanySize = "small" | "medium" | "large" | "priority";
 
@@ -163,6 +164,12 @@ export default function InsuranceCalculatorClient() {
             if (copyTimeout.current) clearTimeout(copyTimeout.current);
             copyTimeout.current = setTimeout(() => setCopied(false), 2000);
         } catch { /* ignore */ }
+    };
+
+    const getShareText = () => {
+        if (!result) return '';
+        const monthlySalary = parseInput(salary);
+        return `🏥 ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("label.monthlySalary")}: ${formatNumber(monthlySalary)}${t("unit")}\n${t("insurance.nationalPension")}: ${formatNumber(result.nationalPension.employee)}${t("unit")}\n${t("insurance.healthInsurance")}: ${formatNumber(result.healthInsurance.employee)}${t("unit")}\n${t("insurance.longTermCare")}: ${formatNumber(result.longTermCare.employee)}${t("unit")}\n${t("insurance.employmentInsurance")}: ${formatNumber(result.employmentInsurance.employee)}${t("unit")}\n${t("label.totalEmployee")}: ${formatNumber(result.totalEmployee)}${t("unit")}\n${t("label.netSalary")}: ${formatNumber(result.netSalary)}${t("unit")}\n\n📍 teck-tani.com/insurance-calculator`;
     };
 
     const companySizes: CompanySize[] = ["small", "medium", "large", "priority"];
@@ -708,6 +715,11 @@ export default function InsuranceCalculatorClient() {
                     </div>
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: "16px" }}>
+                <ShareButton shareText={getShareText()} disabled={!result} />
+            </div>
 
             {/* Animation Keyframes */}
             <style jsx>{`

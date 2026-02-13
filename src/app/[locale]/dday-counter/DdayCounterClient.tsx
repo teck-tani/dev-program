@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import styles from "./dday.module.css";
+import ShareButton from "@/components/ShareButton";
 
 // ===== Types =====
 interface DdayEvent {
@@ -178,6 +179,17 @@ export default function DdayCounterClient() {
     }
     return a.title.localeCompare(b.title);
   });
+
+  const getShareText = () => {
+    if (events.length === 0 || !now) return '';
+    const line = '━━━━━━━━━━━━━━';
+    const items = sortedEvents.map(event => {
+      const diff = getDayDiff(event.targetDate, now);
+      const ddayStr = diff === 0 ? 'D-Day' : diff > 0 ? `D-${diff}` : `D+${Math.abs(diff)}`;
+      return `${CATEGORY_ICONS[event.category]} ${event.title}: ${ddayStr}`;
+    }).join('\n');
+    return `📅 ${t('title')}\n${line}\n${items}\n\n📍 teck-tani.com/ko/dday-counter`;
+  };
 
   const displayNow = now || new Date();
 
@@ -389,6 +401,12 @@ export default function DdayCounterClient() {
           })
         )}
       </div>
+
+      {events.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+          <ShareButton shareText={getShareText()} disabled={events.length === 0} />
+        </div>
+      )}
     </div>
   );
 }

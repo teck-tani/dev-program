@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaTrash } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 interface DecodedJwt {
     header: Record<string, unknown>;
@@ -143,6 +144,14 @@ export default function JwtDecoderClient() {
         const sig = "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
         setToken(`${header}.${payload}.${sig}`);
     }, []);
+
+    const getShareText = () => {
+        if (!decoded) return '';
+        const alg = decoded.header.alg || 'N/A';
+        const iss = decoded.payload.iss || 'N/A';
+        const exp = decoded.payload.exp ? formatTimestamp(decoded.payload.exp) : 'N/A';
+        return `\uD83D\uDD10 JWT Decoder\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nAlgorithm: ${alg}\nIssuer: ${iss}\nExpiry: ${exp}\nStatus: ${expStatus}\n\n\uD83D\uDCCD teck-tani.com/jwt-decoder`;
+    };
 
     // Shared styles
     const cardStyle: React.CSSProperties = {
@@ -525,6 +534,10 @@ export default function JwtDecoderClient() {
                         }}>
                             {t("signature.note")}
                         </p>
+                    </div>
+
+                    <div style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
+                        <ShareButton shareText={getShareText()} disabled={!decoded} />
                     </div>
                 </>
             )}

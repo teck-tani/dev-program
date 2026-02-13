@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 interface Player {
     id: number;
@@ -277,6 +278,12 @@ export default function LadderGameClient() {
         drawLadder();
     };
 
+    const getShareText = () => {
+        if (!showResults || gameResults.length === 0) return '';
+        const resultLines = gameResults.map(r => `${r.playerName} \u2192 ${r.resultName}`).join('\n');
+        return `\u{1F3AF} ${t('gameResults')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${resultLines}\n\n\u{1F4CD} teck-tani.com/ladder-game`;
+    };
+
     const reset = () => {
         setLadderGenerated(false);
         setShowResults(false);
@@ -431,6 +438,9 @@ export default function LadderGameClient() {
                                     <span className="ladder-result-value">{result.resultName}</span>
                                 </div>
                             ))}
+                        </div>
+                        <div style={{ marginTop: "16px", display: "flex", justifyContent: "center" }}>
+                            <ShareButton shareText={getShareText()} disabled={!showResults || gameResults.length === 0} />
                         </div>
                     </div>
                 )}

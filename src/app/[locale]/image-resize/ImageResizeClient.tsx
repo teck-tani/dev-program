@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaImage, FaDownload, FaTrash, FaCog, FaExpand, FaLock, FaUnlock } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 type ResizeMode = 'pixel' | 'percent';
 type OutputFormat = 'original' | 'image/jpeg' | 'image/png' | 'image/webp';
@@ -221,6 +222,13 @@ export default function ImageResizeClient() {
     }, [images]);
 
     const completedCount = images.filter(img => img.status === 'done').length;
+
+    const getShareText = () => {
+        if (completedCount === 0) return '';
+        const doneImages = images.filter(img => img.status === 'done');
+        const lines = doneImages.map(img => `${img.originalWidth}x${img.originalHeight} \u2192 ${img.resizedWidth}x${img.resizedHeight}`).join('\n');
+        return `\u{1F4D0} ${t('buttons.resize')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${lines}\n${t('summary.images')}: ${completedCount}\n\n\u{1F4CD} teck-tani.com/image-resize`;
+    };
 
     return (
         <div style={{ minHeight: '100vh', background: isDark ? "#0f172a" : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
@@ -471,6 +479,13 @@ export default function ImageResizeClient() {
                                 {formatBytes(images.reduce((sum, img) => sum + img.resizedSize, 0))}
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Share Button */}
+                {completedCount > 0 && (
+                    <div style={{ marginBottom: '20px' }}>
+                        <ShareButton shareText={getShareText()} disabled={completedCount === 0} />
                     </div>
                 )}
 

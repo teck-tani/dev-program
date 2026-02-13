@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { IoCopyOutline, IoTrashOutline } from "react-icons/io5";
+import ShareButton from "@/components/ShareButton";
 
 type CalcMode = "fromSupply" | "fromTotal" | "fromVat";
 
@@ -166,6 +167,11 @@ export default function VatCalculatorClient() {
     // Mode label for history display
     const getModeLabel = (m: CalcMode): string => {
         return t(`mode.${m}`);
+    };
+
+    const getShareText = () => {
+        if (!result) return '';
+        return `🧾 ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("label.supplyAmount")}: ${formatNumber(result.supplyAmount)}${t("unit")}\n${t("label.vatAmount")}: ${formatNumber(result.vatAmount)}${t("unit")}\n${t("label.totalAmount")}: ${formatNumber(result.totalAmount)}${t("unit")}\n\n📍 teck-tani.com/vat-calculator`;
     };
 
     const modes: CalcMode[] = ["fromSupply", "fromTotal", "fromVat"];
@@ -387,6 +393,11 @@ export default function VatCalculatorClient() {
                     />
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: "16px" }}>
+                <ShareButton shareText={getShareText()} disabled={!result} />
+            </div>
 
             {/* History Section */}
             <div style={{

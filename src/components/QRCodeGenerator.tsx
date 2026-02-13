@@ -5,6 +5,7 @@ import styles from "@/app/[locale]/qr-generator/qr-generator.module.css";
 import { useTranslations } from "next-intl";
 import { HiOutlineDownload, HiOutlineTrash } from "react-icons/hi";
 import { IoCopyOutline, IoCheckmark } from "react-icons/io5";
+import ShareButton from "@/components/ShareButton";
 
 type QRType = 'text' | 'wifi' | 'vcard';
 
@@ -222,6 +223,15 @@ export default function QRCodeGenerator() {
         setError("");
     };
 
+    const getShareText = () => {
+        const content = getQrContent();
+        if (!content.trim()) return '';
+        const label = qrType === 'wifi' ? `Wi-Fi: ${wifiData.ssid}` :
+                      qrType === 'vcard' ? `vCard: ${vcardData.name}` :
+                      content;
+        return `\u{1F4F1} QR Code\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${label}\n\n\u{1F4CD} teck-tani.com/qr-generator`;
+    };
+
     const qrContent = getQrContent();
     const hasContent = !!qrContent.trim();
 
@@ -259,6 +269,7 @@ export default function QRCodeGenerator() {
                         {copied ? <IoCheckmark /> : <IoCopyOutline />}
                         {copied ? t("copied") : t("btnCopy")}
                     </button>
+                    <ShareButton shareText={getShareText()} disabled={!hasContent} />
                 </div>
             </div>
 

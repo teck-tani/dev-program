@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 type CategoryKey = 'length' | 'weight' | 'temperature' | 'speed' | 'area' | 'volume' | 'data' | 'time' | 'pressure' | 'energy' | 'power' | 'cooking';
 
@@ -201,6 +202,11 @@ export default function UnitConverterClient() {
     const currentUnits = units[category];
     const accent = '#667eea';
 
+    const getShareText = () => {
+        if (!result) return '';
+        return `\uD83D\uDD04 Unit Converter\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${inputValue} ${currentUnits[fromUnit]?.name} = ${result} ${currentUnits[toUnit]?.name}\n\n\uD83D\uDCCD teck-tani.com/unit-converter`;
+    };
+
     return (
         <div style={{
             background: isDark ? '#1e293b' : 'white', borderRadius: '20px',
@@ -367,6 +373,11 @@ export default function UnitConverterClient() {
                     <span style={{ fontWeight: 700, color: accent, fontSize: '1.3rem' }}>{result} {currentUnits[toUnit]?.name}</span>
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <ShareButton shareText={getShareText()} disabled={!result} />
+            </div>
 
             {/* Quick reference */}
             <div style={{ marginTop: '30px' }}>

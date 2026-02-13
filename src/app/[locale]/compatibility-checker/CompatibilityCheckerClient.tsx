@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaHeart, FaStar, FaBrain, FaRedoAlt } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 // ===== Chinese Zodiac Data =====
 const ZODIAC_ANIMALS = [
@@ -329,6 +330,21 @@ export default function CompatibilityCheckerClient() {
         if (activeTab === "mbti" && mbtiResult) return mbtiResult.score;
         return null;
     }, [activeTab, zodiacResult, starResult, mbtiResult]);
+
+    const getShareText = () => {
+        const line = '━━━━━━━━━━━━━━';
+        const url = 'teck-tani.com/ko/compatibility-checker';
+        if (activeTab === 'zodiac' && zodiacResult) {
+            return `💕 ${t('tabs.zodiac')} ${zodiacResult.score}%\n${line}\n${ZODIAC_EMOJI[zodiacResult.animal1]} ${t('zodiac.animals.' + zodiacResult.animal1)} + ${ZODIAC_EMOJI[zodiacResult.animal2]} ${t('zodiac.animals.' + zodiacResult.animal2)}\n${t('zodiac.types.' + zodiacResult.type)}\n\n📍 ${url}`;
+        }
+        if (activeTab === 'star' && starResult) {
+            return `💕 ${t('tabs.star')} ${starResult.score}%\n${line}\n${STAR_SIGN_EMOJI[starResult.sign1]} ${t('star.signs.' + starResult.sign1)} + ${STAR_SIGN_EMOJI[starResult.sign2]} ${t('star.signs.' + starResult.sign2)}\n${t('star.types.' + starResult.type)}\n\n📍 ${url}`;
+        }
+        if (activeTab === 'mbti' && mbtiResult) {
+            return `💕 ${t('tabs.mbti')} ${mbtiResult.score}%\n${line}\n${mbtiResult.type1} + ${mbtiResult.type2}\n${t('mbti.types.' + mbtiResult.type)}\n\n📍 ${url}`;
+        }
+        return '';
+    };
 
     const tabs: { key: TabType; icon: React.ReactNode; label: string }[] = [
         { key: "zodiac", icon: <FaHeart />, label: t("tabs.zodiac") },
@@ -1075,6 +1091,13 @@ export default function CompatibilityCheckerClient() {
                     }}>
                         {t(`mbti.descriptions.${mbtiResult.type}`)}
                     </p>
+                </div>
+            )}
+
+            {/* Share Button */}
+            {currentResult !== null && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                    <ShareButton shareText={getShareText()} disabled={currentResult === null} />
                 </div>
             )}
 

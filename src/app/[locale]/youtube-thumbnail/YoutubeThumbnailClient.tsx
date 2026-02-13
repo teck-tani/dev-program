@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 type Quality = "maxresdefault" | "sddefault" | "hqdefault" | "mqdefault" | "default";
 
@@ -165,6 +166,14 @@ export default function YoutubeThumbnailClient() {
     });
   };
 
+  const getShareText = () => {
+    if (!result) return '';
+    const title = result.meta?.title || result.videoId;
+    const bestQuality = result.qualities.find(q => q.loaded === true);
+    const thumbUrl = bestQuality ? bestQuality.url : '';
+    return `\u{1F3AC} YouTube Thumbnail\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${title}\n${thumbUrl}\n\n\u{1F4CD} teck-tani.com/youtube-thumbnail`;
+  };
+
   const availableCount = result?.qualities.filter((q) => q.loaded === true).length ?? 0;
 
   return (
@@ -230,15 +239,18 @@ export default function YoutubeThumbnailClient() {
             <h2 style={{ fontSize: "1.2rem", fontWeight: "bold", color: isDark ? "#f1f5f9" : "#333", margin: 0 }}>
               {t("resultTitle")}
             </h2>
-            {availableCount > 1 && (
-              <button onClick={handleDownloadAll} style={{
-                padding: "8px 18px", borderRadius: "8px", border: "none",
-                background: "linear-gradient(135deg, #4a90d9, #357abd)", color: "#fff",
-                fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
-              }}>
-                {t("downloadAll")} ({availableCount})
-              </button>
-            )}
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <ShareButton shareText={getShareText()} disabled={!result} />
+              {availableCount > 1 && (
+                <button onClick={handleDownloadAll} style={{
+                  padding: "8px 18px", borderRadius: "8px", border: "none",
+                  background: "linear-gradient(135deg, #4a90d9, #357abd)", color: "#fff",
+                  fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
+                }}>
+                  {t("downloadAll")} ({availableCount})
+                </button>
+              )}
+            </div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>

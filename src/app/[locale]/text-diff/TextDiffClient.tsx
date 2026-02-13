@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaTrash, FaExchangeAlt, FaCheckCircle, FaPlus, FaMinus } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 interface DiffLine {
     type: 'equal' | 'add' | 'remove';
@@ -225,6 +226,14 @@ export default function TextDiffClient() {
 
     const isIdentical = text1 === text2 && text1.length > 0;
 
+    const getShareText = () => {
+        return `📊 Text Diff
+━━━━━━━━━━━━━━
++${stats.added} added / -${stats.removed} removed / ~${stats.modified} modified / ${stats.unchanged} unchanged
+
+📍 teck-tani.com/ko/text-diff`;
+    };
+
     // Render char-level highlighted content
     const renderCharDiff = (chars: { char: string; type: string }[], highlightType: 'delete' | 'insert') => {
         return chars.map((c, i) => {
@@ -410,19 +419,22 @@ export default function TextDiffClient() {
                 <div style={{ marginBottom: "30px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                         <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#374151" }}>{t('result.title')}</h2>
-                        <button
-                            onClick={handleCopyDiff}
-                            style={{
-                                display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px",
-                                borderRadius: "8px", border: "none",
-                                background: copied ? "#d1fae5" : (isDark ? "#0f172a" : "#f3f4f6"),
-                                color: copied ? "#059669" : (isDark ? "#f1f5f9" : "#374151"),
-                                cursor: "pointer", transition: "all 0.2s"
-                            }}
-                        >
-                            <FaCopy />
-                            {copied ? t('buttons.copied') : t('buttons.copyDiff')}
-                        </button>
+                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                            <button
+                                onClick={handleCopyDiff}
+                                style={{
+                                    display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px",
+                                    borderRadius: "8px", border: "none",
+                                    background: copied ? "#d1fae5" : (isDark ? "#0f172a" : "#f3f4f6"),
+                                    color: copied ? "#059669" : (isDark ? "#f1f5f9" : "#374151"),
+                                    cursor: "pointer", transition: "all 0.2s"
+                                }}
+                            >
+                                <FaCopy />
+                                {copied ? t('buttons.copied') : t('buttons.copyDiff')}
+                            </button>
+                            <ShareButton shareText={getShareText()} disabled={processedDiff.length === 0} />
+                        </div>
                     </div>
 
                     {/* Unified View */}

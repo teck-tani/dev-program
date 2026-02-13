@@ -1,4 +1,8 @@
 {
+  "Common": {
+    "share": "📤 Share Result",
+    "copied": "✓ Copied!"
+  },
   "Meta": {
     "defaultTitle": "Web Tools Collection | Calculator, Clock, Emoji | Tani DevTool",
     "defaultDescription": "Various web tools necessary for daily life and work. Use calculators, clocks, emoji collections and more in one place. Conveniently available on mobile.",

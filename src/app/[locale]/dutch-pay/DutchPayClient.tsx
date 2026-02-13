@@ -3,7 +3,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { IoCopyOutline, IoShareSocialOutline, IoTrashOutline } from "react-icons/io5";
+import { IoCopyOutline, IoTrashOutline } from "react-icons/io5";
+import ShareButton from "@/components/ShareButton";
 
 interface Person {
     id: number;
@@ -294,10 +295,10 @@ export default function DutchPayClient() {
         } catch { /* fallback */ }
     };
 
-    const handleShareResult = async () => {
-        if (navigator.share) {
-            try { await navigator.share({ title: t('resultTitle'), text: buildResultText() }); } catch { /* cancelled */ }
-        } else { handleCopyResult(); }
+    const getShareText = () => {
+        if (!calculated) return '';
+        const line = '━━━━━━━━━━━━━━';
+        return `💰 ${t('resultTitle')}\n${line}\n${buildResultText()}\n\n📍 teck-tani.com/ko/dutch-pay`;
     };
 
     const cardStyle: React.CSSProperties = {
@@ -555,14 +556,12 @@ export default function DutchPayClient() {
                                 <IoCopyOutline size={14} />
                                 {copied ? t('copied') : t('copyResult')}
                             </button>
-                            <button onClick={handleShareResult} style={{
-                                padding: '6px 14px', background: 'rgba(255,255,255,0.15)',
-                                color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer',
-                                fontSize: '0.8rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px',
-                            }}>
-                                <IoShareSocialOutline size={14} />
-                                {t('shareResult')}
-                            </button>
+                            <ShareButton
+                                shareText={getShareText()}
+                                shareTitle={t('resultTitle')}
+                                className=""
+                                disabled={!calculated}
+                            />
                         </div>
                     </div>
 

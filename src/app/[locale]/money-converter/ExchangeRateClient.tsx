@@ -6,6 +6,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import {
     LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine
 } from "recharts";
+import ShareButton from "@/components/ShareButton";
 
 interface ExchangeRate {
     result: number;
@@ -519,6 +520,20 @@ export default function ExchangeRateClient() {
         setHighlightedIndex(-1);
     }, [openDropdownIndex]);
 
+    const getShareText = () => {
+        if (baseKrwValue === null) return '';
+        const line = '━━━━━━━━━━━━━━';
+        const lines = rowCurrencies.map(code => {
+            const val = getDisplayValue(code);
+            if (!val) return null;
+            return `${code.replace('(100)', '')}: ${formatNumber(parseFloat(val))}`;
+        }).filter(Boolean);
+        const url = locale === 'ko' ? 'teck-tani.com/ko/money-converter' : 'teck-tani.com/en/money-converter';
+        return locale === 'ko'
+            ? `💱 환율 계산 결과\n${line}\n${lines.join('\n')}\n\n📍 ${url}`
+            : `💱 Exchange Rate Result\n${line}\n${lines.join('\n')}\n\n📍 ${url}`;
+    };
+
     // Show loading skeleton until mounted to prevent hydration mismatch
     if (!mounted) {
         return (
@@ -871,6 +886,12 @@ export default function ExchangeRateClient() {
                     })}
                 </div>
             </div>
+
+            {baseKrwValue !== null && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+                    <ShareButton shareText={getShareText()} disabled={baseKrwValue === null} />
+                </div>
+            )}
 
             {/* Chart Section */}
             <div style={{

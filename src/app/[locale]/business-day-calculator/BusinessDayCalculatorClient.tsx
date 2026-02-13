@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCalendarAlt, FaPlus, FaMinus, FaExchangeAlt, FaCopy, FaCheck } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 // ===== Korean Holidays 2025-2027 =====
 const KOREAN_HOLIDAYS: Record<string, string> = {
@@ -266,6 +267,29 @@ export default function BusinessDayCalculatorClient() {
             setTimeout(() => setCopied(false), 2000);
         });
     }, [t, showToast]);
+
+    const getShareText = () => {
+        const line = '━━━━━━━━━━━━━━';
+        const url = isKo ? 'teck-tani.com/ko/business-day-calculator' : 'teck-tani.com/en/business-day-calculator';
+        if (mode === 'add' && addResult) {
+            return isKo
+                ? `📅 영업일 계산 결과\n${line}\n시작일: ${startDate}\n${direction === 'add' ? '+' : '-'}${businessDays} 영업일\n결과: ${formatDateDisplay(addResult.endDate)}\n(달력일 ${addResult.calendarDays}일, 주말 ${addResult.weekends}일, 공휴일 ${addResult.holidays.length}일 제외)\n\n📍 ${url}`
+                : `📅 Business Day Calculator\n${line}\nStart: ${startDate}\n${direction === 'add' ? '+' : '-'}${businessDays} business days\nResult: ${formatDateDisplay(addResult.endDate)}\n(${addResult.calendarDays} calendar days, ${addResult.weekends} weekends, ${addResult.holidays.length} holidays skipped)\n\n📍 ${url}`;
+        }
+        if (mode === 'between' && betweenResult) {
+            return isKo
+                ? `📅 영업일 계산 결과\n${line}\n${startDate} ~ ${endDate}\n영업일: ${betweenResult.businessDays}일\n(달력일 ${betweenResult.calendarDays}일)\n\n📍 ${url}`
+                : `📅 Business Day Calculator\n${line}\n${startDate} ~ ${endDate}\nBusiness Days: ${betweenResult.businessDays}\n(${betweenResult.calendarDays} calendar days)\n\n📍 ${url}`;
+        }
+        if (mode === 'dday' && ddayResult) {
+            const sign = ddayResult.businessDays > 0 ? 'D-' : ddayResult.businessDays < 0 ? 'D+' : 'D-Day';
+            const val = ddayResult.businessDays !== 0 ? Math.abs(ddayResult.businessDays) : '';
+            return isKo
+                ? `📅 D-Day 영업일 계산\n${line}\n목표일: ${ddayTarget}\n영업일: ${sign}${val}\n(달력일 ${ddayResult.calendarDays}일)\n\n📍 ${url}`
+                : `📅 D-Day Business Days\n${line}\nTarget: ${ddayTarget}\nBusiness Days: ${sign}${val}\n(${ddayResult.calendarDays} calendar days)\n\n📍 ${url}`;
+        }
+        return '';
+    };
 
     const formatDateDisplay = useCallback((date: Date): string => {
         const y = date.getFullYear();
@@ -854,6 +878,16 @@ export default function BusinessDayCalculatorClient() {
                         </div>
                     )}
                 </>
+            )}
+
+            {/* Share Button */}
+            {(addResult || betweenResult || ddayResult) && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                    <ShareButton
+                        shareText={getShareText()}
+                        disabled={mode === 'add' ? !addResult : mode === 'between' ? !betweenResult : !ddayResult}
+                    />
+                </div>
             )}
 
             {/* Upcoming Holidays Reference */}

@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaDice, FaSync, FaPalette } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 // ===== Data =====
 const KOREAN_SURNAMES = ['김', '이', '박', '최', '정', '강', '조', '윤', '장', '임', '한', '오', '서', '신', '권', '황', '안', '송', '류', '전'];
@@ -221,6 +222,38 @@ export default function RandomGeneratorClient() {
             }
         }, 80);
     }, []);
+
+    // ===== Share =====
+    const getShareText = () => {
+        if (activeTab === 'number' && numResults.length > 0) {
+            return `\u{1F3B2} ${t('tabs.number')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${numResults.join(', ')}\n\n\u{1F4CD} teck-tani.com/random-generator`;
+        }
+        if (activeTab === 'name' && nameResults.length > 0) {
+            return `\u{1F464} ${t('tabs.name')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${nameResults.join('\n')}\n\n\u{1F4CD} teck-tani.com/random-generator`;
+        }
+        if (activeTab === 'color' && colorResults.length > 0) {
+            return `\u{1F3A8} ${t('tabs.color')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${colorResults.map(c => c.hex.toUpperCase()).join('\n')}\n\n\u{1F4CD} teck-tani.com/random-generator`;
+        }
+        if (activeTab === 'dice' && diceResults.length > 0) {
+            const total = diceResults.reduce((a, b) => a + b, 0);
+            return `\u{1F3B2} ${t('tabs.dice')} (D${diceSides})\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${diceResults.join(' + ')} = ${total}\n\n\u{1F4CD} teck-tani.com/random-generator`;
+        }
+        if (activeTab === 'coin' && coinResult) {
+            const headsCount = coinHistory.filter(r => r === 'heads').length;
+            const tailsCount = coinHistory.filter(r => r === 'tails').length;
+            return `\u{1FA99} ${t('tabs.coin')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${coinResult === 'heads' ? t('coin.heads') : t('coin.tails')}\n${t('coin.heads')}: ${headsCount} / ${t('coin.tails')}: ${tailsCount}\n\n\u{1F4CD} teck-tani.com/random-generator`;
+        }
+        return '';
+    };
+
+    const hasShareResult = () => {
+        if (activeTab === 'number') return numResults.length > 0;
+        if (activeTab === 'name') return nameResults.length > 0;
+        if (activeTab === 'color') return colorResults.length > 0;
+        if (activeTab === 'dice') return diceResults.length > 0;
+        if (activeTab === 'coin') return coinResult !== null;
+        return false;
+    };
 
     // ===== Styles =====
     const cardStyle: React.CSSProperties = {
@@ -946,6 +979,11 @@ export default function RandomGeneratorClient() {
                     )}
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: "20px" }}>
+                <ShareButton shareText={getShareText()} disabled={!hasShareResult()} />
+            </div>
 
             {/* Animation Keyframes */}
             <style jsx>{`

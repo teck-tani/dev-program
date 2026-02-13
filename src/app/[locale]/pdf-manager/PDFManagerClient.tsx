@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaFilePdf, FaDownload, FaTrash, FaPlus, FaCut, FaLayerGroup, FaArrowUp, FaArrowDown, FaUndo, FaRedo, FaCheckSquare, FaRegSquare, FaTint, FaGripVertical } from "react-icons/fa";
 import { PDFDocument, degrees, rgb, StandardFonts } from "pdf-lib";
+import ShareButton from "@/components/ShareButton";
 
 interface PDFFile {
     id: string;
@@ -545,6 +546,26 @@ export default function PDFManagerClient() {
 
     const totalMergePages = mergeFiles.reduce((sum, f) => sum + f.pageCount, 0);
     const totalMergeSize = mergeFiles.reduce((sum, f) => sum + f.size, 0);
+
+    const getShareText = () => {
+        if (activeTab === 'merge' && mergeFiles.length >= 2) {
+            return `\u{1F4C4} PDF ${t('tabs.merge')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${mergeFiles.length} files \u2192 ${totalMergePages} pages\n${formatBytes(totalMergeSize)}\n\n\u{1F4CD} teck-tani.com/pdf-manager`;
+        }
+        if (activeTab === 'split' && splitFile) {
+            return `\u{2702}\uFE0F PDF ${t('tabs.split')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${splitFile.name}\n${splitFile.pageCount} pages, ${formatBytes(splitFile.size)}\n\n\u{1F4CD} teck-tani.com/pdf-manager`;
+        }
+        if (activeTab === 'watermark' && watermarkFile) {
+            return `\u{1F4A7} PDF ${t('tabs.watermark')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${watermarkFile.name}\n${watermarkFile.pageCount} pages\n\n\u{1F4CD} teck-tani.com/pdf-manager`;
+        }
+        return '';
+    };
+
+    const hasPdfResult = () => {
+        if (activeTab === 'merge') return mergeFiles.length >= 2;
+        if (activeTab === 'split') return splitFile !== null;
+        if (activeTab === 'watermark') return watermarkFile !== null;
+        return false;
+    };
 
     // Style helpers
     const cardBg = isDark ? '#1e293b' : 'white';
@@ -1445,6 +1466,13 @@ export default function PDFManagerClient() {
                             </>
                         )}
                     </>
+                )}
+
+                {/* Share Button */}
+                {hasPdfResult() && (
+                    <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+                        <ShareButton shareText={getShareText()} disabled={!hasPdfResult()} />
+                    </div>
                 )}
 
                 {/* Info Section */}

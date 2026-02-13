@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 interface MatchResult {
     fullMatch: string;
@@ -173,6 +174,15 @@ export default function RegexTesterClient() {
         }
     }, []);
 
+    const getShareText = () => {
+        return `🔍 Regex Tester
+━━━━━━━━━━━━━━
+/${pattern}/${flagsStr}
+${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''} found` : 'No matches'}
+
+📍 teck-tani.com/ko/regex-tester`;
+    };
+
     // Shared styles
     const cardStyle = {
         background: isDark ? "#1e293b" : "white",
@@ -244,7 +254,7 @@ export default function RegexTesterClient() {
                 )}
 
                 <label style={{ ...labelStyle, marginBottom: "8px" }}>{t("input.flags")}</label>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
                     {FLAG_OPTIONS.map((flag) => (
                         <button
                             key={flag}
@@ -266,6 +276,7 @@ export default function RegexTesterClient() {
                             <span style={{ fontSize: "0.75rem" }}>{t(`flags.${flag}`)}</span>
                         </button>
                     ))}
+                    <ShareButton shareText={getShareText()} disabled={!pattern} />
                 </div>
             </div>
 

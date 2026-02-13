@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 interface OvulationResult {
     ovulationDate: Date;
@@ -267,6 +268,14 @@ export default function OvulationCalculatorClient() {
     };
 
     const result = results[0] ?? null;
+
+    const getShareText = () => {
+        if (!result) return '';
+        const line = '━━━━━━━━━━━━━━';
+        return locale === 'ko'
+            ? `🌸 배란일 계산 결과\n${line}\n배란 예정일: ${formatDate(result.ovulationDate, locale)}\n가임기: ${formatShortDate(result.fertileStart, locale)} ~ ${formatShortDate(result.fertileEnd, locale)}\n다음 생리일: ${formatDate(result.nextPeriodDate, locale)}\n\n📍 teck-tani.com/ko/ovulation-calculator`
+            : `🌸 Ovulation Calculator Result\n${line}\nOvulation Date: ${formatDate(result.ovulationDate, locale)}\nFertile Window: ${formatShortDate(result.fertileStart, locale)} ~ ${formatShortDate(result.fertileEnd, locale)}\nNext Period: ${formatDate(result.nextPeriodDate, locale)}\n\n📍 teck-tani.com/en/ovulation-calculator`;
+    };
 
     return (
         <div className="ovulation-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
@@ -685,6 +694,10 @@ export default function OvulationCalculatorClient() {
                             ))}
                         </div>
                     </section>
+
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+                        <ShareButton shareText={getShareText()} disabled={!result} />
+                    </div>
                 </>
             )}
 

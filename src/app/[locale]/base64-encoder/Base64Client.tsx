@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaExchangeAlt, FaTrash, FaUpload, FaDownload } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 export default function Base64Client() {
     const t = useTranslations('Base64');
@@ -117,6 +118,15 @@ export default function Base64Client() {
         a.download = mode === 'encode' ? 'encoded.txt' : 'decoded.txt';
         a.click();
         URL.revokeObjectURL(url);
+    };
+
+    const getShareText = () => {
+        const modeLabel = mode === 'encode' ? 'Encode' : 'Decode';
+        return `🔐 Base64 ${modeLabel}
+━━━━━━━━━━━━━━
+${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleString()}자${urlSafe ? ' (URL-Safe)' : ''}
+
+📍 teck-tani.com/ko/base64-encoder`;
     };
 
     return (
@@ -367,6 +377,7 @@ export default function Base64Client() {
                             >
                                 <FaDownload size={12} />
                             </button>
+                            <ShareButton shareText={getShareText()} disabled={!output} />
                         </div>
                     </div>
                     <textarea

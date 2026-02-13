@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 interface ColorValues {
     hex: string;
@@ -232,6 +233,11 @@ export default function ColorConverterClient() {
         "#EF4444", "#F97316", "#EAB308", "#22C55E", "#14B8A6",
         "#3B82F6", "#8B5CF6", "#EC4899", "#6B7280", "#000000"
     ];
+
+    const getShareText = () => {
+        const { hex, rgb, hsl } = colorValues;
+        return `\uD83C\uDFA8 Color Converter\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nHEX: ${hex}\nRGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})\nHSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)\n\n\uD83D\uDCCD teck-tani.com/color-converter`;
+    };
 
     // ---- Style Helpers ----
     const cardStyle: React.CSSProperties = {
@@ -555,6 +561,10 @@ export default function ColorConverterClient() {
                             </button>
                         </div>
                     </div>
+                </div>
+
+                <div style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
+                    <ShareButton shareText={getShareText()} />
                 </div>
             </div>
 

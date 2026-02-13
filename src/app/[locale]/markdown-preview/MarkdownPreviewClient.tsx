@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaCode, FaEye, FaTrash, FaFileAlt } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 // ===== Custom regex-based Markdown parser (no external libraries) =====
 function escapeHtml(text: string): string {
@@ -446,6 +447,17 @@ export default function MarkdownPreviewClient() {
         return () => el.removeEventListener('keydown', handleKeyDown);
     }, []);
 
+    const getShareText = () => {
+        const lines = markdown.split('\n').length;
+        const words = markdown.trim().split(/\s+/).filter(Boolean).length;
+        const chars = markdown.length;
+        return `📄 Markdown Preview
+━━━━━━━━━━━━━━
+${lines} lines / ${words} words / ${chars.toLocaleString()} chars
+
+📍 teck-tani.com/ko/markdown-preview`;
+    };
+
     // ===== Styles =====
     const containerStyle: React.CSSProperties = {
         maxWidth: "1200px",
@@ -678,6 +690,7 @@ export default function MarkdownPreviewClient() {
                     <FaTrash size={12} />
                     {t("action.clear")}
                 </button>
+                <ShareButton shareText={getShareText()} disabled={!markdown.trim()} />
             </div>
 
             {/* Split View */}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 function formatDateInput(value: string): string {
     const numbers = value.replace(/\D/g, '');
@@ -207,6 +208,14 @@ export default function KoreanAgeCalculatorClient() {
     };
 
     const genColor = result ? GENERATION_COLORS[result.generation] || '#6b7280' : '#6b7280';
+
+    const getShareText = () => {
+        if (!result) return '';
+        const line = '━━━━━━━━━━━━━━';
+        return locale === 'ko'
+            ? `🎂 나이 계산 결과\n${line}\n만 ${result.manAge}세 · 세는나이 ${result.koreanAge}세 · 연나이 ${result.yearAge}세\n${result.detailYears}년 ${result.detailMonths}개월 ${result.detailDays}일 (총 ${result.totalDays.toLocaleString()}일)\n${ZODIAC_EMOJIS[result.zodiacSign]} ${t('zodiacSigns.' + result.zodiacSign)} · ${zodiacs[result.zodiacIndex]}띠\n🎉 D-${result.dDay}\n\n📍 teck-tani.com/ko/korean-age-calculator`
+            : `🎂 Age Calculator Result\n${line}\nAge ${result.manAge} · Korean Age ${result.koreanAge} · Year Age ${result.yearAge}\n${result.detailYears}y ${result.detailMonths}m ${result.detailDays}d (${result.totalDays.toLocaleString()} days)\n${ZODIAC_EMOJIS[result.zodiacSign]} ${t('zodiacSigns.' + result.zodiacSign)} · ${zodiacs[result.zodiacIndex]}\n🎉 D-${result.dDay}\n\n📍 teck-tani.com/en/korean-age-calculator`;
+    };
 
     return (
         <div className="age-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px' }}>
@@ -493,6 +502,10 @@ export default function KoreanAgeCalculatorClient() {
                                 </div>
                             ))}
                         </div>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+                        <ShareButton shareText={getShareText()} disabled={!result} />
                     </div>
                 </>
             )}

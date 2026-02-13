@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 // Animated number component
 function AnimatedNumber({ value, duration = 600 }: { value: number; duration?: number }) {
@@ -278,6 +279,11 @@ export default function PayCalClient() {
         const childDeduction = 150000 * kids;
         tax = Math.max(0, tax - childDeduction);
         return tax / 12;
+    };
+
+    const getShareText = () => {
+        if (!result) return '';
+        return `💰 ${tResult("title")}\n━━━━━━━━━━━━━━\n${tResult("gross")}: ${result.monthlyGross.toLocaleString("ko-KR")}${tResult("currency")}\n${tResult("totalDeduction")}: -${result.totalDeduction.toLocaleString("ko-KR")}${tResult("currency")}\n${tResult("net")}: ${result.netSalary.toLocaleString("ko-KR")}${tResult("currency")}\n${tResult("annualNet")}: ${result.annualNetSalary.toLocaleString("ko-KR")}${tResult("currency")}\n\n📍 teck-tani.com/salary-calculator`;
     };
 
     const calculate = () => {
@@ -791,6 +797,11 @@ export default function PayCalClient() {
                     </div>
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: '24px' }}>
+                <ShareButton shareText={getShareText()} disabled={!result} />
+            </div>
 
             {/* Info Section */}
             <section className="paycal-info-section" style={{ marginTop: '48px' }}>

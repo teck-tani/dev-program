@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 // SQL dialect options mapped to sql-formatter library language values
 type SqlDialect = "sql" | "mysql" | "postgresql" | "tsql" | "plsql" | "sqlite";
@@ -341,6 +342,14 @@ export default function SqlFormatterClient() {
 
     const inputLines = input.split('\n').length;
 
+    const getShareText = () => {
+        return `🗃️ SQL Formatter
+━━━━━━━━━━━━━━
+${inputLines} lines → ${outputLines} lines (${dialect.toUpperCase()})
+
+📍 teck-tani.com/ko/sql-formatter`;
+    };
+
     return (
         <div className="container" style={{ maxWidth: "1000px", padding: "20px" }}>
             {/* Options bar */}
@@ -521,6 +530,7 @@ export default function SqlFormatterClient() {
                 >
                     {copied ? t('copied') : t('copyBtn')}
                 </button>
+                <ShareButton shareText={getShareText()} disabled={!output} />
                 <button
                     onClick={handleSwap}
                     disabled={!output}

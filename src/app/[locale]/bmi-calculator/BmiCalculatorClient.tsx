@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 interface BmiResult {
     bmi: number;
@@ -79,6 +80,11 @@ export default function BmiCalculatorClient() {
         const max = 45;
         const clamped = Math.max(min, Math.min(max, bmi));
         return ((clamped - min) / (max - min)) * 100;
+    };
+
+    const getShareText = () => {
+        if (!result) return '';
+        return `⚖️ BMI ${tResult("title")}\n━━━━━━━━━━━━━━\nBMI: ${result.bmi.toFixed(2)} (${tResult(result.classification)})\n${tResult("normalRange")}: ${result.normalWeightMin} ~ ${result.normalWeightMax} ${tResult("weightUnit")}\n\n📍 teck-tani.com/bmi-calculator`;
     };
 
     const TABLE_ROWS = [
@@ -360,6 +366,11 @@ export default function BmiCalculatorClient() {
                     </div>
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: 20 }}>
+                <ShareButton shareText={getShareText()} disabled={!result} />
+            </div>
 
             {/* WHO Classification Table */}
             <div

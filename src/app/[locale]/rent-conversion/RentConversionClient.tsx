@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 type ConversionMode = "jeonseToMonthly" | "monthlyToJeonse";
 
@@ -66,6 +67,17 @@ export default function RentConversionClient() {
             };
         }
     }, [calculated, mode, rawJeonse, rawMonthlyDeposit, rawMonthlyRent, rateNum]);
+
+    const getShareText = () => {
+        if (!result) return '';
+        if (mode === "jeonseToMonthly" && "convertedMonthlyRent" in result) {
+            return `🏠 ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("result.convertedMonthlyRent")}: ${formatNumber(result.convertedMonthlyRent ?? 0)}${t("input.amountUnit")}\n${t("input.jeonseDeposit")}: ${formatNumber(result.jeonse ?? 0)}${t("input.amountUnit")}\n${t("input.monthlyDeposit")}: ${formatNumber(result.deposit ?? 0)}${t("input.amountUnit")}\n${t("result.depositDifference")}: ${formatNumber(result.depositDifference ?? 0)}${t("input.amountUnit")}\n\n📍 teck-tani.com/rent-conversion`;
+        }
+        if (mode === "monthlyToJeonse" && "convertedDeposit" in result) {
+            return `🏠 ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("result.convertedDeposit")}: ${formatNumber(result.convertedDeposit ?? 0)}${t("input.amountUnit")}\n${t("input.monthlyDeposit")}: ${formatNumber(result.deposit ?? 0)}${t("input.amountUnit")}\n${t("input.monthlyRent")}: ${formatNumber(result.monthlyRent ?? 0)}${t("input.amountUnit")}\n${t("result.depositDifference")}: ${formatNumber(result.depositDifference ?? 0)}${t("input.amountUnit")}\n\n📍 teck-tani.com/rent-conversion`;
+        }
+        return '';
+    };
 
     const handleCalculate = useCallback(() => {
         if (mode === "jeonseToMonthly") {
@@ -726,6 +738,11 @@ export default function RentConversionClient() {
                     </div>
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: 20 }}>
+                <ShareButton shareText={getShareText()} disabled={!calculated || !result} />
+            </div>
 
             {/* Formula Info Section */}
             <div

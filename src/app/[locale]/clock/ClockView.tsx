@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import styles from './ClockView.module.css';
 import { CITY_DATABASE, type City } from './CitySearchModal';
 import { useTheme } from '@/contexts/ThemeContext';
+import ShareButton from '@/components/ShareButton';
 
 // ============================================
 // Lazy load heavy components
@@ -582,6 +583,20 @@ export default function ClockView() {
     [state.mainClock.timezone, currentTime]
   );
 
+  const getShareText = () => {
+    const mainTime = formatTime(mainClockTime);
+    const mainName = getCityName(state.mainClock, locale);
+    const subTexts = state.subClocks.map(city => {
+      const cityTime = getTimeForTimezone(city.timezone);
+      const ft = formatTime(cityTime);
+      const diff = getTimeDifference(state.mainClock.timezone, city.timezone, locale);
+      return `${getCityName(city, locale)}: ${ft.hours}:${ft.minutes} (${diff})`;
+    }).join('\n');
+    const line = '━━━━━━━━━━━━━━';
+    const url = locale === 'ko' ? 'teck-tani.com/ko/clock' : 'teck-tani.com/en/clock';
+    return `🕐 ${mainName} ${mainTime.hours}:${mainTime.minutes}:${mainTime.seconds}\n${line}\n${subTexts}\n\n📍 ${url}`;
+  };
+
   // Prevent hydration mismatch - only render clock after mount
   if (!isMounted) {
     return (
@@ -688,6 +703,10 @@ export default function ClockView() {
               </div>
             </div>
           )}
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+          <ShareButton shareText={getShareText()} />
         </div>
       </div>
 

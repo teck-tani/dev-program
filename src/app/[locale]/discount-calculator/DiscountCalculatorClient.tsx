@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 type CalcMode = "discountRate" | "discountPrice" | "margin";
 
@@ -132,6 +133,23 @@ export default function DiscountCalculatorClient() {
         setResultMarginRate(null);
         setResultMarginAmount(null);
     };
+
+    const getShareText = () => {
+        if (mode === "discountRate" && resultDiscountRate !== null) {
+            return `🏷️ ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("label.originalPrice")}: ${originalPrice1} ${t("unit")}\n${t("label.discountedPrice")}: ${discountedPrice} ${t("unit")}\n${t("result.discountRate")}: ${resultDiscountRate.toFixed(1)}%\n${t("result.discountAmount")}: ${formatNumber(resultDiscountAmount!)} ${t("unit")}\n\n📍 teck-tani.com/discount-calculator`;
+        }
+        if (mode === "discountPrice" && resultDiscountedPrice !== null) {
+            return `🏷️ ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("label.originalPrice")}: ${originalPrice2} ${t("unit")}\n${t("result.discountRate")}: ${discountRateInput}%\n${t("result.finalPrice")}: ${formatNumber(resultDiscountedPrice)} ${t("unit")}\n${t("result.discountAmount")}: ${formatNumber(resultDiscountAmount2!)} ${t("unit")}\n\n📍 teck-tani.com/discount-calculator`;
+        }
+        if (mode === "margin" && resultMarginRate !== null) {
+            return `🏷️ ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("label.costPrice")}: ${costPrice} ${t("unit")}\n${t("label.sellingPrice")}: ${sellingPrice} ${t("unit")}\n${t("result.marginRate")}: ${resultMarginRate.toFixed(1)}%\n${t("result.marginAmount")}: ${formatNumber(resultMarginAmount!)} ${t("unit")}\n\n📍 teck-tani.com/discount-calculator`;
+        }
+        return '';
+    };
+
+    const hasResult = (mode === "discountRate" && resultDiscountRate !== null)
+        || (mode === "discountPrice" && resultDiscountedPrice !== null)
+        || (mode === "margin" && resultMarginRate !== null);
 
     const modes: CalcMode[] = ["discountRate", "discountPrice", "margin"];
 
@@ -519,6 +537,11 @@ export default function DiscountCalculatorClient() {
                     />
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: "16px" }}>
+                <ShareButton shareText={getShareText()} disabled={!hasResult} />
+            </div>
 
             {/* 참고 공식 카드 */}
             <div style={{

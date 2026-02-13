@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaRedo, FaTrash, FaCheck } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 function generateUuidV4(): string {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -109,6 +110,13 @@ export default function UuidGeneratorClient() {
             return next;
         });
     }, [withHyphens]);
+
+    const getShareText = () => {
+        if (uuids.length === 0) return '';
+        const uuidList = uuids.slice(0, 5).join('\n');
+        const more = uuids.length > 5 ? `\n... +${uuids.length - 5} more` : '';
+        return `\uD83D\uDD11 UUID Generator\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${uuidList}${more}\n\n\uD83D\uDCCD teck-tani.com/uuid-generator`;
+    };
 
     const handleHyphensToggle = useCallback(() => {
         setWithHyphens((prev) => {
@@ -508,6 +516,10 @@ export default function UuidGeneratorClient() {
                             {t("copyAll")}
                         </button>
                     )}
+
+                    <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
+                        <ShareButton shareText={getShareText()} disabled={uuids.length === 0} />
+                    </div>
                 </div>
             )}
 

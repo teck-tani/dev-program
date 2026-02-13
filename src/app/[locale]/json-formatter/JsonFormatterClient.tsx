@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 // Syntax highlight colors
 const lightColors = {
@@ -301,6 +302,14 @@ export default function JsonFormatterClient() {
 
     const hasValidOutput = output && !error && output !== t('validate.success');
 
+    const getShareText = () => {
+        return `📋 JSON Formatter
+━━━━━━━━━━━━━━
+${input.length.toLocaleString()}자 → ${output.length.toLocaleString()}자${stats ? ` (${stats.lines} lines, ${stats.size})` : ''}
+
+📍 teck-tani.com/ko/json-formatter`;
+    };
+
     return (
         <div style={{ background: isDark ? '#1e293b' : 'white', borderRadius: '16px', boxShadow: isDark ? 'none' : '0 4px 20px rgba(0,0,0,0.08)', padding: '25px', marginBottom: '30px' }}>
             {/* Control Bar */}
@@ -437,6 +446,7 @@ export default function JsonFormatterClient() {
                             >
                                 {copied ? t('btn.copied') : t('btn.copy')}
                             </button>
+                            <ShareButton shareText={getShareText()} disabled={!hasValidOutput} />
                         </div>
                     </div>
 

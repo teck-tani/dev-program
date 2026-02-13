@@ -9,6 +9,7 @@ import { recordPomoSession } from "./PomodoroStats";
 import { incrementTaskPomo } from "./PomodoroTasks";
 import dynamic from "next/dynamic";
 import styles from "./timer.module.css";
+import ShareButton from "@/components/ShareButton";
 
 const PomodoroStats = dynamic(() => import("./PomodoroStats"), { ssr: false });
 const PomodoroTasks = dynamic(() => import("./PomodoroTasks"), { ssr: false });
@@ -486,6 +487,21 @@ export default function TimerView() {
         localStorage.setItem(PRESETS_KEY, JSON.stringify(newPresets));
     };
 
+    const getShareText = () => {
+        const h = inputValues.h; const m = inputValues.m; const s = inputValues.s;
+        const parts: string[] = [];
+        if (h > 0) parts.push(`${h}h`);
+        if (m > 0) parts.push(`${m}m`);
+        if (s > 0) parts.push(`${s}s`);
+        const timeStr = parts.length > 0 ? parts.join(' ') : '0s';
+        const params = new URLSearchParams();
+        if (h > 0) params.set('h', String(h));
+        if (m > 0) params.set('m', String(m));
+        if (s > 0) params.set('s', String(s));
+        const url = `${typeof window !== 'undefined' ? window.location.origin : ''}${typeof window !== 'undefined' ? window.location.pathname : ''}/timer?${params.toString()}`;
+        return `⏱️ Timer: ${timeStr}\n━━━━━━━━━━━━━━\n${url}\n\n📍 teck-tani.com/ko/timer`;
+    };
+
     // Share
     const handleShare = async () => {
         const params = new URLSearchParams();
@@ -860,9 +876,12 @@ export default function TimerView() {
                 {/* Feature buttons row */}
                 <div className={styles.featureRow}>
                     {mode === 'timer' && (
-                        <button onClick={handleShare} className={`${styles.featureBtn} ${shareCopied ? styles.featureActive : ''}`}>
-                            🔗 {shareCopied ? t('share.copied') : t('share.copy')}
-                        </button>
+                        <>
+                            <button onClick={handleShare} className={`${styles.featureBtn} ${shareCopied ? styles.featureActive : ''}`}>
+                                🔗 {shareCopied ? t('share.copied') : t('share.copy')}
+                            </button>
+                            <ShareButton shareText={getShareText()} className={styles.featureBtn} />
+                        </>
                     )}
                     <button onClick={() => setVoiceCountdown(prev => !prev)} className={`${styles.featureBtn} ${voiceCountdown ? styles.featureActive : ''}`}>
                         🗣️ {t('voice.label')}

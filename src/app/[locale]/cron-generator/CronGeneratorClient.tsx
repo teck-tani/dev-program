@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 interface FieldConfig {
     type: 'every' | 'specific' | 'range' | 'interval';
@@ -375,6 +376,15 @@ export default function CronGeneratorClient() {
     const cronParts = cronExpression.split(' ');
     const partLabels = [t('fields.minute'), t('fields.hour'), t('fields.dayOfMonth'), t('fields.month'), t('fields.dayOfWeek')];
 
+    const getShareText = () => {
+        return `⏰ Cron Expression
+━━━━━━━━━━━━━━
+${cronExpression}
+${description ? `→ ${description}` : ''}
+
+📍 teck-tani.com/ko/cron-generator`;
+    };
+
     return (
         <div className="container" style={{ maxWidth: "1000px", padding: "20px" }}>
             <section style={{ textAlign: "center", marginBottom: "40px" }}>
@@ -469,6 +479,7 @@ export default function CronGeneratorClient() {
                     >
                         {copied ? t('copied') : t('copyBtn')}
                     </button>
+                    <ShareButton shareText={getShareText()} disabled={!cronExpression} />
                     <button
                         onClick={handleReset}
                         style={{

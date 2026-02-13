@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { IoCopyOutline } from "react-icons/io5";
+import ShareButton from "@/components/ShareButton";
 
 type CalcMode = "contractToNet" | "netToContract";
 
@@ -127,6 +128,11 @@ export default function FreelancerTaxClient() {
     const handleReset = () => {
         setInputValue("");
         setResult(null);
+    };
+
+    const getShareText = () => {
+        if (!result) return '';
+        return `📋 3.3% ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("label.contractAmount")}: ${formatNumber(result.contractAmount)}${t("unit")}\n${t("label.totalTax")} (3.3%): -${formatNumber(result.totalTax)}${t("unit")}\n${t("label.netAmount")}: ${formatNumber(result.netAmount)}${t("unit")}\n\n📍 teck-tani.com/freelancer-tax`;
     };
 
     const modes: CalcMode[] = ["contractToNet", "netToContract"];
@@ -536,6 +542,11 @@ export default function FreelancerTaxClient() {
                     </div>
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: "16px" }}>
+                <ShareButton shareText={getShareText()} disabled={!result} />
+            </div>
 
             {/* Formula Card */}
             <div style={{

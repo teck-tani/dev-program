@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 type UnitKey = 'bit' | 'byte' | 'kb' | 'mb' | 'gb' | 'tb' | 'pb';
 
@@ -124,6 +125,12 @@ export default function FileSizeConverterClient() {
         { label: '8 GB (USB)', unit: 'gb' as UnitKey, value: 8 },
         { label: '1 TB', unit: 'tb' as UnitKey, value: 1 },
     ];
+
+    const getShareText = () => {
+        const value = parseFloat(inputValue);
+        if (isNaN(value) || value <= 0) return '';
+        return `\uD83D\uDCBE File Size Converter\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${inputValue} ${unitNames[selectedUnit]} = ${results.byte} Bytes\nKB: ${results.kb} | MB: ${results.mb} | GB: ${results.gb}\n\n\uD83D\uDCCD teck-tani.com/file-size-converter`;
+    };
 
     const cardBg = isDark ? "#1e293b" : "white";
     const cardShadow = isDark ? "none" : "0 4px 20px rgba(0,0,0,0.08)";
@@ -257,6 +264,11 @@ export default function FileSizeConverterClient() {
                         </div>
                     </div>
                 )}
+
+                {/* Share Button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                    <ShareButton shareText={getShareText()} disabled={isNaN(parseFloat(inputValue)) || parseFloat(inputValue) <= 0} />
+                </div>
             </div>
 
             {/* Transfer Time Calculator */}

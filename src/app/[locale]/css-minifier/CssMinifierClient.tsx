@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaCompress, FaExpand, FaTrash, FaFileCode } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 // ===== CSS Minify (no external library) =====
 function minifyCSS(css: string): string {
@@ -199,6 +200,16 @@ export default function CssMinifierClient() {
     const handleLoadSample = useCallback(() => {
         setInput(SAMPLE_CSS);
     }, []);
+
+    const getShareText = () => {
+        const modeLabel = mode === 'minify' ? 'Minify' : 'Beautify';
+        const reduction = stats ? `${Math.abs(Number(stats.savedPercent))}%` : '';
+        return `🎨 CSS ${modeLabel}
+━━━━━━━━━━━━━━
+${stats ? `${stats.originalBytes.toLocaleString()}B → ${stats.resultBytes.toLocaleString()}B (${stats.savedBytes >= 0 ? '-' : '+'}${reduction})` : ''}
+
+📍 teck-tani.com/ko/css-minifier`;
+    };
 
     // ===== Styles =====
     const cardBg = isDark ? "#2a2a3e" : "#ffffff";
@@ -541,6 +552,7 @@ export default function CssMinifierClient() {
                         {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
                         {copied ? t("copied") : t("copy")}
                     </button>
+                    <ShareButton shareText={getShareText()} disabled={!output} />
                 </div>
                 <textarea
                     ref={outputRef}

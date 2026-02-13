@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { IoCopyOutline } from "react-icons/io5";
+import ShareButton from "@/components/ShareButton";
 
 interface CalcResult {
     investment: number;
@@ -173,6 +174,12 @@ export default function StockCalculatorClient() {
         setCommissionRate("0.015");
         setTaxRate("0.18");
     }, []);
+
+    const getShareText = () => {
+        if (!result) return '';
+        const sign = result.netProfit >= 0 ? '+' : '';
+        return `📈 ${t("result.title")}\n━━━━━━━━━━━━━━\n${t("result.netProfit")}: ${sign}${formatNumber(result.netProfit)}${t("unit")}\n${t("result.returnRate")}: ${sign}${result.returnRate.toFixed(2)}%\n${t("result.totalCommission")}: ${formatNumber(result.totalCommission)}${t("unit")}\n${t("result.tax")}: ${formatNumber(result.tax)}${t("unit")}\n${t("breakeven.price")}: ${formatPrice(result.breakevenPrice)}${t("unit")}\n\n📍 teck-tani.com/stock-calculator`;
+    };
 
     const isProfit = result ? result.netProfit >= 0 : true;
     const profitColor = isProfit
@@ -793,6 +800,11 @@ export default function StockCalculatorClient() {
                     </p>
                 </div>
             )}
+
+            {/* Share Button */}
+            <div style={{ marginBottom: "16px" }}>
+                <ShareButton shareText={getShareText()} disabled={!result} />
+            </div>
 
             {/* Formula Card */}
             <div style={{

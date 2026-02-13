@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaImage, FaDownload, FaTrash, FaCog, FaCompress } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 type OutputFormat = 'image/jpeg' | 'image/webp' | 'image/png';
 
@@ -231,6 +232,12 @@ export default function ImageCompressorClient() {
     const totalCompressedSize = images.reduce((sum, img) => sum + img.compressedSize, 0);
     const completedCount = images.filter(img => img.status === 'done').length;
 
+    const getShareText = () => {
+        if (completedCount === 0) return '';
+        const reduction = totalCompressedSize > 0 ? calculateReduction(totalOriginalSize, totalCompressedSize) : 0;
+        return `\u{1F5DC}\uFE0F ${t('buttons.compress')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${formatBytes(totalOriginalSize)} \u2192 ${formatBytes(totalCompressedSize)} (-${reduction}%)\n${t('summary.images')}: ${completedCount}\n\n\u{1F4CD} teck-tani.com/image-compressor`;
+    };
+
     return (
         <div style={{ minHeight: '100vh', background: isDark ? "#0f172a" : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
@@ -456,6 +463,13 @@ export default function ImageCompressorClient() {
                                 {totalCompressedSize > 0 ? `${calculateReduction(totalOriginalSize, totalCompressedSize)}%` : '-'}
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Share Button */}
+                {completedCount > 0 && (
+                    <div style={{ marginBottom: '20px' }}>
+                        <ShareButton shareText={getShareText()} disabled={completedCount === 0} />
                     </div>
                 )}
 

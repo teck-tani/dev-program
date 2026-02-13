@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 // Types
 interface LottoRound {
@@ -192,6 +193,12 @@ export default function LottoClient() {
     }, [stats, sortBy]);
 
 
+    // --- Share ---
+    const getShareText = () => {
+        if (generatedNumbers.length === 0) return '';
+        return `\u{1F3B0} ${t('generator.start')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${generatedNumbers.join(' - ')}\n\n\u{1F4CD} teck-tani.com/lotto-generator`;
+    };
+
     // --- Helpers ---
     const getBallColor = (num: number) => {
         if (num <= 10) return "#FBC400";
@@ -313,6 +320,9 @@ export default function LottoClient() {
                         >
                             {isAnimating ? t('generator.generating') : t('generator.start')}
                         </button>
+                        <div style={{ marginTop: "12px" }}>
+                            <ShareButton shareText={getShareText()} disabled={generatedNumbers.length === 0 || isAnimating} />
+                        </div>
                     </div>
 
                 </div>

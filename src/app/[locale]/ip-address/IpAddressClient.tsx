@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
+import ShareButton from "@/components/ShareButton";
 
 interface IpInfo {
     ip: string;
@@ -205,6 +206,11 @@ export default function IpAddressClient() {
 
     const isDataReady = ipInfo && !loading && !lookupLoading;
 
+    const getShareText = () => {
+        if (!ipInfo || !ipv4) return '';
+        return `\uD83C\uDF10 IP Address\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nIP: ${ipv4}\nLocation: ${ipInfo.city}, ${ipInfo.regionName}, ${ipInfo.country}\nISP: ${ipInfo.isp}\nTimezone: ${ipInfo.timezone}\n\n\uD83D\uDCCD teck-tani.com/ip-address`;
+    };
+
     return (
         <div className="container" style={{ maxWidth: "800px", padding: "20px" }}>
             {/* Custom IP/Domain Lookup */}
@@ -307,17 +313,20 @@ export default function IpAddressClient() {
                         }}>
                             {ipv4}
                         </p>
-                        <button
-                            onClick={() => handleCopy(ipv4 || '', setCopied)}
-                            style={{
-                                padding: "10px 28px", background: copied ? "rgba(39,174,96,0.8)" : "rgba(255,255,255,0.2)",
-                                color: "white", border: "1px solid rgba(255,255,255,0.3)",
-                                borderRadius: "8px", cursor: "pointer", fontSize: "0.95rem",
-                                fontWeight: 500, transition: "all 0.2s"
-                            }}
-                        >
-                            {copied ? t('copied') : t('copyBtn')}
-                        </button>
+                        <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+                            <button
+                                onClick={() => handleCopy(ipv4 || '', setCopied)}
+                                style={{
+                                    padding: "10px 28px", background: copied ? "rgba(39,174,96,0.8)" : "rgba(255,255,255,0.2)",
+                                    color: "white", border: "1px solid rgba(255,255,255,0.3)",
+                                    borderRadius: "8px", cursor: "pointer", fontSize: "0.95rem",
+                                    fontWeight: 500, transition: "all 0.2s"
+                                }}
+                            >
+                                {copied ? t('copied') : t('copyBtn')}
+                            </button>
+                            <ShareButton shareText={getShareText()} disabled={!ipInfo} className="share-btn" />
+                        </div>
 
                         {/* IPv6 section */}
                         {!isCustomLookup && (

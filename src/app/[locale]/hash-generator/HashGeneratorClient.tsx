@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaFileUpload, FaTrash, FaExchangeAlt } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
 
 // ===== MD5 구현 (Web Crypto API에 없으므로 순수 JS) =====
 function md5(input: string): string {
@@ -451,6 +452,14 @@ export default function HashGeneratorClient() {
     const currentHashes = mode === 'text' ? hashes : fileHashes;
     const hasResults = Object.values(currentHashes).some(v => v !== '');
 
+    const getShareText = () => {
+        if (!hasResults) return '';
+        const firstAlgo = ALGORITHMS.find(a => currentHashes[a] !== '');
+        if (!firstAlgo) return '';
+        const hashVal = uppercase ? currentHashes[firstAlgo].toUpperCase() : currentHashes[firstAlgo];
+        return `#\uFE0F\u20E3 Hash Generator\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${firstAlgo}: ${hashVal}\n\n\uD83D\uDCCD teck-tani.com/hash-generator`;
+    };
+
     return (
         <div style={{ maxWidth: "800px", margin: "0 auto", padding: "16px" }}>
             {/* Toast */}
@@ -805,6 +814,10 @@ export default function HashGeneratorClient() {
                                 </div>
                             );
                         })}
+                    </div>
+
+                    <div style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
+                        <ShareButton shareText={getShareText()} disabled={!hasResults} />
                     </div>
                 </div>
             )}
