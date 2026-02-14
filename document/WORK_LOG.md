@@ -1,6 +1,6 @@
 # WORK_LOG.md — teck-tani.com 전체 현황 및 전략
 
-> 최종 업데이트: 2026-02-12
+> 최종 업데이트: 2026-02-14
 > 도메인: teck-tani.com | 배포: Vercel | 스택: Next.js 16 + React 19 + Tailwind 4 + next-intl
 
 ---
@@ -131,14 +131,14 @@
 |------|------|----------|-----|---------|
 | SQL 포맷터 | /sql-formatter | SQL 정렬/구문강조 | ✅ | - |
 | Cron 생성기 | /cron-generator | 비주얼 빌더, 다음 실행 미리보기 | ✅ | 크론 파서 + 예측 엔진 |
-| 정규식 테스터 | /regex-tester | 실시간 매칭, 캡처그룹, 치환, 프리셋 | ✅ | JS RegExp 엔진, 5가지 플래그 |
-| 해시 생성기 | /hash-generator | MD5/SHA-1/SHA-256/SHA-384/SHA-512, 실시간 계산, 파일 해시 | ✅ | Web Crypto API + 순수 JS MD5 |
-| 타임스탬프 변환기 | /timestamp-converter | Unix 타임스탬프↔날짜 변환, 초/밀리초 자동 감지, 다양한 포맷 | ✅ | ISO 8601, UTC, 로컬, 상대 시간 |
-| UUID 생성기 | /uuid-generator | UUID v4 생성, 대량(100개), 대소문자/하이픈 옵션 | ✅ | Web Crypto API, 히스토리 |
-| JWT 디코더 | /jwt-decoder | Header/Payload/Signature 분석, 만료 확인 | ✅ | 타임스탬프 자동 변환 |
-| HTML 엔티티 변환기 | /html-entity | 실시간 인코딩/디코딩, Named/Numeric/Hex 엔티티, 레퍼런스 테이블 | ✅ | 23개 엔티티 참조표 |
-| Markdown 미리보기 | /markdown-preview | 실시간 마크다운→HTML 변환, 분할 에디터, 복사 | ✅ | 자체 정규식 파서, 외부 라이브러리 無 |
-| CSS Minifier | /css-minifier | CSS 압축(Minify)/정렬(Beautify), 크기 통계 | ✅ | 순수 JS, 주석/공백/세미콜론 제거 |
+| 정규식 테스터 | /regex-tester | 실시간 매칭, 캡처그룹, 치환, 프리셋, **패턴 해석, URL 공유, 치트시트, Named 그룹, 실행시간, 백트래킹 경고** | ✅ | JS RegExp 엔진, 5가지 플래그 |
+| 해시 생성기 | /hash-generator | MD5/SHA-1/SHA-256/SHA-384/SHA-512, 파일 해시, **해시 검증, HMAC, 다중파일 배치, 대용량 진행률, .sha256 다운로드** | ✅ | Web Crypto API + 순수 JS MD5 |
+| 타임스탬프 변환기 | /timestamp-converter | Unix↔날짜, 다양한 포맷, **타임존 선택, 두 타임스탬프 차이, 배치 변환, 코드 스니펫(7개 언어), 프리셋** | ✅ | ISO 8601, UTC, 로컬 |
+| UUID 생성기 | /uuid-generator | **UUID v1/v4/v7**, 대량(100개), **유효성 검증, 타임스탬프 추출, NIL/MAX UUID, .txt 다운로드** | ✅ | Web Crypto API, 히스토리 |
+| JWT 디코더 | /jwt-decoder | Header/Payload/Signature 분석, **서명 검증(HMAC), 인코딩 모드, 알고리즘 비교표, 만료 카운트다운, 표준 Claim 툴팁, alg:none 경고** | ✅ | 타임스탬프 자동 변환 |
+| HTML 엔티티 변환기 | /html-entity | 인코딩/디코딩, **Named/Decimal/Hex 형식 선택, 130+ 엔티티 참조표, 검색/필터, 8개 유니코드 블록 브라우징** | ✅ | 카테고리별 엔티티 데이터 |
+| Markdown 미리보기 | /markdown-preview | 마크다운→HTML, 분할 에디터, **GFM 체크리스트, 이모지 shortcode, 코드 구문강조(7개 언어), PDF/HTML 내보내기, .md 업로드, TOC 자동생성, LaTeX 수식** | ✅ | 자체 파서, 외부 라이브러리 無 |
+| CSS Minifier | /css-minifier | CSS Minify/Beautify, **고급 최적화(색상축약/0단위 등), 최적화 리포트, .min.css 다운로드, CSS 검증/린트, Before/After diff** | ✅ | 순수 JS |
 
 ### SEO 섹션 현황 ✅
 
@@ -393,3 +393,13 @@
 | 2026-02-12 | Markdown 미리보기 신규 추가: 실시간 마크다운→HTML 변환, 분할 화면 에디터(좌: 입력, 우: 미리보기), 자체 정규식 기반 파서(외부 라이브러리 無), 제목/굵게/기울임/취소선/코드블록/표/인용구/목록/링크/이미지/수평선 전체 지원, MD/HTML 복사, 샘플 로드, 싱크 스크롤, 반응형(데스크톱 좌우·모바일 상하), JSON-LD 3종 + SEO 6섹션 완비 |
 | 2026-02-12 | IP 주소 조회 확장: User-Agent/브라우저/OS/플랫폼/언어/화면해상도/쿠키/DNT 정보 표시 섹션 추가, UA 문자열 복사 |
 | 2026-02-12 | 글자수 세기 확장: 200자 원고지/400자 원고지 매수 카운터 추가 |
+| 2026-02-14 | **개발자 도구 8개 상세 기능 대규모 강화** (총 ~44개 기능 추가): |
+|  | — 해시 생성기: 해시 검증 모드, HMAC 지원, 다중 파일 배치, 대용량 진행률, .sha256 체크섬 다운로드 |
+|  | — UUID 생성기: v1(타임스탬프)/v7(시간정렬) 추가, 유효성 검증 모드, 타임스탬프 추출, NIL/MAX UUID, .txt 다운로드 |
+|  | — JWT 디코더: 서명 검증(HMAC), JWT 인코딩 모드, 알고리즘 비교표, 만료 카운트다운, 표준 Claim 툴팁, alg:none 경고 |
+|  | — 타임스탬프 변환기: 타임존 선택, 두 타임스탬프 차이 계산, 배치 변환(50개), 코드 스니펫(JS/Python/Java/Go/PHP/Ruby/Bash), 프리셋 |
+|  | — CSS Minifier: 고급 최적화(색상축약/0단위/rgb→키워드), 최적화 리포트, .min.css 다운로드, CSS 검증/린트, Before/After diff |
+|  | — 정규식 테스터: 패턴 해석 패널, URL 공유, 치트시트(6카테고리), Named 캡처그룹, 실행 시간 측정, 백트래킹 경고 |
+|  | — Markdown 미리보기: GFM 체크리스트, 이모지 shortcode(100개), 코드 구문강조(7개 언어), PDF/HTML 내보내기, .md 업로드, TOC 자동생성, LaTeX 수식 |
+|  | — HTML 엔티티 변환기: Named/Decimal/Hex 인코딩 형식 선택, 130+ 엔티티 참조표(entityData.ts), 검색/필터, 8개 유니코드 블록 브라우징 |
+|  | — 공통: src/utils/fileDownload.ts 유틸리티 생성, ko.json/en.json 중복 섹션 정리 |

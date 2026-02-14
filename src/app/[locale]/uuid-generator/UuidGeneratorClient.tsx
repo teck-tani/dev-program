@@ -27,9 +27,9 @@ let _v1LastTimestamp = 0;
 function generateUuidV1(): string {
     // UUID epoch: Oct 15, 1582 00:00:00
     // Offset from Unix epoch in 100ns intervals
-    const UUID_EPOCH_OFFSET = 122192928000000000n;
+    const UUID_EPOCH_OFFSET = BigInt("122192928000000000");
 
-    const now = BigInt(Date.now()) * 10000n + UUID_EPOCH_OFFSET;
+    const now = BigInt(Date.now()) * BigInt(10000) + UUID_EPOCH_OFFSET;
 
     // Clock sequence: random 14-bit
     if (_v1ClockSeq < 0 || Number(now) <= _v1LastTimestamp) {
@@ -37,9 +37,9 @@ function generateUuidV1(): string {
     }
     _v1LastTimestamp = Number(now);
 
-    const timeLow = Number(now & 0xFFFFFFFFn);
-    const timeMid = Number((now >> 32n) & 0xFFFFn);
-    const timeHi = Number((now >> 48n) & 0x0FFFn) | 0x1000; // version 1
+    const timeLow = Number(now & BigInt(0xFFFFFFFF));
+    const timeMid = Number((now >> BigInt(32)) & BigInt(0xFFFF));
+    const timeHi = Number((now >> BigInt(48)) & BigInt(0x0FFF)) | 0x1000; // version 1
 
     const clockSeqHi = ((_v1ClockSeq >> 8) & 0x3f) | 0x80; // variant
     const clockSeqLow = _v1ClockSeq & 0xff;
@@ -62,12 +62,12 @@ function generateUuidV7(): string {
     crypto.getRandomValues(bytes);
 
     // First 48 bits: Unix timestamp in ms
-    bytes[0] = Number((timestamp >> 40n) & 0xFFn);
-    bytes[1] = Number((timestamp >> 32n) & 0xFFn);
-    bytes[2] = Number((timestamp >> 24n) & 0xFFn);
-    bytes[3] = Number((timestamp >> 16n) & 0xFFn);
-    bytes[4] = Number((timestamp >> 8n) & 0xFFn);
-    bytes[5] = Number(timestamp & 0xFFn);
+    bytes[0] = Number((timestamp >> BigInt(40)) & BigInt(0xFF));
+    bytes[1] = Number((timestamp >> BigInt(32)) & BigInt(0xFF));
+    bytes[2] = Number((timestamp >> BigInt(24)) & BigInt(0xFF));
+    bytes[3] = Number((timestamp >> BigInt(16)) & BigInt(0xFF));
+    bytes[4] = Number((timestamp >> BigInt(8)) & BigInt(0xFF));
+    bytes[5] = Number(timestamp & BigInt(0xFF));
 
     // Version 7: bits 48-51 = 0111
     bytes[6] = (bytes[6] & 0x0f) | 0x70;
@@ -118,9 +118,9 @@ function validateUuid(input: string): UuidValidation {
         const timeLow = BigInt("0x" + hex.slice(0, 8));
         const timeMid = BigInt("0x" + hex.slice(8, 12));
         const timeHi = BigInt("0x" + hex.slice(13, 16)); // skip version nibble at index 12
-        const uuidTimestamp = timeLow | (timeMid << 32n) | (timeHi << 48n);
-        const UUID_EPOCH_OFFSET = 122192928000000000n;
-        const unixMs = Number((uuidTimestamp - UUID_EPOCH_OFFSET) / 10000n);
+        const uuidTimestamp = timeLow | (timeMid << BigInt(32)) | (timeHi << BigInt(48));
+        const UUID_EPOCH_OFFSET = BigInt("122192928000000000");
+        const unixMs = Number((uuidTimestamp - UUID_EPOCH_OFFSET) / BigInt(10000));
         if (unixMs > 0 && unixMs < 4102444800000) { // before 2100
             timestamp = new Date(unixMs);
         }
