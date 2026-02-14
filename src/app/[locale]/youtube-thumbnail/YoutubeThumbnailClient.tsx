@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import ShareButton from "@/components/ShareButton";
 
 type Quality = "maxresdefault" | "sddefault" | "hqdefault" | "mqdefault" | "default";
 
@@ -166,14 +165,6 @@ export default function YoutubeThumbnailClient() {
     });
   };
 
-  const getShareText = () => {
-    if (!result) return '';
-    const title = result.meta?.title || result.videoId;
-    const bestQuality = result.qualities.find(q => q.loaded === true);
-    const thumbUrl = bestQuality ? bestQuality.url : '';
-    return `\u{1F3AC} YouTube Thumbnail\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${title}\n${thumbUrl}\n\n\u{1F4CD} teck-tani.com/youtube-thumbnail`;
-  };
-
   const availableCount = result?.qualities.filter((q) => q.loaded === true).length ?? 0;
 
   return (
@@ -240,7 +231,6 @@ export default function YoutubeThumbnailClient() {
               {t("resultTitle")}
             </h2>
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-              <ShareButton shareText={getShareText()} disabled={!result} />
               {availableCount > 1 && (
                 <button onClick={handleDownloadAll} style={{
                   padding: "8px 18px", borderRadius: "8px", border: "none",

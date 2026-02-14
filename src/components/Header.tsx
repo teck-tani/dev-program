@@ -133,7 +133,7 @@ export default function Header() {
       {/* Mobile Slide Menu */}
       <div className={`mobile-menu mobile-menu-left ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-menu-header">
-          <Link href="/" className="header-logo" onClick={handleLinkClick}>
+          <Link href="/" className="header-logo" onClick={handleLinkClick} prefetch={false}>
             <div className="header-logo-icon">
               <FaHome />
             </div>
@@ -163,6 +163,7 @@ export default function Header() {
                     key={tool.href}
                     href={tool.href}
                     onClick={handleLinkClick}
+                    prefetch={false}
                     className={isActive ? 'mobile-menu-active' : ''}
                     ref={isActive ? activeMenuRef : undefined}
                   >

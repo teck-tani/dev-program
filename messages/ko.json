@@ -3364,7 +3364,13 @@
       "min": "분",
       "sec": "초",
       "manuscript200": "200자 원고지",
-      "manuscript400": "400자 원고지"
+      "manuscript400": "400자 원고지",
+      "sentences": "문장 수"
+    },
+    "upload": {
+      "title": "텍스트 파일 업로드",
+      "hint": ".txt 파일을 드래그하거나 클릭하여 선택하세요",
+      "choose": "파일 선택"
     },
     "input": {
       "title": "텍스트 입력",
@@ -5814,14 +5820,57 @@
       "copied": "복사됨!",
       "copyAll": "전체 복사",
       "history": "생성 히스토리",
-      "clear": "삭제"
+      "clear": "삭제",
+      "excludeAmbiguous": "모호한 문자 제외",
+      "ambiguousHint": "헷갈리는 문자 제외"
+    },
+    "mode": {
+      "label": "생성 방식",
+      "random": "랜덤 문자",
+      "passphrase": "패스프레이즈"
+    },
+    "passphrase": {
+      "language": "언어",
+      "korean": "한국어",
+      "english": "English",
+      "wordCount": "단어 수",
+      "separator": "구분자",
+      "separatorDash": "하이픈 (-)",
+      "separatorDot": "점 (.)",
+      "separatorSpace": "공백",
+      "separatorNone": "없음",
+      "capitalize": "첫 글자 대문자"
+    },
+    "presets": {
+      "label": "프리셋",
+      "bank": "은행용",
+      "wifi": "WiFi용",
+      "pin": "PIN",
+      "general": "일반"
+    },
+    "feedback": {
+      "title": "강도를 높이려면",
+      "addLength": "길이를 12자 이상으로 늘리세요",
+      "addUppercase": "대문자를 추가하세요",
+      "addLowercase": "소문자를 추가하세요",
+      "addNumbers": "숫자를 추가하세요",
+      "addSymbols": "특수문자를 추가하세요"
     },
     "strength": {
       "label": "비밀번호 강도",
       "weak": "약함",
       "fair": "보통",
       "strong": "강함",
-      "veryStrong": "매우 강함"
+      "veryStrong": "매우 강함",
+      "crackTime": "해독 소요시간",
+      "crackInstant": "즉시",
+      "crackSeconds": "약 {time}초",
+      "crackMinutes": "약 {time}분",
+      "crackHours": "약 {time}시간",
+      "crackDays": "약 {time}일",
+      "crackYears": "약 {time}년",
+      "crackMillionYears": "약 {time}백만 년",
+      "crackBillionYears": "약 {time}억 년"
     },
     "seo": {
       "description": {
@@ -7508,6 +7557,30 @@
     "upcomingHolidays": "다가오는 공휴일",
     "copy": "복사",
     "copied": "클립보드에 복사되었습니다!",
+    "customHolidays": {
+      "title": "사용자 정의 휴일",
+      "namePlaceholder": "휴일 이름 (예: 회사 창립기념일)",
+      "add": "추가",
+      "delete": "삭제",
+      "duplicate": "이미 등록된 날짜입니다",
+      "noCustom": "등록된 사용자 정의 휴일이 없습니다"
+    },
+    "calendar": {
+      "title": "달력",
+      "business": "영업일",
+      "weekend": "주말",
+      "holiday": "공휴일",
+      "custom": "커스텀 휴일",
+      "weekdays": ["일", "월", "화", "수", "목", "금", "토"]
+    },
+    "deadlines": {
+      "title": "마감일 관리",
+      "labelPlaceholder": "마감일 이름 (예: 프로젝트 제출)",
+      "add": "추가",
+      "delete": "삭제",
+      "noDeadlines": "등록된 마감일이 없습니다"
+    },
+    "addToGoogleCalendar": "구글 캘린더에 추가",
     "seo": {
       "description": {
         "title": "영업일 계산기란?",
@@ -7707,7 +7780,9 @@
       "name": "이름",
       "color": "색상",
       "dice": "주사위",
-      "coin": "동전"
+      "coin": "동전",
+      "shuffle": "셔플",
+      "team": "팀 나누기"
     },
     "copied": "복사되었습니다!",
     "copyAll": "전체 복사",
@@ -7721,7 +7796,15 @@
       "decimals": "소수점 자릿수",
       "count": "생성 개수",
       "generate": "숫자 생성",
-      "result": "생성 결과"
+      "result": "생성 결과",
+      "presets": "프리셋",
+      "preset": {
+        "lotto": "로또 (1~45)",
+        "otp": "OTP (6자리)",
+        "seat": "좌석번호",
+        "pin": "PIN (4자리)"
+      },
+      "noDuplicates": "중복 없이 생성"
     },
     "name": {
       "type": "이름 유형",
@@ -7734,14 +7817,25 @@
     "color": {
       "count": "생성 개수",
       "generate": "색상 생성",
-      "result": "생성 결과"
+      "result": "생성 결과",
+      "paletteMode": "팔레트 모드",
+      "baseColor": "기본 색상",
+      "mode": {
+        "random": "랜덤",
+        "complementary": "보색",
+        "analogous": "유사색",
+        "monochromatic": "단색"
+      }
     },
     "dice": {
       "sides": "주사위 면",
       "count": "주사위 개수",
       "roll": "주사위 굴리기",
       "rolling": "굴리는 중...",
-      "total": "합계"
+      "total": "합계",
+      "notation": "RPG 주사위 표기법",
+      "rollNotation": "굴리기",
+      "notationHint": "예: 3d6+5, 2d20-3 (NdS±M 형식)"
     },
     "coin": {
       "flip": "동전 뒤집기",
@@ -7749,6 +7843,24 @@
       "heads": "앞면",
       "tails": "뒷면",
       "history": "기록"
+    },
+    "shuffle": {
+      "inputLabel": "항목 입력",
+      "placeholder": "한 줄에 하나씩 입력하세요\n예:\n사과\n바나나\n딸기\n포도",
+      "itemCount": "입력된 항목",
+      "shuffle": "섞기",
+      "result": "섞인 결과"
+    },
+    "team": {
+      "membersLabel": "팀원 입력",
+      "placeholder": "한 줄에 한 명씩 입력하세요\n예:\n김철수\n이영희\n박민수\n최지현",
+      "memberCount": "입력된 인원",
+      "teamCountLabel": "팀 수",
+      "teamUnit": "팀",
+      "divide": "팀 나누기",
+      "result": "팀 구성 결과",
+      "teamLabel": "팀",
+      "personUnit": "명"
     },
     "seo": {
       "description": {
@@ -7855,10 +7967,27 @@
     "tabs": {
       "zodiac": "띠 궁합",
       "star": "별자리 궁합",
-      "mbti": "MBTI 궁합"
+      "mbti": "MBTI 궁합",
+      "blood": "혈액형 궁합",
+      "combined": "종합 궁합"
     },
     "checkBtn": "궁합 보기",
     "resetBtn": "초기화",
+    "shareKakao": "카카오톡 공유",
+    "saveImage": "이미지 저장",
+    "birthday": {
+      "label": "생년월일로 자동 감지",
+      "person1": "첫 번째 생년월일",
+      "person2": "두 번째 생년월일",
+      "detected": "감지됨"
+    },
+    "details": {
+      "show": "자세히 보기",
+      "hide": "접기",
+      "strengths": "장점",
+      "cautions": "주의점",
+      "tips": "성공 팁"
+    },
     "zodiac": {
       "person1": "첫 번째 사람",
       "person2": "두 번째 사람",
@@ -7895,10 +8024,25 @@
       },
       "descriptions": {
         "samhap": "삼합 관계로, 서로를 가장 잘 이해하고 보완해주는 최고의 궁합입니다. 함께 있으면 시너지가 발생하며 자연스럽게 조화를 이룹니다.",
+        "samhap_strengths": "서로를 깊이 이해하고 존중합니다. 의사소통이 원활하며 갈등이 적습니다.",
+        "samhap_cautions": "너무 편안한 관계에 안주하지 말고 서로 발전하려는 노력이 필요합니다.",
+        "samhap_tips": "공동 목표를 설정하고 함께 노력하세요.",
         "yukhap": "육합 관계로, 서로에게 좋은 에너지를 주고받는 훌륭한 궁합입니다. 깊은 유대감을 형성하며 안정적인 관계를 유지할 수 있습니다.",
+        "yukhap_strengths": "서로에게 긍정적인 에너지를 주며 안정적인 유대감을 형성합니다.",
+        "yukhap_cautions": "서로의 기대치가 높아질 수 있으므로 현실적인 소통이 중요합니다.",
+        "yukhap_tips": "정기적으로 감사의 마음을 표현하고 소소한 이벤트를 즐기세요.",
         "sangchung": "상충 관계로, 성격과 가치관이 충돌할 수 있는 조합입니다. 서로의 차이를 인정하고 노력한다면 오히려 성장의 기회가 될 수 있습니다.",
+        "sangchung_strengths": "서로 다른 시각을 제공하여 시야를 넓혀줍니다. 갈등을 통해 성장할 수 있습니다.",
+        "sangchung_cautions": "의견 충돌 시 감정적으로 대응하지 말고 차분하게 대화하세요.",
+        "sangchung_tips": "서로의 차이를 인정하고 타협점을 찾는 연습을 하세요.",
         "same": "같은 띠끼리는 비슷한 성향을 공유하여 이해하기 쉽지만, 같은 단점도 증폭될 수 있습니다. 서로의 장점을 살려보세요.",
-        "neutral": "특별히 좋거나 나쁘지 않은 보통 궁합입니다. 서로의 노력에 따라 얼마든지 좋은 관계를 만들어 갈 수 있습니다."
+        "same_strengths": "같은 성향이라 서로를 이해하기 쉽고 공감대가 넓습니다.",
+        "same_cautions": "비슷한 약점이 동시에 나타날 수 있어 보완이 필요합니다.",
+        "same_tips": "서로의 강점을 인정하고 약점은 함께 극복해 나가세요.",
+        "neutral": "특별히 좋거나 나쁘지 않은 보통 궁합입니다. 서로의 노력에 따라 얼마든지 좋은 관계를 만들어 갈 수 있습니다.",
+        "neutral_strengths": "큰 갈등 없이 평화로운 관계를 유지할 수 있습니다.",
+        "neutral_cautions": "관계가 무미건조해지지 않도록 새로운 활동을 함께 해보세요.",
+        "neutral_tips": "공통 관심사를 찾고 함께하는 시간을 늘려보세요."
       }
     },
     "star": {
@@ -7934,9 +8078,21 @@
       },
       "descriptions": {
         "sameElement": "같은 원소에 속한 별자리끼리는 본능적으로 서로를 이해합니다. 비슷한 가치관과 감성을 공유하며, 함께 있으면 편안하고 자연스러운 관계를 형성합니다.",
+        "sameElement_strengths": "깊은 공감대와 자연스러운 소통이 가능합니다. 서로의 감정을 직감적으로 이해합니다.",
+        "sameElement_cautions": "너무 비슷하여 새로운 자극이 부족할 수 있습니다.",
+        "sameElement_tips": "함께 새로운 경험을 시도하며 관계에 신선함을 더하세요.",
         "compatible": "상생하는 원소 조합으로, 서로를 보완하며 좋은 에너지를 교환합니다. 불과 공기, 흙과 물처럼 서로에게 긍정적인 영향을 주는 관계입니다.",
+        "compatible_strengths": "서로 다른 강점으로 완벽하게 보완하는 관계입니다.",
+        "compatible_cautions": "각자의 역할에 너무 고정되지 않도록 유연성을 가지세요.",
+        "compatible_tips": "서로의 강점을 인정하고 배움의 자세를 유지하세요.",
         "neutral": "특별히 강한 끌림이나 반발은 없지만, 서로의 차이를 통해 새로운 관점을 얻을 수 있는 관계입니다. 노력 여하에 따라 좋은 관계로 발전할 수 있습니다.",
-        "opposing": "대립하는 원소 조합으로, 서로 다른 에너지가 충돌할 수 있습니다. 하지만 이 차이를 이해하고 존중한다면, 서로에게 없는 것을 채워주는 성장의 관계가 될 수 있습니다."
+        "neutral_strengths": "균형 잡힌 관계로 큰 갈등 없이 안정적입니다.",
+        "neutral_cautions": "관심이 줄어들지 않도록 꾸준한 노력이 필요합니다.",
+        "neutral_tips": "서로에 대한 호기심을 유지하고 깊은 대화를 나누세요.",
+        "opposing": "대립하는 원소 조합으로, 서로 다른 에너지가 충돌할 수 있습니다. 하지만 이 차이를 이해하고 존중한다면, 서로에게 없는 것을 채워주는 성장의 관계가 될 수 있습니다.",
+        "opposing_strengths": "서로에게 완전히 새로운 관점과 에너지를 제공합니다.",
+        "opposing_cautions": "가치관 차이로 인한 갈등이 발생할 수 있으니 인내심이 필요합니다.",
+        "opposing_tips": "차이를 비판하지 말고 배움의 기회로 받아들이세요."
       }
     },
     "mbti": {
@@ -7957,11 +8113,81 @@
       },
       "descriptions": {
         "golden": "MBTI 이론에서 가장 이상적인 골든 페어입니다! 서로의 약점을 자연스럽게 보완하고 강점을 극대화하는 최고의 조합입니다. 깊은 이해와 존중을 바탕으로 한 관계가 기대됩니다.",
+        "golden_strengths": "서로의 약점을 자연스럽게 보완하여 완벽한 팀을 이룹니다.",
+        "golden_cautions": "상대방에게 너무 의존하지 않도록 개인의 독립성도 유지하세요.",
+        "golden_tips": "서로의 성장을 응원하며 각자의 공간도 존중하세요.",
         "complementary": "서로를 보완하는 좋은 조합입니다. 비슷한 기본 성향을 공유하면서도 적절한 차이가 있어 함께 성장할 수 있는 관계입니다.",
+        "complementary_strengths": "기본적인 가치관이 비슷하면서도 적절한 차이로 자극을 줍니다.",
+        "complementary_cautions": "비슷한 점이 많아 서로를 당연시하지 않도록 주의하세요.",
+        "complementary_tips": "서로의 작은 차이점을 즐기고 새로운 관점으로 받아들이세요.",
         "same": "같은 MBTI 유형끼리는 서로를 깊이 이해하지만, 비슷한 약점이 증폭될 수 있습니다. 서로의 성장을 위해 새로운 관점을 찾아보세요.",
+        "same_strengths": "서로를 완벽히 이해하며 깊은 공감이 가능합니다.",
+        "same_cautions": "같은 약점이 동시에 나타나면 문제가 커질 수 있습니다.",
+        "same_tips": "의식적으로 다른 관점을 탐색하고 서로의 성장을 격려하세요.",
         "similar": "3가지 성향이 같아 기본적인 이해도가 높은 관계입니다. 한 가지 차이점이 오히려 관계에 신선함을 더해줄 수 있습니다.",
+        "similar_strengths": "높은 이해도와 함께 적당한 차이가 관계에 재미를 더합니다.",
+        "similar_cautions": "하나의 차이점이 반복적인 갈등 원인이 되지 않도록 주의하세요.",
+        "similar_tips": "서로 다른 그 한 가지를 존중하고 배우려는 태도를 가지세요.",
         "neutral": "적당한 유사점과 차이점을 가진 보통 궁합입니다. 서로의 차이를 존중하며 소통한다면 좋은 관계를 만들어갈 수 있습니다.",
-        "different": "매우 다른 성향의 조합이지만, 이것이 단점만은 아닙니다. 서로에게 완전히 새로운 시각을 제공하며, 노력한다면 크게 성장할 수 있는 관계입니다."
+        "neutral_strengths": "서로에게 새로운 관점을 제공하며 균형 잡힌 관계가 가능합니다.",
+        "neutral_cautions": "소통 방식의 차이로 오해가 생길 수 있으니 명확한 대화가 중요합니다.",
+        "neutral_tips": "서로의 소통 스타일을 파악하고 맞춰가는 노력을 하세요.",
+        "different": "매우 다른 성향의 조합이지만, 이것이 단점만은 아닙니다. 서로에게 완전히 새로운 시각을 제공하며, 노력한다면 크게 성장할 수 있는 관계입니다.",
+        "different_strengths": "완전히 다른 세계관을 공유하며 크게 성장할 수 있습니다.",
+        "different_cautions": "이해하기 어려운 부분이 많으므로 인내심과 열린 마음이 필수입니다.",
+        "different_tips": "상대방의 방식을 틀린 것이 아닌 다른 것으로 받아들이세요."
+      }
+    },
+    "blood": {
+      "person1": "첫 번째 사람",
+      "person2": "두 번째 사람",
+      "selectType": "혈액형 선택",
+      "placeholder": "선택하세요",
+      "tableTitle": "혈액형 궁합표",
+      "types": {
+        "perfect": "환상의 궁합",
+        "good": "좋은 궁합",
+        "neutral": "무난한 관계",
+        "challenging": "노력이 필요한 관계"
+      },
+      "descriptions": {
+        "perfect": "혈액형 궁합이 매우 좋습니다! 서로의 성격을 잘 이해하고 배려하는 이상적인 조합입니다. 자연스럽게 소통이 되며, 함께 있을 때 편안함을 느낍니다.",
+        "perfect_strengths": "서로를 깊이 이해하고 자연스럽게 배려합니다. 갈등이 적고 편안합니다.",
+        "perfect_cautions": "너무 편안한 관계에 안주하지 않도록 새로운 도전을 함께 하세요.",
+        "perfect_tips": "서로의 장점을 자주 칭찬하고 감사를 표현하세요.",
+        "good": "원만한 관계를 유지할 수 있는 좋은 궁합입니다. 서로 다른 매력을 느끼며 보완적인 관계를 만들어갈 수 있습니다.",
+        "good_strengths": "서로 다른 매력으로 끌리며 보완적인 관계를 형성합니다.",
+        "good_cautions": "가끔 소통 방식의 차이가 있을 수 있으니 열린 대화가 중요합니다.",
+        "good_tips": "상대방의 방식을 존중하고 차이를 즐기세요.",
+        "neutral": "평범한 관계입니다. 서로의 차이를 이해하고 존중하면 좋은 관계로 발전할 수 있습니다.",
+        "neutral_strengths": "특별한 갈등 요소가 없어 안정적인 관계가 가능합니다.",
+        "neutral_cautions": "관계가 단조로워지지 않도록 함께하는 활동을 늘리세요.",
+        "neutral_tips": "공통 취미를 만들고 서로에 대한 관심을 유지하세요.",
+        "challenging": "다소 차이가 있는 조합이지만, 서로 이해하려는 노력이 있다면 오히려 더 깊은 관계를 만들 수 있습니다.",
+        "challenging_strengths": "서로에게 새로운 시각을 제공하며 성장의 기회가 됩니다.",
+        "challenging_cautions": "성격 차이로 인한 갈등이 있을 수 있으니 인내심이 필요합니다.",
+        "challenging_tips": "상대방의 장점에 집중하고 차이를 배움의 기회로 삼으세요."
+      }
+    },
+    "combined": {
+      "title": "종합 궁합 분석",
+      "birthYear": "출생년도",
+      "birthDate": "생년월일",
+      "mbtiType": "MBTI 유형",
+      "bloodType": "혈액형",
+      "calculate": "종합 궁합 보기",
+      "breakdown": "세부 점수",
+      "zodiacScore": "띠 궁합",
+      "starScore": "별자리 궁합",
+      "mbtiScore": "MBTI 궁합",
+      "bloodScore": "혈액형 궁합",
+      "person1": "첫 번째 사람",
+      "person2": "두 번째 사람",
+      "overallDesc": {
+        "excellent": "모든 면에서 환상적인 궁합입니다! 서로를 완벽하게 보완하는 최고의 조합이에요.",
+        "good": "전반적으로 좋은 궁합입니다. 몇 가지 부분에서 노력하면 더욱 완벽한 관계가 될 수 있어요.",
+        "average": "평균적인 궁합입니다. 서로의 차이를 이해하고 배려하면 좋은 관계를 만들어갈 수 있습니다.",
+        "needsWork": "서로 다른 점이 많지만, 그만큼 배울 점도 많은 관계입니다. 서로를 이해하려는 노력이 중요합니다."
       }
     },
     "seo": {

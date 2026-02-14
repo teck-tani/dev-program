@@ -3251,7 +3251,13 @@
       "min": "min",
       "sec": "sec",
       "manuscript200": "200-char Pages",
-      "manuscript400": "400-char Pages"
+      "manuscript400": "400-char Pages",
+      "sentences": "Sentences"
+    },
+    "upload": {
+      "title": "Upload Text File",
+      "hint": "Drag & drop or click to select a .txt file",
+      "choose": "Choose File"
     },
     "input": {
       "title": "Text Input",
@@ -5820,14 +5826,57 @@
       "copied": "Copied!",
       "copyAll": "Copy All",
       "history": "Generation History",
-      "clear": "Clear"
+      "clear": "Clear",
+      "excludeAmbiguous": "Exclude ambiguous characters",
+      "ambiguousHint": "Exclude confusing characters"
+    },
+    "mode": {
+      "label": "Generation Mode",
+      "random": "Random Characters",
+      "passphrase": "Passphrase"
+    },
+    "passphrase": {
+      "language": "Language",
+      "korean": "Korean",
+      "english": "English",
+      "wordCount": "Word Count",
+      "separator": "Separator",
+      "separatorDash": "Hyphen (-)",
+      "separatorDot": "Dot (.)",
+      "separatorSpace": "Space",
+      "separatorNone": "None",
+      "capitalize": "Capitalize first letter"
+    },
+    "presets": {
+      "label": "Presets",
+      "bank": "Banking",
+      "wifi": "WiFi",
+      "pin": "PIN",
+      "general": "General"
+    },
+    "feedback": {
+      "title": "To improve strength",
+      "addLength": "Increase length to 12+ characters",
+      "addUppercase": "Add uppercase letters",
+      "addLowercase": "Add lowercase letters",
+      "addNumbers": "Add numbers",
+      "addSymbols": "Add special characters"
     },
     "strength": {
       "label": "Password Strength",
       "weak": "Weak",
       "fair": "Fair",
       "strong": "Strong",
-      "veryStrong": "Very Strong"
+      "veryStrong": "Very Strong",
+      "crackTime": "Estimated crack time",
+      "crackInstant": "Instantly",
+      "crackSeconds": "~{time} seconds",
+      "crackMinutes": "~{time} minutes",
+      "crackHours": "~{time} hours",
+      "crackDays": "~{time} days",
+      "crackYears": "~{time} years",
+      "crackMillionYears": "~{time} million years",
+      "crackBillionYears": "~{time} billion years"
     },
     "seo": {
       "description": {
@@ -7514,6 +7563,30 @@
     "upcomingHolidays": "Upcoming Holidays",
     "copy": "Copy",
     "copied": "Copied to clipboard!",
+    "customHolidays": {
+      "title": "Custom Holidays",
+      "namePlaceholder": "Holiday name (e.g. Company anniversary)",
+      "add": "Add",
+      "delete": "Delete",
+      "duplicate": "This date is already registered",
+      "noCustom": "No custom holidays registered"
+    },
+    "calendar": {
+      "title": "Calendar",
+      "business": "Business day",
+      "weekend": "Weekend",
+      "holiday": "Holiday",
+      "custom": "Custom",
+      "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    },
+    "deadlines": {
+      "title": "Deadline Manager",
+      "labelPlaceholder": "Deadline name (e.g. Project submission)",
+      "add": "Add",
+      "delete": "Delete",
+      "noDeadlines": "No deadlines registered"
+    },
+    "addToGoogleCalendar": "Add to Google Calendar",
     "seo": {
       "description": {
         "title": "What is a Business Day Calculator?",
@@ -7713,7 +7786,9 @@
       "name": "Name",
       "color": "Color",
       "dice": "Dice",
-      "coin": "Coin"
+      "coin": "Coin",
+      "shuffle": "Shuffle",
+      "team": "Teams"
     },
     "copied": "Copied!",
     "copyAll": "Copy All",
@@ -7727,7 +7802,15 @@
       "decimals": "Decimal Places",
       "count": "Count",
       "generate": "Generate Numbers",
-      "result": "Results"
+      "result": "Results",
+      "presets": "Presets",
+      "preset": {
+        "lotto": "Lotto (1~45)",
+        "otp": "OTP (6 digits)",
+        "seat": "Seat Number",
+        "pin": "PIN (4 digits)"
+      },
+      "noDuplicates": "No duplicates"
     },
     "name": {
       "type": "Name Type",
@@ -7740,14 +7823,25 @@
     "color": {
       "count": "Count",
       "generate": "Generate Colors",
-      "result": "Results"
+      "result": "Results",
+      "paletteMode": "Palette Mode",
+      "baseColor": "Base Color",
+      "mode": {
+        "random": "Random",
+        "complementary": "Complementary",
+        "analogous": "Analogous",
+        "monochromatic": "Monochromatic"
+      }
     },
     "dice": {
       "sides": "Dice Sides",
       "count": "Number of Dice",
       "roll": "Roll Dice",
       "rolling": "Rolling...",
-      "total": "Total"
+      "total": "Total",
+      "notation": "RPG Dice Notation",
+      "rollNotation": "Roll",
+      "notationHint": "e.g. 3d6+5, 2d20-3 (NdS±M format)"
     },
     "coin": {
       "flip": "Flip Coin",
@@ -7755,6 +7849,24 @@
       "heads": "Heads",
       "tails": "Tails",
       "history": "History"
+    },
+    "shuffle": {
+      "inputLabel": "Enter Items",
+      "placeholder": "Enter one item per line\ne.g.:\nApple\nBanana\nStrawberry\nGrape",
+      "itemCount": "Items entered",
+      "shuffle": "Shuffle",
+      "result": "Shuffled Result"
+    },
+    "team": {
+      "membersLabel": "Enter Members",
+      "placeholder": "Enter one name per line\ne.g.:\nAlice\nBob\nCharlie\nDiana",
+      "memberCount": "Members entered",
+      "teamCountLabel": "Number of Teams",
+      "teamUnit": " teams",
+      "divide": "Divide into Teams",
+      "result": "Team Results",
+      "teamLabel": "Team",
+      "personUnit": " members"
     },
     "seo": {
       "description": {
@@ -7861,10 +7973,27 @@
     "tabs": {
       "zodiac": "Zodiac",
       "star": "Star Sign",
-      "mbti": "MBTI"
+      "mbti": "MBTI",
+      "blood": "Blood Type",
+      "combined": "Combined"
     },
     "checkBtn": "Check",
     "resetBtn": "Reset",
+    "shareKakao": "Share on Kakao",
+    "saveImage": "Save Image",
+    "birthday": {
+      "label": "Auto-detect from birthday",
+      "person1": "Person 1 Birthday",
+      "person2": "Person 2 Birthday",
+      "detected": "Detected"
+    },
+    "details": {
+      "show": "Show Details",
+      "hide": "Collapse",
+      "strengths": "Strengths",
+      "cautions": "Cautions",
+      "tips": "Tips for Success"
+    },
     "zodiac": {
       "person1": "Person 1",
       "person2": "Person 2",
@@ -7901,10 +8030,25 @@
       },
       "descriptions": {
         "samhap": "A Three Harmony relationship, where both partners understand and complement each other perfectly. Being together creates synergy and natural harmony.",
+        "samhap_strengths": "Deep mutual understanding and respect. Communication is smooth with few conflicts.",
+        "samhap_cautions": "Don't become complacent in a comfortable relationship. Keep striving to grow together.",
+        "samhap_tips": "Set common goals and work toward them together.",
         "yukhap": "A Six Harmony relationship, where both partners exchange positive energy. This pairing forms deep bonds and maintains a stable relationship.",
+        "yukhap_strengths": "Positive energy exchange and strong stable bond formation.",
+        "yukhap_cautions": "Expectations may rise high, so realistic communication is important.",
+        "yukhap_tips": "Express gratitude regularly and enjoy small events together.",
         "sangchung": "A Clash relationship where personalities and values may conflict. However, acknowledging differences and making effort can turn this into an opportunity for growth.",
+        "sangchung_strengths": "Provides different perspectives that broaden your worldview. Growth through conflict is possible.",
+        "sangchung_cautions": "Avoid emotional responses during disagreements. Stay calm and communicate.",
+        "sangchung_tips": "Practice acknowledging differences and finding compromise.",
         "same": "Same zodiac signs share similar tendencies, making it easy to understand each other, but similar weaknesses may also be amplified. Focus on bringing out each other's strengths.",
-        "neutral": "An average compatibility that is neither particularly good nor bad. With mutual effort, you can build a wonderful relationship."
+        "same_strengths": "Easy mutual understanding with broad common ground due to similar tendencies.",
+        "same_cautions": "Similar weaknesses may emerge simultaneously and need compensation.",
+        "same_tips": "Acknowledge each other's strengths and overcome weaknesses together.",
+        "neutral": "An average compatibility that is neither particularly good nor bad. With mutual effort, you can build a wonderful relationship.",
+        "neutral_strengths": "Peaceful relationship maintenance without major conflicts.",
+        "neutral_cautions": "Try new activities together to prevent the relationship from becoming mundane.",
+        "neutral_tips": "Find common interests and spend more quality time together."
       }
     },
     "star": {
@@ -7940,9 +8084,21 @@
       },
       "descriptions": {
         "sameElement": "Star signs of the same element instinctively understand each other. They share similar values and sensibilities, forming a comfortable and natural relationship when together.",
+        "sameElement_strengths": "Deep empathy and natural communication. Intuitive understanding of each other's emotions.",
+        "sameElement_cautions": "May lack new stimulation due to being too similar.",
+        "sameElement_tips": "Try new experiences together to add freshness to the relationship.",
         "compatible": "A compatible element combination where partners complement and exchange positive energy. Like fire and air, or earth and water, this relationship has a positive influence on both.",
+        "compatible_strengths": "Perfectly complementary relationship with different strengths.",
+        "compatible_cautions": "Stay flexible and don't get too fixed in your respective roles.",
+        "compatible_tips": "Acknowledge each other's strengths and maintain a learning attitude.",
         "neutral": "Without particularly strong attraction or repulsion, this relationship offers new perspectives through differences. With effort, it can develop into a great partnership.",
-        "opposing": "An opposing element combination where different energies may clash. However, understanding and respecting these differences can create a relationship of growth where each fills what the other lacks."
+        "neutral_strengths": "A balanced and stable relationship without major conflicts.",
+        "neutral_cautions": "Consistent effort is needed to maintain interest in each other.",
+        "neutral_tips": "Maintain curiosity about each other and have deep conversations.",
+        "opposing": "An opposing element combination where different energies may clash. However, understanding and respecting these differences can create a relationship of growth where each fills what the other lacks.",
+        "opposing_strengths": "Provides completely new perspectives and energy to each other.",
+        "opposing_cautions": "Value differences may cause conflicts, so patience is needed.",
+        "opposing_tips": "Accept differences as learning opportunities rather than criticizing them."
       }
     },
     "mbti": {
@@ -7963,11 +8119,81 @@
       },
       "descriptions": {
         "golden": "The ideal Golden Pair in MBTI theory! This combination naturally complements each other's weaknesses and maximizes strengths. A relationship built on deep understanding and mutual respect.",
+        "golden_strengths": "Naturally complements each other's weaknesses, forming a perfect team.",
+        "golden_cautions": "Maintain individual independence and don't become too dependent on each other.",
+        "golden_tips": "Support each other's growth while respecting personal space.",
         "complementary": "A complementary pairing that balances well. Sharing similar basic tendencies with just enough differences to grow together.",
+        "complementary_strengths": "Similar core values with just enough differences to provide stimulation.",
+        "complementary_cautions": "Don't take each other for granted due to many similarities.",
+        "complementary_tips": "Enjoy each other's small differences and accept them as fresh perspectives.",
         "same": "Same MBTI types deeply understand each other, but similar weaknesses may be amplified. Seek new perspectives for mutual growth.",
+        "same_strengths": "Perfect mutual understanding with deep empathy possible.",
+        "same_cautions": "Problems can escalate when the same weaknesses appear simultaneously.",
+        "same_tips": "Consciously explore different perspectives and encourage each other's growth.",
         "similar": "With three matching dimensions, this relationship has high basic understanding. The one difference can actually add freshness to the relationship.",
+        "similar_strengths": "High understanding combined with just enough difference to keep things interesting.",
+        "similar_cautions": "Be careful that the one difference doesn't become a recurring source of conflict.",
+        "similar_tips": "Respect and learn from that one different dimension.",
         "neutral": "Average compatibility with a mix of similarities and differences. Respecting differences and communicating well can lead to a great relationship.",
-        "different": "A very different personality combination, but this is not necessarily a disadvantage. It provides completely new perspectives, and with effort, can become a relationship of significant growth."
+        "neutral_strengths": "Offers new perspectives to each other with balanced relationship potential.",
+        "neutral_cautions": "Communication style differences may cause misunderstandings, so clear dialogue is important.",
+        "neutral_tips": "Understand each other's communication styles and make effort to adapt.",
+        "different": "A very different personality combination, but this is not necessarily a disadvantage. It provides completely new perspectives, and with effort, can become a relationship of significant growth.",
+        "different_strengths": "Share completely different worldviews with tremendous growth potential.",
+        "different_cautions": "Many aspects may be hard to understand, so patience and an open mind are essential.",
+        "different_tips": "Accept the other's approach as different, not wrong."
+      }
+    },
+    "blood": {
+      "person1": "Person 1",
+      "person2": "Person 2",
+      "selectType": "Select Blood Type",
+      "placeholder": "Choose",
+      "tableTitle": "Blood Type Compatibility Chart",
+      "types": {
+        "perfect": "Perfect Match",
+        "good": "Good Match",
+        "neutral": "Average Match",
+        "challenging": "Needs Effort"
+      },
+      "descriptions": {
+        "perfect": "Excellent blood type compatibility! An ideal combination where both naturally understand and care for each other. Communication flows naturally and you feel comfortable together.",
+        "perfect_strengths": "Deep understanding and natural consideration. Few conflicts and comfortable together.",
+        "perfect_cautions": "Don't settle for comfort alone. Take on new challenges together.",
+        "perfect_tips": "Compliment each other's strengths often and express gratitude.",
+        "good": "Good compatibility for maintaining a harmonious relationship. You are attracted to each other's different charms and can build a complementary relationship.",
+        "good_strengths": "Attracted by different charms, forming a complementary relationship.",
+        "good_cautions": "Communication differences may arise sometimes, so open dialogue is important.",
+        "good_tips": "Respect each other's approach and enjoy the differences.",
+        "neutral": "An average relationship. Understanding and respecting each other's differences can lead to a good relationship.",
+        "neutral_strengths": "No particular conflict factors, allowing for a stable relationship.",
+        "neutral_cautions": "Increase shared activities to prevent the relationship from becoming monotonous.",
+        "neutral_tips": "Create common hobbies and maintain interest in each other.",
+        "challenging": "A combination with some differences, but with effort to understand each other, you can actually build a deeper relationship.",
+        "challenging_strengths": "Provides new perspectives to each other, offering opportunities for growth.",
+        "challenging_cautions": "Personality differences may cause conflicts, so patience is needed.",
+        "challenging_tips": "Focus on the other's strengths and treat differences as learning opportunities."
+      }
+    },
+    "combined": {
+      "title": "Combined Compatibility Analysis",
+      "birthYear": "Birth Year",
+      "birthDate": "Birth Date",
+      "mbtiType": "MBTI Type",
+      "bloodType": "Blood Type",
+      "calculate": "Check Combined",
+      "breakdown": "Score Breakdown",
+      "zodiacScore": "Zodiac",
+      "starScore": "Star Sign",
+      "mbtiScore": "MBTI",
+      "bloodScore": "Blood Type",
+      "person1": "Person 1",
+      "person2": "Person 2",
+      "overallDesc": {
+        "excellent": "Fantastic compatibility in every aspect! The best combination that perfectly complements each other.",
+        "good": "Generally good compatibility. With effort in a few areas, it can become an even more perfect relationship.",
+        "average": "Average compatibility. Understanding and caring for each other's differences can build a good relationship.",
+        "needsWork": "Many differences, but also many things to learn from each other. Effort to understand each other is key."
       }
     },
     "seo": {

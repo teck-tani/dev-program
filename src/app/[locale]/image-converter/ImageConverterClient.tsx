@@ -4,7 +4,6 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaImage, FaDownload, FaTrash, FaCog, FaExchangeAlt } from "react-icons/fa";
-import ShareButton from "@/components/ShareButton";
 
 type OutputFormat = 'image/jpeg' | 'image/webp' | 'image/png';
 
@@ -206,12 +205,6 @@ export default function ImageConverterClient() {
     const totalConvertedSize = images.reduce((sum, img) => sum + img.convertedSize, 0);
     const completedCount = images.filter(img => img.status === 'done').length;
 
-    const getShareText = () => {
-        if (completedCount === 0) return '';
-        const formatLabel = outputFormat === 'image/jpeg' ? 'JPG' : outputFormat === 'image/webp' ? 'WebP' : 'PNG';
-        const reduction = totalConvertedSize > 0 ? calculateReduction(totalOriginalSize, totalConvertedSize) : 0;
-        return `\u{1F504} ${t('buttons.convert')} \u2192 ${formatLabel}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${formatBytes(totalOriginalSize)} \u2192 ${formatBytes(totalConvertedSize)} (${reduction > 0 ? '-' : '+'}${Math.abs(reduction)}%)\n${t('summary.images')}: ${completedCount}\n\n\u{1F4CD} teck-tani.com/image-converter`;
-    };
 
     return (
         <div style={{ minHeight: '100vh', background: isDark ? "#0f172a" : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
@@ -402,13 +395,6 @@ export default function ImageConverterClient() {
                                 {totalConvertedSize > 0 ? `${calculateReduction(totalOriginalSize, totalConvertedSize)}%` : '-'}
                             </div>
                         </div>
-                    </div>
-                )}
-
-                {/* Share Button */}
-                {completedCount > 0 && (
-                    <div style={{ marginBottom: '20px' }}>
-                        <ShareButton shareText={getShareText()} disabled={completedCount === 0} />
                     </div>
                 )}
 

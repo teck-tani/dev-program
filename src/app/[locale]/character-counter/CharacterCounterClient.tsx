@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaClipboard, FaTrash, FaCheck } from "react-icons/fa";
@@ -14,6 +14,7 @@ export default function CharacterCounterClient() {
     const isDark = theme === 'dark';
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
+    const [dragActive, setDragActive] = useState(false);
 
     const stats = useMemo(() => {
         const charWithSpace = text.length;
@@ -40,10 +41,13 @@ export default function CharacterCounterClient() {
         const manuscript200 = Math.ceil(charWithSpace / 200);
         const manuscript400 = Math.ceil(charWithSpace / 400);
 
+        // 문장 수 (sentence count)
+        const sentences = text.trim() ? (text.match(/[.?!。！？]+/g) || []).length : 0;
+
         return {
             charWithSpace, charWithoutSpace, words, lines, paragraphs,
             bytes, koreanChars, englishChars, numbers, specialChars,
-            readMinutes, readSeconds, manuscript200, manuscript400,
+            readMinutes, readSeconds, manuscript200, manuscript400, sentences,
         };
     }, [text]);
 
@@ -103,6 +107,43 @@ export default function CharacterCounterClient() {
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
     };
 
+    // File upload handlers
+    const handleFileUpload = useCallback((file: File) => {
+        if (!file.name.endsWith('.txt')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target?.result as string;
+            if (content) setText(content);
+        };
+        reader.readAsText(file, 'UTF-8');
+    }, []);
+
+    const handleDragOver = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) handleFileUpload(files[0]);
+    }, [handleFileUpload]);
+
+    const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) handleFileUpload(files[0]);
+        e.target.value = '';
+    }, [handleFileUpload]);
+
     const snsLimits = [
         { name: "Twitter/X", limit: 280, key: "twitter" },
         { name: "Instagram Bio", limit: 150, key: "instaBio" },
@@ -129,9 +170,46 @@ export default function CharacterCounterClient() {
                     <StatCard label={t('stats.charWithoutSpace')} value={stats.charWithoutSpace} highlight />
                     <StatCard label={t('stats.bytes')} value={formatBytes(stats.bytes)} highlight />
                     <StatCard label={t('stats.words')} value={stats.words} />
+                    <StatCard label={t('stats.sentences')} value={stats.sentences} />
                     <StatCard label={t('stats.readTime')} value={stats.readMinutes > 0 ? `${stats.readMinutes}${t('stats.min')}` : `${stats.readSeconds}${t('stats.sec')}`} />
                     <StatCard label={t('stats.manuscript200')} value={stats.manuscript200} />
                     <StatCard label={t('stats.manuscript400')} value={stats.manuscript400} />
+                </div>
+
+                {/* File Upload */}
+                <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    style={{
+                        padding: '20px',
+                        borderRadius: '12px',
+                        border: dragActive
+                            ? '2px dashed #667eea'
+                            : `2px dashed ${isDark ? '#334155' : '#cbd5e1'}`,
+                        background: dragActive
+                            ? (isDark ? '#1e2a4a' : '#eff3ff')
+                            : (isDark ? '#0f172a' : '#f8fafc'),
+                        textAlign: 'center',
+                        marginBottom: '16px',
+                        transition: 'all 0.2s',
+                    }}
+                >
+                    <div style={{ fontSize: '1.5rem', marginBottom: '6px' }}>📁</div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#e2e8f0' : '#334155', marginBottom: '4px' }}>
+                        {t('upload.title')}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: isDark ? '#64748b' : '#94a3b8', marginBottom: '10px' }}>
+                        {t('upload.hint')}
+                    </div>
+                    <label style={{
+                        display: 'inline-block', padding: '8px 16px', borderRadius: '8px',
+                        background: '#667eea', color: '#fff', fontSize: '0.85rem',
+                        fontWeight: 600, cursor: 'pointer',
+                    }}>
+                        {t('upload.choose')}
+                        <input type="file" accept=".txt" onChange={handleFileInput} style={{ display: 'none' }} />
+                    </label>
                 </div>
 
                 {/* Textarea */}

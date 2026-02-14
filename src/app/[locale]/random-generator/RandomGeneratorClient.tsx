@@ -21,8 +21,44 @@ const ENGLISH_LAST_NAMES = [
     'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'
 ];
 
-type TabKey = 'number' | 'name' | 'color' | 'dice' | 'coin';
+type TabKey = 'number' | 'name' | 'color' | 'dice' | 'coin' | 'shuffle' | 'team';
 type DiceSides = 4 | 6 | 8 | 10 | 12 | 20;
+
+// Fisher-Yates shuffle
+function shuffleArray<T>(array: T[]): T[] {
+    const result = [...array];
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+}
+
+// RPG Dice notation parser
+interface DiceNotation { count: number; sides: number; modifier: number; }
+function parseDiceNotation(notation: string): DiceNotation | null {
+    const match = notation.trim().match(/^(\d+)d(\d+)([+-]\d+)?$/i);
+    if (!match) return null;
+    return { count: Math.min(parseInt(match[1]), 100), sides: parseInt(match[2]), modifier: match[3] ? parseInt(match[3]) : 0 };
+}
+
+// HSL to Hex
+function hslToHex(h: number, s: number, l: number): string {
+    s /= 100; l /= 100;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n: number) => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+function colorFromHsl(h: number, s: number, l: number): ColorResult {
+    const hex = hslToHex(h, s, l);
+    const rgb = hexToRgb(hex);
+    return { hex, rgb, hsl: { h, s, l } };
+}
 
 // ===== Helpers =====
 function randomInt(min: number, max: number): number {
@@ -138,6 +174,27 @@ export default function RandomGeneratorClient() {
     const [coinFlipping, setCoinFlipping] = useState(false);
     const [coinHistory, setCoinHistory] = useState<('heads' | 'tails')[]>([]);
 
+    // Shuffle state
+    const [shuffleInput, setShuffleInput] = useState('');
+    const [shuffleResult, setShuffleResult] = useState<string[]>([]);
+
+    // Team state
+    const [teamInput, setTeamInput] = useState('');
+    const [teamCount, setTeamCount] = useState(2);
+    const [teams, setTeams] = useState<string[][]>([]);
+
+    // RPG dice notation state
+    const [diceNotation, setDiceNotation] = useState('3d6+5');
+    const [notationResults, setNotationResults] = useState<number[]>([]);
+    const [notationModifier, setNotationModifier] = useState(0);
+
+    // Color palette state
+    const [paletteMode, setPaletteMode] = useState<'random' | 'complementary' | 'analogous' | 'monochromatic'>('random');
+    const [baseColor, setBaseColor] = useState('#3b82f6');
+
+    // Number preset: "중복 없이" for presets
+    const [numNoDuplicates, setNumNoDuplicates] = useState(false);
+
     const showToast = useCallback(() => {
         setToast(true);
         if (toastTimeout.current) clearTimeout(toastTimeout.current);
@@ -154,15 +211,24 @@ export default function RandomGeneratorClient() {
     // ===== Generators =====
     const generateNumbers = useCallback(() => {
         const results: number[] = [];
-        for (let i = 0; i < numCount; i++) {
-            if (numIsInteger) {
-                results.push(randomInt(numMin, numMax));
-            } else {
-                results.push(randomFloat(numMin, numMax, numDecimals));
+        if (numNoDuplicates && numIsInteger) {
+            const range = numMax - numMin + 1;
+            const count = Math.min(numCount, range);
+            const pool: number[] = [];
+            for (let n = numMin; n <= numMax; n++) pool.push(n);
+            const shuffled = shuffleArray(pool);
+            results.push(...shuffled.slice(0, count).sort((a, b) => a - b));
+        } else {
+            for (let i = 0; i < numCount; i++) {
+                if (numIsInteger) {
+                    results.push(randomInt(numMin, numMax));
+                } else {
+                    results.push(randomFloat(numMin, numMax, numDecimals));
+                }
             }
         }
         setNumResults(results);
-    }, [numMin, numMax, numIsInteger, numDecimals, numCount]);
+    }, [numMin, numMax, numIsInteger, numDecimals, numCount, numNoDuplicates]);
 
     const generateNames = useCallback(() => {
         const results: string[] = [];
@@ -223,6 +289,98 @@ export default function RandomGeneratorClient() {
         }, 80);
     }, []);
 
+    // ===== Shuffle =====
+    const handleShuffle = useCallback(() => {
+        const items = shuffleInput.split('\n').filter(line => line.trim());
+        if (items.length < 2) return;
+        setShuffleResult(shuffleArray(items));
+    }, [shuffleInput]);
+
+    // ===== Team Divide =====
+    const divideIntoTeams = useCallback(() => {
+        const members = teamInput.split('\n').filter(l => l.trim());
+        if (members.length < teamCount) return;
+        const shuffled = shuffleArray(members);
+        const result: string[][] = Array.from({ length: teamCount }, () => []);
+        shuffled.forEach((member, i) => { result[i % teamCount].push(member); });
+        setTeams(result);
+    }, [teamInput, teamCount]);
+
+    // ===== Number Presets =====
+    const applyNumberPreset = useCallback((preset: 'lotto' | 'otp' | 'seat' | 'pin') => {
+        const configs: Record<string, { min: number; max: number; count: number; integer: boolean; noDup: boolean }> = {
+            lotto: { min: 1, max: 45, count: 6, integer: true, noDup: true },
+            otp: { min: 0, max: 9, count: 6, integer: true, noDup: false },
+            seat: { min: 1, max: 100, count: 1, integer: true, noDup: false },
+            pin: { min: 0, max: 9, count: 4, integer: true, noDup: false },
+        };
+        const c = configs[preset];
+        setNumMin(c.min); setNumMax(c.max); setNumCount(c.count);
+        setNumIsInteger(c.integer); setNumNoDuplicates(c.noDup);
+        // Generate immediately
+        const results: number[] = [];
+        if (c.noDup) {
+            const pool: number[] = [];
+            for (let n = c.min; n <= c.max; n++) pool.push(n);
+            const shuffled = shuffleArray(pool);
+            results.push(...shuffled.slice(0, c.count).sort((a, b) => a - b));
+        } else {
+            for (let i = 0; i < c.count; i++) results.push(randomInt(c.min, c.max));
+        }
+        setNumResults(results);
+    }, []);
+
+    // ===== RPG Dice Notation =====
+    const rollNotation = useCallback(() => {
+        const parsed = parseDiceNotation(diceNotation);
+        if (!parsed) return;
+        const rolls: number[] = [];
+        for (let i = 0; i < parsed.count; i++) rolls.push(randomInt(1, parsed.sides));
+        setNotationResults(rolls);
+        setNotationModifier(parsed.modifier);
+    }, [diceNotation]);
+
+    // ===== Color Palette =====
+    const generateColorsEnhanced = useCallback(() => {
+        if (paletteMode === 'random') {
+            const results: ColorResult[] = [];
+            for (let i = 0; i < colorCount; i++) {
+                const hex = randomHexColor();
+                const rgb = hexToRgb(hex);
+                const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+                results.push({ hex, rgb, hsl });
+            }
+            setColorResults(results);
+        } else {
+            const rgb = hexToRgb(baseColor);
+            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+            let results: ColorResult[] = [];
+            if (paletteMode === 'complementary') {
+                results = [
+                    { hex: baseColor, rgb, hsl },
+                    colorFromHsl((hsl.h + 180) % 360, hsl.s, hsl.l),
+                ];
+            } else if (paletteMode === 'analogous') {
+                results = [
+                    colorFromHsl((hsl.h - 30 + 360) % 360, hsl.s, hsl.l),
+                    { hex: baseColor, rgb, hsl },
+                    colorFromHsl((hsl.h + 30) % 360, hsl.s, hsl.l),
+                    colorFromHsl((hsl.h - 60 + 360) % 360, hsl.s, hsl.l),
+                    colorFromHsl((hsl.h + 60) % 360, hsl.s, hsl.l),
+                ];
+            } else {
+                results = [
+                    colorFromHsl(hsl.h, hsl.s, Math.max(10, hsl.l - 20)),
+                    colorFromHsl(hsl.h, hsl.s, Math.max(5, hsl.l - 10)),
+                    { hex: baseColor, rgb, hsl },
+                    colorFromHsl(hsl.h, hsl.s, Math.min(90, hsl.l + 10)),
+                    colorFromHsl(hsl.h, hsl.s, Math.min(95, hsl.l + 20)),
+                ];
+            }
+            setColorResults(results);
+        }
+    }, [paletteMode, baseColor, colorCount]);
+
     // ===== Share =====
     const getShareText = () => {
         if (activeTab === 'number' && numResults.length > 0) {
@@ -243,6 +401,12 @@ export default function RandomGeneratorClient() {
             const tailsCount = coinHistory.filter(r => r === 'tails').length;
             return `\u{1FA99} ${t('tabs.coin')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${coinResult === 'heads' ? t('coin.heads') : t('coin.tails')}\n${t('coin.heads')}: ${headsCount} / ${t('coin.tails')}: ${tailsCount}\n\n\u{1F4CD} teck-tani.com/random-generator`;
         }
+        if (activeTab === 'shuffle' && shuffleResult.length > 0) {
+            return `\u{1F500} ${t('tabs.shuffle')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${shuffleResult.map((item, i) => `${i + 1}. ${item}`).join('\n')}\n\n\u{1F4CD} teck-tani.com/random-generator`;
+        }
+        if (activeTab === 'team' && teams.length > 0) {
+            return `\u{1F465} ${t('tabs.team')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${teams.map((team, i) => `${t('team.teamLabel')} ${i + 1}: ${team.join(', ')}`).join('\n')}\n\n\u{1F4CD} teck-tani.com/random-generator`;
+        }
         return '';
     };
 
@@ -252,6 +416,8 @@ export default function RandomGeneratorClient() {
         if (activeTab === 'color') return colorResults.length > 0;
         if (activeTab === 'dice') return diceResults.length > 0;
         if (activeTab === 'coin') return coinResult !== null;
+        if (activeTab === 'shuffle') return shuffleResult.length > 0;
+        if (activeTab === 'team') return teams.length > 0;
         return false;
     };
 
@@ -328,6 +494,8 @@ export default function RandomGeneratorClient() {
         { key: 'color', icon: <FaPalette size={14} /> },
         { key: 'dice', icon: <FaDice size={14} /> },
         { key: 'coin', icon: <span style={{ fontSize: "1.1rem" }}>&#x1FA99;</span> },
+        { key: 'shuffle', icon: <span style={{ fontSize: "1.1rem" }}>{'\u{1F500}'}</span> },
+        { key: 'team', icon: <span style={{ fontSize: "1.1rem" }}>{'\u{1F465}'}</span> },
     ];
 
     return (
@@ -400,6 +568,23 @@ export default function RandomGeneratorClient() {
             {/* ===== Number Tab ===== */}
             {activeTab === 'number' && (
                 <div style={cardStyle}>
+                    {/* Presets */}
+                    <div style={{ marginBottom: "16px" }}>
+                        <label style={labelStyle}>{t('number.presets')}</label>
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                            {(['lotto', 'otp', 'seat', 'pin'] as const).map(p => (
+                                <button key={p} onClick={() => applyNumberPreset(p)} style={{
+                                    padding: "8px 16px", borderRadius: "8px",
+                                    border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                    background: isDark ? "#1e293b" : "#f9fafb",
+                                    color: isDark ? "#e2e8f0" : "#333",
+                                    fontSize: "0.85rem", cursor: "pointer", fontWeight: "600",
+                                    transition: "all 0.2s",
+                                }}>{t(`number.preset.${p}`)}</button>
+                            ))}
+                        </div>
+                    </div>
+
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
                         <div>
                             <label style={labelStyle}>{t('number.min')}</label>
@@ -476,6 +661,20 @@ export default function RandomGeneratorClient() {
                                 ))}
                             </select>
                         </div>
+                    )}
+
+                    {numIsInteger && (
+                        <label style={{
+                            display: "flex", alignItems: "center", gap: "10px",
+                            marginBottom: "16px", cursor: "pointer",
+                        }}>
+                            <input type="checkbox" checked={numNoDuplicates}
+                                onChange={(e) => setNumNoDuplicates(e.target.checked)}
+                                style={{ width: 18, height: 18, accentColor: "#2563eb" }} />
+                            <span style={{ fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "#333" }}>
+                                {t('number.noDuplicates')}
+                            </span>
+                        </label>
                     )}
 
                     <button onClick={generateNumbers} style={btnPrimary}>
@@ -623,20 +822,47 @@ export default function RandomGeneratorClient() {
             {/* ===== Color Tab ===== */}
             {activeTab === 'color' && (
                 <div style={cardStyle}>
+                    {/* Palette Mode */}
                     <div style={{ marginBottom: "16px" }}>
-                        <label style={labelStyle}>{t('color.count')}</label>
-                        <select
-                            value={colorCount}
-                            onChange={(e) => setColorCount(Number(e.target.value))}
-                            style={{ ...selectStyle, width: "auto", minWidth: "100px" }}
-                        >
-                            {[1, 3, 5, 10, 20].map((n) => (
-                                <option key={n} value={n}>{n}</option>
+                        <label style={labelStyle}>{t('color.paletteMode')}</label>
+                        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                            {(['random', 'complementary', 'analogous', 'monochromatic'] as const).map(m => (
+                                <button key={m} onClick={() => setPaletteMode(m)} style={{
+                                    padding: "8px 14px", borderRadius: "8px",
+                                    border: paletteMode === m ? "2px solid #2563eb" : (isDark ? "1px solid #334155" : "1px solid #d1d5db"),
+                                    background: paletteMode === m ? (isDark ? "#1e3a5f" : "#eff6ff") : (isDark ? "#0f172a" : "#f9fafb"),
+                                    color: paletteMode === m ? "#2563eb" : (isDark ? "#e2e8f0" : "#333"),
+                                    fontSize: "0.82rem", cursor: "pointer", fontWeight: paletteMode === m ? "700" : "500",
+                                }}>{t(`color.mode.${m}`)}</button>
                             ))}
-                        </select>
+                        </div>
                     </div>
 
-                    <button onClick={generateColors} style={btnPrimary}>
+                    {paletteMode !== 'random' && (
+                        <div style={{ marginBottom: "16px" }}>
+                            <label style={labelStyle}>{t('color.baseColor')}</label>
+                            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                                <input type="color" value={baseColor} onChange={(e) => setBaseColor(e.target.value)}
+                                    style={{ width: 50, height: 40, border: "none", borderRadius: 8, cursor: "pointer" }} />
+                                <input type="text" value={baseColor} onChange={(e) => setBaseColor(e.target.value)}
+                                    style={{ ...inputStyle, flex: 1, fontFamily: "'Fira Code', monospace" }} />
+                            </div>
+                        </div>
+                    )}
+
+                    {paletteMode === 'random' && (
+                        <div style={{ marginBottom: "16px" }}>
+                            <label style={labelStyle}>{t('color.count')}</label>
+                            <select value={colorCount} onChange={(e) => setColorCount(Number(e.target.value))}
+                                style={{ ...selectStyle, width: "auto", minWidth: "100px" }}>
+                                {[1, 3, 5, 10, 20].map((n) => (
+                                    <option key={n} value={n}>{n}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
+                    <button onClick={generateColorsEnhanced} style={btnPrimary}>
                         <FaPalette size={14} />
                         {t('color.generate')}
                     </button>
@@ -706,6 +932,53 @@ export default function RandomGeneratorClient() {
             {/* ===== Dice Tab ===== */}
             {activeTab === 'dice' && (
                 <div style={cardStyle}>
+                    {/* RPG Notation */}
+                    <div style={{
+                        padding: "14px", borderRadius: "10px", marginBottom: "16px",
+                        background: isDark ? "#0f172a" : "#faf5ff",
+                        border: isDark ? "1px solid #334155" : "1px solid #e9d5ff",
+                    }}>
+                        <label style={{ ...labelStyle, color: "#7c3aed", marginBottom: "8px" }}>{t('dice.notation')}</label>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                            <input type="text" value={diceNotation} onChange={(e) => setDiceNotation(e.target.value)}
+                                placeholder="3d6+5" style={{ ...inputStyle, flex: 1, fontFamily: "'Fira Code', monospace" }} />
+                            <button onClick={rollNotation} style={{
+                                padding: "10px 20px", borderRadius: "10px", border: "none",
+                                background: "#7c3aed", color: "white", fontWeight: "700",
+                                cursor: "pointer", whiteSpace: "nowrap",
+                            }}>{t('dice.rollNotation')}</button>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: isDark ? "#64748b" : "#a78bfa", marginTop: "4px" }}>
+                            {t('dice.notationHint')}
+                        </div>
+                        {notationResults.length > 0 && (
+                            <div style={{
+                                marginTop: "12px", padding: "12px", borderRadius: "8px",
+                                background: isDark ? "#1e293b" : "white",
+                                border: isDark ? "1px solid #475569" : "1px solid #e9d5ff",
+                            }}>
+                                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "8px" }}>
+                                    {notationResults.map((r, i) => (
+                                        <span key={i} style={{
+                                            padding: "4px 10px", borderRadius: "6px",
+                                            background: isDark ? "#334155" : "#f5f3ff",
+                                            color: "#7c3aed", fontWeight: "700", fontSize: "0.9rem",
+                                            fontFamily: "'Fira Code', monospace",
+                                        }}>{r}</span>
+                                    ))}
+                                </div>
+                                <div style={{ fontSize: "1.1rem", fontWeight: "700", color: isDark ? "#e2e8f0" : "#333" }}>
+                                    {notationResults.join(' + ')}
+                                    {notationModifier !== 0 && ` ${notationModifier >= 0 ? '+' : ''}${notationModifier}`}
+                                    {' = '}
+                                    <span style={{ color: "#7c3aed", fontSize: "1.3rem" }}>
+                                        {notationResults.reduce((a, b) => a + b, 0) + notationModifier}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
                         <div>
                             <label style={labelStyle}>{t('dice.sides')}</label>
@@ -974,6 +1247,121 @@ export default function RandomGeneratorClient() {
                                         {result === 'heads' ? 'H' : 'T'}
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ===== Shuffle Tab ===== */}
+            {activeTab === 'shuffle' && (
+                <div style={cardStyle}>
+                    <div style={{ marginBottom: "16px" }}>
+                        <label style={labelStyle}>{t('shuffle.inputLabel')}</label>
+                        <textarea value={shuffleInput} onChange={(e) => setShuffleInput(e.target.value)}
+                            placeholder={t('shuffle.placeholder')} rows={8}
+                            style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit", lineHeight: "1.7" }} />
+                        <div style={{ fontSize: "0.8rem", color: isDark ? "#64748b" : "#999", marginTop: "4px" }}>
+                            {t('shuffle.itemCount')}: {shuffleInput.split('\n').filter(l => l.trim()).length}
+                        </div>
+                    </div>
+                    <button onClick={handleShuffle}
+                        disabled={shuffleInput.split('\n').filter(l => l.trim()).length < 2}
+                        style={{ ...btnPrimary, opacity: shuffleInput.split('\n').filter(l => l.trim()).length < 2 ? 0.5 : 1 }}>
+                        <FaSync size={14} /> {t('shuffle.shuffle')}
+                    </button>
+                    {shuffleResult.length > 0 && (
+                        <div style={{ marginTop: "20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                                <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "#333" }}>
+                                    {t('shuffle.result')}
+                                </span>
+                                <button onClick={() => copyText(shuffleResult.map((item, i) => `${i + 1}. ${item}`).join('\n'))} style={copyBtnStyle}>
+                                    <FaCopy size={11} /> {t('copyAll')}
+                                </button>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                {shuffleResult.map((item, i) => (
+                                    <div key={i} style={{
+                                        display: "flex", alignItems: "center", gap: "12px",
+                                        padding: "12px 16px", background: isDark ? "#0f172a" : "#f9fafb",
+                                        borderRadius: "10px", border: isDark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                    }}>
+                                        <span style={{ minWidth: "30px", fontWeight: "700", color: "#2563eb", fontSize: "0.9rem" }}>{i + 1}.</span>
+                                        <span style={{ flex: 1, color: isDark ? "#e2e8f0" : "#333", fontSize: "1rem" }}>{item}</span>
+                                        <button onClick={() => copyText(item)} style={copyBtnStyle}><FaCopy size={11} /></button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ===== Team Tab ===== */}
+            {activeTab === 'team' && (
+                <div style={cardStyle}>
+                    <div style={{ marginBottom: "16px" }}>
+                        <label style={labelStyle}>{t('team.membersLabel')}</label>
+                        <textarea value={teamInput} onChange={(e) => setTeamInput(e.target.value)}
+                            placeholder={t('team.placeholder')} rows={8}
+                            style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit", lineHeight: "1.7" }} />
+                        <div style={{ fontSize: "0.8rem", color: isDark ? "#64748b" : "#999", marginTop: "4px" }}>
+                            {t('team.memberCount')}: {teamInput.split('\n').filter(l => l.trim()).length}
+                        </div>
+                    </div>
+                    <div style={{ marginBottom: "16px" }}>
+                        <label style={labelStyle}>{t('team.teamCountLabel')}</label>
+                        <select value={teamCount} onChange={(e) => setTeamCount(Number(e.target.value))} style={{ ...selectStyle, width: "auto", minWidth: "100px" }}>
+                            {[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                                <option key={n} value={n}>{n}{t('team.teamUnit')}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <button onClick={divideIntoTeams}
+                        disabled={teamInput.split('\n').filter(l => l.trim()).length < teamCount}
+                        style={{ ...btnPrimary, opacity: teamInput.split('\n').filter(l => l.trim()).length < teamCount ? 0.5 : 1 }}>
+                        <FaDice size={14} /> {t('team.divide')}
+                    </button>
+                    {teams.length > 0 && (
+                        <div style={{ marginTop: "20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                                <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "#333" }}>
+                                    {t('team.result')}
+                                </span>
+                                <button onClick={() => copyText(teams.map((team, i) => `${t('team.teamLabel')} ${i + 1}: ${team.join(', ')}`).join('\n'))} style={copyBtnStyle}>
+                                    <FaCopy size={11} /> {t('copyAll')}
+                                </button>
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+                                {teams.map((team, i) => {
+                                    const hue = i * (360 / teams.length);
+                                    return (
+                                        <div key={i} style={{
+                                            padding: "16px", borderRadius: "12px",
+                                            background: isDark ? "#0f172a" : `hsl(${hue}, 70%, 97%)`,
+                                            border: `2px solid hsl(${hue}, 70%, ${isDark ? 40 : 60}%)`,
+                                        }}>
+                                            <div style={{
+                                                fontWeight: "700", fontSize: "1rem", marginBottom: "10px",
+                                                color: `hsl(${hue}, 70%, ${isDark ? 65 : 40}%)`,
+                                            }}>
+                                                {t('team.teamLabel')} {i + 1} <span style={{ fontWeight: "400", fontSize: "0.85rem" }}>({team.length}{t('team.personUnit')})</span>
+                                            </div>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                                {team.map((member, j) => (
+                                                    <div key={j} style={{
+                                                        padding: "8px 12px",
+                                                        background: isDark ? "#1e293b" : "white",
+                                                        borderRadius: "8px", fontSize: "0.9rem",
+                                                        color: isDark ? "#e2e8f0" : "#333",
+                                                        border: isDark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                                    }}>{member}</div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}

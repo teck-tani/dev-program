@@ -4,7 +4,6 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaImage, FaDownload, FaTrash, FaCog, FaCode, FaCheck } from "react-icons/fa";
-import ShareButton from "@/components/ShareButton";
 
 const FAVICON_SIZES = [16, 32, 48, 64, 128, 192, 512] as const;
 type FaviconSize = typeof FAVICON_SIZES[number];
@@ -167,12 +166,6 @@ export default function FaviconGeneratorClient() {
         setSourceFile(null);
         setFavicons([]);
     }, [sourceImage, favicons]);
-
-    const getShareText = () => {
-        if (favicons.length === 0) return '';
-        const sizeList = favicons.map(f => `${f.size}x${f.size}`).join(', ');
-        return `\u{2B50} Favicon Generator\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${favicons.length} sizes: ${sizeList}\n${sourceFile?.name || ''}\n\n\u{1F4CD} teck-tani.com/favicon-generator`;
-    };
 
     const htmlCode = favicons.length > 0 ? [
         '<link rel="icon" type="image/x-icon" href="/favicon.ico">',
@@ -396,13 +389,6 @@ export default function FaviconGeneratorClient() {
                                 </div>
                             ))}
                         </div>
-                    </div>
-                )}
-
-                {/* Share Button */}
-                {favicons.length > 0 && (
-                    <div style={{ marginBottom: '20px' }}>
-                        <ShareButton shareText={getShareText()} disabled={favicons.length === 0} />
                     </div>
                 )}
 
