@@ -230,7 +230,7 @@ export default function CharacterCounterClient() {
                     <textarea value={text} onChange={(e) => setText(e.target.value)}
                         placeholder={t('input.placeholder')}
                         style={{
-                            width: '100%', minHeight: '200px', padding: '20px',
+                            width: '100%', minHeight: '50vh', padding: '20px',
                             border: 'none', outline: 'none', fontSize: '1rem',
                             lineHeight: '1.7', resize: 'vertical',
                             fontFamily: "'Noto Sans KR', sans-serif",
