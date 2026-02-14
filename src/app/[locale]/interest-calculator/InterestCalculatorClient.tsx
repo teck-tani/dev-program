@@ -468,15 +468,15 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                     }
                     .interest-card {
                         padding: 14px !important;
-                        borderRadius: 14px !important;
-                        marginBottom: 14px !important;
+                        border-radius: 14px !important;
+                        margin-bottom: 14px !important;
                     }
                     .interest-section {
-                        marginBottom: 12px !important;
+                        margin-bottom: 12px !important;
                     }
                     .interest-label {
-                        fontSize: 0.75rem !important;
-                        marginBottom: 5px !important;
+                        font-size: 0.75rem !important;
+                        margin-bottom: 5px !important;
                     }
                     .interest-toggle-group {
                         gap: 4px !important;
@@ -484,55 +484,48 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                     }
                     .interest-toggle-btn {
                         padding: 10px 6px !important;
-                        fontSize: 0.8rem !important;
-                        borderRadius: 8px !important;
+                        font-size: 0.8rem !important;
+                        border-radius: 8px !important;
                     }
                     .toggle-emoji {
                         display: none !important;
                     }
                     .interest-input {
-                        padding: 10px 12px !important;
-                        paddingRight: 40px !important;
-                        fontSize: 0.9rem !important;
-                        borderRadius: 10px !important;
-                        borderWidth: 1.5px !important;
+                        padding: 10px 45px 10px 12px !important;
+                        font-size: 0.9rem !important;
+                        border-radius: 10px !important;
+                        border-width: 1.5px !important;
                     }
                     .interest-calc-btn {
                         padding: 12px 16px !important;
-                        fontSize: 0.95rem !important;
-                        borderRadius: 10px !important;
+                        font-size: 0.95rem !important;
+                        border-radius: 10px !important;
                     }
                     .interest-container {
                         padding: 8px 10px !important;
                     }
-                    .interest-info-section {
-                        display: none !important;
-                    }
                     .interest-result-card {
                         padding: 20px !important;
-                        borderRadius: 16px !important;
+                        border-radius: 16px !important;
                     }
                     .interest-result-title {
-                        fontSize: 1rem !important;
-                        marginBottom: 14px !important;
+                        font-size: 1rem !important;
+                        margin-bottom: 14px !important;
                     }
                     .interest-result-row {
                         padding: 10px 0 !important;
                     }
                     .interest-result-label {
-                        fontSize: 0.85rem !important;
+                        font-size: 0.85rem !important;
                     }
                     .interest-result-value {
-                        fontSize: 0.9rem !important;
+                        font-size: 0.9rem !important;
                     }
                     .interest-final-value {
-                        fontSize: 1.4rem !important;
+                        font-size: 1.4rem !important;
                     }
                     .interest-growth-chart {
-                        marginTop: 16px !important;
-                    }
-                    .interest-seo-section {
-                        display: none !important;
+                        margin-top: 16px !important;
                     }
                 }
             `}</style>
@@ -826,11 +819,10 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 setPrincipal(val ? parseInt(val).toLocaleString("ko-KR") : "");
                                 if (errors.principal) setErrors(prev => ({ ...prev, principal: false }));
                             }}
-                            placeholder={type === "deposit" ? tInput('principalPlaceholderDeposit') : tInput('principalPlaceholderSavings')}
+                            placeholder="0"
                             style={{
                                 width: "100%",
-                                padding: "14px 16px",
-                                paddingRight: "60px",
+                                padding: "14px 45px 14px 16px",
                                 border: `2px solid ${errors.principal ? "#ef4444" : (isDark ? "#334155" : "#e5e7eb")}`,
                                 borderRadius: "14px",
                                 fontSize: "1rem",
@@ -877,11 +869,10 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                     setPeriod(e.target.value);
                                     if (errors.period) setErrors(prev => ({ ...prev, period: false }));
                                 }}
-                                placeholder={tInput('periodPlaceholder')}
+                                placeholder="0"
                                 style={{
                                     width: "100%",
-                                    padding: "14px 16px",
-                                    paddingRight: "60px",
+                                    padding: "14px 55px 14px 16px",
                                     border: `2px solid ${errors.period ? "#ef4444" : (isDark ? "#334155" : "#e5e7eb")}`,
                                     borderRadius: "14px",
                                     fontSize: "1rem",
@@ -926,11 +917,10 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                     setRate(e.target.value);
                                     if (errors.rate) setErrors(prev => ({ ...prev, rate: false }));
                                 }}
-                                placeholder={tInput('ratePlaceholder')}
+                                placeholder="0"
                                 style={{
                                     width: "100%",
-                                    padding: "14px 16px",
-                                    paddingRight: "55px",
+                                    padding: "14px 40px 14px 16px",
                                     border: `2px solid ${errors.rate ? "#ef4444" : (isDark ? "#334155" : "#e5e7eb")}`,
                                     borderRadius: "14px",
                                     fontSize: "1rem",
@@ -975,11 +965,10 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 inputMode="numeric"
                                 value={earlyWithdrawMonth}
                                 onChange={(e) => setEarlyWithdrawMonth(e.target.value)}
-                                placeholder={tInput('periodPlaceholder')}
+                                placeholder="0"
                                 style={{
                                     width: "100%",
-                                    padding: "14px 16px",
-                                    paddingRight: "60px",
+                                    padding: "14px 55px 14px 16px",
                                     border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                     borderRadius: "14px",
                                     fontSize: "1rem",
