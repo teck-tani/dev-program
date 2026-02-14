@@ -1,34 +1,150 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaCopy, FaRedo, FaTrash, FaCheck } from "react-icons/fa";
+import { FaCopy, FaRedo, FaTrash, FaCheck, FaDownload, FaSearch } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
+import { downloadFile } from "@/utils/fileDownload";
 
+// ===== UUID v4 =====
 function generateUuidV4(): string {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
         return crypto.randomUUID();
     }
-    // Polyfill for older browsers
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
-    bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
-    bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 1
-    const hex = Array.from(bytes)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
+// ===== UUID v1 (timestamp-based, RFC 4122) =====
+let _v1ClockSeq = -1;
+let _v1LastTimestamp = 0;
+
+function generateUuidV1(): string {
+    // UUID epoch: Oct 15, 1582 00:00:00
+    // Offset from Unix epoch in 100ns intervals
+    const UUID_EPOCH_OFFSET = 122192928000000000n;
+
+    const now = BigInt(Date.now()) * 10000n + UUID_EPOCH_OFFSET;
+
+    // Clock sequence: random 14-bit
+    if (_v1ClockSeq < 0 || Number(now) <= _v1LastTimestamp) {
+        _v1ClockSeq = (crypto.getRandomValues(new Uint16Array(1))[0]) & 0x3fff;
+    }
+    _v1LastTimestamp = Number(now);
+
+    const timeLow = Number(now & 0xFFFFFFFFn);
+    const timeMid = Number((now >> 32n) & 0xFFFFn);
+    const timeHi = Number((now >> 48n) & 0x0FFFn) | 0x1000; // version 1
+
+    const clockSeqHi = ((_v1ClockSeq >> 8) & 0x3f) | 0x80; // variant
+    const clockSeqLow = _v1ClockSeq & 0xff;
+
+    // Node: random 6 bytes with multicast bit set
+    const node = new Uint8Array(6);
+    crypto.getRandomValues(node);
+    node[0] |= 0x01; // multicast bit
+
+    const hex = (n: number, len: number) => n.toString(16).padStart(len, '0');
+    const nodeHex = Array.from(node).map(b => b.toString(16).padStart(2, '0')).join('');
+
+    return `${hex(timeLow, 8)}-${hex(timeMid, 4)}-${hex(timeHi, 4)}-${hex(clockSeqHi, 2)}${hex(clockSeqLow, 2)}-${nodeHex}`;
+}
+
+// ===== UUID v7 (time-ordered, RFC 9562) =====
+function generateUuidV7(): string {
+    const timestamp = BigInt(Date.now());
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+
+    // First 48 bits: Unix timestamp in ms
+    bytes[0] = Number((timestamp >> 40n) & 0xFFn);
+    bytes[1] = Number((timestamp >> 32n) & 0xFFn);
+    bytes[2] = Number((timestamp >> 24n) & 0xFFn);
+    bytes[3] = Number((timestamp >> 16n) & 0xFFn);
+    bytes[4] = Number((timestamp >> 8n) & 0xFFn);
+    bytes[5] = Number(timestamp & 0xFFn);
+
+    // Version 7: bits 48-51 = 0111
+    bytes[6] = (bytes[6] & 0x0f) | 0x70;
+    // Variant: bits 64-65 = 10
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+// ===== UUID Validation =====
+interface UuidValidation {
+    valid: boolean;
+    version: number | null;
+    variant: string | null;
+    timestamp: Date | null;
+}
+
+function validateUuid(input: string): UuidValidation {
+    const cleaned = input.trim().toLowerCase();
+    const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+    if (!regex.test(cleaned)) {
+        // Try without hyphens
+        const noHyphen = /^[0-9a-f]{32}$/;
+        if (!noHyphen.test(cleaned)) {
+            return { valid: false, version: null, variant: null, timestamp: null };
+        }
+    }
+
+    const hex = cleaned.replace(/-/g, '');
+    const versionChar = parseInt(hex[12], 16);
+    const variantBits = parseInt(hex[16], 16);
+
+    let variant: string;
+    if ((variantBits & 0x8) === 0) variant = "NCS";
+    else if ((variantBits & 0xc) === 0x8) variant = "RFC 4122";
+    else if ((variantBits & 0xe) === 0xc) variant = "Microsoft";
+    else variant = "Reserved";
+
+    const version = versionChar;
+
+    // Extract timestamp for v1 and v7
+    let timestamp: Date | null = null;
+
+    if (version === 1) {
+        // v1: time_low (8) + time_mid (4) + time_hi (3, skip version nibble)
+        const timeLow = BigInt("0x" + hex.slice(0, 8));
+        const timeMid = BigInt("0x" + hex.slice(8, 12));
+        const timeHi = BigInt("0x" + hex.slice(13, 16)); // skip version nibble at index 12
+        const uuidTimestamp = timeLow | (timeMid << 32n) | (timeHi << 48n);
+        const UUID_EPOCH_OFFSET = 122192928000000000n;
+        const unixMs = Number((uuidTimestamp - UUID_EPOCH_OFFSET) / 10000n);
+        if (unixMs > 0 && unixMs < 4102444800000) { // before 2100
+            timestamp = new Date(unixMs);
+        }
+    } else if (version === 7) {
+        // v7: first 48 bits are Unix timestamp in ms
+        const ms = parseInt(hex.slice(0, 12), 16);
+        if (ms > 0 && ms < 4102444800000) {
+            timestamp = new Date(ms);
+        }
+    }
+
+    return { valid: true, version, variant, timestamp };
+}
+
+const NIL_UUID = "00000000-0000-0000-0000-000000000000";
+const MAX_UUID = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+
+type UuidVersion = 'v4' | 'v1' | 'v7';
+type UuidMode = 'generate' | 'validate';
+
 function formatUuid(uuid: string, uppercase: boolean, withHyphens: boolean): string {
     let result = uuid;
-    if (!withHyphens) {
-        result = result.replace(/-/g, "");
-    }
-    if (uppercase) {
-        result = result.toUpperCase();
-    }
+    if (!withHyphens) result = result.replace(/-/g, "");
+    if (uppercase) result = result.toUpperCase();
     return result;
 }
 
@@ -37,6 +153,8 @@ export default function UuidGeneratorClient() {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
+    const [mode, setMode] = useState<UuidMode>('generate');
+    const [version, setVersion] = useState<UuidVersion>('v4');
     const [count, setCount] = useState(1);
     const [uppercase, setUppercase] = useState(false);
     const [withHyphens, setWithHyphens] = useState(true);
@@ -46,16 +164,32 @@ export default function UuidGeneratorClient() {
     const [toast, setToast] = useState(false);
     const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // Validate mode state
+    const [validateInput, setValidateInput] = useState('');
+
+    const validationResult = useMemo(() => {
+        if (!validateInput.trim()) return null;
+        return validateUuid(validateInput);
+    }, [validateInput]);
+
+    const generateByVersion = useCallback((ver: UuidVersion): string => {
+        switch (ver) {
+            case 'v1': return generateUuidV1();
+            case 'v7': return generateUuidV7();
+            default: return generateUuidV4();
+        }
+    }, []);
+
     const handleGenerate = useCallback(() => {
         const newUuids: string[] = [];
         for (let i = 0; i < count; i++) {
-            const raw = generateUuidV4();
+            const raw = generateByVersion(version);
             newUuids.push(formatUuid(raw, uppercase, withHyphens));
         }
         setUuids(newUuids);
         setHistory((prev) => [...newUuids, ...prev].slice(0, 100));
         setCopiedIndex(null);
-    }, [count, uppercase, withHyphens]);
+    }, [count, uppercase, withHyphens, version, generateByVersion]);
 
     const showToast = useCallback(() => {
         setToast(true);
@@ -66,50 +200,62 @@ export default function UuidGeneratorClient() {
         }, 2000);
     }, []);
 
-    const handleCopy = useCallback(
-        async (uuid: string, index: number) => {
-            try {
-                await navigator.clipboard.writeText(uuid);
-                setCopiedIndex(index);
-                showToast();
-            } catch {
-                // fallback
-            }
-        },
-        [showToast]
-    );
+    const handleCopy = useCallback(async (uuid: string, index: number) => {
+        try {
+            await navigator.clipboard.writeText(uuid);
+            setCopiedIndex(index);
+            showToast();
+        } catch { /* fallback */ }
+    }, [showToast]);
 
     const handleCopyAll = useCallback(async () => {
         if (uuids.length === 0) return;
         try {
             await navigator.clipboard.writeText(uuids.join("\n"));
             showToast();
-        } catch {
-            // fallback
-        }
+        } catch { /* fallback */ }
     }, [uuids, showToast]);
 
-    const clearHistory = useCallback(() => {
-        setHistory([]);
-    }, []);
+    const clearHistory = useCallback(() => { setHistory([]); }, []);
 
-    // Re-format existing UUIDs when options change
+    const handleNil = useCallback(() => {
+        const formatted = formatUuid(NIL_UUID, uppercase, withHyphens);
+        setUuids([formatted]);
+    }, [uppercase, withHyphens]);
+
+    const handleMax = useCallback(() => {
+        const formatted = formatUuid(MAX_UUID, uppercase, withHyphens);
+        setUuids([formatted]);
+    }, [uppercase, withHyphens]);
+
+    const handleDownloadTxt = useCallback(() => {
+        if (uuids.length === 0) return;
+        downloadFile(uuids.join("\n") + "\n", `uuids-${version}.txt`);
+    }, [uuids, version]);
+
     const handleUppercaseToggle = useCallback(() => {
         setUppercase((prev) => {
             const next = !prev;
-            setUuids((currentUuids) =>
-                currentUuids.map((u) => {
-                    // Normalize to lowercase with hyphens first, then reformat
-                    const normalized = u.toLowerCase();
-                    const base = normalized.includes("-")
-                        ? normalized
-                        : `${normalized.slice(0, 8)}-${normalized.slice(8, 12)}-${normalized.slice(12, 16)}-${normalized.slice(16, 20)}-${normalized.slice(20)}`;
-                    return formatUuid(base, next, withHyphens);
-                })
-            );
+            setUuids((cur) => cur.map((u) => {
+                const normalized = u.toLowerCase().replace(/-/g, "");
+                const base = `${normalized.slice(0, 8)}-${normalized.slice(8, 12)}-${normalized.slice(12, 16)}-${normalized.slice(16, 20)}-${normalized.slice(20)}`;
+                return formatUuid(base, next, withHyphens);
+            }));
             return next;
         });
     }, [withHyphens]);
+
+    const handleHyphensToggle = useCallback(() => {
+        setWithHyphens((prev) => {
+            const next = !prev;
+            setUuids((cur) => cur.map((u) => {
+                const normalized = u.toLowerCase().replace(/-/g, "");
+                const base = `${normalized.slice(0, 8)}-${normalized.slice(8, 12)}-${normalized.slice(12, 16)}-${normalized.slice(16, 20)}-${normalized.slice(20)}`;
+                return formatUuid(base, uppercase, next);
+            }));
+            return next;
+        });
+    }, [uppercase]);
 
     const getShareText = () => {
         if (uuids.length === 0) return '';
@@ -118,549 +264,387 @@ export default function UuidGeneratorClient() {
         return `\uD83D\uDD11 UUID Generator\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${uuidList}${more}\n\n\uD83D\uDCCD teck-tani.com/uuid-generator`;
     };
 
-    const handleHyphensToggle = useCallback(() => {
-        setWithHyphens((prev) => {
-            const next = !prev;
-            setUuids((currentUuids) =>
-                currentUuids.map((u) => {
-                    const normalized = u.toLowerCase().replace(/-/g, "");
-                    const base = `${normalized.slice(0, 8)}-${normalized.slice(8, 12)}-${normalized.slice(12, 16)}-${normalized.slice(16, 20)}-${normalized.slice(20)}`;
-                    return formatUuid(base, uppercase, next);
-                })
-            );
-            return next;
-        });
-    }, [uppercase]);
-
     return (
         <div style={{ maxWidth: "700px", margin: "0 auto", padding: "16px" }}>
             {/* Toast */}
             {toast && (
-                <div
-                    style={{
-                        position: "fixed",
-                        top: "80px",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        background: "#22c55e",
-                        color: "white",
-                        padding: "10px 24px",
-                        borderRadius: "8px",
-                        fontWeight: "600",
-                        fontSize: "0.9rem",
-                        zIndex: 9999,
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                        animation: "fadeInDown 0.3s ease",
-                    }}
-                >
+                <div style={{
+                    position: "fixed", top: "80px", left: "50%", transform: "translateX(-50%)",
+                    background: "#22c55e", color: "white", padding: "10px 24px", borderRadius: "8px",
+                    fontWeight: "600", fontSize: "0.9rem", zIndex: 9999,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)", animation: "fadeInDown 0.3s ease"
+                }}>
                     <FaCheck style={{ marginRight: "6px", verticalAlign: "middle" }} />
                     {t("copied")}
                 </div>
             )}
 
-            {/* Options Card */}
-            <div
-                style={{
-                    background: isDark ? "#1e293b" : "white",
-                    borderRadius: "16px",
-                    padding: "24px",
-                    boxShadow: isDark
-                        ? "0 2px 8px rgba(0,0,0,0.3)"
-                        : "0 2px 15px rgba(0,0,0,0.08)",
-                    marginBottom: "20px",
-                }}
-            >
-                {/* Count Slider */}
-                <div style={{ marginBottom: "20px" }}>
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginBottom: "10px",
-                        }}
-                    >
-                        <label
-                            style={{
-                                fontWeight: "600",
-                                fontSize: "0.95rem",
-                                color: isDark ? "#e2e8f0" : "#333",
-                            }}
-                        >
-                            {t("count")}
-                        </label>
-                        <span
-                            style={{
-                                fontWeight: "700",
-                                fontSize: "1.3rem",
-                                color: "#2563eb",
-                                minWidth: "40px",
-                                textAlign: "right",
-                            }}
-                        >
-                            {count}
-                        </span>
-                    </div>
-                    <input
-                        type="range"
-                        min={1}
-                        max={100}
-                        value={count}
-                        onChange={(e) => setCount(Number(e.target.value))}
-                        style={{
-                            width: "100%",
-                            height: "6px",
-                            cursor: "pointer",
-                            accentColor: "#2563eb",
-                        }}
-                    />
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            fontSize: "0.75rem",
-                            color: isDark ? "#64748b" : "#999",
-                            marginTop: "4px",
-                        }}
-                    >
-                        <span>1</span>
-                        <span>100</span>
-                    </div>
-                </div>
-
-                {/* Toggle Options */}
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "10px",
-                        marginBottom: "20px",
-                    }}
-                >
-                    {/* Uppercase Toggle */}
-                    <label
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            padding: "12px 14px",
-                            background: isDark
-                                ? uppercase
-                                    ? "#1e3a5f"
-                                    : "#0f172a"
-                                : uppercase
-                                  ? "#eff6ff"
-                                  : "#f9fafb",
-                            borderRadius: "10px",
-                            cursor: "pointer",
-                            border: uppercase
-                                ? "2px solid #2563eb"
-                                : isDark
-                                  ? "2px solid #334155"
-                                  : "2px solid #e5e7eb",
-                            transition: "all 0.2s",
-                        }}
-                    >
-                        <input
-                            type="checkbox"
-                            checked={uppercase}
-                            onChange={handleUppercaseToggle}
-                            style={{
-                                width: "18px",
-                                height: "18px",
-                                accentColor: "#2563eb",
-                                cursor: "pointer",
-                            }}
-                        />
-                        <div>
-                            <div
-                                style={{
-                                    fontWeight: "600",
-                                    fontSize: "0.85rem",
-                                    color: isDark ? "#e2e8f0" : "#333",
-                                }}
-                            >
-                                {t("uppercase")}
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: "0.75rem",
-                                    color: isDark ? "#64748b" : "#999",
-                                    marginTop: "2px",
-                                }}
-                            >
-                                {uppercase ? "A-F, 0-9" : "a-f, 0-9"}
-                            </div>
-                        </div>
-                    </label>
-
-                    {/* Hyphens Toggle */}
-                    <label
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            padding: "12px 14px",
-                            background: isDark
-                                ? withHyphens
-                                    ? "#1e3a5f"
-                                    : "#0f172a"
-                                : withHyphens
-                                  ? "#eff6ff"
-                                  : "#f9fafb",
-                            borderRadius: "10px",
-                            cursor: "pointer",
-                            border: withHyphens
-                                ? "2px solid #2563eb"
-                                : isDark
-                                  ? "2px solid #334155"
-                                  : "2px solid #e5e7eb",
-                            transition: "all 0.2s",
-                        }}
-                    >
-                        <input
-                            type="checkbox"
-                            checked={withHyphens}
-                            onChange={handleHyphensToggle}
-                            style={{
-                                width: "18px",
-                                height: "18px",
-                                accentColor: "#2563eb",
-                                cursor: "pointer",
-                            }}
-                        />
-                        <div>
-                            <div
-                                style={{
-                                    fontWeight: "600",
-                                    fontSize: "0.85rem",
-                                    color: isDark ? "#e2e8f0" : "#333",
-                                }}
-                            >
-                                {t("hyphens")}
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: "0.75rem",
-                                    color: isDark ? "#64748b" : "#999",
-                                    marginTop: "2px",
-                                }}
-                            >
-                                {withHyphens ? "xxxxxxxx-xxxx-..." : "xxxxxxxxxxxxxxxx..."}
-                            </div>
-                        </div>
-                    </label>
-                </div>
-
-                {/* Generate Button */}
-                <button
-                    onClick={handleGenerate}
-                    style={{
-                        width: "100%",
-                        padding: "14px",
-                        background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "12px",
-                        fontSize: "1rem",
-                        fontWeight: "700",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "8px",
-                        boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
-                        transition: "all 0.2s",
-                    }}
-                >
-                    <FaRedo size={14} />
-                    {t("generate")}
-                </button>
+            {/* Mode Toggle */}
+            <div style={{
+                display: "flex", gap: "0", marginBottom: "16px", borderRadius: "12px",
+                overflow: "hidden", border: isDark ? "1px solid #334155" : "1px solid #e5e7eb"
+            }}>
+                {(['generate', 'validate'] as const).map((m) => (
+                    <button key={m} onClick={() => setMode(m)} style={{
+                        flex: 1, padding: "12px", border: "none",
+                        background: mode === m ? "#2563eb" : (isDark ? "#1e293b" : "white"),
+                        color: mode === m ? "white" : (isDark ? "#94a3b8" : "#666"),
+                        fontWeight: mode === m ? "700" : "500", fontSize: "0.95rem",
+                        cursor: "pointer", transition: "all 0.2s",
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"
+                    }}>
+                        {m === 'validate' && <FaSearch size={14} />}
+                        {m === 'generate' && <FaRedo size={14} />}
+                        {t(`mode.${m}`)}
+                    </button>
+                ))}
             </div>
 
-            {/* Results */}
-            {uuids.length > 0 && (
-                <div
-                    style={{
-                        background: isDark ? "#1e293b" : "white",
-                        borderRadius: "16px",
-                        padding: "24px",
-                        boxShadow: isDark
-                            ? "0 2px 8px rgba(0,0,0,0.3)"
-                            : "0 2px 15px rgba(0,0,0,0.08)",
-                        marginBottom: "20px",
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginBottom: "14px",
-                        }}
-                    >
-                        <h3
-                            style={{
-                                fontSize: "1rem",
-                                fontWeight: "700",
-                                color: isDark ? "#e2e8f0" : "#333",
-                                margin: 0,
-                            }}
-                        >
-                            {t("result")}
-                            <span
-                                style={{
-                                    fontSize: "0.8rem",
-                                    fontWeight: "400",
-                                    color: isDark ? "#64748b" : "#999",
-                                    marginLeft: "8px",
-                                }}
-                            >
-                                ({uuids.length})
-                            </span>
-                        </h3>
-                    </div>
-
-                    {/* UUID List */}
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "10px",
-                            maxHeight: uuids.length > 10 ? "500px" : "auto",
-                            overflowY: uuids.length > 10 ? "auto" : "visible",
-                        }}
-                    >
-                        {uuids.map((uuid, i) => (
-                            <div
-                                key={i}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "10px",
-                                    padding: "14px 16px",
-                                    background: isDark ? "#0f172a" : "#f9fafb",
-                                    borderRadius: "10px",
-                                    border: isDark
-                                        ? "1px solid #334155"
-                                        : "1px solid #e5e7eb",
-                                }}
-                            >
-                                <code
-                                    style={{
-                                        flex: 1,
-                                        fontFamily:
-                                            "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
-                                        fontSize:
-                                            uuids.length === 1 ? "1.15rem" : "0.9rem",
-                                        color: isDark ? "#e2e8f0" : "#1f2937",
-                                        wordBreak: "break-all",
-                                        lineHeight: 1.5,
-                                        letterSpacing: "0.5px",
-                                    }}
-                                >
-                                    {uuid}
-                                </code>
-                                <button
-                                    onClick={() => handleCopy(uuid, i)}
-                                    style={{
-                                        padding: "8px 12px",
-                                        background:
-                                            copiedIndex === i ? "#22c55e" : "#2563eb",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "8px",
-                                        cursor: "pointer",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "4px",
-                                        fontSize: "0.8rem",
-                                        fontWeight: "600",
-                                        flexShrink: 0,
-                                        transition: "background 0.2s",
-                                    }}
-                                    title={t("copy")}
-                                >
-                                    {copiedIndex === i ? (
-                                        <FaCheck size={12} />
-                                    ) : (
-                                        <FaCopy size={12} />
-                                    )}
-                                </button>
+            {/* ===== GENERATE MODE ===== */}
+            {mode === 'generate' && (
+                <>
+                    <div style={{
+                        background: isDark ? "#1e293b" : "white", borderRadius: "16px", padding: "24px",
+                        boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)",
+                        marginBottom: "20px"
+                    }}>
+                        {/* Version Selector */}
+                        <div style={{ marginBottom: "20px" }}>
+                            <label style={{
+                                fontWeight: "600", fontSize: "0.95rem", color: isDark ? "#e2e8f0" : "#333",
+                                display: "block", marginBottom: "10px"
+                            }}>
+                                {t("version.label")}
+                            </label>
+                            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                                {(['v1', 'v4', 'v7'] as const).map((v) => (
+                                    <button key={v} onClick={() => setVersion(v)} style={{
+                                        flex: 1, minWidth: "80px", padding: "10px 14px", borderRadius: "10px",
+                                        border: version === v ? "2px solid #2563eb" : (isDark ? "1px solid #334155" : "1px solid #d1d5db"),
+                                        background: version === v ? (isDark ? "#1e3a5f" : "#eff6ff") : (isDark ? "#0f172a" : "#f9fafb"),
+                                        color: version === v ? "#2563eb" : (isDark ? "#94a3b8" : "#666"),
+                                        fontWeight: version === v ? "700" : "500", fontSize: "0.9rem",
+                                        cursor: "pointer", transition: "all 0.2s", textAlign: "center"
+                                    }}>
+                                        <div style={{ fontWeight: "700", fontSize: "1rem" }}>UUID {v}</div>
+                                        <div style={{ fontSize: "0.7rem", marginTop: "2px", opacity: 0.7 }}>
+                                            {v === 'v1' ? t("version.v1Desc") : v === 'v4' ? t("version.v4Desc") : t("version.v7Desc")}
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
-                        ))}
+                        </div>
+
+                        {/* Count Slider */}
+                        <div style={{ marginBottom: "20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                                <label style={{ fontWeight: "600", fontSize: "0.95rem", color: isDark ? "#e2e8f0" : "#333" }}>
+                                    {t("count")}
+                                </label>
+                                <span style={{ fontWeight: "700", fontSize: "1.3rem", color: "#2563eb", minWidth: "40px", textAlign: "right" }}>
+                                    {count}
+                                </span>
+                            </div>
+                            <input type="range" min={1} max={100} value={count}
+                                onChange={(e) => setCount(Number(e.target.value))}
+                                style={{ width: "100%", height: "6px", cursor: "pointer", accentColor: "#2563eb" }}
+                            />
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: isDark ? "#64748b" : "#999", marginTop: "4px" }}>
+                                <span>1</span><span>100</span>
+                            </div>
+                        </div>
+
+                        {/* Toggle Options */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
+                            <label style={{
+                                display: "flex", alignItems: "center", gap: "10px", padding: "12px 14px",
+                                background: isDark ? (uppercase ? "#1e3a5f" : "#0f172a") : (uppercase ? "#eff6ff" : "#f9fafb"),
+                                borderRadius: "10px", cursor: "pointer",
+                                border: uppercase ? "2px solid #2563eb" : (isDark ? "2px solid #334155" : "2px solid #e5e7eb"),
+                                transition: "all 0.2s"
+                            }}>
+                                <input type="checkbox" checked={uppercase} onChange={handleUppercaseToggle}
+                                    style={{ width: "18px", height: "18px", accentColor: "#2563eb", cursor: "pointer" }} />
+                                <div>
+                                    <div style={{ fontWeight: "600", fontSize: "0.85rem", color: isDark ? "#e2e8f0" : "#333" }}>{t("uppercase")}</div>
+                                    <div style={{ fontSize: "0.75rem", color: isDark ? "#64748b" : "#999", marginTop: "2px" }}>{uppercase ? "A-F, 0-9" : "a-f, 0-9"}</div>
+                                </div>
+                            </label>
+                            <label style={{
+                                display: "flex", alignItems: "center", gap: "10px", padding: "12px 14px",
+                                background: isDark ? (withHyphens ? "#1e3a5f" : "#0f172a") : (withHyphens ? "#eff6ff" : "#f9fafb"),
+                                borderRadius: "10px", cursor: "pointer",
+                                border: withHyphens ? "2px solid #2563eb" : (isDark ? "2px solid #334155" : "2px solid #e5e7eb"),
+                                transition: "all 0.2s"
+                            }}>
+                                <input type="checkbox" checked={withHyphens} onChange={handleHyphensToggle}
+                                    style={{ width: "18px", height: "18px", accentColor: "#2563eb", cursor: "pointer" }} />
+                                <div>
+                                    <div style={{ fontWeight: "600", fontSize: "0.85rem", color: isDark ? "#e2e8f0" : "#333" }}>{t("hyphens")}</div>
+                                    <div style={{ fontSize: "0.75rem", color: isDark ? "#64748b" : "#999", marginTop: "2px" }}>{withHyphens ? "xxxxxxxx-xxxx-..." : "xxxxxxxxxxxxxxxx..."}</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        {/* Generate + Special Buttons */}
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                            <button onClick={handleGenerate} style={{
+                                flex: 1, minWidth: "150px", padding: "14px",
+                                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                                color: "white", border: "none", borderRadius: "12px", fontSize: "1rem",
+                                fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center",
+                                justifyContent: "center", gap: "8px",
+                                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)", transition: "all 0.2s"
+                            }}>
+                                <FaRedo size={14} /> {t("generate")}
+                            </button>
+                            <button onClick={handleNil} style={{
+                                padding: "14px 16px", borderRadius: "12px",
+                                border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                background: isDark ? "#0f172a" : "#f9fafb",
+                                color: isDark ? "#94a3b8" : "#666", fontSize: "0.85rem",
+                                fontWeight: "600", cursor: "pointer"
+                            }}>
+                                NIL
+                            </button>
+                            <button onClick={handleMax} style={{
+                                padding: "14px 16px", borderRadius: "12px",
+                                border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                background: isDark ? "#0f172a" : "#f9fafb",
+                                color: isDark ? "#94a3b8" : "#666", fontSize: "0.85rem",
+                                fontWeight: "600", cursor: "pointer"
+                            }}>
+                                MAX
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Copy All */}
-                    {uuids.length > 1 && (
-                        <button
-                            onClick={handleCopyAll}
-                            style={{
-                                width: "100%",
-                                marginTop: "12px",
-                                padding: "10px",
-                                background: isDark ? "#334155" : "#f0f0f0",
-                                color: isDark ? "#e2e8f0" : "#333",
-                                border: "none",
-                                borderRadius: "8px",
-                                cursor: "pointer",
-                                fontWeight: "600",
-                                fontSize: "0.85rem",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: "6px",
-                            }}
-                        >
-                            <FaCopy size={12} />
-                            {t("copyAll")}
-                        </button>
+                    {/* Results */}
+                    {uuids.length > 0 && (
+                        <div style={{
+                            background: isDark ? "#1e293b" : "white", borderRadius: "16px", padding: "24px",
+                            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)",
+                            marginBottom: "20px"
+                        }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: "700", color: isDark ? "#e2e8f0" : "#333", margin: 0 }}>
+                                    {t("result")}
+                                    <span style={{ fontSize: "0.8rem", fontWeight: "400", color: isDark ? "#64748b" : "#999", marginLeft: "8px" }}>({uuids.length})</span>
+                                </h3>
+                                {uuids.length > 1 && (
+                                    <button onClick={handleDownloadTxt} style={{
+                                        padding: "6px 12px", borderRadius: "8px",
+                                        border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                        background: isDark ? "#0f172a" : "#f9fafb",
+                                        color: isDark ? "#94a3b8" : "#666", fontSize: "0.8rem",
+                                        cursor: "pointer", display: "flex", alignItems: "center", gap: "4px"
+                                    }}>
+                                        <FaDownload size={10} /> .txt
+                                    </button>
+                                )}
+                            </div>
+
+                            <div style={{
+                                display: "flex", flexDirection: "column", gap: "10px",
+                                maxHeight: uuids.length > 10 ? "500px" : "auto",
+                                overflowY: uuids.length > 10 ? "auto" : "visible"
+                            }}>
+                                {uuids.map((uuid, i) => (
+                                    <div key={i} style={{
+                                        display: "flex", alignItems: "center", gap: "10px", padding: "14px 16px",
+                                        background: isDark ? "#0f172a" : "#f9fafb", borderRadius: "10px",
+                                        border: isDark ? "1px solid #334155" : "1px solid #e5e7eb"
+                                    }}>
+                                        <code style={{
+                                            flex: 1, fontFamily: "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
+                                            fontSize: uuids.length === 1 ? "1.15rem" : "0.9rem",
+                                            color: isDark ? "#e2e8f0" : "#1f2937", wordBreak: "break-all",
+                                            lineHeight: 1.5, letterSpacing: "0.5px"
+                                        }}>
+                                            {uuid}
+                                        </code>
+                                        <button onClick={() => handleCopy(uuid, i)} style={{
+                                            padding: "8px 12px", background: copiedIndex === i ? "#22c55e" : "#2563eb",
+                                            color: "white", border: "none", borderRadius: "8px", cursor: "pointer",
+                                            display: "flex", alignItems: "center", gap: "4px", fontSize: "0.8rem",
+                                            fontWeight: "600", flexShrink: 0, transition: "background 0.2s"
+                                        }} title={t("copy")}>
+                                            {copiedIndex === i ? <FaCheck size={12} /> : <FaCopy size={12} />}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {uuids.length > 1 && (
+                                <button onClick={handleCopyAll} style={{
+                                    width: "100%", marginTop: "12px", padding: "10px",
+                                    background: isDark ? "#334155" : "#f0f0f0",
+                                    color: isDark ? "#e2e8f0" : "#333", border: "none", borderRadius: "8px",
+                                    cursor: "pointer", fontWeight: "600", fontSize: "0.85rem",
+                                    display: "flex", alignItems: "center", justifyContent: "center", gap: "6px"
+                                }}>
+                                    <FaCopy size={12} /> {t("copyAll")}
+                                </button>
+                            )}
+
+                            <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
+                                <ShareButton shareText={getShareText()} disabled={uuids.length === 0} />
+                            </div>
+                        </div>
                     )}
 
-                    <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
-                        <ShareButton shareText={getShareText()} disabled={uuids.length === 0} />
-                    </div>
-                </div>
-            )}
-
-            {/* History */}
-            {history.length > 0 && (
-                <div
-                    style={{
-                        background: isDark ? "#1e293b" : "white",
-                        borderRadius: "16px",
-                        padding: "24px",
-                        boxShadow: isDark
-                            ? "0 2px 8px rgba(0,0,0,0.3)"
-                            : "0 2px 15px rgba(0,0,0,0.08)",
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginBottom: "14px",
-                        }}
-                    >
-                        <h3
-                            style={{
-                                fontSize: "1rem",
-                                fontWeight: "700",
-                                color: isDark ? "#e2e8f0" : "#333",
-                                margin: 0,
-                            }}
-                        >
-                            {t("history")}
-                            <span
-                                style={{
-                                    fontSize: "0.8rem",
-                                    fontWeight: "400",
-                                    color: isDark ? "#64748b" : "#999",
-                                    marginLeft: "8px",
-                                }}
-                            >
-                                ({history.length})
-                            </span>
-                        </h3>
-                        <button
-                            onClick={clearHistory}
-                            style={{
-                                padding: "6px 10px",
-                                background: isDark ? "#7f1d1d" : "#fee2e2",
-                                color: isDark ? "#fca5a5" : "#dc2626",
-                                border: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                                fontSize: "0.8rem",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "4px",
-                            }}
-                        >
-                            <FaTrash size={10} />
-                            {t("clear")}
-                        </button>
-                    </div>
-                    <div
-                        style={{
-                            maxHeight: "200px",
-                            overflowY: "auto",
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "6px",
-                        }}
-                    >
-                        {history.map((uuid, i) => (
-                            <div
-                                key={i}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                    padding: "8px 12px",
-                                    background: isDark ? "#0f172a" : "#f9fafb",
-                                    borderRadius: "8px",
-                                    fontSize: "0.8rem",
-                                }}
-                            >
-                                <code
-                                    style={{
-                                        flex: 1,
-                                        fontFamily: "'Fira Code', monospace",
-                                        color: isDark ? "#94a3b8" : "#666",
-                                        wordBreak: "break-all",
-                                        fontSize: "0.8rem",
-                                    }}
-                                >
-                                    {uuid}
-                                </code>
-                                <button
-                                    onClick={() => handleCopy(uuid, 1000 + i)}
-                                    style={{
-                                        padding: "4px 8px",
-                                        background:
-                                            copiedIndex === 1000 + i
-                                                ? "#22c55e"
-                                                : isDark
-                                                  ? "#334155"
-                                                  : "#e5e7eb",
-                                        color:
-                                            copiedIndex === 1000 + i
-                                                ? "white"
-                                                : isDark
-                                                  ? "#94a3b8"
-                                                  : "#666",
-                                        border: "none",
-                                        borderRadius: "6px",
-                                        cursor: "pointer",
-                                        flexShrink: 0,
-                                        transition: "background 0.2s",
-                                    }}
-                                >
-                                    {copiedIndex === 1000 + i ? (
-                                        <FaCheck size={10} />
-                                    ) : (
-                                        <FaCopy size={10} />
-                                    )}
+                    {/* History */}
+                    {history.length > 0 && (
+                        <div style={{
+                            background: isDark ? "#1e293b" : "white", borderRadius: "16px", padding: "24px",
+                            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)"
+                        }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                                <h3 style={{ fontSize: "1rem", fontWeight: "700", color: isDark ? "#e2e8f0" : "#333", margin: 0 }}>
+                                    {t("history")}
+                                    <span style={{ fontSize: "0.8rem", fontWeight: "400", color: isDark ? "#64748b" : "#999", marginLeft: "8px" }}>({history.length})</span>
+                                </h3>
+                                <button onClick={clearHistory} style={{
+                                    padding: "6px 10px", background: isDark ? "#7f1d1d" : "#fee2e2",
+                                    color: isDark ? "#fca5a5" : "#dc2626", border: "none", borderRadius: "6px",
+                                    cursor: "pointer", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "4px"
+                                }}>
+                                    <FaTrash size={10} /> {t("clear")}
                                 </button>
                             </div>
-                        ))}
-                    </div>
+                            <div style={{ maxHeight: "200px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "6px" }}>
+                                {history.map((uuid, i) => (
+                                    <div key={i} style={{
+                                        display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px",
+                                        background: isDark ? "#0f172a" : "#f9fafb", borderRadius: "8px", fontSize: "0.8rem"
+                                    }}>
+                                        <code style={{ flex: 1, fontFamily: "'Fira Code', monospace", color: isDark ? "#94a3b8" : "#666", wordBreak: "break-all", fontSize: "0.8rem" }}>
+                                            {uuid}
+                                        </code>
+                                        <button onClick={() => handleCopy(uuid, 1000 + i)} style={{
+                                            padding: "4px 8px",
+                                            background: copiedIndex === 1000 + i ? "#22c55e" : (isDark ? "#334155" : "#e5e7eb"),
+                                            color: copiedIndex === 1000 + i ? "white" : (isDark ? "#94a3b8" : "#666"),
+                                            border: "none", borderRadius: "6px", cursor: "pointer", flexShrink: 0, transition: "background 0.2s"
+                                        }}>
+                                            {copiedIndex === 1000 + i ? <FaCheck size={10} /> : <FaCopy size={10} />}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* ===== VALIDATE MODE ===== */}
+            {mode === 'validate' && (
+                <div style={{
+                    background: isDark ? "#1e293b" : "white", borderRadius: "16px", padding: "24px",
+                    boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)"
+                }}>
+                    <label style={{
+                        display: "block", fontWeight: "600", fontSize: "0.95rem",
+                        color: isDark ? "#e2e8f0" : "#333", marginBottom: "10px"
+                    }}>
+                        {t("validate.title")}
+                    </label>
+                    <input
+                        type="text" value={validateInput}
+                        onChange={(e) => setValidateInput(e.target.value)}
+                        placeholder={t("validate.placeholder")}
+                        style={{
+                            width: "100%", padding: "14px", borderRadius: "12px",
+                            border: validationResult?.valid ? "2px solid #22c55e"
+                                : validationResult && !validationResult.valid ? "2px solid #ef4444"
+                                : (isDark ? "1px solid #334155" : "1px solid #d1d5db"),
+                            background: isDark ? "#0f172a" : "#f9fafb",
+                            color: isDark ? "#e2e8f0" : "#1f2937", fontSize: "0.95rem",
+                            fontFamily: "monospace", outline: "none", boxSizing: "border-box"
+                        }}
+                    />
+
+                    {validationResult && (
+                        <div style={{ marginTop: "16px" }}>
+                            {/* Valid/Invalid */}
+                            <div style={{
+                                padding: "16px 20px", borderRadius: "12px",
+                                background: validationResult.valid ? (isDark ? "#052e16" : "#f0fdf4") : (isDark ? "#450a0a" : "#fef2f2"),
+                                border: validationResult.valid ? (isDark ? "1px solid #166534" : "1px solid #bbf7d0") : (isDark ? "1px solid #991b1b" : "1px solid #fecaca"),
+                                display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px"
+                            }}>
+                                <div style={{
+                                    width: "36px", height: "36px", borderRadius: "50%",
+                                    background: validationResult.valid ? "#22c55e" : "#ef4444",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    color: "white", fontSize: "1.1rem", fontWeight: "700", flexShrink: 0
+                                }}>
+                                    {validationResult.valid ? "\u2713" : "\u2717"}
+                                </div>
+                                <div style={{
+                                    fontWeight: "700", fontSize: "1rem",
+                                    color: validationResult.valid ? (isDark ? "#4ade80" : "#16a34a") : (isDark ? "#f87171" : "#dc2626")
+                                }}>
+                                    {validationResult.valid ? t("validate.valid") : t("validate.invalid")}
+                                </div>
+                            </div>
+
+                            {/* Details */}
+                            {validationResult.valid && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                    <div style={{
+                                        padding: "12px 16px", background: isDark ? "#0f172a" : "#f9fafb",
+                                        borderRadius: "10px", border: isDark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                        display: "flex", justifyContent: "space-between", alignItems: "center"
+                                    }}>
+                                        <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#94a3b8" : "#666" }}>
+                                            {t("validate.version")}
+                                        </span>
+                                        <span style={{
+                                            fontWeight: "700", fontSize: "1rem", color: "#2563eb",
+                                            padding: "4px 12px", background: isDark ? "#1e3a5f" : "#eff6ff",
+                                            borderRadius: "6px"
+                                        }}>
+                                            v{validationResult.version}
+                                        </span>
+                                    </div>
+                                    <div style={{
+                                        padding: "12px 16px", background: isDark ? "#0f172a" : "#f9fafb",
+                                        borderRadius: "10px", border: isDark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                        display: "flex", justifyContent: "space-between", alignItems: "center"
+                                    }}>
+                                        <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#94a3b8" : "#666" }}>
+                                            {t("validate.variant")}
+                                        </span>
+                                        <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "#333" }}>
+                                            {validationResult.variant}
+                                        </span>
+                                    </div>
+                                    {validationResult.timestamp && (
+                                        <div style={{
+                                            padding: "12px 16px", background: isDark ? "#0f172a" : "#fffbeb",
+                                            borderRadius: "10px", border: isDark ? "1px solid #334155" : "1px solid #fde68a",
+                                            display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "4px"
+                                        }}>
+                                            <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#fbbf24" : "#92400e" }}>
+                                                {t("validate.timestamp")}
+                                            </span>
+                                            <span style={{ fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#fbbf24" : "#92400e" }}>
+                                                {validationResult.timestamp.toLocaleString()}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
 
-            {/* Animation Keyframes */}
             <style jsx>{`
                 @keyframes fadeInDown {
-                    from {
-                        opacity: 0;
-                        transform: translateX(-50%) translateY(-10px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(-50%) translateY(0);
-                    }
+                    from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
                 }
             `}</style>
         </div>

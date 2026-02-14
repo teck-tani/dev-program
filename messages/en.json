@@ -3234,18 +3234,19 @@
   },
   "CharacterCounter": {
     "meta": {
-      "title": "Character Counter | Count Letters, Words, Bytes - Free Online",
-      "description": "Free online character counter. Count characters with/without spaces, bytes, words, and lines in real-time. Analyze Korean, English, number, and special character ratios. Essential for SNS, blogs, and resumes!",
-      "keywords": "character counter, letter counter, word counter, byte counter, text analysis, character count online, word count tool, free character counter, text length checker",
-      "ogTitle": "Character Counter | Letters, Words & Bytes in Real-Time",
-      "ogDescription": "Enter text to instantly count characters, words, bytes, and lines. Supports detailed analysis including character type ratios. Completely free!"
+      "title": "Character Counter | Set Goal Limit, Count Letters & Words - Free",
+      "description": "Free character counter with goal limit feature. Set target character counts (500, 1000, 1500+) and track progress with a visual bar. Count characters with/without spaces, bytes, words in real-time. Perfect for essays, resumes, blogs & SNS!",
+      "keywords": "character counter, word counter, character limit checker, essay word count, letter counter, text length checker, character goal tracker, byte counter, manuscript page counter, SNS character limit, free character counter, online word counter",
+      "ogTitle": "Character Counter | Set Goals & Track Character Limits",
+      "ogDescription": "Set target character counts and track progress in real-time! Perfect for essays, cover letters, blogs, and SNS with character limits. Completely free!"
     },
     "title": "Character Counter",
     "subtitle": "Enter text to count characters with/without spaces, bytes, and words in real-time.",
     "stats": {
       "charWithSpace": "With Spaces",
       "charWithoutSpace": "Without Spaces",
-      "bytes": "Bytes",
+      "bytesUtf8": "UTF-8",
+      "bytesEucKr": "EUC-KR",
       "words": "Words",
       "readTime": "Read Time",
       "min": "min",
@@ -3254,6 +3255,15 @@
       "manuscript400": "400-char Pages",
       "sentences": "Sentences"
     },
+    "goal": {
+      "title": "Goal",
+      "char": "",
+      "custom": "Custom",
+      "withSpace": "With spaces",
+      "withoutSpace": "Without spaces",
+      "remaining": "{count} remaining",
+      "over": "{count} over limit!"
+    },
     "upload": {
       "title": "Upload Text File",
       "hint": "Drag & drop or click to select a .txt file",
@@ -3261,7 +3271,7 @@
     },
     "input": {
       "title": "Text Input",
-      "placeholder": "Enter text to count characters...",
+      "placeholder": "Enter text to count characters...\n\nCheck character limits for essays, blog posts, SNS posts, and more.",
       "copy": "Copy",
       "copied": "Copied!",
       "clear": "Clear"
@@ -3300,8 +3310,8 @@
         "desc": "Pure character count only. Often used when there are character limits for essays or applications."
       },
       "bytes": {
-        "title": "Byte Calculation",
-        "desc": "Size in UTF-8 encoding. Korean characters are 3 bytes, English/numbers are 1 byte each."
+        "title": "Byte Calculation (UTF-8 / EUC-KR)",
+        "desc": "UTF-8: Korean 3 bytes, English 1 byte. EUC-KR: Korean 2 bytes, English 1 byte. Some legacy systems use EUC-KR byte limits."
       }
     },
     "faq": {
@@ -3325,24 +3335,32 @@
       "q5": {
         "q": "Q. What are the character limits for different SNS platforms?",
         "a": "Twitter (X) allows 280 characters, Instagram captions 2,200 characters, Facebook 63,206 characters, and YouTube titles 100 characters. This tool shows real-time comparison against each platform's limit."
+      },
+      "q6": {
+        "q": "Q. Do essay character limits include spaces?",
+        "a": "Most character limits count 'with spaces'. However, some organizations use 'without spaces', so always check the specific requirements. You can toggle between 'with spaces' and 'without spaces' in the goal setting feature."
+      },
+      "q7": {
+        "q": "Q. How do I set a target character count?",
+        "a": "Click one of the preset buttons (500, 1000, 1500, 2000, 3000) or enter a custom number. You can also choose whether to count with or without spaces. A progress bar shows your progress, and a red warning appears when you exceed the limit."
       }
     },
     "seo": {
       "description": {
         "title": "What is a Character Counter?",
-        "p1": "Character Counter is an online tool that analyzes your text in real-time, counting characters (with/without spaces), words, bytes, lines, and more. It's useful for various situations with character limits such as blog posts, SNS content, resumes, and essays.",
-        "p2": "Beyond basic counting, it provides character type ratio analysis (Korean, English, numbers, special characters), estimated reading time, keyword frequency analysis, and SNS character limit guides. All analysis is processed in real-time within your browser for speed and security."
+        "p1": "Character Counter is an online tool that analyzes your text in real-time, counting characters (with/without spaces), words, bytes, lines, and more. It's essential for essays, cover letters, blog posts, and SNS content with character limits.",
+        "p2": "Set a target character goal with preset buttons (500, 1000, 1500+) or custom input, and track your progress with a visual progress bar. When you exceed the limit, a red warning appears instantly. Also includes character type analysis, reading time, SNS limit guides, and manuscript page counts."
       },
       "features": {
         "title": "Key Features",
         "list": {
           "feat1": {
-            "title": "Real-time Character & Word Count",
-            "desc": "Instantly calculates characters (with/without spaces), words, bytes, lines, and paragraphs as you type."
+            "title": "Goal Character Limit",
+            "desc": "Set a target with 500/1000/1500/2000/3000 presets or custom input. A progress bar shows your progress, and a red warning appears when you exceed the limit."
           },
           "feat2": {
-            "title": "Estimated Reading Time",
-            "desc": "Displays estimated reading time in minutes and seconds based on your text length. Great for checking blog post or presentation script length."
+            "title": "Real-time Character & Word Count",
+            "desc": "Instantly calculates characters (with/without spaces), words, bytes, sentences, and manuscript pages (200/400-char) as you type."
           },
           "feat3": {
             "title": "SNS Character Limit Guide",
@@ -3357,30 +3375,30 @@
       "howto": {
         "title": "How to Use",
         "steps": {
-          "step1": "<strong>Enter Text</strong> — Type or paste the text you want to analyze into the input area.",
-          "step2": "<strong>View Real-time Analysis</strong> — Character count (with/without spaces), bytes, words, and reading time are displayed automatically.",
-          "step3": "<strong>Check SNS Limits</strong> — Compare your current character count against Twitter, Instagram, and other SNS platform limits.",
-          "step4": "<strong>Use Text Transforms</strong> — Apply uppercase/lowercase conversion, space removal, and other text transformation tools as needed."
+          "step1": "<strong>Enter Text</strong> — Type or paste the text you want to analyze (essays, blog posts, etc.) into the input area.",
+          "step2": "<strong>Set Goal</strong> — Click a preset (500, 1000, etc.) or enter a custom character limit. Choose between with/without spaces.",
+          "step3": "<strong>Track Progress</strong> — Character count, bytes, words, manuscript pages, and reading time update in real-time. Monitor remaining characters and over-limit warnings via the progress bar.",
+          "step4": "<strong>SNS & Text Tools</strong> — Check SNS character limits, apply text transforms (uppercase, space removal), and use keyword analysis."
         }
       },
       "usecases": {
         "title": "Use Cases",
         "list": {
           "uc1": {
-            "title": "Blog & Content Writing",
-            "desc": "Check SEO-optimized character counts and adjust content length using estimated reading time."
+            "title": "Essays & Cover Letters",
+            "desc": "Set goals matching your character limits (500, 1000, 1500 chars) and write precisely to meet with/without space requirements."
           },
           "uc2": {
+            "title": "Blog & Content Writing",
+            "desc": "Set SEO-optimized targets (1500-3000 chars), check estimated reading time, and fine-tune content length."
+          },
+          "uc3": {
             "title": "SNS Posting",
             "desc": "Write posts while checking real-time character limits for Twitter (280 chars), Instagram (2,200 chars), and other platforms."
           },
-          "uc3": {
-            "title": "Resumes & Cover Letters",
-            "desc": "Verify exact character counts (with/without spaces) when writing cover letters with character limits from job postings."
-          },
           "uc4": {
             "title": "Academic Papers & Reports",
-            "desc": "Ensure your abstract meets word count limits or your report meets page requirements for academic submissions."
+            "desc": "Check manuscript page counts (200/400-char pages), verify word count limits for abstracts, and ensure report length requirements."
           }
         }
       },
@@ -5315,6 +5333,22 @@
     "error": {
       "invalid": "Invalid regular expression"
     },
+    "shareUrl": "Share URL",
+    "warning": {
+      "backtrack": "This pattern may cause excessive backtracking. Watch for performance issues."
+    },
+    "explain": {
+      "title": "Pattern Explanation"
+    },
+    "cheatsheet": {
+      "title": "Cheatsheet",
+      "charClasses": "Character Classes",
+      "quantifiers": "Quantifiers",
+      "anchors": "Anchors",
+      "groups": "Groups",
+      "lookaround": "Lookaround",
+      "flagsInfo": "Flags"
+    },
     "action": {
       "copy": "Copy",
       "copied": "Copied!",
@@ -6120,6 +6154,16 @@
     "copied": "Copied!",
     "history": "History",
     "clear": "Clear",
+    "mode": {
+      "generate": "Generate",
+      "validate": "Validate"
+    },
+    "version": {
+      "label": "UUID Version",
+      "v1Desc": "Timestamp",
+      "v4Desc": "Random",
+      "v7Desc": "Time-ordered"
+    },
     "validate": {
       "title": "UUID Validation",
       "placeholder": "Enter a UUID to validate...",
@@ -6127,7 +6171,8 @@
       "valid": "Valid UUID",
       "invalid": "Invalid UUID",
       "version": "Version",
-      "variant": "Variant"
+      "variant": "Variant",
+      "timestamp": "Timestamp"
     },
     "seo": {
       "description": {
@@ -6237,7 +6282,8 @@
     },
     "mode": {
       "text": "Text",
-      "file": "File"
+      "file": "File",
+      "verify": "Verify"
     },
     "input": {
       "label": "Enter text to hash",
@@ -6247,7 +6293,25 @@
     "file": {
       "dropzone": "Drag & drop a file here or click to select",
       "or": "or click to select a file",
-      "processing": "Computing hashes..."
+      "processing": "Computing hashes...",
+      "maxFiles": "Max 10 files",
+      "filesProcessed": "file(s) processed",
+      "clearAll": "Clear All"
+    },
+    "hmac": {
+      "keyPlaceholder": "Enter HMAC Secret Key..."
+    },
+    "verify": {
+      "algorithm": "Select Hash Algorithm",
+      "inputLabel": "Text to Verify",
+      "inputPlaceholder": "Enter the original text...",
+      "expectedLabel": "Expected Hash",
+      "expectedPlaceholder": "Paste the expected hash value...",
+      "computed": "Computed Hash",
+      "match": "Match",
+      "mismatch": "Mismatch",
+      "matchDesc": "Hash values match exactly. The data has not been tampered with.",
+      "mismatchDesc": "Hash values do not match. The data may have been modified."
     },
     "options": {
       "uppercase": "Uppercase (ABC)",
@@ -6376,6 +6440,17 @@
     "copy": "Copy",
     "copied": "Copied",
     "invalidTimestamp": "Invalid timestamp.",
+    "timezone": "Timezone",
+    "modeDiff": "Diff",
+    "modeBatch": "Batch",
+    "diffTitle": "Calculate difference between two timestamps",
+    "diffPlaceholder1": "First timestamp",
+    "diffPlaceholder2": "Second timestamp",
+    "diffTimestamp": "Timestamp",
+    "batchTitle": "Batch conversion (one per line, max 50)",
+    "batchPlaceholder": "1707696000\n1707782400\n1707868800",
+    "batchInput": "Input",
+    "codeSnippets": "Code Snippets",
     "infoTitle": "What is a Unix Timestamp?",
     "infoText": "A Unix timestamp (Epoch Time) is the number of seconds elapsed since January 1, 1970 00:00:00 UTC (Unix Epoch). It is a standard way to represent time in programming, databases, and APIs, providing consistent time representation worldwide regardless of timezone.",
     "seo": {
@@ -6504,6 +6579,36 @@
     },
     "signature": {
       "note": "The Signature cannot be verified without the Secret Key. This tool only decodes; signature verification must be performed server-side."
+    },
+    "mode": {
+      "decode": "Decode",
+      "encode": "Encode"
+    },
+    "verify": {
+      "title": "Signature Verification",
+      "secretPlaceholder": "Enter Secret Key...",
+      "button": "Verify",
+      "valid": "Signature is valid",
+      "invalid": "Signature is invalid",
+      "unsupported": "Currently only HMAC (HS256/HS384/HS512) verification is supported"
+    },
+    "warning": {
+      "algNoneTitle": "Security Warning: alg: \"none\" detected",
+      "algNoneDesc": "This token has no signing algorithm (\"none\"), meaning it has no signature. This is a known security vulnerability and should never be allowed in production environments."
+    },
+    "algInfo": {
+      "title": "JWT Algorithm Comparison",
+      "algorithm": "Algorithm",
+      "type": "Type",
+      "keyType": "Key Type",
+      "useCase": "Use Case"
+    },
+    "encode": {
+      "algorithm": "Select Algorithm",
+      "secret": "Secret Key",
+      "generate": "Generate JWT Token",
+      "result": "Generated JWT Token",
+      "decodeThis": "Decode this token"
     },
     "seo": {
       "description": {
@@ -7439,6 +7544,23 @@
     "savings": "Savings",
     "bytes": "bytes",
     "noInput": "Please enter CSS code.",
+    "download": "Download .min.css",
+    "lintTitle": "CSS Lint",
+    "lintUnclosed": "Unclosed brace",
+    "lintSemicolon": "Possible missing semicolon",
+    "lintDuplicate": "Duplicate property",
+    "lintLine": "Line",
+    "lintNoIssues": "No lint issues found",
+    "optimReport": "Optimization Report",
+    "optim": {
+      "comments": "Comments removed",
+      "colorShorthand": "Color shorthand",
+      "zeroUnit": "Zero unit removed",
+      "rgbShorthand": "RGB shorthand"
+    },
+    "diffTitle": "Before / After Diff",
+    "diffRemoved": "Removed",
+    "diffAdded": "Added",
     "seo": {
       "description": {
         "title": "What is CSS Minifier?",
@@ -7702,12 +7824,18 @@
       "copyHtml": "Copy HTML",
       "sample": "Load Sample",
       "clear": "Clear",
-      "copied": "Copied!"
+      "copied": "Copied!",
+      "upload": "Upload .md",
+      "exportHtml": "Export HTML",
+      "exportPdf": "Export PDF",
+      "toc": "Table of Contents"
     },
     "toast": {
       "copiedMd": "Markdown copied to clipboard.",
       "copiedHtml": "HTML copied to clipboard.",
-      "cleared": "Editor has been cleared."
+      "cleared": "Editor has been cleared.",
+      "uploaded": ".md file has been loaded.",
+      "exportedHtml": "HTML file has been downloaded."
     },
     "seo": {
       "description": {

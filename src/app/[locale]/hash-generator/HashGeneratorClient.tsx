@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaCopy, FaCheck, FaFileUpload, FaTrash, FaExchangeAlt } from "react-icons/fa";
+import { FaCopy, FaCheck, FaFileUpload, FaTrash, FaExchangeAlt, FaKey, FaDownload, FaShieldAlt } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
+import { downloadFile } from "@/utils/fileDownload";
 
 // ===== MD5 구현 (Web Crypto API에 없으므로 순수 JS) =====
 function md5(input: string): string {
@@ -150,7 +151,6 @@ function md5(input: string): string {
         return output;
     }
 
-    // UTF-8 encode
     function str2rstrUTF8(input: string): string {
         return unescape(encodeURIComponent(input));
     }
@@ -287,6 +287,33 @@ function md5FromBuffer(buffer: ArrayBuffer): string {
     return output;
 }
 
+// ===== HMAC-MD5 구현 =====
+function hmacMd5(key: string, message: string): string {
+    const blockSize = 64;
+    let keyBytes = Array.from(unescape(encodeURIComponent(key))).map(c => c.charCodeAt(0));
+    if (keyBytes.length > blockSize) {
+        const hashed = md5(key);
+        keyBytes = [];
+        for (let i = 0; i < hashed.length; i += 2) {
+            keyBytes.push(parseInt(hashed.substring(i, i + 2), 16));
+        }
+    }
+    while (keyBytes.length < blockSize) keyBytes.push(0);
+
+    const oKeyPad = keyBytes.map(b => b ^ 0x5c);
+    const iKeyPad = keyBytes.map(b => b ^ 0x36);
+
+    const innerInput = String.fromCharCode(...iKeyPad) + unescape(encodeURIComponent(message));
+    const innerHash = md5(innerInput);
+
+    const outerBytes: number[] = [];
+    for (let i = 0; i < innerHash.length; i += 2) {
+        outerBytes.push(parseInt(innerHash.substring(i, i + 2), 16));
+    }
+    const outerInput = String.fromCharCode(...oKeyPad) + String.fromCharCode(...outerBytes);
+    return md5(outerInput);
+}
+
 // ===== 알고리즘 목록 =====
 type Algorithm = 'MD5' | 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 
@@ -317,8 +344,6 @@ async function computeHash(algo: Algorithm, data: ArrayBuffer | string): Promise
             return md5FromBuffer(data);
         }
     }
-
-    // Web Crypto API
     let buffer: ArrayBuffer;
     if (typeof data === 'string') {
         buffer = new TextEncoder().encode(data).buffer as ArrayBuffer;
@@ -329,6 +354,19 @@ async function computeHash(algo: Algorithm, data: ArrayBuffer | string): Promise
     return bufferToHex(hashBuffer);
 }
 
+async function computeHmac(algo: Algorithm, data: string, key: string): Promise<string> {
+    if (algo === 'MD5') {
+        return hmacMd5(key, data);
+    }
+    const enc = new TextEncoder();
+    const keyData = enc.encode(key);
+    const cryptoKey = await crypto.subtle.importKey(
+        'raw', keyData, { name: 'HMAC', hash: algo }, false, ['sign']
+    );
+    const sig = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(data));
+    return bufferToHex(sig);
+}
+
 function formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -336,6 +374,15 @@ function formatFileSize(bytes: number): string {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
+
+// 파일 해시 결과 타입
+interface FileHashResult {
+    name: string;
+    size: number;
+    hashes: Record<Algorithm, string>;
+}
+
+type Mode = 'text' | 'file' | 'verify';
 
 export default function HashGeneratorClient() {
     const t = useTranslations('HashGenerator');
@@ -351,16 +398,24 @@ export default function HashGeneratorClient() {
     const [toast, setToast] = useState(false);
     const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // HMAC state
+    const [hmacEnabled, setHmacEnabled] = useState(false);
+    const [hmacKey, setHmacKey] = useState('');
+
     // File hash state
-    const [mode, setMode] = useState<'text' | 'file'>('text');
-    const [fileName, setFileName] = useState('');
-    const [fileSize, setFileSize] = useState(0);
-    const [fileHashes, setFileHashes] = useState<Record<Algorithm, string>>({
-        'MD5': '', 'SHA-1': '', 'SHA-256': '', 'SHA-384': '', 'SHA-512': ''
-    });
+    const [mode, setMode] = useState<Mode>('text');
+    const [fileResults, setFileResults] = useState<FileHashResult[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [processingProgress, setProcessingProgress] = useState('');
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [expandedFile, setExpandedFile] = useState<number>(0);
+
+    // Verify mode state
+    const [verifyAlgo, setVerifyAlgo] = useState<Algorithm>('SHA-256');
+    const [verifyInput, setVerifyInput] = useState('');
+    const [verifyExpected, setVerifyExpected] = useState('');
+    const [verifyComputed, setVerifyComputed] = useState('');
 
     // 텍스트 실시간 해시 계산
     useEffect(() => {
@@ -374,14 +429,37 @@ export default function HashGeneratorClient() {
             const results: Record<string, string> = {};
             for (const algo of ALGORITHMS) {
                 if (cancelled) return;
-                results[algo] = await computeHash(algo, inputText);
+                if (hmacEnabled && hmacKey) {
+                    results[algo] = await computeHmac(algo, inputText, hmacKey);
+                } else {
+                    results[algo] = await computeHash(algo, inputText);
+                }
             }
             if (!cancelled) {
                 setHashes(results as Record<Algorithm, string>);
             }
         })();
         return () => { cancelled = true; };
-    }, [inputText, mode]);
+    }, [inputText, mode, hmacEnabled, hmacKey]);
+
+    // 검증 모드 해시 계산
+    useEffect(() => {
+        if (mode !== 'verify' || !verifyInput) {
+            setVerifyComputed('');
+            return;
+        }
+        let cancelled = false;
+        (async () => {
+            const result = await computeHash(verifyAlgo, verifyInput);
+            if (!cancelled) setVerifyComputed(result);
+        })();
+        return () => { cancelled = true; };
+    }, [verifyInput, verifyAlgo, mode]);
+
+    const verifyMatch = useMemo(() => {
+        if (!verifyComputed || !verifyExpected) return null;
+        return verifyComputed.toLowerCase().trim() === verifyExpected.toLowerCase().trim();
+    }, [verifyComputed, verifyExpected]);
 
     const handleCopy = useCallback(async (text: string, algo: string) => {
         if (!text) return;
@@ -400,37 +478,47 @@ export default function HashGeneratorClient() {
         }
     }, [uppercase]);
 
-    const handleFileSelect = useCallback(async (file: File) => {
-        setFileName(file.name);
-        setFileSize(file.size);
+    const handleFilesSelect = useCallback(async (files: FileList) => {
+        const fileArray = Array.from(files).slice(0, 10);
         setIsProcessing(true);
-        setFileHashes({ 'MD5': '', 'SHA-1': '', 'SHA-256': '', 'SHA-384': '', 'SHA-512': '' });
+        setFileResults([]);
 
-        try {
-            const buffer = await file.arrayBuffer();
-            const results: Record<string, string> = {};
-            for (const algo of ALGORITHMS) {
-                results[algo] = await computeHash(algo, buffer);
+        const results: FileHashResult[] = [];
+        for (let fi = 0; fi < fileArray.length; fi++) {
+            const file = fileArray[fi];
+            setProcessingProgress(`${fi + 1}/${fileArray.length}: ${file.name}`);
+            try {
+                const buffer = await file.arrayBuffer();
+                const fileHashes: Record<string, string> = {};
+                for (const algo of ALGORITHMS) {
+                    fileHashes[algo] = await computeHash(algo, buffer);
+                }
+                results.push({
+                    name: file.name,
+                    size: file.size,
+                    hashes: fileHashes as Record<Algorithm, string>
+                });
+            } catch {
+                // skip failed file
             }
-            setFileHashes(results as Record<Algorithm, string>);
-        } catch {
-            // error handling
-        } finally {
-            setIsProcessing(false);
         }
+        setFileResults(results);
+        setIsProcessing(false);
+        setProcessingProgress('');
+        if (results.length > 0) setExpandedFile(0);
     }, []);
 
     const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) handleFileSelect(file);
-    }, [handleFileSelect]);
+        const files = e.target.files;
+        if (files && files.length > 0) handleFilesSelect(files);
+    }, [handleFilesSelect]);
 
     const handleDrop = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         setDragOver(false);
-        const file = e.dataTransfer.files?.[0];
-        if (file) handleFileSelect(file);
-    }, [handleFileSelect]);
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) handleFilesSelect(files);
+    }, [handleFilesSelect]);
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -442,23 +530,109 @@ export default function HashGeneratorClient() {
         setDragOver(false);
     }, []);
 
-    const clearFile = useCallback(() => {
-        setFileName('');
-        setFileSize(0);
-        setFileHashes({ 'MD5': '', 'SHA-1': '', 'SHA-256': '', 'SHA-384': '', 'SHA-512': '' });
+    const clearFiles = useCallback(() => {
+        setFileResults([]);
+        setProcessingProgress('');
         if (fileInputRef.current) fileInputRef.current.value = '';
     }, []);
 
-    const currentHashes = mode === 'text' ? hashes : fileHashes;
-    const hasResults = Object.values(currentHashes).some(v => v !== '');
+    const handleDownloadChecksum = useCallback((fileResult: FileHashResult, algo: Algorithm) => {
+        const hash = uppercase ? fileResult.hashes[algo].toUpperCase() : fileResult.hashes[algo];
+        const content = `${hash}  ${fileResult.name}\n`;
+        const ext = algo.toLowerCase().replace('-', '');
+        downloadFile(content, `${fileResult.name}.${ext}`, 'text/plain');
+    }, [uppercase]);
+
+    const currentHashes = mode === 'text' ? hashes : {};
+    const hasTextResults = Object.values(hashes).some(v => v !== '');
+    const hasFileResults = fileResults.length > 0;
 
     const getShareText = () => {
-        if (!hasResults) return '';
-        const firstAlgo = ALGORITHMS.find(a => currentHashes[a] !== '');
-        if (!firstAlgo) return '';
-        const hashVal = uppercase ? currentHashes[firstAlgo].toUpperCase() : currentHashes[firstAlgo];
-        return `#\uFE0F\u20E3 Hash Generator\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${firstAlgo}: ${hashVal}\n\n\uD83D\uDCCD teck-tani.com/hash-generator`;
+        if (mode === 'text' && hasTextResults) {
+            const firstAlgo = ALGORITHMS.find(a => hashes[a] !== '');
+            if (!firstAlgo) return '';
+            const hashVal = uppercase ? hashes[firstAlgo].toUpperCase() : hashes[firstAlgo];
+            return `#\uFE0F\u20E3 Hash Generator\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${firstAlgo}: ${hashVal}\n\n\uD83D\uDCCD teck-tani.com/hash-generator`;
+        }
+        return '';
     };
+
+    const renderHashResults = (hashData: Record<Algorithm, string>, prefix: string = '') => (
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            {ALGORITHMS.map((algo) => {
+                const hashVal = hashData[algo];
+                if (!hashVal) return null;
+                const displayHash = uppercase ? hashVal.toUpperCase() : hashVal;
+                const info = ALGO_INFO[algo];
+                const copyKey = prefix ? `${prefix}-${algo}` : algo;
+
+                return (
+                    <div key={copyKey} style={{
+                        padding: "14px 16px",
+                        background: isDark ? "#0f172a" : "#f9fafb",
+                        borderRadius: "12px",
+                        border: isDark ? "1px solid #334155" : "1px solid #e5e7eb"
+                    }}>
+                        <div style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "8px"
+                        }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span style={{ fontWeight: "700", fontSize: "0.9rem", color: "#2563eb" }}>
+                                    {hmacEnabled && mode === 'text' ? `HMAC-${algo}` : algo}
+                                </span>
+                                <span style={{
+                                    fontSize: "0.7rem",
+                                    color: isDark ? "#64748b" : "#999",
+                                    padding: "2px 6px",
+                                    background: isDark ? "#1e293b" : "#e5e7eb",
+                                    borderRadius: "4px"
+                                }}>
+                                    {info.bits}bit
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => handleCopy(hashVal, copyKey)}
+                                style={{
+                                    padding: "6px 12px",
+                                    background: copiedAlgo === copyKey ? "#22c55e" : "#2563eb",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "6px",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                    fontSize: "0.8rem",
+                                    fontWeight: "600",
+                                    flexShrink: 0,
+                                    transition: "background 0.2s"
+                                }}
+                            >
+                                {copiedAlgo === copyKey
+                                    ? <><FaCheck size={10} /> {t('copied')}</>
+                                    : <><FaCopy size={10} /> {t('copy')}</>
+                                }
+                            </button>
+                        </div>
+                        <code style={{
+                            display: "block",
+                            fontFamily: "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
+                            fontSize: "0.82rem",
+                            color: isDark ? "#94a3b8" : "#555",
+                            wordBreak: "break-all",
+                            lineHeight: 1.6,
+                            letterSpacing: "0.5px"
+                        }}>
+                            {displayHash}
+                        </code>
+                    </div>
+                );
+            })}
+        </div>
+    );
 
     return (
         <div style={{ maxWidth: "800px", margin: "0 auto", padding: "16px" }}>
@@ -493,7 +667,7 @@ export default function HashGeneratorClient() {
                 overflow: "hidden",
                 border: isDark ? "1px solid #334155" : "1px solid #e5e7eb"
             }}>
-                {(['text', 'file'] as const).map((m) => (
+                {(['text', 'file', 'verify'] as const).map((m) => (
                     <button
                         key={m}
                         onClick={() => setMode(m)}
@@ -502,7 +676,7 @@ export default function HashGeneratorClient() {
                             padding: "12px",
                             border: "none",
                             background: mode === m
-                                ? (isDark ? "#2563eb" : "#2563eb")
+                                ? "#2563eb"
                                 : (isDark ? "#1e293b" : "white"),
                             color: mode === m ? "white" : (isDark ? "#94a3b8" : "#666"),
                             fontWeight: mode === m ? "700" : "500",
@@ -516,21 +690,81 @@ export default function HashGeneratorClient() {
                         }}
                     >
                         {m === 'file' && <FaFileUpload size={14} />}
+                        {m === 'verify' && <FaShieldAlt size={14} />}
                         {t(`mode.${m}`)}
                     </button>
                 ))}
             </div>
 
-            {/* Input Card */}
-            <div style={{
-                background: isDark ? "#1e293b" : "white",
-                borderRadius: "16px",
-                padding: "24px",
-                boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)",
-                marginBottom: "20px"
-            }}>
-                {mode === 'text' ? (
-                    <>
+            {/* ===== TEXT MODE ===== */}
+            {mode === 'text' && (
+                <>
+                    {/* HMAC Toggle */}
+                    <div style={{
+                        background: isDark ? "#1e293b" : "white",
+                        borderRadius: "16px",
+                        padding: "16px 24px",
+                        boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)",
+                        marginBottom: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        flexWrap: "wrap"
+                    }}>
+                        <button
+                            onClick={() => setHmacEnabled(!hmacEnabled)}
+                            style={{
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                border: hmacEnabled
+                                    ? "2px solid #f59e0b"
+                                    : (isDark ? "1px solid #334155" : "1px solid #d1d5db"),
+                                background: hmacEnabled
+                                    ? (isDark ? "#78350f" : "#fffbeb")
+                                    : (isDark ? "#0f172a" : "#f9fafb"),
+                                color: hmacEnabled ? "#f59e0b" : (isDark ? "#94a3b8" : "#666"),
+                                fontWeight: "600",
+                                fontSize: "0.85rem",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                transition: "all 0.2s"
+                            }}
+                        >
+                            <FaKey size={12} />
+                            HMAC
+                        </button>
+                        {hmacEnabled && (
+                            <input
+                                type="text"
+                                value={hmacKey}
+                                onChange={(e) => setHmacKey(e.target.value)}
+                                placeholder={t('hmac.keyPlaceholder')}
+                                style={{
+                                    flex: 1,
+                                    minWidth: "200px",
+                                    padding: "8px 12px",
+                                    borderRadius: "8px",
+                                    border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                    background: isDark ? "#0f172a" : "#f9fafb",
+                                    color: isDark ? "#e2e8f0" : "#1f2937",
+                                    fontSize: "0.9rem",
+                                    fontFamily: "monospace",
+                                    outline: "none"
+                                }}
+                            />
+                        )}
+                    </div>
+
+                    {/* Input Card */}
+                    <div style={{
+                        background: isDark ? "#1e293b" : "white",
+                        borderRadius: "16px",
+                        padding: "24px",
+                        boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)",
+                        marginBottom: "20px"
+                    }}>
                         <label style={{
                             display: "block",
                             fontWeight: "600",
@@ -559,12 +793,8 @@ export default function HashGeneratorClient() {
                                 transition: "border-color 0.2s",
                                 boxSizing: "border-box"
                             }}
-                            onFocus={(e) => {
-                                e.target.style.borderColor = '#2563eb';
-                            }}
-                            onBlur={(e) => {
-                                e.target.style.borderColor = isDark ? '#334155' : '#d1d5db';
-                            }}
+                            onFocus={(e) => { e.target.style.borderColor = '#2563eb'; }}
+                            onBlur={(e) => { e.target.style.borderColor = isDark ? '#334155' : '#d1d5db'; }}
                         />
                         {inputText && (
                             <div style={{
@@ -576,9 +806,75 @@ export default function HashGeneratorClient() {
                                 {inputText.length} {t('input.chars')} / {new TextEncoder().encode(inputText).length} bytes
                             </div>
                         )}
-                    </>
-                ) : (
-                    <>
+                    </div>
+
+                    {/* Options */}
+                    <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-end",
+                        gap: "10px",
+                        marginBottom: "16px"
+                    }}>
+                        <button
+                            onClick={() => setUppercase(!uppercase)}
+                            style={{
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                background: uppercase
+                                    ? (isDark ? "#1e3a5f" : "#eff6ff")
+                                    : (isDark ? "#1e293b" : "white"),
+                                color: uppercase ? "#2563eb" : (isDark ? "#94a3b8" : "#666"),
+                                fontWeight: "600",
+                                fontSize: "0.85rem",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                transition: "all 0.2s"
+                            }}
+                        >
+                            <FaExchangeAlt size={12} />
+                            {uppercase ? t('options.uppercase') : t('options.lowercase')}
+                        </button>
+                    </div>
+
+                    {/* Results */}
+                    {hasTextResults && (
+                        <div style={{
+                            background: isDark ? "#1e293b" : "white",
+                            borderRadius: "16px",
+                            padding: "24px",
+                            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)"
+                        }}>
+                            <h3 style={{
+                                fontSize: "1rem",
+                                fontWeight: "700",
+                                color: isDark ? "#e2e8f0" : "#333",
+                                margin: "0 0 16px 0"
+                            }}>
+                                {t('results.title')}
+                            </h3>
+                            {renderHashResults(hashes)}
+                            <div style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
+                                <ShareButton shareText={getShareText()} disabled={!hasTextResults} />
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* ===== FILE MODE ===== */}
+            {mode === 'file' && (
+                <>
+                    <div style={{
+                        background: isDark ? "#1e293b" : "white",
+                        borderRadius: "16px",
+                        padding: "24px",
+                        boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)",
+                        marginBottom: "20px"
+                    }}>
                         <div
                             onDrop={handleDrop}
                             onDragOver={handleDragOver}
@@ -612,213 +908,383 @@ export default function HashGeneratorClient() {
                                 fontSize: "0.8rem",
                                 margin: 0
                             }}>
-                                {t('file.or')}
+                                {t('file.or')} ({t('file.maxFiles')})
                             </p>
                         </div>
                         <input
                             ref={fileInputRef}
                             type="file"
+                            multiple
                             onChange={handleFileInputChange}
                             style={{ display: "none" }}
                         />
 
-                        {fileName && (
-                            <div style={{
-                                marginTop: "14px",
-                                padding: "12px 16px",
-                                background: isDark ? "#0f172a" : "#f0f9ff",
-                                borderRadius: "10px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                border: isDark ? "1px solid #1e3a5f" : "1px solid #bfdbfe"
-                            }}>
-                                <div>
-                                    <div style={{
-                                        fontWeight: "600",
-                                        fontSize: "0.9rem",
-                                        color: isDark ? "#e2e8f0" : "#333",
-                                        wordBreak: "break-all"
-                                    }}>
-                                        {fileName}
-                                    </div>
-                                    <div style={{
-                                        fontSize: "0.8rem",
-                                        color: isDark ? "#64748b" : "#999",
-                                        marginTop: "2px"
-                                    }}>
-                                        {formatFileSize(fileSize)}
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); clearFile(); }}
-                                    style={{
-                                        padding: "6px 10px",
-                                        background: isDark ? "#7f1d1d" : "#fee2e2",
-                                        color: isDark ? "#fca5a5" : "#dc2626",
-                                        border: "none",
-                                        borderRadius: "6px",
-                                        cursor: "pointer",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "4px",
-                                        fontSize: "0.8rem"
-                                    }}
-                                >
-                                    <FaTrash size={10} />
-                                </button>
-                            </div>
-                        )}
-
                         {isProcessing && (
                             <div style={{
                                 marginTop: "14px",
-                                textAlign: "center",
-                                color: "#2563eb",
-                                fontWeight: "600",
-                                fontSize: "0.9rem"
+                                textAlign: "center"
                             }}>
-                                {t('file.processing')}
+                                <div style={{
+                                    color: "#2563eb",
+                                    fontWeight: "600",
+                                    fontSize: "0.9rem",
+                                    marginBottom: "8px"
+                                }}>
+                                    {t('file.processing')} {processingProgress}
+                                </div>
+                                <div style={{
+                                    height: "6px",
+                                    background: isDark ? "#334155" : "#e5e7eb",
+                                    borderRadius: "3px",
+                                    overflow: "hidden"
+                                }}>
+                                    <div style={{
+                                        height: "100%",
+                                        background: "#2563eb",
+                                        borderRadius: "3px",
+                                        animation: "progressPulse 1.5s ease-in-out infinite",
+                                        width: "60%"
+                                    }} />
+                                </div>
                             </div>
                         )}
-                    </>
-                )}
-            </div>
+                    </div>
 
-            {/* Options */}
-            <div style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
-                gap: "10px",
-                marginBottom: "16px"
-            }}>
-                <button
-                    onClick={() => setUppercase(!uppercase)}
-                    style={{
-                        padding: "8px 16px",
-                        borderRadius: "8px",
-                        border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
-                        background: uppercase
-                            ? (isDark ? "#1e3a5f" : "#eff6ff")
-                            : (isDark ? "#1e293b" : "white"),
-                        color: uppercase ? "#2563eb" : (isDark ? "#94a3b8" : "#666"),
-                        fontWeight: "600",
-                        fontSize: "0.85rem",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        transition: "all 0.2s"
-                    }}
-                >
-                    <FaExchangeAlt size={12} />
-                    {uppercase ? t('options.uppercase') : t('options.lowercase')}
-                </button>
-            </div>
+                    {/* File Results */}
+                    {hasFileResults && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center"
+                            }}>
+                                <span style={{
+                                    fontSize: "0.85rem",
+                                    color: isDark ? "#94a3b8" : "#666"
+                                }}>
+                                    {fileResults.length} {t('file.filesProcessed')}
+                                </span>
+                                <div style={{ display: "flex", gap: "8px" }}>
+                                    <button
+                                        onClick={() => setUppercase(!uppercase)}
+                                        style={{
+                                            padding: "6px 12px",
+                                            borderRadius: "8px",
+                                            border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                            background: isDark ? "#1e293b" : "white",
+                                            color: isDark ? "#94a3b8" : "#666",
+                                            fontSize: "0.8rem",
+                                            cursor: "pointer",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "4px"
+                                        }}
+                                    >
+                                        <FaExchangeAlt size={10} />
+                                        {uppercase ? t('options.uppercase') : t('options.lowercase')}
+                                    </button>
+                                    <button
+                                        onClick={clearFiles}
+                                        style={{
+                                            padding: "6px 12px",
+                                            background: isDark ? "#7f1d1d" : "#fee2e2",
+                                            color: isDark ? "#fca5a5" : "#dc2626",
+                                            border: "none",
+                                            borderRadius: "8px",
+                                            cursor: "pointer",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "4px",
+                                            fontSize: "0.8rem"
+                                        }}
+                                    >
+                                        <FaTrash size={10} /> {t('file.clearAll')}
+                                    </button>
+                                </div>
+                            </div>
 
-            {/* Results */}
-            {hasResults && (
+                            {fileResults.map((fr, idx) => (
+                                <div key={idx} style={{
+                                    background: isDark ? "#1e293b" : "white",
+                                    borderRadius: "16px",
+                                    boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)",
+                                    overflow: "hidden"
+                                }}>
+                                    {/* File Header (click to expand) */}
+                                    <button
+                                        onClick={() => setExpandedFile(expandedFile === idx ? -1 : idx)}
+                                        style={{
+                                            width: "100%",
+                                            padding: "16px 24px",
+                                            border: "none",
+                                            background: "transparent",
+                                            cursor: "pointer",
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            textAlign: "left"
+                                        }}
+                                    >
+                                        <div>
+                                            <div style={{
+                                                fontWeight: "600",
+                                                fontSize: "0.95rem",
+                                                color: isDark ? "#e2e8f0" : "#333",
+                                                wordBreak: "break-all"
+                                            }}>
+                                                {fr.name}
+                                            </div>
+                                            <div style={{
+                                                fontSize: "0.8rem",
+                                                color: isDark ? "#64748b" : "#999",
+                                                marginTop: "2px"
+                                            }}>
+                                                {formatFileSize(fr.size)}
+                                            </div>
+                                        </div>
+                                        <span style={{
+                                            fontSize: "1.2rem",
+                                            color: isDark ? "#64748b" : "#999",
+                                            transition: "transform 0.2s",
+                                            transform: expandedFile === idx ? "rotate(180deg)" : "rotate(0)"
+                                        }}>
+                                            &#9660;
+                                        </span>
+                                    </button>
+
+                                    {expandedFile === idx && (
+                                        <div style={{ padding: "0 24px 24px" }}>
+                                            {renderHashResults(fr.hashes, `file-${idx}`)}
+
+                                            {/* Download Checksum */}
+                                            <div style={{
+                                                marginTop: "12px",
+                                                display: "flex",
+                                                gap: "8px",
+                                                flexWrap: "wrap"
+                                            }}>
+                                                {ALGORITHMS.filter(a => fr.hashes[a]).map(algo => (
+                                                    <button
+                                                        key={algo}
+                                                        onClick={() => handleDownloadChecksum(fr, algo)}
+                                                        style={{
+                                                            padding: "6px 10px",
+                                                            borderRadius: "6px",
+                                                            border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                                            background: isDark ? "#0f172a" : "#f9fafb",
+                                                            color: isDark ? "#94a3b8" : "#666",
+                                                            fontSize: "0.75rem",
+                                                            cursor: "pointer",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: "4px"
+                                                        }}
+                                                    >
+                                                        <FaDownload size={10} />
+                                                        .{algo.toLowerCase().replace('-', '')}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* ===== VERIFY MODE ===== */}
+            {mode === 'verify' && (
                 <div style={{
                     background: isDark ? "#1e293b" : "white",
                     borderRadius: "16px",
                     padding: "24px",
                     boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.3)" : "0 2px 15px rgba(0,0,0,0.08)"
                 }}>
-                    <h3 style={{
-                        fontSize: "1rem",
-                        fontWeight: "700",
+                    {/* Algorithm selector */}
+                    <label style={{
+                        display: "block",
+                        fontWeight: "600",
+                        fontSize: "0.95rem",
                         color: isDark ? "#e2e8f0" : "#333",
-                        margin: "0 0 16px 0"
+                        marginBottom: "10px"
                     }}>
-                        {t('results.title')}
-                    </h3>
+                        {t('verify.algorithm')}
+                    </label>
+                    <div style={{
+                        display: "flex",
+                        gap: "8px",
+                        flexWrap: "wrap",
+                        marginBottom: "20px"
+                    }}>
+                        {ALGORITHMS.map(algo => (
+                            <button
+                                key={algo}
+                                onClick={() => setVerifyAlgo(algo)}
+                                style={{
+                                    padding: "8px 14px",
+                                    borderRadius: "8px",
+                                    border: verifyAlgo === algo
+                                        ? "2px solid #2563eb"
+                                        : (isDark ? "1px solid #334155" : "1px solid #d1d5db"),
+                                    background: verifyAlgo === algo
+                                        ? (isDark ? "#1e3a5f" : "#eff6ff")
+                                        : (isDark ? "#0f172a" : "#f9fafb"),
+                                    color: verifyAlgo === algo ? "#2563eb" : (isDark ? "#94a3b8" : "#666"),
+                                    fontWeight: verifyAlgo === algo ? "700" : "500",
+                                    fontSize: "0.85rem",
+                                    cursor: "pointer",
+                                    transition: "all 0.2s"
+                                }}
+                            >
+                                {algo}
+                            </button>
+                        ))}
+                    </div>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                        {ALGORITHMS.map((algo) => {
-                            const hashVal = currentHashes[algo];
-                            if (!hashVal) return null;
-                            const displayHash = uppercase ? hashVal.toUpperCase() : hashVal;
-                            const info = ALGO_INFO[algo];
+                    {/* Input text */}
+                    <label style={{
+                        display: "block",
+                        fontWeight: "600",
+                        fontSize: "0.95rem",
+                        color: isDark ? "#e2e8f0" : "#333",
+                        marginBottom: "10px"
+                    }}>
+                        {t('verify.inputLabel')}
+                    </label>
+                    <textarea
+                        value={verifyInput}
+                        onChange={(e) => setVerifyInput(e.target.value)}
+                        placeholder={t('verify.inputPlaceholder')}
+                        style={{
+                            width: "100%",
+                            minHeight: "80px",
+                            padding: "14px",
+                            borderRadius: "12px",
+                            border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                            background: isDark ? "#0f172a" : "#f9fafb",
+                            color: isDark ? "#e2e8f0" : "#1f2937",
+                            fontSize: "0.95rem",
+                            fontFamily: "monospace",
+                            resize: "vertical",
+                            outline: "none",
+                            boxSizing: "border-box",
+                            marginBottom: "16px"
+                        }}
+                    />
 
-                            return (
-                                <div key={algo} style={{
-                                    padding: "14px 16px",
-                                    background: isDark ? "#0f172a" : "#f9fafb",
-                                    borderRadius: "12px",
-                                    border: isDark ? "1px solid #334155" : "1px solid #e5e7eb"
+                    {/* Computed hash */}
+                    {verifyComputed && (
+                        <div style={{
+                            padding: "12px 16px",
+                            background: isDark ? "#0f172a" : "#f0f9ff",
+                            borderRadius: "10px",
+                            border: isDark ? "1px solid #1e3a5f" : "1px solid #bfdbfe",
+                            marginBottom: "16px"
+                        }}>
+                            <div style={{
+                                fontSize: "0.8rem",
+                                color: isDark ? "#64748b" : "#999",
+                                marginBottom: "4px"
+                            }}>
+                                {t('verify.computed')} ({verifyAlgo})
+                            </div>
+                            <code style={{
+                                fontFamily: "monospace",
+                                fontSize: "0.85rem",
+                                color: isDark ? "#94a3b8" : "#555",
+                                wordBreak: "break-all"
+                            }}>
+                                {uppercase ? verifyComputed.toUpperCase() : verifyComputed}
+                            </code>
+                        </div>
+                    )}
+
+                    {/* Expected hash */}
+                    <label style={{
+                        display: "block",
+                        fontWeight: "600",
+                        fontSize: "0.95rem",
+                        color: isDark ? "#e2e8f0" : "#333",
+                        marginBottom: "10px"
+                    }}>
+                        {t('verify.expectedLabel')}
+                    </label>
+                    <input
+                        type="text"
+                        value={verifyExpected}
+                        onChange={(e) => setVerifyExpected(e.target.value)}
+                        placeholder={t('verify.expectedPlaceholder')}
+                        style={{
+                            width: "100%",
+                            padding: "14px",
+                            borderRadius: "12px",
+                            border: verifyMatch === true
+                                ? "2px solid #22c55e"
+                                : verifyMatch === false
+                                    ? "2px solid #ef4444"
+                                    : (isDark ? "1px solid #334155" : "1px solid #d1d5db"),
+                            background: isDark ? "#0f172a" : "#f9fafb",
+                            color: isDark ? "#e2e8f0" : "#1f2937",
+                            fontSize: "0.95rem",
+                            fontFamily: "monospace",
+                            outline: "none",
+                            boxSizing: "border-box"
+                        }}
+                    />
+
+                    {/* Match Result */}
+                    {verifyMatch !== null && (
+                        <div style={{
+                            marginTop: "16px",
+                            padding: "16px 20px",
+                            borderRadius: "12px",
+                            background: verifyMatch
+                                ? (isDark ? "#052e16" : "#f0fdf4")
+                                : (isDark ? "#450a0a" : "#fef2f2"),
+                            border: verifyMatch
+                                ? (isDark ? "1px solid #166534" : "1px solid #bbf7d0")
+                                : (isDark ? "1px solid #991b1b" : "1px solid #fecaca"),
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px"
+                        }}>
+                            <div style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                background: verifyMatch ? "#22c55e" : "#ef4444",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "white",
+                                fontSize: "1.2rem",
+                                fontWeight: "700",
+                                flexShrink: 0
+                            }}>
+                                {verifyMatch ? "\u2713" : "\u2717"}
+                            </div>
+                            <div>
+                                <div style={{
+                                    fontWeight: "700",
+                                    fontSize: "1rem",
+                                    color: verifyMatch
+                                        ? (isDark ? "#4ade80" : "#16a34a")
+                                        : (isDark ? "#f87171" : "#dc2626")
                                 }}>
-                                    <div style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        marginBottom: "8px"
-                                    }}>
-                                        <div style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "8px"
-                                        }}>
-                                            <span style={{
-                                                fontWeight: "700",
-                                                fontSize: "0.9rem",
-                                                color: "#2563eb"
-                                            }}>
-                                                {algo}
-                                            </span>
-                                            <span style={{
-                                                fontSize: "0.7rem",
-                                                color: isDark ? "#64748b" : "#999",
-                                                padding: "2px 6px",
-                                                background: isDark ? "#1e293b" : "#e5e7eb",
-                                                borderRadius: "4px"
-                                            }}>
-                                                {info.bits}bit
-                                            </span>
-                                        </div>
-                                        <button
-                                            onClick={() => handleCopy(hashVal, algo)}
-                                            style={{
-                                                padding: "6px 12px",
-                                                background: copiedAlgo === algo ? "#22c55e" : "#2563eb",
-                                                color: "white",
-                                                border: "none",
-                                                borderRadius: "6px",
-                                                cursor: "pointer",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: "4px",
-                                                fontSize: "0.8rem",
-                                                fontWeight: "600",
-                                                flexShrink: 0,
-                                                transition: "background 0.2s"
-                                            }}
-                                        >
-                                            {copiedAlgo === algo
-                                                ? <><FaCheck size={10} /> {t('copied')}</>
-                                                : <><FaCopy size={10} /> {t('copy')}</>
-                                            }
-                                        </button>
-                                    </div>
-                                    <code style={{
-                                        display: "block",
-                                        fontFamily: "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
-                                        fontSize: "0.82rem",
-                                        color: isDark ? "#94a3b8" : "#555",
-                                        wordBreak: "break-all",
-                                        lineHeight: 1.6,
-                                        letterSpacing: "0.5px"
-                                    }}>
-                                        {displayHash}
-                                    </code>
+                                    {verifyMatch ? t('verify.match') : t('verify.mismatch')}
                                 </div>
-                            );
-                        })}
-                    </div>
-
-                    <div style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
-                        <ShareButton shareText={getShareText()} disabled={!hasResults} />
-                    </div>
+                                <div style={{
+                                    fontSize: "0.85rem",
+                                    color: isDark ? "#94a3b8" : "#666",
+                                    marginTop: "2px"
+                                }}>
+                                    {verifyMatch ? t('verify.matchDesc') : t('verify.mismatchDesc')}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -833,6 +1299,11 @@ export default function HashGeneratorClient() {
                         opacity: 1;
                         transform: translateX(-50%) translateY(0);
                     }
+                }
+                @keyframes progressPulse {
+                    0% { width: 20%; margin-left: 0; }
+                    50% { width: 60%; margin-left: 20%; }
+                    100% { width: 20%; margin-left: 80%; }
                 }
             `}</style>
         </div>

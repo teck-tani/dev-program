@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import ShareButton from "@/components/ShareButton";
@@ -9,6 +9,7 @@ interface MatchResult {
     fullMatch: string;
     index: number;
     groups: string[];
+    namedGroups: Record<string, string> | null;
 }
 
 interface PresetItem {
@@ -16,6 +17,11 @@ interface PresetItem {
     pattern: string;
     flags: string;
     testSample: string;
+}
+
+interface TokenExplanation {
+    token: string;
+    desc: string;
 }
 
 const PRESETS: PresetItem[] = [
@@ -31,16 +37,274 @@ const PRESETS: PresetItem[] = [
 
 const FLAG_OPTIONS = ["g", "i", "m", "s", "u"] as const;
 
+// Pattern explanation: tokenize and describe
+function explainPattern(pattern: string, lang: "ko" | "en"): TokenExplanation[] {
+    const explanations: TokenExplanation[] = [];
+    const tokenMap: Record<string, { ko: string; en: string }> = {
+        "\\d": { ko: "숫자 (0-9)", en: "Digit (0-9)" },
+        "\\D": { ko: "숫자가 아닌 문자", en: "Non-digit" },
+        "\\w": { ko: "단어 문자 (a-z, A-Z, 0-9, _)", en: "Word char (a-z, A-Z, 0-9, _)" },
+        "\\W": { ko: "단어 문자가 아닌 문자", en: "Non-word char" },
+        "\\s": { ko: "공백 문자 (스페이스, 탭, 줄바꿈)", en: "Whitespace (space, tab, newline)" },
+        "\\S": { ko: "공백이 아닌 문자", en: "Non-whitespace" },
+        "\\b": { ko: "단어 경계", en: "Word boundary" },
+        "\\B": { ko: "단어 경계가 아닌 위치", en: "Non-word boundary" },
+        "\\n": { ko: "줄바꿈", en: "Newline" },
+        "\\t": { ko: "탭", en: "Tab" },
+        ".": { ko: "아무 문자 (줄바꿈 제외)", en: "Any char (except newline)" },
+        "^": { ko: "문자열/줄 시작", en: "Start of string/line" },
+        "$": { ko: "문자열/줄 끝", en: "End of string/line" },
+        "*": { ko: "0개 이상 반복", en: "0 or more" },
+        "+": { ko: "1개 이상 반복", en: "1 or more" },
+        "?": { ko: "0개 또는 1개", en: "0 or 1" },
+        "*?": { ko: "0개 이상 (게으른)", en: "0 or more (lazy)" },
+        "+?": { ko: "1개 이상 (게으른)", en: "1 or more (lazy)" },
+        "??": { ko: "0개 또는 1개 (게으른)", en: "0 or 1 (lazy)" },
+        "|": { ko: "OR (선택)", en: "OR (alternation)" },
+    };
+
+    let i = 0;
+    while (i < pattern.length) {
+        let matched = false;
+
+        // Escaped sequences
+        if (pattern[i] === "\\" && i + 1 < pattern.length) {
+            const twoChar = pattern.substring(i, i + 2);
+            if (tokenMap[twoChar]) {
+                explanations.push({ token: twoChar, desc: tokenMap[twoChar][lang] });
+                i += 2;
+                matched = true;
+            } else {
+                explanations.push({
+                    token: twoChar,
+                    desc: lang === "ko" ? `리터럴 '${pattern[i + 1]}'` : `Literal '${pattern[i + 1]}'`
+                });
+                i += 2;
+                matched = true;
+            }
+        }
+
+        if (!matched) {
+            // Named capture group
+            if (pattern.substring(i).startsWith("(?<")) {
+                const end = pattern.indexOf(">", i);
+                if (end !== -1) {
+                    const name = pattern.substring(i + 3, end);
+                    explanations.push({
+                        token: `(?<${name}>...)`,
+                        desc: lang === "ko" ? `명명된 캡처 그룹 '${name}'` : `Named capture group '${name}'`
+                    });
+                    i = end + 1;
+                    matched = true;
+                }
+            }
+            // Lookahead/lookbehind
+            else if (pattern.substring(i).startsWith("(?=")) {
+                explanations.push({ token: "(?=...)", desc: lang === "ko" ? "전방탐색 (긍정)" : "Positive lookahead" });
+                i += 3; matched = true;
+            } else if (pattern.substring(i).startsWith("(?!")) {
+                explanations.push({ token: "(?!...)", desc: lang === "ko" ? "전방탐색 (부정)" : "Negative lookahead" });
+                i += 3; matched = true;
+            } else if (pattern.substring(i).startsWith("(?<=")) {
+                explanations.push({ token: "(?<=...)", desc: lang === "ko" ? "후방탐색 (긍정)" : "Positive lookbehind" });
+                i += 4; matched = true;
+            } else if (pattern.substring(i).startsWith("(?<!")) {
+                explanations.push({ token: "(?<!...)", desc: lang === "ko" ? "후방탐색 (부정)" : "Negative lookbehind" });
+                i += 4; matched = true;
+            }
+            // Non-capturing group
+            else if (pattern.substring(i).startsWith("(?:")) {
+                explanations.push({ token: "(?:...)", desc: lang === "ko" ? "비캡처 그룹" : "Non-capturing group" });
+                i += 3; matched = true;
+            }
+            // Quantifier {n,m}
+            else if (pattern[i] === "{") {
+                const end = pattern.indexOf("}", i);
+                if (end !== -1) {
+                    const q = pattern.substring(i, end + 1);
+                    const inner = q.slice(1, -1);
+                    let desc: string;
+                    if (inner.includes(",")) {
+                        const [min, max] = inner.split(",").map(s => s.trim());
+                        desc = max
+                            ? (lang === "ko" ? `${min}~${max}회 반복` : `${min} to ${max} times`)
+                            : (lang === "ko" ? `${min}회 이상 반복` : `${min} or more times`);
+                    } else {
+                        desc = lang === "ko" ? `정확히 ${inner}회 반복` : `Exactly ${inner} times`;
+                    }
+                    explanations.push({ token: q, desc });
+                    i = end + 1;
+                    matched = true;
+                }
+            }
+            // Character class
+            else if (pattern[i] === "[") {
+                let end = i + 1;
+                if (end < pattern.length && pattern[end] === "^") end++;
+                if (end < pattern.length && pattern[end] === "]") end++;
+                while (end < pattern.length && pattern[end] !== "]") {
+                    if (pattern[end] === "\\" && end + 1 < pattern.length) end++;
+                    end++;
+                }
+                if (end < pattern.length) {
+                    const cls = pattern.substring(i, end + 1);
+                    const isNeg = cls[1] === "^";
+                    explanations.push({
+                        token: cls.length > 20 ? cls.substring(0, 18) + "...]" : cls,
+                        desc: isNeg
+                            ? (lang === "ko" ? "부정 문자 클래스" : "Negated character class")
+                            : (lang === "ko" ? "문자 클래스" : "Character class")
+                    });
+                    i = end + 1;
+                    matched = true;
+                }
+            }
+            // Capture group
+            else if (pattern[i] === "(") {
+                explanations.push({ token: "(", desc: lang === "ko" ? "캡처 그룹 시작" : "Capture group start" });
+                i++; matched = true;
+            } else if (pattern[i] === ")") {
+                explanations.push({ token: ")", desc: lang === "ko" ? "그룹 끝" : "Group end" });
+                i++; matched = true;
+            }
+        }
+
+        if (!matched) {
+            // Lazy quantifiers
+            if (i + 1 < pattern.length && (pattern[i] === "*" || pattern[i] === "+" || pattern[i] === "?") && pattern[i + 1] === "?") {
+                const twoChar = pattern.substring(i, i + 2);
+                if (tokenMap[twoChar]) {
+                    explanations.push({ token: twoChar, desc: tokenMap[twoChar][lang] });
+                    i += 2;
+                    continue;
+                }
+            }
+            // Simple tokens
+            const ch = pattern[i];
+            if (tokenMap[ch]) {
+                explanations.push({ token: ch, desc: tokenMap[ch][lang] });
+            } else {
+                explanations.push({
+                    token: ch,
+                    desc: lang === "ko" ? `리터럴 '${ch}'` : `Literal '${ch}'`
+                });
+            }
+            i++;
+        }
+    }
+    return explanations;
+}
+
+// Backtracking risk detection
+function detectBacktrackRisk(pattern: string): boolean {
+    // (a+)+, (a*)+, (a*)*,  (a+)* patterns
+    const dangerousPatterns = [
+        /\(.+[+*]\)\s*[+*]/,       // (group+)+ or (group*)*
+        /\([^)]*\|[^)]*\)\s*[+*]/, // (a|b)+ with potential overlap
+        /(\.\*){2,}/,               // .*.* multiple greedy wildcards
+    ];
+    return dangerousPatterns.some(dp => dp.test(pattern));
+}
+
+// Cheatsheet data
+const CHEATSHEET_SECTIONS = [
+    {
+        key: "charClasses",
+        items: [
+            { token: ".", desc: { ko: "아무 문자 (줄바꿈 제외)", en: "Any character (except newline)" } },
+            { token: "\\d", desc: { ko: "숫자 [0-9]", en: "Digit [0-9]" } },
+            { token: "\\D", desc: { ko: "숫자 아님", en: "Non-digit" } },
+            { token: "\\w", desc: { ko: "단어 문자 [a-zA-Z0-9_]", en: "Word [a-zA-Z0-9_]" } },
+            { token: "\\W", desc: { ko: "단어 문자 아님", en: "Non-word" } },
+            { token: "\\s", desc: { ko: "공백 문자", en: "Whitespace" } },
+            { token: "\\S", desc: { ko: "공백 아님", en: "Non-whitespace" } },
+            { token: "[abc]", desc: { ko: "a, b 또는 c", en: "a, b, or c" } },
+            { token: "[^abc]", desc: { ko: "a, b, c 아님", en: "Not a, b, or c" } },
+            { token: "[a-z]", desc: { ko: "a부터 z까지", en: "a through z" } },
+        ],
+    },
+    {
+        key: "quantifiers",
+        items: [
+            { token: "*", desc: { ko: "0개 이상", en: "0 or more" } },
+            { token: "+", desc: { ko: "1개 이상", en: "1 or more" } },
+            { token: "?", desc: { ko: "0 또는 1개", en: "0 or 1" } },
+            { token: "{n}", desc: { ko: "정확히 n개", en: "Exactly n" } },
+            { token: "{n,}", desc: { ko: "n개 이상", en: "n or more" } },
+            { token: "{n,m}", desc: { ko: "n~m개", en: "n to m" } },
+            { token: "*?", desc: { ko: "0개 이상 (게으른)", en: "0 or more (lazy)" } },
+            { token: "+?", desc: { ko: "1개 이상 (게으른)", en: "1 or more (lazy)" } },
+        ],
+    },
+    {
+        key: "anchors",
+        items: [
+            { token: "^", desc: { ko: "문자열/줄 시작", en: "Start of string/line" } },
+            { token: "$", desc: { ko: "문자열/줄 끝", en: "End of string/line" } },
+            { token: "\\b", desc: { ko: "단어 경계", en: "Word boundary" } },
+            { token: "\\B", desc: { ko: "단어 경계 아님", en: "Non-word boundary" } },
+        ],
+    },
+    {
+        key: "groups",
+        items: [
+            { token: "(abc)", desc: { ko: "캡처 그룹", en: "Capture group" } },
+            { token: "(?:abc)", desc: { ko: "비캡처 그룹", en: "Non-capturing group" } },
+            { token: "(?<name>abc)", desc: { ko: "명명된 캡처 그룹", en: "Named capture group" } },
+            { token: "\\1", desc: { ko: "역참조 (첫 번째 그룹)", en: "Backreference (1st group)" } },
+            { token: "a|b", desc: { ko: "a 또는 b", en: "a or b" } },
+        ],
+    },
+    {
+        key: "lookaround",
+        items: [
+            { token: "(?=abc)", desc: { ko: "전방탐색 (긍정)", en: "Positive lookahead" } },
+            { token: "(?!abc)", desc: { ko: "전방탐색 (부정)", en: "Negative lookahead" } },
+            { token: "(?<=abc)", desc: { ko: "후방탐색 (긍정)", en: "Positive lookbehind" } },
+            { token: "(?<!abc)", desc: { ko: "후방탐색 (부정)", en: "Negative lookbehind" } },
+        ],
+    },
+    {
+        key: "flagsInfo",
+        items: [
+            { token: "g", desc: { ko: "전역 검색 (모든 매칭)", en: "Global (all matches)" } },
+            { token: "i", desc: { ko: "대소문자 무시", en: "Case-insensitive" } },
+            { token: "m", desc: { ko: "여러 줄 모드 (^/$가 줄 단위)", en: "Multiline (^/$ per line)" } },
+            { token: "s", desc: { ko: ".이 줄바꿈 포함", en: "DotAll (. matches newline)" } },
+            { token: "u", desc: { ko: "유니코드 지원", en: "Unicode support" } },
+        ],
+    },
+];
+
 export default function RegexTesterClient() {
     const t = useTranslations("RegexTester");
     const { theme } = useTheme();
     const isDark = theme === "dark";
+    const lang = t("action.copy") === "복사" ? "ko" : "en";
 
     const [pattern, setPattern] = useState("");
     const [flags, setFlags] = useState<Set<string>>(new Set(["g"]));
     const [testString, setTestString] = useState("");
     const [replacement, setReplacement] = useState("");
     const [copied, setCopied] = useState<string | null>(null);
+    const [showCheatsheet, setShowCheatsheet] = useState(false);
+    const [showExplanation, setShowExplanation] = useState(false);
+
+    // URL sharing: read params on mount
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const params = new URLSearchParams(window.location.search);
+        const p = params.get("p");
+        const f = params.get("f");
+        const ts = params.get("t");
+        if (p) setPattern(p);
+        if (f) {
+            const newFlags = new Set<string>();
+            for (const ch of f) newFlags.add(ch);
+            setFlags(newFlags);
+        }
+        if (ts) setTestString(ts);
+    }, []);
 
     const flagsStr = useMemo(() => {
         return Array.from(flags).sort().join("");
@@ -68,8 +332,10 @@ export default function RegexTesterClient() {
         }
     }, [pattern, flagsStr]);
 
-    const matches: MatchResult[] = useMemo(() => {
-        if (!regex || !testString) return [];
+    // Execution time measurement
+    const { matches, executionTime } = useMemo(() => {
+        if (!regex || !testString) return { matches: [] as MatchResult[], executionTime: 0 };
+        const start = performance.now();
         const results: MatchResult[] = [];
         if (flagsStr.includes("g")) {
             let match;
@@ -79,10 +345,12 @@ export default function RegexTesterClient() {
                     fullMatch: match[0],
                     index: match.index,
                     groups: match.slice(1).map(g => g ?? ""),
+                    namedGroups: match.groups ? { ...match.groups } : null,
                 });
                 if (match[0].length === 0) {
                     r.lastIndex++;
                 }
+                if (results.length > 10000) break;
             }
         } else {
             const match = regex.exec(testString);
@@ -91,11 +359,22 @@ export default function RegexTesterClient() {
                     fullMatch: match[0],
                     index: match.index,
                     groups: match.slice(1).map(g => g ?? ""),
+                    namedGroups: match.groups ? { ...match.groups } : null,
                 });
             }
         }
-        return results;
+        const end = performance.now();
+        return { matches: results, executionTime: end - start };
     }, [regex, testString, flagsStr]);
+
+    // Backtracking risk
+    const backtrackRisk = useMemo(() => detectBacktrackRisk(pattern), [pattern]);
+
+    // Pattern explanation
+    const patternExplanation = useMemo(() => {
+        if (!pattern) return [];
+        return explainPattern(pattern, lang as "ko" | "en");
+    }, [pattern, lang]);
 
     const highlightedParts = useMemo(() => {
         if (!regex || !testString || matches.length === 0) return null;
@@ -174,6 +453,16 @@ export default function RegexTesterClient() {
         }
     }, []);
 
+    // URL sharing
+    const handleShareUrl = useCallback(() => {
+        const params = new URLSearchParams();
+        if (pattern) params.set("p", pattern);
+        if (flagsStr) params.set("f", flagsStr);
+        if (testString) params.set("t", testString);
+        const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+        handleCopy(url, "shareUrl");
+    }, [pattern, flagsStr, testString, handleCopy]);
+
     const getShareText = () => {
         return `🔍 Regex Tester
 ━━━━━━━━━━━━━━
@@ -212,6 +501,18 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
         marginBottom: "6px",
         display: "block" as const,
     };
+
+    const btnStyle = (active?: boolean) => ({
+        padding: "6px 14px",
+        border: "1px solid",
+        borderColor: active ? "#4A90D9" : isDark ? "#334155" : "#ddd",
+        borderRadius: "6px",
+        background: active ? "#4A90D9" : isDark ? "#0f172a" : "white",
+        color: active ? "white" : isDark ? "#94a3b8" : "#555",
+        cursor: "pointer" as const,
+        fontSize: "0.85rem",
+        fontWeight: active ? 600 : 400,
+    });
 
     return (
         <div style={{ maxWidth: "960px", margin: "0 auto", padding: "16px" }}>
@@ -253,6 +554,24 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                     </div>
                 )}
 
+                {/* Backtracking warning */}
+                {backtrackRisk && pattern && (
+                    <div style={{
+                        background: isDark ? "rgba(234,179,8,0.15)" : "#fefce8",
+                        color: isDark ? "#fbbf24" : "#b45309",
+                        padding: "8px 14px",
+                        borderRadius: "6px",
+                        fontSize: "0.85rem",
+                        marginBottom: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                    }}>
+                        <span style={{ fontSize: "1.1rem" }}>⚠️</span>
+                        {t("warning.backtrack")}
+                    </div>
+                )}
+
                 <label style={{ ...labelStyle, marginBottom: "8px" }}>{t("input.flags")}</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
                     {FLAG_OPTIONS.map((flag) => (
@@ -260,15 +579,7 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                             key={flag}
                             onClick={() => toggleFlag(flag)}
                             style={{
-                                padding: "6px 14px",
-                                border: "1px solid",
-                                borderColor: flags.has(flag) ? "#4A90D9" : isDark ? "#334155" : "#ddd",
-                                borderRadius: "6px",
-                                background: flags.has(flag) ? "#4A90D9" : isDark ? "#0f172a" : "white",
-                                color: flags.has(flag) ? "white" : isDark ? "#94a3b8" : "#555",
-                                cursor: "pointer",
-                                fontSize: "0.85rem",
-                                fontWeight: flags.has(flag) ? 600 : 400,
+                                ...btnStyle(flags.has(flag)),
                                 fontFamily: "'Consolas', monospace",
                             }}
                         >
@@ -279,6 +590,138 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                     <ShareButton shareText={getShareText()} disabled={!pattern} />
                 </div>
             </div>
+
+            {/* Action buttons row */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+                <button
+                    onClick={() => setShowCheatsheet(!showCheatsheet)}
+                    style={btnStyle(showCheatsheet)}
+                >
+                    📋 {t("cheatsheet.title")}
+                </button>
+                <button
+                    onClick={() => setShowExplanation(!showExplanation)}
+                    disabled={!pattern}
+                    style={{
+                        ...btnStyle(showExplanation),
+                        opacity: pattern ? 1 : 0.5,
+                    }}
+                >
+                    🔍 {t("explain.title")}
+                </button>
+                <button
+                    onClick={handleShareUrl}
+                    disabled={!pattern}
+                    style={{
+                        ...btnStyle(false),
+                        opacity: pattern ? 1 : 0.5,
+                    }}
+                >
+                    {copied === "shareUrl" ? `✅ ${t("action.copied")}` : `🔗 ${t("shareUrl")}`}
+                </button>
+            </div>
+
+            {/* Cheatsheet */}
+            {showCheatsheet && (
+                <div style={cardStyle}>
+                    <label style={{ ...labelStyle, marginBottom: "14px", fontSize: "1rem" }}>📋 {t("cheatsheet.title")}</label>
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                        gap: "16px",
+                    }}>
+                        {CHEATSHEET_SECTIONS.map((section) => (
+                            <div key={section.key} style={{
+                                background: isDark ? "#0f172a" : "#f8fafc",
+                                borderRadius: "8px",
+                                padding: "14px",
+                                border: isDark ? "1px solid #1e293b" : "1px solid #e2e8f0",
+                            }}>
+                                <div style={{
+                                    fontWeight: 700,
+                                    fontSize: "0.85rem",
+                                    color: isDark ? "#60a5fa" : "#4A90D9",
+                                    marginBottom: "10px",
+                                }}>
+                                    {t(`cheatsheet.${section.key}`)}
+                                </div>
+                                {section.items.map((item, idx) => (
+                                    <div key={idx} style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        padding: "4px 0",
+                                        borderBottom: idx < section.items.length - 1 ? (isDark ? "1px solid #1e293b" : "1px solid #f1f5f9") : "none",
+                                    }}>
+                                        <code style={{
+                                            fontFamily: "'Consolas', monospace",
+                                            fontSize: "0.85rem",
+                                            color: isDark ? "#fbbf24" : "#b45309",
+                                            fontWeight: 600,
+                                            cursor: "pointer",
+                                        }}
+                                            onClick={() => {
+                                                setPattern(prev => prev + item.token);
+                                            }}
+                                            title={lang === "ko" ? "클릭하여 패턴에 추가" : "Click to add to pattern"}
+                                        >
+                                            {item.token}
+                                        </code>
+                                        <span style={{
+                                            fontSize: "0.78rem",
+                                            color: isDark ? "#94a3b8" : "#64748b",
+                                            textAlign: "right",
+                                        }}>
+                                            {item.desc[lang as "ko" | "en"]}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Pattern Explanation */}
+            {showExplanation && pattern && patternExplanation.length > 0 && (
+                <div style={cardStyle}>
+                    <label style={{ ...labelStyle, marginBottom: "12px" }}>🔍 {t("explain.title")}</label>
+                    <div style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "6px",
+                    }}>
+                        {patternExplanation.map((item, idx) => (
+                            <div key={idx} style={{
+                                background: isDark ? "#0f172a" : "#f0f9ff",
+                                border: isDark ? "1px solid #1e3a5f" : "1px solid #bae6fd",
+                                borderRadius: "6px",
+                                padding: "6px 10px",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: "2px",
+                            }}>
+                                <code style={{
+                                    fontFamily: "'Consolas', monospace",
+                                    fontSize: "0.9rem",
+                                    fontWeight: 700,
+                                    color: isDark ? "#fbbf24" : "#b45309",
+                                }}>
+                                    {item.token}
+                                </code>
+                                <span style={{
+                                    fontSize: "0.7rem",
+                                    color: isDark ? "#94a3b8" : "#64748b",
+                                    textAlign: "center",
+                                }}>
+                                    {item.desc}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Presets */}
             <div style={cardStyle}>
@@ -378,26 +821,36 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                 </div>
             )}
 
-            {/* Match Count & Details */}
+            {/* Match Count & Details + Execution Time */}
             {testString && pattern && !error && (
                 <div style={cardStyle}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
                         <label style={{ ...labelStyle, marginBottom: 0 }}>{t("result.matches")}</label>
-                        <span style={{
-                            background: matches.length > 0 ? (isDark ? "rgba(34,197,94,0.2)" : "#ecfdf5") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"),
-                            color: matches.length > 0 ? (isDark ? "#4ade80" : "#059669") : (isDark ? "#fca5a5" : "#dc2626"),
-                            padding: "4px 12px",
-                            borderRadius: "20px",
-                            fontSize: "0.85rem",
-                            fontWeight: 600,
-                        }}>
-                            {matches.length > 0 ? t("result.matchCount", { count: matches.length }) : t("result.noMatch")}
-                        </span>
+                        <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                            {/* Execution time */}
+                            <span style={{
+                                fontSize: "0.75rem",
+                                color: executionTime > 100 ? (isDark ? "#fca5a5" : "#dc2626") : (isDark ? "#475569" : "#9ca3af"),
+                                fontFamily: "'Consolas', monospace",
+                            }}>
+                                {executionTime > 100 ? "⚠️ " : "⏱ "}{executionTime.toFixed(2)}ms
+                            </span>
+                            <span style={{
+                                background: matches.length > 0 ? (isDark ? "rgba(34,197,94,0.2)" : "#ecfdf5") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"),
+                                color: matches.length > 0 ? (isDark ? "#4ade80" : "#059669") : (isDark ? "#fca5a5" : "#dc2626"),
+                                padding: "4px 12px",
+                                borderRadius: "20px",
+                                fontSize: "0.85rem",
+                                fontWeight: 600,
+                            }}>
+                                {matches.length > 0 ? t("result.matchCount", { count: matches.length }) : t("result.noMatch")}
+                            </span>
+                        </div>
                     </div>
 
                     {matches.length > 0 && (
                         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                            {matches.map((match, idx) => (
+                            {matches.slice(0, 100).map((match, idx) => (
                                 <div key={idx} style={{
                                     background: isDark ? "#0f172a" : "#f8fafc",
                                     borderRadius: "8px",
@@ -410,7 +863,7 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                                         alignItems: "center",
                                         flexWrap: "wrap",
                                         gap: "8px",
-                                        marginBottom: match.groups.length > 0 ? "8px" : 0,
+                                        marginBottom: (match.groups.length > 0 || match.namedGroups) ? "8px" : 0,
                                     }}>
                                         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                                             <span style={{
@@ -439,6 +892,8 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                                             {t("result.index")}: {match.index}
                                         </span>
                                     </div>
+
+                                    {/* Numbered capture groups */}
                                     {match.groups.length > 0 && (
                                         <div style={{
                                             display: "flex",
@@ -464,8 +919,47 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                                             ))}
                                         </div>
                                     )}
+
+                                    {/* Named capture groups */}
+                                    {match.namedGroups && Object.keys(match.namedGroups).length > 0 && (
+                                        <div style={{
+                                            display: "flex",
+                                            flexWrap: "wrap",
+                                            gap: "6px",
+                                            paddingTop: "8px",
+                                            marginTop: match.groups.length > 0 ? "4px" : 0,
+                                            borderTop: match.groups.length > 0 ? "none" : (isDark ? "1px solid #1e293b" : "1px solid #e2e8f0"),
+                                        }}>
+                                            {Object.entries(match.namedGroups).map(([name, val]) => (
+                                                <span key={name} style={{
+                                                    background: isDark ? "rgba(168,85,247,0.15)" : "#faf5ff",
+                                                    padding: "3px 10px",
+                                                    borderRadius: "4px",
+                                                    fontSize: "0.8rem",
+                                                    fontFamily: "'Consolas', monospace",
+                                                    color: isDark ? "#c084fc" : "#7c3aed",
+                                                    border: isDark ? "1px solid rgba(168,85,247,0.3)" : "1px solid #e9d5ff",
+                                                }}>
+                                                    <span style={{ fontWeight: 600, marginRight: "4px" }}>
+                                                        {name}:
+                                                    </span>
+                                                    {val || '(empty)'}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
+                            {matches.length > 100 && (
+                                <div style={{
+                                    textAlign: "center",
+                                    fontSize: "0.85rem",
+                                    color: isDark ? "#94a3b8" : "#64748b",
+                                    padding: "8px",
+                                }}>
+                                    {lang === "ko" ? `... 외 ${matches.length - 100}개 더` : `... and ${matches.length - 100} more`}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

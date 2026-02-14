@@ -67,7 +67,7 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "자기소개서 글자수 제한은 어떻게 계산하나요?",
-            answer: "대부분의 자기소개서는 \"공백 포함\" 글자수를 기준으로 합니다. 다만 일부 기업은 \"공백 제외\"를 사용하므로 채용공고의 기준을 반드시 확인하세요."
+            answer: "대부분의 자기소개서는 \"공백 포함\" 글자수를 기준으로 합니다. 다만 일부 기업은 \"공백 제외\"를 사용하므로 채용공고의 기준을 반드시 확인하세요. 본 도구의 목표 글자수 기능에서 공백 포함/제외를 선택할 수 있습니다."
         },
         {
             question: "단어 수는 어떻게 계산되나요?",
@@ -80,6 +80,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "SNS별 글자수 제한은 얼마인가요?",
             answer: "트위터(X)는 280자, 인스타그램 캡션은 2,200자, 페이스북은 63,206자, 유튜브 제목은 100자입니다."
+        },
+        {
+            question: "자소서 글자수 500자, 1000자는 공백 포함인가요?",
+            answer: "대부분의 기업은 '공백 포함' 기준으로 글자수를 제한합니다. 다만 일부 기업(삼성, LG 등)은 '공백 제외'를 사용하므로, 채용공고의 기준을 반드시 확인하세요. 본 도구의 목표 글자수 기능에서 '공백 포함/제외'를 선택할 수 있습니다."
+        },
+        {
+            question: "목표 글자수는 어떻게 설정하나요?",
+            answer: "500자, 1000자, 1500자, 2000자, 3000자 프리셋 버튼을 클릭하거나, 직접 원하는 글자수를 입력할 수 있습니다. 공백 포함/제외 기준도 선택 가능하며, 프로그레스 바로 진행률을 확인하고 초과 시 빨간색 경고가 표시됩니다."
         }
     ] : [
         {
@@ -88,7 +96,7 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "How are character limits calculated for applications?",
-            answer: "Most applications use \"characters with spaces\" as the standard. However, some may use \"without spaces\", so always check the specific requirements."
+            answer: "Most applications use \"characters with spaces\" as the standard. However, some may use \"without spaces\", so always check the specific requirements. You can toggle between with/without spaces in the goal setting feature."
         },
         {
             question: "How is the word count calculated?",
@@ -101,6 +109,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "What are the character limits for different SNS platforms?",
             answer: "Twitter (X) allows 280 characters, Instagram captions 2,200 characters, Facebook 63,206 characters, and YouTube titles 100 characters."
+        },
+        {
+            question: "Do essay character limits include spaces?",
+            answer: "Most character limits count 'with spaces'. However, some organizations use 'without spaces', so always check the specific requirements. You can toggle between 'with spaces' and 'without spaces' in the goal setting feature."
+        },
+        {
+            question: "How do I set a target character count?",
+            answer: "Click one of the preset buttons (500, 1000, 1500, 2000, 3000) or enter a custom number. You can also choose whether to count with or without spaces. A progress bar shows your progress, and a red warning appears when you exceed the limit."
         }
     ];
 
@@ -127,49 +143,49 @@ function generateHowToSchema(locale: string) {
         "@type": "HowTo",
         "name": isKo ? "글자수 세기 사용 방법" : "How to Use Character Counter",
         "description": isKo
-            ? "텍스트의 글자수, 단어수, 바이트를 실시간으로 분석하는 방법"
-            : "How to analyze character count, word count, and bytes in real-time",
+            ? "목표 글자수를 설정하고 텍스트의 글자수, 단어수, 바이트를 실시간으로 분석하는 방법"
+            : "How to set character goals and analyze character count, word count, and bytes in real-time",
         "step": isKo ? [
             {
                 "@type": "HowToStep",
                 "name": "텍스트 입력",
-                "text": "분석하고 싶은 텍스트를 입력창에 직접 타이핑하거나 붙여넣기 합니다."
+                "text": "자기소개서, 블로그 글 등 분석하고 싶은 텍스트를 입력창에 직접 타이핑하거나 붙여넣기 합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "목표 글자수 설정",
+                "text": "500자, 1000자 등 프리셋을 클릭하거나 직접 입력하여 목표 글자수를 설정합니다. 공백 포함/제외도 선택 가능합니다."
             },
             {
                 "@type": "HowToStep",
                 "name": "실시간 분석 확인",
-                "text": "글자수(공백 포함/제외), 바이트, 단어 수, 읽기 시간이 자동으로 표시됩니다."
+                "text": "글자수, 바이트, 단어 수, 원고지 매수, 읽기 시간이 자동으로 표시됩니다. 목표 대비 남은 글자수와 초과 여부를 프로그레스 바로 확인합니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "SNS 가이드 확인",
-                "text": "트위터, 인스타그램 등 SNS별 글자수 제한 대비 현재 글자수를 확인합니다."
-            },
-            {
-                "@type": "HowToStep",
-                "name": "텍스트 변환 활용",
-                "text": "필요시 대소문자 변환, 공백 제거 등 텍스트 변환 기능을 사용합니다."
+                "name": "SNS·텍스트 변환 활용",
+                "text": "SNS별 글자수 제한 확인, 대소문자 변환, 공백 제거 등 부가 기능을 활용합니다."
             }
         ] : [
             {
                 "@type": "HowToStep",
                 "name": "Enter Text",
-                "text": "Type or paste the text you want to analyze into the input area."
+                "text": "Type or paste the text you want to analyze (essays, blog posts, etc.) into the input area."
             },
             {
                 "@type": "HowToStep",
-                "name": "View Real-time Analysis",
-                "text": "Character count (with/without spaces), bytes, words, and reading time are displayed automatically."
+                "name": "Set Goal",
+                "text": "Click a preset (500, 1000, etc.) or enter a custom character limit. Choose between with/without spaces."
             },
             {
                 "@type": "HowToStep",
-                "name": "Check SNS Limits",
-                "text": "Compare your current character count against Twitter, Instagram, and other SNS platform limits."
+                "name": "Track Progress",
+                "text": "Character count, bytes, words, manuscript pages, and reading time update in real-time. Monitor remaining characters and over-limit warnings via the progress bar."
             },
             {
                 "@type": "HowToStep",
-                "name": "Use Text Transforms",
-                "text": "Apply uppercase/lowercase conversion, space removal, and other text transformation tools as needed."
+                "name": "SNS & Text Tools",
+                "text": "Check SNS character limits, apply text transforms (uppercase, space removal), and use keyword analysis."
             }
         ]
     };
@@ -190,8 +206,8 @@ export default async function CharacterCounterPage({ params }: { params: Promise
         "applicationCategory": "UtilityApplication",
         "operatingSystem": "Any",
         "description": isKo
-            ? "텍스트의 글자수, 단어수, 바이트를 실시간으로 세는 온라인 도구"
-            : "Online tool to count characters, words, and bytes in real-time",
+            ? "목표 글자수 설정, 자소서 글자수 제한 확인, 공백 포함/제외 글자수, 바이트, 원고지 매수를 실시간으로 세는 온라인 도구"
+            : "Online tool to set character goals, track limits, and count characters, words, and bytes in real-time",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "inLanguage": isKo ? "ko-KR" : "en-US",
     };
@@ -202,7 +218,7 @@ export default async function CharacterCounterPage({ params }: { params: Promise
     const featureKeys = ["feat1", "feat2", "feat3", "feat4"] as const;
     const howtoKeys = ["step1", "step2", "step3", "step4"] as const;
     const usecaseKeys = ["uc1", "uc2", "uc3", "uc4"] as const;
-    const faqKeys = ["q1", "q2", "q3", "q4", "q5"] as const;
+    const faqKeys = ["q1", "q2", "q3", "q4", "q5", "q6", "q7"] as const;
 
     return (
         <>

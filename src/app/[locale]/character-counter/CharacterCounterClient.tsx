@@ -15,6 +15,8 @@ export default function CharacterCounterClient() {
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
     const [dragActive, setDragActive] = useState(false);
+    const [goalLimit, setGoalLimit] = useState<number>(0);
+    const [goalMode, setGoalMode] = useState<'withSpace' | 'withoutSpace'>('withSpace');
 
     const stats = useMemo(() => {
         const charWithSpace = text.length;
@@ -41,12 +43,23 @@ export default function CharacterCounterClient() {
         const manuscript200 = Math.ceil(charWithSpace / 200);
         const manuscript400 = Math.ceil(charWithSpace / 400);
 
+        // EUC-KR 바이트: 한글(가-힣, ㄱ-ㅎ, ㅏ-ㅣ) = 2byte, ASCII = 1byte, 기타 = 2byte
+        let eucKrBytes = 0;
+        for (const ch of text) {
+            const code = ch.charCodeAt(0);
+            if (code <= 0x7F) {
+                eucKrBytes += 1; // ASCII
+            } else {
+                eucKrBytes += 2; // 한글, 전각문자 등
+            }
+        }
+
         // 문장 수 (sentence count)
         const sentences = text.trim() ? (text.match(/[.?!。！？]+/g) || []).length : 0;
 
         return {
             charWithSpace, charWithoutSpace, words, lines, paragraphs,
-            bytes, koreanChars, englishChars, numbers, specialChars,
+            bytes, eucKrBytes, koreanChars, englishChars, numbers, specialChars,
             readMinutes, readSeconds, manuscript200, manuscript400, sentences,
         };
     }, [text]);
@@ -159,95 +172,59 @@ export default function CharacterCounterClient() {
     return (
         <div style={{ minHeight: '100vh', background: isDark ? "#0f172a" : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
-                {/* Main Stats Cards */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-                    gap: '10px',
-                    marginBottom: '20px',
-                }}>
-                    <StatCard label={t('stats.charWithSpace')} value={stats.charWithSpace} highlight />
-                    <StatCard label={t('stats.charWithoutSpace')} value={stats.charWithoutSpace} highlight />
-                    <StatCard label={t('stats.bytes')} value={formatBytes(stats.bytes)} highlight />
-                    <StatCard label={t('stats.words')} value={stats.words} />
-                    <StatCard label={t('stats.sentences')} value={stats.sentences} />
-                    <StatCard label={t('stats.readTime')} value={stats.readMinutes > 0 ? `${stats.readMinutes}${t('stats.min')}` : `${stats.readSeconds}${t('stats.sec')}`} />
-                    <StatCard label={t('stats.manuscript200')} value={stats.manuscript200} />
-                    <StatCard label={t('stats.manuscript400')} value={stats.manuscript400} />
-                </div>
-
-                {/* File Upload */}
-                <div
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    style={{
-                        padding: '20px',
-                        borderRadius: '12px',
-                        border: dragActive
-                            ? '2px dashed #667eea'
-                            : `2px dashed ${isDark ? '#334155' : '#cbd5e1'}`,
-                        background: dragActive
-                            ? (isDark ? '#1e2a4a' : '#eff3ff')
-                            : (isDark ? '#0f172a' : '#f8fafc'),
-                        textAlign: 'center',
-                        marginBottom: '16px',
-                        transition: 'all 0.2s',
-                    }}
-                >
-                    <div style={{ fontSize: '1.5rem', marginBottom: '6px' }}>📁</div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#e2e8f0' : '#334155', marginBottom: '4px' }}>
-                        {t('upload.title')}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: isDark ? '#64748b' : '#94a3b8', marginBottom: '10px' }}>
-                        {t('upload.hint')}
-                    </div>
-                    <label style={{
-                        display: 'inline-block', padding: '8px 16px', borderRadius: '8px',
-                        background: '#667eea', color: '#fff', fontSize: '0.85rem',
-                        fontWeight: 600, cursor: 'pointer',
-                    }}>
-                        {t('upload.choose')}
-                        <input type="file" accept=".txt" onChange={handleFileInput} style={{ display: 'none' }} />
-                    </label>
-                </div>
-
-                {/* Textarea */}
+                {/* Textarea - 맨 위 */}
                 <div style={{
                     background: cardBg, borderRadius: '16px',
                     boxShadow: isDark ? "none" : '0 4px 20px rgba(0,0,0,0.08)',
-                    overflow: 'hidden', marginBottom: '20px',
+                    overflow: 'hidden', marginBottom: '16px',
                 }}>
                     <div style={{
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        padding: '12px 20px',
+                        padding: '10px 16px',
                         borderBottom: isDark ? '1px solid #334155' : '1px solid #eee',
                         background: isDark ? "#1e293b" : '#fafbfc', flexWrap: 'wrap', gap: '8px',
                     }}>
-                        <span style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333' }}>{t('input.title')}</span>
-                        <div style={{ display: 'flex', gap: '8px' }}>
+                        <span style={{ fontWeight: 600, fontSize: '0.9rem', color: isDark ? "#f1f5f9" : '#333' }}>{t('input.title')}</span>
+                        <div style={{ display: 'flex', gap: '5px', flexShrink: 0, alignItems: 'center' }}>
                             <button onClick={handleCopy} disabled={!text} style={{
-                                display: 'flex', alignItems: 'center', gap: '6px',
-                                padding: '8px 16px', background: copied ? '#10b981' : '#667eea',
-                                color: 'white', border: 'none', borderRadius: '20px',
-                                fontSize: '0.85rem', cursor: text ? 'pointer' : 'not-allowed',
+                                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                whiteSpace: 'nowrap',
+                                padding: '5px 10px', background: copied ? '#10b981' : '#667eea',
+                                color: 'white', border: 'none', borderRadius: '6px',
+                                fontSize: '0.75rem', fontWeight: 500, lineHeight: 1,
+                                cursor: text ? 'pointer' : 'not-allowed',
                                 opacity: text ? 1 : 0.5, transition: 'all 0.2s',
                             }}>
-                                {copied ? <FaCheck /> : <FaClipboard />}
+                                {copied ? <FaCheck size={10} /> : <FaClipboard size={10} />}
                                 {copied ? t('input.copied') : t('input.copy')}
                             </button>
                             <button onClick={handleClear} disabled={!text} style={{
-                                display: 'flex', alignItems: 'center', gap: '6px',
-                                padding: '8px 16px', background: isDark ? "#1e293b" : '#f8f9fa',
+                                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                whiteSpace: 'nowrap',
+                                padding: '5px 10px', background: isDark ? "#1e293b" : '#f8f9fa',
                                 color: isDark ? "#94a3b8" : '#666',
                                 border: isDark ? '1px solid #334155' : '1px solid #ddd',
-                                borderRadius: '20px', fontSize: '0.85rem',
+                                borderRadius: '6px', fontSize: '0.75rem', fontWeight: 500, lineHeight: 1,
                                 cursor: text ? 'pointer' : 'not-allowed', opacity: text ? 1 : 0.5,
                             }}>
-                                <FaTrash />
+                                <FaTrash size={10} />
                                 {t('input.clear')}
                             </button>
-                            <ShareButton shareText={getShareText()} disabled={!text} />
+                            <ShareButton
+                                shareText={getShareText()}
+                                disabled={!text}
+                                iconSize={10}
+                                style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                    whiteSpace: 'nowrap',
+                                    padding: '5px 10px',
+                                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                    color: 'white', border: 'none', borderRadius: '6px',
+                                    fontSize: '0.75rem', fontWeight: 500, lineHeight: 1,
+                                    cursor: text ? 'pointer' : 'not-allowed',
+                                    boxShadow: 'none', width: 'auto', maxWidth: 'none', margin: 0,
+                                }}
+                            />
                         </div>
                     </div>
                     <textarea value={text} onChange={(e) => setText(e.target.value)}
@@ -261,6 +238,151 @@ export default function CharacterCounterClient() {
                             background: isDark ? "#0f172a" : "#fff",
                         }}
                     />
+                </div>
+
+                {/* Goal Character Count */}
+                <div style={{
+                    background: cardBg, borderRadius: '12px', padding: '14px 16px',
+                    boxShadow: cardShadow, marginBottom: '16px',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333', whiteSpace: 'nowrap' }}>
+                            {t('goal.title')}
+                        </span>
+                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                            {[500, 1000, 1500, 2000, 3000].map(preset => (
+                                <button key={preset} onClick={() => setGoalLimit(goalLimit === preset ? 0 : preset)}
+                                    style={{
+                                        padding: '4px 10px', borderRadius: '14px',
+                                        border: goalLimit === preset ? '1.5px solid #667eea' : `1px solid ${isDark ? '#334155' : '#d1d5db'}`,
+                                        background: goalLimit === preset ? (isDark ? '#1e2a4a' : '#eff3ff') : 'transparent',
+                                        color: goalLimit === preset ? '#667eea' : isDark ? '#94a3b8' : '#666',
+                                        fontSize: '0.75rem', fontWeight: goalLimit === preset ? 700 : 500,
+                                        cursor: 'pointer', transition: 'all 0.15s',
+                                    }}>
+                                    {preset}{t('goal.char')}
+                                </button>
+                            ))}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <input type="number" value={goalLimit || ''} onChange={(e) => setGoalLimit(Math.max(0, parseInt(e.target.value) || 0))}
+                                placeholder={t('goal.custom')}
+                                style={{
+                                    width: '80px', padding: '4px 8px', borderRadius: '8px',
+                                    border: `1px solid ${isDark ? '#334155' : '#d1d5db'}`,
+                                    background: isDark ? '#0f172a' : '#fff',
+                                    color: isDark ? '#e2e8f0' : '#333',
+                                    fontSize: '0.8rem', textAlign: 'center', outline: 'none',
+                                }}
+                            />
+                            <select value={goalMode} onChange={(e) => setGoalMode(e.target.value as 'withSpace' | 'withoutSpace')}
+                                style={{
+                                    padding: '4px 6px', borderRadius: '8px',
+                                    border: `1px solid ${isDark ? '#334155' : '#d1d5db'}`,
+                                    background: isDark ? '#0f172a' : '#fff',
+                                    color: isDark ? '#e2e8f0' : '#333',
+                                    fontSize: '0.75rem', outline: 'none',
+                                }}
+                            >
+                                <option value="withSpace">{t('goal.withSpace')}</option>
+                                <option value="withoutSpace">{t('goal.withoutSpace')}</option>
+                            </select>
+                        </div>
+                    </div>
+                    {goalLimit > 0 && (() => {
+                        const current = goalMode === 'withSpace' ? stats.charWithSpace : stats.charWithoutSpace;
+                        const pct = Math.min((current / goalLimit) * 100, 100);
+                        const remaining = goalLimit - current;
+                        const isOver = current > goalLimit;
+                        const isNear = pct > 80 && !isOver;
+                        const barColor = isOver ? '#ef4444' : isNear ? '#f59e0b' : '#667eea';
+                        return (
+                            <div style={{ marginTop: '10px' }}>
+                                <div style={{
+                                    height: '10px', borderRadius: '5px',
+                                    background: isDark ? '#334155' : '#e5e7eb', overflow: 'hidden',
+                                }}>
+                                    <div style={{
+                                        width: `${pct}%`, height: '100%', borderRadius: '5px',
+                                        background: barColor, transition: 'width 0.3s, background 0.3s',
+                                    }} />
+                                </div>
+                                <div style={{
+                                    display: 'flex', justifyContent: 'space-between', marginTop: '6px',
+                                    fontSize: '0.8rem', fontWeight: 600,
+                                }}>
+                                    <span style={{ color: isDark ? '#94a3b8' : '#666' }}>
+                                        {current} / {goalLimit}{t('goal.char')}
+                                    </span>
+                                    <span style={{
+                                        color: isOver ? '#ef4444' : isNear ? '#f59e0b' : isDark ? '#94a3b8' : '#666',
+                                        fontWeight: isOver ? 700 : 600,
+                                    }}>
+                                        {isOver
+                                            ? t('goal.over', { count: Math.abs(remaining) })
+                                            : t('goal.remaining', { count: remaining })
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </div>
+
+                {/* File Upload - 두 번째 */}
+                <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    style={{
+                        padding: '14px',
+                        borderRadius: '12px',
+                        border: dragActive
+                            ? '2px dashed #667eea'
+                            : `2px dashed ${isDark ? '#334155' : '#cbd5e1'}`,
+                        background: dragActive
+                            ? (isDark ? '#1e2a4a' : '#eff3ff')
+                            : (isDark ? '#0f172a' : '#f8fafc'),
+                        textAlign: 'center',
+                        marginBottom: '16px',
+                        transition: 'all 0.2s',
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '1.2rem' }}>📁</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isDark ? '#e2e8f0' : '#334155' }}>
+                            {t('upload.title')}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: isDark ? '#64748b' : '#94a3b8' }}>
+                            {t('upload.hint')}
+                        </span>
+                        <label style={{
+                            display: 'inline-block', padding: '6px 14px', borderRadius: '8px',
+                            background: '#667eea', color: '#fff', fontSize: '0.8rem',
+                            fontWeight: 600, cursor: 'pointer',
+                        }}>
+                            {t('upload.choose')}
+                            <input type="file" accept=".txt" onChange={handleFileInput} style={{ display: 'none' }} />
+                        </label>
+                    </div>
+                </div>
+
+                {/* Stats Cards - 작게 아래로 */}
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+                    gap: '8px',
+                    marginBottom: '16px',
+                }}>
+                    <MiniStatCard label={t('stats.charWithSpace')} value={stats.charWithSpace} highlight isDark={isDark} />
+                    <MiniStatCard label={t('stats.charWithoutSpace')} value={stats.charWithoutSpace} highlight isDark={isDark} />
+                    <MiniStatCard label={t('stats.bytesUtf8')} value={formatBytes(stats.bytes)} isDark={isDark} />
+                    <MiniStatCard label={t('stats.bytesEucKr')} value={formatBytes(stats.eucKrBytes)} isDark={isDark} />
+                    <MiniStatCard label={t('stats.words')} value={stats.words} isDark={isDark} />
+                    <MiniStatCard label={t('stats.sentences')} value={stats.sentences} isDark={isDark} />
+                    <MiniStatCard label={t('stats.readTime')} value={stats.readMinutes > 0 ? `${stats.readMinutes}${t('stats.min')}` : `${stats.readSeconds}${t('stats.sec')}`} isDark={isDark} />
+                    <MiniStatCard label={t('stats.manuscript200')} value={stats.manuscript200} isDark={isDark} />
+                    <MiniStatCard label={t('stats.manuscript400')} value={stats.manuscript400} isDark={isDark} />
                 </div>
 
                 {/* Text Transform Buttons */}
@@ -440,20 +562,18 @@ export default function CharacterCounterClient() {
     );
 }
 
-function StatCard({ label, value, highlight }: { label: string; value: string | number; highlight?: boolean }) {
-    const { theme } = useTheme();
-    const isDark = theme === 'dark';
+function MiniStatCard({ label, value, highlight, isDark }: { label: string; value: string | number; highlight?: boolean; isDark: boolean }) {
     return (
         <div style={{
             background: highlight ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : isDark ? "#1e293b" : 'white',
             color: highlight ? 'white' : isDark ? "#f1f5f9" : '#333',
-            padding: '16px 12px', borderRadius: '12px', textAlign: 'center',
-            boxShadow: highlight ? (isDark ? "none" : '0 4px 15px rgba(102, 126, 234, 0.3)') : (isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)'),
+            padding: '10px 8px', borderRadius: '10px', textAlign: 'center',
+            boxShadow: highlight ? (isDark ? "none" : '0 2px 8px rgba(102, 126, 234, 0.25)') : (isDark ? "none" : '0 1px 6px rgba(0,0,0,0.04)'),
         }}>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '4px', fontFamily: "'SF Mono', 'Fira Code', monospace" }}>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '2px', fontFamily: "'SF Mono', 'Fira Code', monospace" }}>
                 {value}
             </div>
-            <div style={{ fontSize: '0.75rem', opacity: highlight ? 0.9 : 0.7 }}>{label}</div>
+            <div style={{ fontSize: '0.65rem', opacity: highlight ? 0.9 : 0.7 }}>{label}</div>
         </div>
     );
 }

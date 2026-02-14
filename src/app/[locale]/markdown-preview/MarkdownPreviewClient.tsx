@@ -3,10 +3,104 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaCopy, FaCheck, FaCode, FaEye, FaTrash, FaFileAlt } from "react-icons/fa";
+import { FaCopy, FaCheck, FaCode, FaEye, FaTrash, FaFileAlt, FaUpload, FaFilePdf, FaFileCode, FaListUl } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
+import { downloadFile } from "@/utils/fileDownload";
 
-// ===== Custom regex-based Markdown parser (no external libraries) =====
+// ===== Emoji shortcode map (top ~100) =====
+const EMOJI_MAP: Record<string, string> = {
+    smile: "😄", laugh: "😂", wink: "😉", heart: "❤️", thumbsup: "👍", thumbsdown: "👎",
+    clap: "👏", fire: "🔥", star: "⭐", check: "✅", x: "❌", warning: "⚠️",
+    rocket: "🚀", tada: "🎉", sparkles: "✨", bulb: "💡", eyes: "👀", wave: "👋",
+    thinking: "🤔", cool: "😎", cry: "😢", angry: "😡", poop: "💩", ghost: "👻",
+    skull: "💀", pray: "🙏", muscle: "💪", point_up: "☝️", point_down: "👇",
+    point_left: "👈", point_right: "👉", ok_hand: "👌", v: "✌️", raised_hands: "🙌",
+    sun: "☀️", moon: "🌙", cloud: "☁️", rain: "🌧️", snow: "❄️", rainbow: "🌈",
+    coffee: "☕", beer: "🍺", pizza: "🍕", apple: "🍎", cake: "🎂", gift: "🎁",
+    key: "🔑", lock: "🔒", unlock: "🔓", bell: "🔔", mag: "🔍", link: "🔗",
+    gear: "⚙️", wrench: "🔧", hammer: "🔨", shield: "🛡️", flag: "🚩",
+    bug: "🐛", ant: "🐜", bee: "🐝", cat: "🐱", dog: "🐶", penguin: "🐧",
+    turtle: "🐢", fish: "🐟", whale: "🐳", bird: "🐦", tree: "🌳", flower: "🌸",
+    earth: "🌍", globe: "🌐", airplane: "✈️", car: "🚗", house: "🏠", school: "🏫",
+    hospital: "🏥", phone: "📱", computer: "💻", email: "📧", book: "📖", pencil: "✏️",
+    memo: "📝", calendar: "📅", clock: "🕐", hourglass: "⏳", battery: "🔋",
+    chart: "📊", trophy: "🏆", medal: "🏅", crown: "👑", diamond: "💎",
+    heart_eyes: "😍", joy: "😂", sob: "😭", blush: "😊", sunglasses: "😎",
+    zap: "⚡", boom: "💥", sweat_drops: "💦", dash: "💨", notes: "🎵",
+    art: "🎨", movie: "🎬", microphone: "🎤", headphones: "🎧", video_game: "🎮",
+    one: "1️⃣", two: "2️⃣", three: "3️⃣", four: "4️⃣", five: "5️⃣",
+    arrow_up: "⬆️", arrow_down: "⬇️", arrow_left: "⬅️", arrow_right: "➡️",
+    recycle: "♻️", white_check_mark: "✅", heavy_check_mark: "✔️",
+    100: "💯", plus: "➕", minus: "➖", exclamation: "❗", question: "❓",
+    info: "ℹ️", stop_sign: "🛑", construction: "🚧",
+};
+
+// ===== Syntax highlighter (pure JS, 6 languages) =====
+function highlightCode(code: string, lang: string): string {
+    const escaped = code
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    const langLower = lang.toLowerCase();
+    if (!['javascript', 'js', 'typescript', 'ts', 'python', 'py', 'html', 'css', 'json', 'bash', 'sh', 'shell'].includes(langLower)) {
+        return escaped;
+    }
+
+    let result = escaped;
+
+    // Comments
+    if (['javascript', 'js', 'typescript', 'ts', 'css'].includes(langLower)) {
+        result = result.replace(/(\/\/[^\n]*)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
+        result = result.replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
+    } else if (['python', 'py', 'bash', 'sh', 'shell'].includes(langLower)) {
+        result = result.replace(/(#[^\n]*)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
+    } else if (langLower === 'html') {
+        result = result.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
+    }
+
+    // Strings
+    result = result.replace(/((?<!\\)(&quot;|&#039;|`))((?:(?!\1).)*?)\1/g,
+        '<span style="color:#22c55e">$1$3$1</span>');
+    // Simple string fallback
+    result = result.replace(/("(?:[^"\\]|\\.)*")/g, '<span style="color:#22c55e">$1</span>');
+    result = result.replace(/('(?:[^'\\]|\\.)*')/g, '<span style="color:#22c55e">$1</span>');
+
+    // Numbers
+    result = result.replace(/\b(\d+\.?\d*)\b/g, '<span style="color:#f59e0b">$1</span>');
+
+    // Keywords
+    let keywords: string[] = [];
+    if (['javascript', 'js', 'typescript', 'ts'].includes(langLower)) {
+        keywords = ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'class', 'import', 'export', 'from', 'default', 'new', 'this', 'async', 'await', 'try', 'catch', 'throw', 'typeof', 'instanceof', 'true', 'false', 'null', 'undefined', 'interface', 'type', 'extends', 'implements'];
+    } else if (['python', 'py'].includes(langLower)) {
+        keywords = ['def', 'class', 'return', 'if', 'elif', 'else', 'for', 'while', 'import', 'from', 'as', 'with', 'try', 'except', 'raise', 'True', 'False', 'None', 'and', 'or', 'not', 'in', 'is', 'lambda', 'yield', 'pass', 'break', 'continue', 'global', 'async', 'await'];
+    } else if (['bash', 'sh', 'shell'].includes(langLower)) {
+        keywords = ['if', 'then', 'else', 'elif', 'fi', 'for', 'do', 'done', 'while', 'case', 'esac', 'function', 'return', 'exit', 'echo', 'export', 'source', 'local', 'readonly', 'set', 'unset'];
+    } else if (langLower === 'css') {
+        keywords = ['@media', '@import', '@keyframes', '@font-face', '!important'];
+    }
+
+    if (keywords.length > 0) {
+        const kw = keywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+        result = result.replace(new RegExp(`\\b(${kw})\\b`, 'g'), '<span style="color:#c084fc;font-weight:600">$1</span>');
+    }
+
+    // HTML tags
+    if (langLower === 'html') {
+        result = result.replace(/(&lt;\/?)([\w-]+)/g, '$1<span style="color:#f472b6">$2</span>');
+        result = result.replace(/([\w-]+)(=)/g, '<span style="color:#60a5fa">$1</span>$2');
+    }
+
+    // JSON keys
+    if (langLower === 'json') {
+        result = result.replace(/("[\w-]+")\s*:/g, '<span style="color:#60a5fa;font-weight:600">$1</span>:');
+    }
+
+    return result;
+}
+
+// ===== Custom regex-based Markdown parser =====
 function escapeHtml(text: string): string {
     return text
         .replace(/&/g, '&amp;')
@@ -35,12 +129,36 @@ function parseInline(text: string): string {
     result = result.replace(/~~(.+?)~~/g, '<del>$1</del>');
     // Inline code: `code`
     result = result.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Emoji shortcodes: :name:
+    result = result.replace(/:([a-zA-Z0-9_]+):/g, (match, name) => {
+        return EMOJI_MAP[name] || match;
+    });
+    // LaTeX block: $$...$$ (inline handler for single-line)
+    result = result.replace(/\$\$(.+?)\$\$/g, '<code class="latex-block">$1</code>');
+    // LaTeX inline: $...$
+    result = result.replace(/\$([^\$\n]+)\$/g, '<code class="latex-inline">$1</code>');
     return result;
 }
 
-function parseMarkdown(md: string): string {
+interface TocItem {
+    level: number;
+    text: string;
+    slug: string;
+}
+
+function slugify(text: string): string {
+    return text
+        .toLowerCase()
+        .replace(/[^\w\s가-힣-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+}
+
+function parseMarkdown(md: string): { html: string; toc: TocItem[] } {
     const lines = md.split('\n');
     const outputLines: string[] = [];
+    const toc: TocItem[] = [];
     let inCodeBlock = false;
     let codeBlockContent: string[] = [];
     let codeBlockLang = '';
@@ -49,7 +167,6 @@ function parseMarkdown(md: string): string {
 
     function flushTable() {
         if (tableRows.length < 2) {
-            // Not a valid table, just output as paragraphs
             tableRows.forEach(row => {
                 outputLines.push(`<p>${parseInline(row)}</p>`);
             });
@@ -59,14 +176,11 @@ function parseMarkdown(md: string): string {
         }
 
         outputLines.push('<table>');
-
-        // Parse header row
         const headerCells = tableRows[0]
             .replace(/^\|/, '').replace(/\|$/, '')
             .split('|')
             .map(c => c.trim());
 
-        // Parse alignment row (row index 1)
         const alignRow = tableRows[1]
             .replace(/^\|/, '').replace(/\|$/, '')
             .split('|')
@@ -79,7 +193,6 @@ function parseMarkdown(md: string): string {
             return '';
         });
 
-        // Header
         outputLines.push('<thead><tr>');
         headerCells.forEach((cell, i) => {
             const align = alignments[i] ? ` style="text-align:${alignments[i]}"` : '';
@@ -87,7 +200,6 @@ function parseMarkdown(md: string): string {
         });
         outputLines.push('</tr></thead>');
 
-        // Body rows
         if (tableRows.length > 2) {
             outputLines.push('<tbody>');
             for (let r = 2; r < tableRows.length; r++) {
@@ -113,18 +225,16 @@ function parseMarkdown(md: string): string {
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
-        // Code blocks: ```lang ... ```
+        // Code blocks
         if (line.trim().startsWith('```')) {
             if (inCodeBlock) {
-                // End code block
-                outputLines.push(`<pre><code class="language-${escapeHtml(codeBlockLang)}">${escapeHtml(codeBlockContent.join('\n'))}</code></pre>`);
+                const highlighted = highlightCode(codeBlockContent.join('\n'), codeBlockLang);
+                outputLines.push(`<pre><code class="language-${escapeHtml(codeBlockLang)}">${highlighted}</code></pre>`);
                 codeBlockContent = [];
                 codeBlockLang = '';
                 inCodeBlock = false;
             } else {
-                // Flush table if in one
                 if (inTable) flushTable();
-                // Start code block
                 codeBlockLang = line.trim().slice(3).trim();
                 inCodeBlock = true;
             }
@@ -136,7 +246,22 @@ function parseMarkdown(md: string): string {
             continue;
         }
 
-        // Table detection: lines starting with |
+        // LaTeX block: $$ on its own line
+        if (line.trim() === '$$') {
+            const blockLines: string[] = [];
+            let j = i + 1;
+            while (j < lines.length && lines[j].trim() !== '$$') {
+                blockLines.push(lines[j]);
+                j++;
+            }
+            if (j < lines.length) {
+                outputLines.push(`<div class="latex-block-display"><code class="latex-block">${escapeHtml(blockLines.join('\n'))}</code></div>`);
+                i = j;
+                continue;
+            }
+        }
+
+        // Table detection
         if (/^\|(.+)\|$/.test(line.trim()) || /^\|(.+)/.test(line.trim())) {
             if (!inTable) {
                 inTable = true;
@@ -148,24 +273,26 @@ function parseMarkdown(md: string): string {
             flushTable();
         }
 
-        // Horizontal rule: ---, ***, ___
+        // Horizontal rule
         if (/^(\s*[-*_]){3,}\s*$/.test(line)) {
             outputLines.push('<hr />');
             continue;
         }
 
-        // Headings: # to ######
+        // Headings
         const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
         if (headingMatch) {
             const level = headingMatch[1].length;
-            const content = parseInline(headingMatch[2]);
-            outputLines.push(`<h${level}>${content}</h${level}>`);
+            const rawText = headingMatch[2];
+            const slug = slugify(rawText.replace(/[*_~`\[\]()]/g, ''));
+            toc.push({ level, text: rawText.replace(/[*_~`\[\]()]/g, ''), slug });
+            const content = parseInline(rawText);
+            outputLines.push(`<h${level} id="${slug}">${content}</h${level}>`);
             continue;
         }
 
-        // Blockquote: > text
+        // Blockquote
         if (line.startsWith('> ') || line === '>') {
-            // Collect consecutive blockquote lines
             const bqLines: string[] = [];
             let j = i;
             while (j < lines.length && (lines[j].startsWith('> ') || lines[j] === '>')) {
@@ -178,7 +305,31 @@ function parseMarkdown(md: string): string {
             continue;
         }
 
-        // Unordered list: - item, * item, + item
+        // GFM Checklist: - [ ] or - [x]
+        const checklistMatch = line.match(/^(\s*)([-*+])\s+\[([ xX])\]\s+(.+)$/);
+        if (checklistMatch) {
+            const listItems: { checked: boolean; text: string }[] = [];
+            let j = i;
+            while (j < lines.length) {
+                const clm = lines[j].match(/^(\s*)([-*+])\s+\[([ xX])\]\s+(.+)$/);
+                if (clm) {
+                    listItems.push({ checked: clm[3] !== ' ', text: clm[4] });
+                    j++;
+                } else {
+                    break;
+                }
+            }
+            outputLines.push('<ul class="checklist">');
+            listItems.forEach(item => {
+                const checkbox = `<input type="checkbox" disabled ${item.checked ? 'checked' : ''} />`;
+                outputLines.push(`<li class="checklist-item">${checkbox} ${parseInline(item.text)}</li>`);
+            });
+            outputLines.push('</ul>');
+            i = j - 1;
+            continue;
+        }
+
+        // Unordered list
         const ulMatch = line.match(/^(\s*)([-*+])\s+(.+)$/);
         if (ulMatch) {
             const listItems: string[] = [];
@@ -201,7 +352,7 @@ function parseMarkdown(md: string): string {
             continue;
         }
 
-        // Ordered list: 1. item, 2. item, etc.
+        // Ordered list
         const olMatch = line.match(/^(\s*)\d+\.\s+(.+)$/);
         if (olMatch) {
             const listItems: string[] = [];
@@ -230,22 +381,20 @@ function parseMarkdown(md: string): string {
             continue;
         }
 
-        // Paragraph (default)
+        // Paragraph
         outputLines.push(`<p>${parseInline(line)}</p>`);
     }
 
-    // Flush any remaining table
     if (inTable) flushTable();
-
-    // Flush any remaining code block
     if (inCodeBlock) {
-        outputLines.push(`<pre><code class="language-${escapeHtml(codeBlockLang)}">${escapeHtml(codeBlockContent.join('\n'))}</code></pre>`);
+        const highlighted = highlightCode(codeBlockContent.join('\n'), codeBlockLang);
+        outputLines.push(`<pre><code class="language-${escapeHtml(codeBlockLang)}">${highlighted}</code></pre>`);
     }
 
-    return outputLines.join('\n');
+    return { html: outputLines.join('\n'), toc };
 }
 
-// ===== Sample markdown content =====
+// ===== Sample markdown =====
 const SAMPLE_MARKDOWN_KO = `# Markdown 미리보기 가이드
 
 ## 텍스트 서식
@@ -254,10 +403,20 @@ const SAMPLE_MARKDOWN_KO = `# Markdown 미리보기 가이드
 ***굵은 기울임***도 가능하고, ~~취소선~~도 지원합니다.
 \`인라인 코드\`는 백틱으로 감싸면 됩니다.
 
+## 이모지 :rocket:
+
+이모지 숏코드도 지원합니다: :smile: :fire: :heart: :star: :check:
+
+## 체크리스트
+
+- [x] Markdown 파서 구현
+- [x] GFM 체크리스트 지원
+- [ ] 이모지 숏코드 추가
+- [ ] 코드 하이라이팅
+
 ## 링크와 이미지
 
 [GitHub](https://github.com)에 방문해보세요.
-![Placeholder 이미지](https://via.placeholder.com/300x100?text=Markdown+Preview)
 
 ## 목록
 
@@ -276,28 +435,47 @@ const SAMPLE_MARKDOWN_KO = `# Markdown 미리보기 가이드
 > Markdown은 읽기 쉽고 쓰기 쉬운 텍스트 기반 마크업 언어입니다.
 > 간단한 기호로 서식을 지정할 수 있습니다.
 
-## 코드 블록
+## 코드 블록 (구문 강조)
 
 \`\`\`javascript
 function greet(name) {
-    console.log(\`안녕하세요, \${name}님!\`);
+    // 인사하기
+    const message = \`안녕하세요, \${name}님!\`;
+    console.log(message);
     return true;
 }
 
 greet("개발자");
 \`\`\`
 
+\`\`\`python
+def fibonacci(n):
+    """피보나치 수열 생성"""
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+for i in range(10):
+    print(fibonacci(i))
+\`\`\`
+
+## 수학 수식
+
+인라인 수식: $E = mc^2$
+
+블록 수식:
+$$
+\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}
+$$
+
 ## 표 (Table)
 
 | 기능 | 지원 여부 | 설명 |
 |------|:--------:|------|
-| 제목 | O | h1~h6 지원 |
-| 굵게/기울임 | O | **, *, ***, ~~ |
-| 코드 블록 | O | 언어 하이라이트 |
-| 표 | O | 정렬 지원 |
-| 링크/이미지 | O | 인라인 문법 |
-
-## 수평선
+| 제목 | ✅ | h1~h6 지원 |
+| 코드 블록 | ✅ | 구문 강조 |
+| 체크리스트 | ✅ | GFM 스타일 |
+| 이모지 | ✅ | 숏코드 지원 |
 
 ---
 
@@ -312,10 +490,20 @@ This is **bold text** and this is *italic text*.
 ***Bold italic*** works too, and ~~strikethrough~~ is supported.
 \`Inline code\` is wrapped with backticks.
 
+## Emoji :rocket:
+
+Emoji shortcodes are supported: :smile: :fire: :heart: :star: :check:
+
+## Checklist
+
+- [x] Implement Markdown parser
+- [x] GFM checklist support
+- [ ] Add emoji shortcodes
+- [ ] Code syntax highlighting
+
 ## Links and Images
 
 Visit [GitHub](https://github.com) for more.
-![Placeholder Image](https://via.placeholder.com/300x100?text=Markdown+Preview)
 
 ## Lists
 
@@ -334,28 +522,47 @@ Visit [GitHub](https://github.com) for more.
 > Markdown is a lightweight text-based markup language.
 > You can format text with simple symbols.
 
-## Code Block
+## Code Block (Syntax Highlighting)
 
 \`\`\`javascript
 function greet(name) {
-    console.log(\`Hello, \${name}!\`);
+    // Say hello
+    const message = \`Hello, \${name}!\`;
+    console.log(message);
     return true;
 }
 
 greet("Developer");
 \`\`\`
 
+\`\`\`python
+def fibonacci(n):
+    """Generate Fibonacci sequence"""
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+for i in range(10):
+    print(fibonacci(i))
+\`\`\`
+
+## Math Formulas
+
+Inline formula: $E = mc^2$
+
+Block formula:
+$$
+\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}
+$$
+
 ## Table
 
 | Feature | Supported | Description |
 |---------|:---------:|-------------|
-| Headings | Yes | h1-h6 support |
-| Bold/Italic | Yes | **, *, ***, ~~ |
-| Code Blocks | Yes | Language highlight |
-| Tables | Yes | Alignment support |
-| Links/Images | Yes | Inline syntax |
-
-## Horizontal Rule
+| Headings | ✅ | h1-h6 support |
+| Code Blocks | ✅ | Syntax highlight |
+| Checklist | ✅ | GFM style |
+| Emoji | ✅ | Shortcode support |
 
 ---
 
@@ -370,14 +577,15 @@ export default function MarkdownPreviewClient() {
     const [markdown, setMarkdown] = useState("");
     const [toast, setToast] = useState<string | null>(null);
     const [copiedBtn, setCopiedBtn] = useState<string | null>(null);
+    const [showToc, setShowToc] = useState(false);
     const editorRef = useRef<HTMLTextAreaElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Determine locale from sample button behavior
     const isKoLocale = t("action.copyMd") === "MD 복사";
 
-    const htmlOutput = useMemo(() => {
-        if (!markdown.trim()) return "";
+    const { html: htmlOutput, toc } = useMemo(() => {
+        if (!markdown.trim()) return { html: "", toc: [] };
         return parseMarkdown(markdown);
     }, [markdown]);
 
@@ -419,7 +627,90 @@ export default function MarkdownPreviewClient() {
         showToast(t("toast.cleared"));
     }, [showToast, t]);
 
-    // Sync scroll (optional, best-effort)
+    // .md file upload
+    const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const text = ev.target?.result as string;
+            if (text) {
+                setMarkdown(text);
+                showToast(t("toast.uploaded"));
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+    }, [showToast, t]);
+
+    // HTML export
+    const handleExportHtml = useCallback(() => {
+        const fullHtml = `<!DOCTYPE html>
+<html lang="${isKoLocale ? 'ko' : 'en'}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown Export</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.8; color: #1f2937; }
+h1 { border-bottom: 2px solid #e5e7eb; padding-bottom: 0.3em; }
+h2 { border-bottom: 1px solid #e5e7eb; padding-bottom: 0.2em; }
+code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.88em; }
+pre { background: #1e293b; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; }
+pre code { background: transparent; color: inherit; padding: 0; }
+blockquote { border-left: 4px solid #3b82f6; padding: 10px 16px; margin: 0.8em 0; color: #6b7280; background: rgba(59,130,246,0.05); }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #d1d5db; padding: 8px 12px; }
+th { background: #f1f5f9; font-weight: 600; }
+.checklist { list-style: none; padding-left: 0; }
+.checklist-item { padding: 2px 0; }
+.checklist-item input { margin-right: 8px; }
+.latex-block, .latex-inline { font-family: 'Times New Roman', serif; font-style: italic; background: #f5f3ff; padding: 2px 6px; border-radius: 4px; }
+.latex-block-display { text-align: center; margin: 1em 0; padding: 16px; background: #f5f3ff; border-radius: 8px; }
+</style>
+</head>
+<body>
+${htmlOutput}
+</body>
+</html>`;
+        downloadFile(fullHtml, 'markdown-export.html', 'text/html');
+        showToast(t("toast.exportedHtml"));
+    }, [htmlOutput, isKoLocale, showToast, t]);
+
+    // PDF export via window.print
+    const handleExportPdf = useCallback(() => {
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
+        printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Markdown PDF</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.8; color: #1f2937; }
+h1 { border-bottom: 2px solid #e5e7eb; padding-bottom: 0.3em; }
+h2 { border-bottom: 1px solid #e5e7eb; padding-bottom: 0.2em; }
+code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.88em; }
+pre { background: #f1f5f9; color: #1f2937; padding: 16px; border-radius: 8px; overflow-x: auto; border: 1px solid #e2e8f0; }
+pre code { background: transparent; padding: 0; }
+blockquote { border-left: 4px solid #3b82f6; padding: 10px 16px; margin: 0.8em 0; color: #6b7280; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #d1d5db; padding: 8px 12px; }
+th { background: #f1f5f9; }
+.checklist { list-style: none; padding-left: 0; }
+.checklist-item input { margin-right: 8px; }
+.latex-block, .latex-inline { font-family: 'Times New Roman', serif; font-style: italic; }
+.latex-block-display { text-align: center; margin: 1em 0; }
+@media print { body { padding: 0; } }
+</style>
+</head>
+<body>${htmlOutput}</body>
+</html>`);
+        printWindow.document.close();
+        setTimeout(() => printWindow.print(), 300);
+    }, [htmlOutput]);
+
+    // Sync scroll
     const handleEditorScroll = useCallback(() => {
         if (!editorRef.current || !previewRef.current) return;
         const editor = editorRef.current;
@@ -428,7 +719,7 @@ export default function MarkdownPreviewClient() {
         preview.scrollTop = ratio * (preview.scrollHeight - preview.clientHeight || 1);
     }, []);
 
-    // Keyboard shortcut: Tab for indent in textarea
+    // Tab indent
     useEffect(() => {
         const el = editorRef.current;
         if (!el) return;
@@ -458,7 +749,7 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
 📍 teck-tani.com/ko/markdown-preview`;
     };
 
-    // ===== Styles =====
+    // Styles
     const containerStyle: React.CSSProperties = {
         maxWidth: "1200px",
         margin: "0 auto",
@@ -553,7 +844,6 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
         overflow: "hidden",
     };
 
-    // Preview pane content styles (injected as a style tag inside)
     const previewStyles = `
         .md-preview h1 { font-size: 1.8em; font-weight: 700; margin: 0.8em 0 0.4em; padding-bottom: 0.3em; border-bottom: 2px solid ${isDark ? '#334155' : '#e5e7eb'}; }
         .md-preview h2 { font-size: 1.5em; font-weight: 700; margin: 0.8em 0 0.4em; padding-bottom: 0.2em; border-bottom: 1px solid ${isDark ? '#334155' : '#e5e7eb'}; }
@@ -606,6 +896,11 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
         .md-preview li { margin: 0.2em 0; }
         .md-preview ul li { list-style-type: disc; }
         .md-preview ol li { list-style-type: decimal; }
+        .md-preview .checklist { list-style: none; padding-left: 0; }
+        .md-preview .checklist-item { padding: 2px 0; display: flex; align-items: center; gap: 6px; }
+        .md-preview .checklist-item input[type="checkbox"] {
+            width: 16px; height: 16px; accent-color: ${isDark ? '#60a5fa' : '#3b82f6'};
+        }
         .md-preview hr {
             border: none;
             border-top: 2px solid ${isDark ? '#334155' : '#e5e7eb'};
@@ -627,6 +922,28 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
         }
         .md-preview tr:nth-child(even) td {
             background: ${isDark ? 'rgba(30,41,59,0.5)' : 'rgba(241,245,249,0.5)'};
+        }
+        .md-preview .latex-inline {
+            font-family: 'Times New Roman', 'Cambria Math', serif;
+            font-style: italic;
+            background: ${isDark ? 'rgba(139,92,246,0.1)' : '#f5f3ff'};
+            color: ${isDark ? '#c4b5fd' : '#5b21b6'};
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .md-preview .latex-block {
+            font-family: 'Times New Roman', 'Cambria Math', serif;
+            font-style: italic;
+            background: transparent;
+            color: ${isDark ? '#c4b5fd' : '#5b21b6'};
+            font-size: 1.1em;
+        }
+        .md-preview .latex-block-display {
+            text-align: center;
+            margin: 1em 0;
+            padding: 16px;
+            background: ${isDark ? 'rgba(139,92,246,0.08)' : '#f5f3ff'};
+            border-radius: 8px;
         }
     `;
 
@@ -660,38 +977,103 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
 
     return (
         <div style={containerStyle}>
+            {/* Hidden file input */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".md,.markdown,.txt"
+                onChange={handleFileUpload}
+                style={{ display: "none" }}
+            />
+
             {/* Toolbar */}
             <div style={toolbarStyle}>
-                <button
-                    onClick={handleCopyMd}
-                    style={btnStyle(copiedBtn === "md")}
-                >
+                <button onClick={handleCopyMd} style={btnStyle(copiedBtn === "md")}>
                     {copiedBtn === "md" ? <FaCheck size={12} /> : <FaCopy size={12} />}
                     {copiedBtn === "md" ? t("action.copied") : t("action.copyMd")}
                 </button>
-                <button
-                    onClick={handleCopyHtml}
-                    style={btnStyle(copiedBtn === "html")}
-                >
+                <button onClick={handleCopyHtml} style={btnStyle(copiedBtn === "html")}>
                     {copiedBtn === "html" ? <FaCheck size={12} /> : <FaCode size={12} />}
                     {copiedBtn === "html" ? t("action.copied") : t("action.copyHtml")}
                 </button>
-                <button
-                    onClick={handleSample}
-                    style={btnStyle()}
-                >
+                <button onClick={() => fileInputRef.current?.click()} style={btnStyle()}>
+                    <FaUpload size={12} />
+                    {t("action.upload")}
+                </button>
+                <button onClick={handleExportHtml} disabled={!htmlOutput} style={{ ...btnStyle(), opacity: htmlOutput ? 1 : 0.5 }}>
+                    <FaFileCode size={12} />
+                    {t("action.exportHtml")}
+                </button>
+                <button onClick={handleExportPdf} disabled={!htmlOutput} style={{ ...btnStyle(), opacity: htmlOutput ? 1 : 0.5 }}>
+                    <FaFilePdf size={12} />
+                    {t("action.exportPdf")}
+                </button>
+                <button onClick={handleSample} style={btnStyle()}>
                     <FaFileAlt size={12} />
                     {t("action.sample")}
                 </button>
-                <button
-                    onClick={handleClear}
-                    style={btnStyle()}
-                >
+                <button onClick={handleClear} style={btnStyle()}>
                     <FaTrash size={12} />
                     {t("action.clear")}
                 </button>
+                {toc.length > 0 && (
+                    <button onClick={() => setShowToc(!showToc)} style={btnStyle(showToc)}>
+                        <FaListUl size={12} />
+                        {t("action.toc")}
+                    </button>
+                )}
                 <ShareButton shareText={getShareText()} disabled={!markdown.trim()} />
             </div>
+
+            {/* TOC */}
+            {showToc && toc.length > 0 && (
+                <div style={{
+                    background: isDark ? "#1e293b" : "white",
+                    borderRadius: "10px",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.08)",
+                    padding: "16px 20px",
+                    marginBottom: "16px",
+                    border: isDark ? "1px solid #334155" : "1px solid #e2e8f0",
+                }}>
+                    <div style={{
+                        fontWeight: 700,
+                        fontSize: "0.9rem",
+                        color: isDark ? "#e2e8f0" : "#374151",
+                        marginBottom: "10px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                    }}>
+                        <FaListUl size={14} />
+                        {t("action.toc")}
+                    </div>
+                    <nav>
+                        {toc.map((item, idx) => (
+                            <a
+                                key={idx}
+                                href={`#${item.slug}`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    const el = previewRef.current?.querySelector(`#${CSS.escape(item.slug)}`);
+                                    el?.scrollIntoView({ behavior: 'smooth' });
+                                }}
+                                style={{
+                                    display: "block",
+                                    paddingLeft: `${(item.level - 1) * 16}px`,
+                                    padding: `3px 0 3px ${(item.level - 1) * 16}px`,
+                                    fontSize: item.level <= 2 ? "0.9rem" : "0.82rem",
+                                    fontWeight: item.level <= 2 ? 600 : 400,
+                                    color: isDark ? "#60a5fa" : "#2563eb",
+                                    textDecoration: "none",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                {item.text}
+                            </a>
+                        ))}
+                    </nav>
+                </div>
+            )}
 
             {/* Split View */}
             <div style={splitContainerStyle}>

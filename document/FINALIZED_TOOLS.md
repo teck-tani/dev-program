@@ -6,21 +6,32 @@
 
 ---
 
-## 확정 도구 목록
+## 확정 도구 목록 (총 3개)
 
+### 계산기 (1개)
 | # | 도구명 | 경로 | 확정일 | 비고 |
 |---|--------|------|--------|------|
 | 1 | 공학용 계산기 | /calculator | 2026-02-12 | 기본+공학 계산, 히스토리, 키보드 입력 |
-| 2 | 바코드 생성기 | /barcode | 2026-02-12 | 다중 형식, 대량생성, 설정 영속화 |
+
+### 유틸리티 (1개)
+| # | 도구명 | 경로 | 확정일 | 비고 |
+|---|--------|------|--------|------|
+| 1 | 바코드 생성기 | /barcode | 2026-02-12 | 다중 형식, 대량생성, 설정 영속화 |
+
+### 텍스트 (1개)
+| # | 도구명 | 경로 | 확정일 | 비고 |
+|---|--------|------|--------|------|
+| 1 | 글자수 세기 | /character-counter | 2026-02-14 | 목표 글자수, UTF-8/EUC-KR 바이트, SNS 제한, 키워드 분석 |
 
 ---
 
 ## 규칙
 
-1. **코드 수정 금지**: `src/app/[locale]/calculator/`, `src/app/[locale]/barcode/` 하위 파일 수정 불가
+1. **코드 수정 금지**: `src/app/[locale]/calculator/`, `src/app/[locale]/barcode/`, `src/app/[locale]/character-counter/` 하위 파일 수정 불가
 2. **번역 수정 금지**: `messages/ko.json`, `messages/en.json` 내 해당 도구 번역 키 수정 불가
    - Calculator: `Calculator.*`, `Index.tools.calculator`
    - Barcode: `Barcode.*`, `Index.tools.barcode`
+   - CharacterCounter: `CharacterCounter.*`, `Index.tools.characterCounter`
 3. **SEO 수정 금지**: 해당 도구의 `page.tsx` 내 JSON-LD, 메타데이터 수정 불가
 4. **예외**: 사용자가 명시적으로 "이 도구 수정해" 라고 요청한 경우에만 수정 가능
 

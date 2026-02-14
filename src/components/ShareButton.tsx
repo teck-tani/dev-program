@@ -11,6 +11,8 @@ interface ShareButtonProps {
     buttonLabel?: string;
     copiedLabel?: string;
     disabled?: boolean;
+    style?: React.CSSProperties;
+    iconSize?: number;
 }
 
 export default function ShareButton({
@@ -20,6 +22,8 @@ export default function ShareButton({
     buttonLabel,
     copiedLabel,
     disabled = false,
+    style,
+    iconSize = 16,
 }: ShareButtonProps) {
     const t = useTranslations("Common");
     const [hasWebShare, setHasWebShare] = useState(false);
@@ -61,14 +65,19 @@ export default function ShareButton({
     const Icon = status === "copied" ? IoCheckmark : hasWebShare ? IoShareOutline : IoCopyOutline;
     const label = status === "copied" ? defaultCopied : defaultLabel;
 
+    const mergedStyle: React.CSSProperties = {
+        ...style,
+        ...(disabled ? { opacity: 0.5, cursor: "not-allowed" } : {}),
+    };
+
     return (
         <button
             onClick={handleShare}
-            className={className}
+            className={style ? undefined : className}
             disabled={disabled}
-            style={disabled ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
+            style={mergedStyle}
         >
-            <Icon size={16} />
+            <Icon size={iconSize} />
             {label}
         </button>
     );
