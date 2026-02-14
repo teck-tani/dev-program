@@ -1,15 +1,14 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { Metadata } from 'next';
-import Script from 'next/script';
 import { locales } from '@/navigation';
 import "../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GoogleAdsense from "@/components/GoogleAdsense";
 import LazyFeedbackButton from "@/components/LazyFeedbackButton";
+import LazyGTM from "@/components/LazyGTM";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { StopwatchSettingsProvider } from "@/contexts/StopwatchSettingsContext";
 import PWARegister from "@/components/PWARegister";
 
 // [핵심] 구글 폰트를 버리고 시스템 폰트와 Pretendard 조합으로 변경
@@ -57,32 +56,17 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <meta name="apple-mobile-web-app-title" content="Tani DevTool" />
         <meta name="naver-site-verification" content="a8001e16d325533ef7a17a89ea10e1fa9b2e4e3f" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
-        {/* 광고 및 분석 스크립트를 더 뒤로 미룸 */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-4K4035NP84"
-          strategy="afterInteractive"
-        />
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-4K4035NP84');
-          `}
-        </Script>
       </head>
       <body style={{ fontFamily: systemFontStack }}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
-            <StopwatchSettingsProvider>
               <div id="top-container"><Header /></div>
               <main>{children}</main>
               <div id="footer-container"><Footer /></div>
               <LazyFeedbackButton />
-            </StopwatchSettingsProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
-        {/* 애드센스는 사용자 상호작용 후에만 로드되도록 기존 전략 유지 */}
+        <LazyGTM />
         <GoogleAdsense />
         <PWARegister />
       </body>

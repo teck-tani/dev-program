@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import React from 'react';
+import { StopwatchSettingsProvider } from "@/contexts/StopwatchSettingsContext";
 
 const StopwatchView = dynamic(() => import('./StopwatchView'), {
   ssr: false,
@@ -26,5 +27,9 @@ const StopwatchView = dynamic(() => import('./StopwatchView'), {
 });
 
 export default function StopwatchWrapper() {
-  return <StopwatchView />;
+  return (
+    <StopwatchSettingsProvider>
+      <StopwatchView />
+    </StopwatchSettingsProvider>
+  );
 }
