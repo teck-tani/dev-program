@@ -79,6 +79,9 @@ export default function Header() {
       <header className="new-header">
         <div className="header-container">
           <div className="header-left">
+            <Link href="/" className="header-action-btn" aria-label="홈" prefetch={false}>
+              <FaHome />
+            </Link>
             <button
               className="header-menu-btn"
               onClick={() => setMobileMenuOpen(true)}

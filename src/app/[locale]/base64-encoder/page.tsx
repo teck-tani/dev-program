@@ -73,6 +73,10 @@ function generateFaqSchema(locale: string) {
         {
             question: "URL-Safe Base64란 무엇인가요?",
             answer: "URL-Safe Base64는 표준 Base64에서 URL에 안전하지 않은 문자(+, /, =)를 안전한 문자(-, _)로 대체한 변형입니다. URL 파라미터나 파일명에 Base64 문자열을 사용할 때 유용합니다."
+        },
+        {
+            question: "URL-Safe Base64와 표준 Base64의 차이점은 무엇인가요?",
+            answer: "표준 Base64는 +, /, = 문자를 사용하지만, 이 문자들은 URL에서 특별한 의미를 가집니다. URL-Safe Base64는 +를 -로, /를 _로 대체하고, 패딩(=)을 제거하여 URL이나 파일명에 안전하게 사용할 수 있도록 합니다."
         }
     ] : [
         {
@@ -86,6 +90,10 @@ function generateFaqSchema(locale: string) {
         {
             question: "What is URL-Safe Base64?",
             answer: "URL-Safe Base64 is a variant that replaces unsafe URL characters (+, /, =) with safe characters (-, _). It's useful when using Base64 strings in URL parameters or filenames."
+        },
+        {
+            question: "What is the difference between URL-Safe and standard Base64?",
+            answer: "Standard Base64 uses +, /, and = characters, which have special meanings in URLs. URL-Safe Base64 replaces + with -, / with _, and removes padding (=), making it safe to use in URLs and filenames."
         }
     ];
 

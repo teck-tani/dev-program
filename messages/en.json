@@ -1199,21 +1199,98 @@
       "generating": "Drawing...",
       "start": "Draw Numbers START!",
       "fixedTitle": "📌 Select Fixed Numbers (Max 5)",
-      "alertFixedMax": "Max 5 fixed numbers allowed!"
+      "excludedTitle": "🚫 Exclude Numbers",
+      "alertFixedMax": "Max 5 fixed numbers allowed!",
+      "quickDraw": "⚡ Quick Draw",
+      "setCount": "Sets",
+      "game": "Game {num}"
+    },
+    "checker": {
+      "title": "🎯 Check Winning",
+      "check": "Check",
+      "invalidInput": "Enter 6 unique numbers between 1-45",
+      "noResults": "No winning history found",
+      "prize1": "1st Prize (6 matched)",
+      "prize2": "2nd Prize (5+bonus)",
+      "prize3": "3rd Prize (5 matched)",
+      "prize4": "4th Prize (4 matched)",
+      "prize5": "5th Prize (3 matched)",
+      "rangeAll": "All Rounds",
+      "rangeLatest50": "Last 50",
+      "rangeLatest10": "Last 10"
     },
     "history": {
       "round": "Round {round}",
       "firstPrize": "1st Prize (Per Person)",
       "totalWinners": "Total {count} winners",
-      "totalSales": "Total Sales"
+      "totalSales": "Total Sales",
+      "currency": " KRW",
+      "savedSets": "📋 Generated History",
+      "clearSaved": "Clear History",
+      "empty": "No saved history"
     },
     "stats": {
       "title": "📊 Statistics by Number",
       "sortByNum": "By Number",
-      "sortByProb": "By Probability"
+      "sortByProb": "By Probability",
+      "hot": "Hot Numbers (Top 10%)",
+      "cold": "Cold Numbers (Bottom 10%)"
     },
-    "disqus": {
-      "title": "Lotto Number Generator"
+    "seo": {
+      "description": {
+        "title": "What is Lotto Number Generator?",
+        "p1": "This lotto number generator is a free online tool that randomly selects 6 numbers from 1 to 45. It features a fun animation where balls mix in a drum and pop out one by one, just like a real lottery machine.",
+        "p2": "With fixed & excluded numbers, up to 5 sets at once, quick draw mode, and historical winning number checker — it's your all-in-one lotto helper."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": { "title": "Random Generation", "desc": "Generate 6 random lotto numbers with a single click. Choose realistic drum animation or instant quick draw mode." },
+          "feat2": { "title": "Fixed & Excluded", "desc": "Fix specific numbers (up to 5) to always include, or exclude numbers you want to avoid in your combination." },
+          "feat3": { "title": "Multi-Set Generation", "desc": "Generate 1-5 sets at once. Check multiple games simultaneously, just like a real lotto ticket." },
+          "feat4": { "title": "Winning Checker", "desc": "Enter your numbers and instantly check how they match against all historical draws." },
+          "feat5": { "title": "Statistics", "desc": "View frequency analysis for each number across all draws, with hot/cold number indicators." },
+          "feat6": { "title": "Auto Update", "desc": "Latest winning numbers are automatically updated after each Saturday draw." }
+        }
+      },
+      "howto": {
+        "title": "How to Use",
+        "steps": {
+          "step1": "<strong>Select Fixed/Excluded Numbers</strong> — Set numbers to include or exclude (optional).",
+          "step2": "<strong>Set Games & Mode</strong> — Choose 1-5 sets and toggle quick draw mode on/off.",
+          "step3": "<strong>Draw Numbers</strong> — Press START to generate numbers with animation.",
+          "step4": "<strong>Check Winning</strong> — Enter your 6 numbers and compare against historical draws.",
+          "step5": "<strong>View Statistics</strong> — Check number frequency and hot/cold indicators at the bottom."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": { "title": "Weekly Lotto Purchase", "desc": "Instead of agonizing over numbers, set your fixed/excluded numbers and quickly generate 5 sets." },
+          "uc2": { "title": "Group Purchase", "desc": "Generate multiple sets at once and share them instantly to your group chat." },
+          "uc3": { "title": "Statistical Analysis", "desc": "Reference hot/cold numbers and historical frequency to develop your own number strategy." },
+          "uc4": { "title": "Historical Lookup", "desc": "View all historical winning numbers, prize amounts, and winner counts at a glance." }
+        }
+      },
+      "probability": {
+        "title": "Winning Odds",
+        "text": "The odds of winning the Korean Lotto 6/45 jackpot are 1 in 8,145,060. Second prize (5+bonus) is about 1 in 1,357,510, third prize (5) is about 1 in 35,724, fourth prize (4) is about 1 in 733, and fifth prize (3) is about 1 in 45."
+      },
+      "privacy": {
+        "title": "Privacy Notice",
+        "text": "All number generation, fixed/excluded settings, and generation history are processed entirely in your browser (localStorage). Nothing is sent to any external server. Winning history data is retrieved from a public API."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": { "q": "How does the lotto number generator work?", "a": "It randomly selects 6 numbers from 1 to 45. Fixed numbers are always included, and excluded numbers are never selected." },
+      "q2": { "q": "What are fixed and excluded numbers?", "a": "Fixed numbers (up to 5) are always included in results. Excluded numbers are never selected. You can use both simultaneously." },
+      "q3": { "q": "How do I generate multiple sets?", "a": "Select the number of sets (1-5) using the set count buttons, then press START to generate all sets at once." },
+      "q4": { "q": "How do I check my winning numbers?", "a": "Enter your 6 numbers in the Winning Checker section and press Check. It will show all historical draws where 3+ numbers matched." },
+      "q5": { "q": "What is Quick Draw mode?", "a": "Quick Draw skips the drum animation and shows results instantly. Useful when generating numbers quickly and repeatedly." },
+      "q6": { "q": "What are hot/cold numbers?", "a": "Hot numbers (🔥) are the top 10% most frequently drawn. Cold numbers (❄️) are the bottom 10% least drawn. These are for reference only." },
+      "q7": { "q": "What are the odds of winning the jackpot?", "a": "The odds of winning Lotto 6/45 jackpot are approximately 1 in 8,145,060. You need to match 6 numbers out of 45, regardless of order." },
+      "q8": { "q": "Are generated numbers saved?", "a": "Yes, the last 20 generation records are automatically saved in your browser's localStorage. Nothing is sent to external servers." }
     }
   },
   "MoneyConverter": {
@@ -2619,6 +2696,25 @@
     "upload": "Upload File",
     "swap": "Swap Input/Output",
     "clear": "Clear All",
+    "autoConvert": "Auto Convert",
+    "lineBreak": "Line Break (76)",
+    "download": "Download",
+    "dragActive": "Drop file here!",
+    "imagePreview": "Image Preview",
+    "stats": {
+      "sizeIncrease": "Size Change",
+      "padding": "Padding",
+      "original": "Original",
+      "result": "Result"
+    },
+    "history": {
+      "title": "Recent Conversions",
+      "clearAll": "Clear All"
+    },
+    "validation": {
+      "valid": "Valid Base64",
+      "invalid": "Invalid Base64"
+    },
     "error": {
       "encode": "Error during encoding. Please check your input.",
       "decode": "Error during decoding. Please verify the Base64 string is valid."

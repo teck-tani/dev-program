@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { getPool } from '@/lib/db';
 
-const DATA_FILE_PATH = path.join(process.cwd(), 'src/data/lotto-history.json');
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
-    if (!fs.existsSync(DATA_FILE_PATH)) {
-        return NextResponse.json([]);
-    }
-    const fileContent = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
     try {
-        const data = JSON.parse(fileContent);
-        return NextResponse.json(data);
-    } catch (e) {
-        return NextResponse.json([]);
+        const pool = getPool();
+        const [rows] = await pool.execute(
+            'SELECT drwNo, drwNoDate, drwtNo1, drwtNo2, drwtNo3, drwtNo4, drwtNo5, drwtNo6, bnusNo, totSellamnt, firstWinamnt, firstPrzwnerCo FROM lotto_rounds ORDER BY drwNo ASC'
+        );
+        return NextResponse.json(rows);
+    } catch (error) {
+        console.error('DB error:', error);
+        return NextResponse.json([], { status: 500 });
     }
 }

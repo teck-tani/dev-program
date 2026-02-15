@@ -1,21 +1,73 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { getPool } from '@/lib/db';
 
-const DATA_FILE_PATH = path.join(process.cwd(), 'src/data/lotto-history.json');
-const DELAY_MS = 2000; // 2 seconds delay to avoid IP block
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
+const DELAY_MS = 2000;
 
 async function wait(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function fetchLottoRound(drwNo: number) {
-    const url = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${drwNo}`;
+interface LottoData {
+    drwNo: number;
+    drwNoDate: string;
+    drwtNo1: number;
+    drwtNo2: number;
+    drwtNo3: number;
+    drwtNo4: number;
+    drwtNo5: number;
+    drwtNo6: number;
+    bnusNo: number;
+    totSellamnt: number;
+    firstWinamnt: number;
+    firstPrzwnerCo: number;
+    firstAccumamnt: number;
+}
+
+async function fetchLottoRound(drwNo: number): Promise<LottoData | null> {
+    const url = `https://pyony.com/lotto/rounds/${drwNo}/`;
     try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Failed to fetch round ${drwNo}`);
-        const data = await res.json();
-        return data.returnValue === 'success' ? data : null;
+        const res = await fetch(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TeckTani/1.0)' }
+        });
+        if (!res.ok) return null;
+        const html = await res.text();
+
+        // Extract winning numbers from numberCircle elements
+        const numberMatches = html.match(/numberCircle[^>]*><strong>(\d+)<\/strong>/g);
+        if (!numberMatches || numberMatches.length < 7) return null;
+
+        const numbers = numberMatches.map(m => {
+            const match = m.match(/<strong>(\d+)<\/strong>/);
+            return match ? parseInt(match[1], 10) : 0;
+        });
+
+        // First 6 are main numbers, 7th is bonus
+        const [drwtNo1, drwtNo2, drwtNo3, drwtNo4, drwtNo5, drwtNo6, bnusNo] = numbers;
+
+        // Extract 1st prize winners count and amount from the table
+        // Pattern: <th>1등</th> <td>count</td> <td><a>amount</a> 원</td>
+        const prizeMatch = html.match(
+            /1등<\/th>\s*<td[^>]*>(\d[\d,]*)<\/td>\s*<td[^>]*><a[^>]*>([\d,]+)<\/a>\s*원/
+        );
+        const firstPrzwnerCo = prizeMatch ? parseInt(prizeMatch[1].replace(/,/g, ''), 10) : 0;
+        const firstWinamnt = prizeMatch ? parseInt(prizeMatch[2].replace(/,/g, ''), 10) : 0;
+        const firstAccumamnt = firstPrzwnerCo * firstWinamnt;
+
+        // Extract draw date from page title or content
+        // Title format: "로또 1211회 당첨번호"
+        // We calculate the date: round 1 was 2002-12-07, each round is +7 days
+        const baseDate = new Date('2002-12-07');
+        const drawDate = new Date(baseDate.getTime() + (drwNo - 1) * 7 * 24 * 60 * 60 * 1000);
+        const drwNoDate = drawDate.toISOString().split('T')[0];
+
+        return {
+            drwNo, drwNoDate,
+            drwtNo1, drwtNo2, drwtNo3, drwtNo4, drwtNo5, drwtNo6, bnusNo,
+            totSellamnt: 0, firstWinamnt, firstPrzwnerCo, firstAccumamnt,
+        };
     } catch (error) {
         console.error(`Error fetching round ${drwNo}:`, error);
         return null;
@@ -24,76 +76,69 @@ async function fetchLottoRound(drwNo: number) {
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    // Optional: manually specify start round, otherwise auto-detect
     const forceStart = searchParams.get('start');
-    const count = parseInt(searchParams.get('count') || '5', 10); // Process 5 at a time by default
+    const count = parseInt(searchParams.get('count') || '5', 10);
 
-    // 1. Load existing data
-    let history: any[] = [];
-    if (fs.existsSync(DATA_FILE_PATH)) {
-        const fileContent = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
-        try {
-            history = JSON.parse(fileContent);
-        } catch (e) {
-            history = [];
-        }
-    }
+    try {
+        const pool = getPool();
 
-    // 2. Determine start round
-    // If we have history, start from (last round + 1). If empty, start from 1.
-    const lastRound = history.length > 0 ? history[history.length - 1].drwNo : 0;
-    let startRound = forceStart ? parseInt(forceStart, 10) : (lastRound + 1);
-    
-    // Safety: prevent infinite loop if startRound is ridiculously high without data
-    // (Lotto is around 1200 as of late 2025? No, as of 2025 it's around 1150-1200)
-    // We'll trust the logic for now.
+        const [lastRows] = await pool.execute(
+            'SELECT MAX(drwNo) as lastRound FROM lotto_rounds'
+        ) as [Array<{ lastRound: number | null }>, unknown];
+        const lastRound = lastRows[0]?.lastRound || 0;
 
-    const newItems = [];
-    let currentRound = startRound;
-    
-    // 3. Loop and fetch
-    for (let i = 0; i < count; i++) {
-        // If we are just starting this batch, or subsequent items
-        console.log(`Fetching Lotto Round: ${currentRound}`);
-        
-        const data = await fetchLottoRound(currentRound);
-        
-        // If data is null or fail (e.g. future round), we stop
-        if (!data) {
-            console.log(`Round ${currentRound} returned no data (possibly future). Stopping.`);
-            break;
+        const startRound = forceStart ? parseInt(forceStart, 10) : (lastRound + 1);
+
+        const newItems: LottoData[] = [];
+        let currentRound = startRound;
+
+        for (let i = 0; i < count; i++) {
+            console.log(`Fetching Lotto Round: ${currentRound}`);
+            const data = await fetchLottoRound(currentRound);
+
+            if (!data) {
+                console.log(`Round ${currentRound} returned no data. Stopping.`);
+                break;
+            }
+
+            newItems.push(data);
+            currentRound++;
+
+            if (i < count - 1) await wait(DELAY_MS);
         }
 
-        newItems.push(data);
-        currentRound++;
+        if (newItems.length > 0) {
+            for (const item of newItems) {
+                await pool.execute(
+                    `INSERT IGNORE INTO lotto_rounds
+                     (drwNo, drwNoDate, drwtNo1, drwtNo2, drwtNo3, drwtNo4, drwtNo5, drwtNo6, bnusNo, totSellamnt, firstWinamnt, firstPrzwnerCo, firstAccumamnt)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                        item.drwNo, item.drwNoDate,
+                        item.drwtNo1, item.drwtNo2, item.drwtNo3, item.drwtNo4, item.drwtNo5, item.drwtNo6,
+                        item.bnusNo,
+                        item.totSellamnt, item.firstWinamnt,
+                        item.firstPrzwnerCo, item.firstAccumamnt,
+                    ]
+                );
+            }
 
-        // Delay if we are not at the last item
-        if (i < count - 1) {
-            await wait(DELAY_MS);
+            return NextResponse.json({
+                status: 'success',
+                processed: newItems.length,
+                lastProcessedRound: currentRound - 1,
+                nextRound: currentRound,
+                message: `Successfully processed ${newItems.length} rounds.`
+            });
         }
-    }
 
-    // 4. Save if we have new items
-    if (newItems.length > 0) {
-        // Merge and Sort just in case
-        const updatedHistory = [...history, ...newItems].sort((a, b) => a.drwNo - b.drwNo);
-        // Deduplicate based on drwNo
-        const uniqueHistory = Array.from(new Map(updatedHistory.map(item => [item.drwNo, item])).values());
-        
-        fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(uniqueHistory, null, 2), 'utf-8');
-        
         return NextResponse.json({
-            status: 'success',
-            processed: newItems.length,
-            lastProcessedRound: currentRound - 1,
-            nextRound: currentRound,
-            message: `Successfully processed ${newItems.length} rounds.`
+            status: 'done',
+            message: 'No new rounds to fetch.',
+            lastRound,
         });
+    } catch (error) {
+        console.error('Update error:', error);
+        return NextResponse.json({ status: 'error', message: String(error) }, { status: 500 });
     }
-
-    return NextResponse.json({
-        status: 'done',
-        message: 'No new rounds to fetch.',
-        lastRound: lastRound
-    });
 }
