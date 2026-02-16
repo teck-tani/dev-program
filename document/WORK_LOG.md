@@ -1,6 +1,6 @@
 # WORK_LOG.md — teck-tani.com 전체 현황 및 전략
 
-> 최종 업데이트: 2026-02-14
+> 최종 업데이트: 2026-02-16
 > 도메인: teck-tani.com | 배포: Vercel | 스택: Next.js 16 + React 19 + Tailwind 4 + next-intl
 
 ---
@@ -73,7 +73,7 @@
 |------|------|----------|-----|---------|
 | 계산기 | /calculator | 기본+공학 계산, 히스토리 | ✅ | 키보드 입력 지원 |
 | 환율 변환기 | /money-converter | 실시간 환율 API, 160+ 통화 | ✅ | exchange-rate API 연동 |
-| 퇴직금 계산기 | /severance-calculator | 퇴직금+세금+DC연금, 2026 세율 | ✅ | SEO 모범 사례, 가장 완성도 높음 |
+| 퇴직금 계산기 | /severance-calculator | 퇴직금+세금+DC연금, 2026 세율 | ✅ | S급 완성: 월급입력+직접입력 토글, 빠른금액추가, 날짜자동포맷+달력, 결과복사/인쇄 |
 | 이자 계산기 | /interest-calculator | 복리/단리, 세금, 월별 테이블, 비교 | ✅ | 1500+줄, 서브컴포넌트화 필요 |
 | 연봉 계산기 | /salary-calculator | 세전→세후, 4대보험 | ✅ | 한국 세법 반영 |
 | 만나이 계산기 | /korean-age-calculator | 만/세는/연나이, 별자리/띠 | ✅ | 2023 만나이법 반영 |
@@ -403,3 +403,4 @@
 |  | — Markdown 미리보기: GFM 체크리스트, 이모지 shortcode(100개), 코드 구문강조(7개 언어), PDF/HTML 내보내기, .md 업로드, TOC 자동생성, LaTeX 수식 |
 |  | — HTML 엔티티 변환기: Named/Decimal/Hex 인코딩 형식 선택, 130+ 엔티티 참조표(entityData.ts), 검색/필터, 8개 유니코드 블록 브라우징 |
 |  | — 공통: src/utils/fileDownload.ts 유틸리티 생성, ko.json/en.json 중복 섹션 정리 |
+| 2026-02-16 | **퇴직금 계산기 S급 업그레이드**: 월급 입력(기본)+직접입력 토글, +100만/+10만 빠른 금액 추가 버튼, 날짜 키보드 8자리 자동포맷(YYYY-MM-DD)+달력 아이콘 클릭, 결과 복사(클립보드)/인쇄 버튼, print CSS |

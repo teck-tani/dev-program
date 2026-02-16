@@ -93,7 +93,10 @@
       "darkMode": "Dark Mode",
       "lapSound": "Lap Sound",
       "vibration": "Vibration",
-      "language": "Language"
+      "language": "Language",
+      "clockMode": "Clock Mode",
+      "analogMode": "Analog",
+      "digitalMode": "Digital"
     }
   },
   "Footer": {
@@ -617,20 +620,20 @@
     },
     "Main": {
       "meta": {
-        "title": "Online Clock - Accurate Server Time to the Second (For Exams/Ticketing)",
-        "description": "Precision 0.01 second online clock optimized for ticketing, exams, and tests. Check server time accurately to the second in real-time. Display multiple world city times simultaneously.",
-        "keywords": "online clock, server time, ticketing clock, exam clock, test clock, precise clock, world time, current time, accurate time, real-time clock",
-        "ogTitle": "Online Clock | Precise Server Time - For Ticketing & Exams",
-        "ogDescription": "The secret to successful ticketing! Check accurate server time down to 0.01 seconds in real-time."
+        "title": "Online Clock - Real-time World Clock & Digital Clock | Exam & Ticketing Timer",
+        "description": "Precision online clock optimized for ticketing, exams, and tests. Check time accurately to the second in real-time. Display 70+ world city times simultaneously with digital segment display.",
+        "keywords": "online clock, world clock, digital clock, ticketing clock, exam clock, test clock, precise clock, world time, current time, accurate time, real-time clock",
+        "ogTitle": "Online Clock | Real-time World Clock - For Ticketing & Exams",
+        "ogDescription": "Check 70+ world city times in real-time with a beautiful digital segment display. Dark mode supported."
       },
       "title": "Online Clock",
       "seo": {
-        "title": "Online Clock - Accurate Server Time to the Second",
-        "desc": "Need accurate time down to the second for ticketing or exams? This online clock displays server time precisely to the millisecond and allows you to check multiple world city times simultaneously. Optimized for concert ticketing, exam practice, and time management.",
+        "title": "Online Clock - Real-time World Clock & Digital Clock",
+        "desc": "Need accurate time down to the second for ticketing or exams? This online clock displays time precisely to the second and allows you to check 70+ world city times simultaneously. Optimized for concert ticketing, exam practice, and time management.",
         "ariaLabel": "Page description",
         "description": {
           "title": "When You Need Precise Time",
-          "p1": "There are moments when you need time accurate to the second - ticketing, exams, important deadlines. This online clock displays server time precisely to the millisecond. With its elegant digital segment design, you can check the time at a glance and compare times across 70+ major cities worldwide simultaneously."
+          "p1": "There are moments when you need time accurate to the second - ticketing, exams, important deadlines. This online clock displays time precisely to the second in real-time. With its elegant digital segment design, you can check the time at a glance and compare times across 70+ major cities worldwide simultaneously."
         },
         "worldTime": {
           "title": "World Time at a Glance",
@@ -639,7 +642,7 @@
         "features": {
           "title": "Key Features",
           "list": {
-            "serverTime": "Second-accurate server time - for precise timing during ticketing",
+            "serverTime": "Second-accurate real-time display - for precise timing during ticketing",
             "exam": "Ideal for important exams like SAT, civil service tests",
             "worldCities": "View current time in 70+ major cities worldwide",
             "timeDiff": "Automatically calculates and displays time differences between cities",
@@ -650,7 +653,7 @@
           }
         },
         "webappFeatures": {
-          "serverTime": "Precise server time to the second",
+          "serverTime": "Precise real-time clock to the second",
           "ticketing": "Clock for ticketing/exams",
           "worldCities": "Display world city times",
           "theme": "Dark/Light theme support",
@@ -665,7 +668,7 @@
             "step1": {
               "num": "1",
               "title": "Check Current Time",
-              "desc": "Upon loading, the precise server-synced current time is displayed to the millisecond in a digital segment display."
+              "desc": "Upon loading, the precise current time is displayed to the second in a digital segment display."
             },
             "step2": {
               "num": "2",
@@ -690,7 +693,7 @@
             "ticketing": {
               "icon": "🎫",
               "title": "Concert & Event Ticketing",
-              "desc": "Start booking at the exact moment with millisecond-accurate server time. Essential for high-demand ticket sales!"
+              "desc": "Start booking at the exact moment with second-accurate real-time display. Essential for high-demand ticket sales!"
             },
             "exam": {
               "icon": "📝",
@@ -748,7 +751,7 @@
           "list": {
             "ticketing": {
               "q": "Can I use this clock for ticketing?",
-              "a": "Yes, this online clock displays server time accurately to the millisecond. You can start booking at the exact time for concerts, musicals, sports events, and more."
+              "a": "Yes, this online clock displays time accurately to the second. You can start booking at the exact time for concerts, musicals, sports events, and more."
             },
             "cityCount": {
               "q": "How many world cities can I add?",
@@ -764,11 +767,11 @@
             },
             "accuracy": {
               "q": "Is the time accurate? Could it differ from my computer clock?",
-              "a": "Yes, this clock is based on NTP-synchronized server time. It uses the median of multiple measurements to minimize network latency, making it more accurate than your computer clock. It automatically re-syncs every 10 minutes."
+              "a": "This clock uses your device's system time. Most devices automatically sync with internet time servers, providing high accuracy. If you need even more precise server time, please use our dedicated 'Server Time' tool."
             },
             "offline": {
               "q": "Does the clock work without internet?",
-              "a": "After the initial load, time is calculated within your browser, so it works even during brief internet interruptions. However, extended offline use may cause slight drift, and it will automatically re-sync when connectivity is restored."
+              "a": "After the initial load, time is calculated within your browser, so the clock works even without internet. However, some features like adding world cities require an internet connection."
             }
           }
         },
@@ -1798,7 +1801,14 @@
       "leaveAllowance": "Annual Leave Allowance",
       "calculate": "Calculate Severance Pay",
       "alertInput": "Please enter join date, resignation date, and 3-month salary total.",
-      "alertPeriod": "Employees with less than 1 year of continuous service are not eligible for severance pay."
+      "alertPeriod": "Employees with less than 1 year of continuous service are not eligible for severance pay.",
+      "modeSimple": "Simple",
+      "modeDetailed": "Detailed",
+      "monthlySalary": "Monthly Salary (Pre-tax)",
+      "monthlySalaryPlaceholder": "Ex: 3,000,000",
+      "monthlySalaryDesc": "* Monthly salary (base + allowances). When same for the last 3 months",
+      "quickAdd100": "+1M",
+      "quickAdd10": "+100K"
     },
     "result": {
       "title": "Estimated Severance Pay",
@@ -1809,7 +1819,10 @@
       "calculating": "Calculating...",
       "year": "yr",
       "months": "mo",
-      "currency": "KRW"
+      "currency": "KRW",
+      "copyResult": "Copy Result",
+      "copied": "Copied!",
+      "printResult": "Print"
     },
     "tax": {
       "incomeTax": "Retirement Income Tax",

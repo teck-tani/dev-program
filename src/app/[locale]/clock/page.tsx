@@ -44,7 +44,7 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
                 url: `${baseUrl}/og/clock.png`,
                 width: 1200,
                 height: 630,
-                alt: isKo ? '온라인 시계 - 초단위 서버시간' : 'Online Clock - Accurate Server Time',
+                alt: isKo ? '온라인 시계 - 실시간 세계시계 & 디지털 시계' : 'Online Clock - Real-time World Clock & Digital Clock',
             }],
         },
         twitter: {
@@ -96,7 +96,7 @@ function generateFaqSchema(locale: string) {
     const faqData = locale === 'ko' ? [
         {
             question: "티켓팅할 때 이 시계를 써도 되나요?",
-            answer: "네, 이 온라인 시계는 서버 시간을 기준으로 밀리초 단위까지 정확하게 표시합니다. 콘서트, 뮤지컬, 스포츠 경기 등 티켓팅 시 정확한 타이밍에 예매를 시작할 수 있습니다."
+            answer: "네, 이 온라인 시계는 초 단위까지 정확하게 시간을 표시합니다. 콘서트, 뮤지컬, 스포츠 경기 등 티켓팅 시 정확한 타이밍에 예매를 시작할 수 있습니다."
         },
         {
             question: "세계 도시 시간은 몇 개까지 추가할 수 있나요?",
@@ -112,16 +112,16 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "시간이 정확한가요? 컴퓨터 시계와 다를 수 있나요?",
-            answer: "네, 이 시계는 서버의 NTP 동기화된 시간을 기준으로 표시합니다. 여러 번 측정한 중앙값을 사용하여 네트워크 지연을 최소화하며, 컴퓨터 시계보다 더 정확합니다. 10분마다 자동으로 재동기화됩니다."
+            answer: "이 시계는 사용 중인 기기의 시스템 시간을 기준으로 표시합니다. 대부분의 기기는 자동으로 인터넷 시간 서버와 동기화되므로 높은 정확도를 제공합니다. 더욱 정밀한 서버 시간이 필요하시면 별도의 '서버 시간' 도구를 이용해 주세요."
         },
         {
             question: "인터넷이 끊겨도 시계가 작동하나요?",
-            answer: "최초 로딩 후에는 브라우저 내에서 시간이 계산되므로 일시적인 인터넷 끊김에도 작동합니다. 다만 장시간 오프라인 시 약간의 오차가 발생할 수 있으며, 인터넷 복구 후 자동으로 재동기화됩니다."
+            answer: "최초 로딩 후에는 브라우저 내에서 시간이 계산되므로 인터넷 없이도 시계가 작동합니다. 다만 세계시계의 도시 추가 등 일부 기능은 인터넷 연결이 필요합니다."
         }
     ] : [
         {
             question: "Can I use this clock for ticketing?",
-            answer: "Yes, this online clock displays server time accurately to the millisecond. You can start booking at the exact time for concerts, musicals, sports events, and more."
+            answer: "Yes, this online clock displays time accurately to the second. You can start booking at the exact time for concerts, musicals, sports events, and more."
         },
         {
             question: "How many world cities can I add?",
@@ -137,11 +137,11 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "Is the time accurate? Could it differ from my computer clock?",
-            answer: "Yes, this clock is based on NTP-synchronized server time. It uses the median of multiple measurements to minimize network latency, making it more accurate than your computer clock. It automatically re-syncs every 10 minutes."
+            answer: "This clock uses your device's system time. Most devices automatically sync with internet time servers, providing high accuracy. If you need even more precise server time, please use our dedicated 'Server Time' tool."
         },
         {
             question: "Does the clock work without internet?",
-            answer: "After the initial load, time is calculated within your browser, so it works even during brief internet interruptions. However, extended offline use may cause slight drift, and it will automatically re-sync when connectivity is restored."
+            answer: "After the initial load, time is calculated within your browser, so the clock works even without internet. However, some features like adding world cities require an internet connection."
         }
     ];
 
@@ -168,13 +168,13 @@ function generateHowToSchema(locale: string) {
         "@type": "HowTo",
         "name": isKo ? "온라인 시계 사용 방법" : "How to Use Online Clock",
         "description": isKo
-            ? "티켓팅과 시험에 필요한 정확한 시간 확인 방법"
-            : "How to check precise time for ticketing and exams",
+            ? "세계시계와 디지털 시계를 활용하는 방법"
+            : "How to use the world clock and digital clock",
         "step": isKo ? [
             {
                 "@type": "HowToStep",
                 "name": "시계 확인",
-                "text": "메인 화면에서 현재 서버 시간을 밀리초 단위까지 정확하게 확인할 수 있습니다."
+                "text": "메인 화면에서 현재 시간을 초 단위까지 디지털 세그먼트로 확인할 수 있습니다."
             },
             {
                 "@type": "HowToStep",
@@ -195,7 +195,7 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "Check Time",
-                "text": "View the current server time accurate to the millisecond on the main screen."
+                "text": "View the current time accurate to the second in a digital segment display on the main screen."
             },
             {
                 "@type": "HowToStep",
@@ -225,10 +225,10 @@ function generateWebAppSchema(locale: string, t: Awaited<ReturnType<typeof getTr
     return {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": isKo ? "온라인 시계 - 서버시간" : "Online Clock - Server Time",
+        "name": isKo ? "온라인 시계 - 세계시계 & 디지털 시계" : "Online Clock - World Clock & Digital Clock",
         "description": isKo
-            ? "티켓팅, 수능 시험에 최적화된 초단위 정밀 온라인 시계. 세계 70개 이상 도시 시간 지원."
-            : "Precise online clock optimized for ticketing and exams. Supports 70+ world city times.",
+            ? "초단위 정밀 온라인 시계. 세계 70개 이상 도시 시간을 디지털 세그먼트 디스플레이로 확인."
+            : "Precise online clock with digital segment display. Supports 70+ world city times.",
         "url": `${baseUrl}/${locale}/clock`,
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Any",

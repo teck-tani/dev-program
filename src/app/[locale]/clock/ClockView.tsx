@@ -72,6 +72,7 @@ interface ClockState {
   mainClock: City;
   subClocks: City[];
   fontSize: number;
+  displayMode: 'digital' | 'analog';
 }
 
 // ============================================
@@ -282,6 +283,101 @@ const DigitalColon: React.FC<ColonProps> = React.memo(({ size, theme }) => {
 DigitalColon.displayName = 'DigitalColon';
 
 // ============================================
+// Analog Clock Component (SVG)
+// ============================================
+interface AnalogClockProps {
+  time: Date;
+  size: number;
+  theme: 'dark' | 'light';
+}
+
+const AnalogClock: React.FC<AnalogClockProps> = React.memo(({ time, size, theme }) => {
+  const hrs = time.getHours() % 12;
+  const min = time.getMinutes();
+  const sec = time.getSeconds();
+
+  const hourDeg = hrs * 30 + min * 0.5;
+  const minDeg = min * 6 + sec * 0.1;
+  const secDeg = sec * 6;
+
+  const isDark = theme === 'dark';
+  const handColor = isDark ? '#e2e8f0' : '#1e293b';
+  const faceBg = isDark ? '#1a2438' : '#ffffff';
+  const faceStroke = isDark ? '#2a3a52' : '#d4d4d4';
+  const numColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.55)';
+  const tickColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const accent = isDark ? '#00ff88' : '#e74c3c';
+
+  const c = 100;
+  const numR = 76;
+
+  const numbers = Array.from({ length: 12 }, (_, i) => {
+    const angle = (i * 30 - 90) * Math.PI / 180;
+    return {
+      n: String(i === 0 ? 12 : i),
+      x: c + numR * Math.cos(angle),
+      y: c + numR * Math.sin(angle) + 1,
+    };
+  });
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" className={styles.analogClock}>
+      {/* Face */}
+      <circle cx={c} cy={c} r={94} fill={faceBg} stroke={faceStroke} strokeWidth="1" />
+
+      {/* Subtle minute ticks */}
+      {Array.from({ length: 60 }, (_, i) => {
+        if (i % 5 === 0) return null;
+        const angle = (i * 6 - 90) * Math.PI / 180;
+        return (
+          <line key={i}
+            x1={c + 88 * Math.cos(angle)} y1={c + 88 * Math.sin(angle)}
+            x2={c + 91 * Math.cos(angle)} y2={c + 91 * Math.sin(angle)}
+            stroke={tickColor} strokeWidth="0.6"
+          />
+        );
+      })}
+
+      {/* Numbers 1–12 */}
+      {numbers.map(({ n, x, y }) => (
+        <text key={n} x={x} y={y} textAnchor="middle" dominantBaseline="central"
+          fill={numColor} fontSize="15" fontWeight="300"
+          style={{ fontFamily: "'Helvetica Neue', 'SF Pro Display', 'Inter', system-ui, sans-serif" }}
+        >{n}</text>
+      ))}
+
+      {/* Hour hand */}
+      <polygon
+        points={`${c - 3.5},${c + 8} ${c + 3.5},${c + 8} ${c + 1.2},${c - 42} ${c - 1.2},${c - 42}`}
+        fill={handColor}
+        transform={`rotate(${hourDeg}, ${c}, ${c})`}
+      />
+
+      {/* Minute hand */}
+      <polygon
+        points={`${c - 2.5},${c + 8} ${c + 2.5},${c + 8} ${c + 0.7},${c - 60} ${c - 0.7},${c - 60}`}
+        fill={handColor}
+        transform={`rotate(${minDeg}, ${c}, ${c})`}
+      />
+
+      {/* Second hand */}
+      <line
+        x1={c} y1={c + 14}
+        x2={c} y2={c - 68}
+        stroke={accent} strokeWidth="0.8" strokeLinecap="round"
+        transform={`rotate(${secDeg}, ${c}, ${c})`}
+      />
+
+      {/* Center dot */}
+      <circle cx={c} cy={c} r="4" fill={handColor} />
+      <circle cx={c} cy={c} r="1.8" fill={accent} />
+    </svg>
+  );
+});
+
+AnalogClock.displayName = 'AnalogClock';
+
+// ============================================
 // Main Clock Display Component
 // ============================================
 interface MainClockProps {
@@ -290,12 +386,14 @@ interface MainClockProps {
   fontSize: number;
   theme: 'dark' | 'light';
   locale: Locale;
+  displayMode: 'digital' | 'analog';
   children?: React.ReactNode;
 }
 
-const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fontSize, theme, locale, children }) => {
+const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fontSize, theme, locale, displayMode, children }) => {
   const { hours, minutes, seconds } = formatTime(time);
   const digitSize = fontSize * 1.8;
+  const analogSize = Math.max(150, Math.min(fontSize * 4.5, 400));
 
   return (
     <div className={`${styles.mainClockContainer} ${styles[theme]}`}>
@@ -311,19 +409,25 @@ const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fon
         </div>
       </div>
 
-      <div className={styles.mainClockTime}>
-        {hours.split('').map((d, i) => (
-          <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
-        <DigitalColon size={digitSize} theme={theme} />
-        {minutes.split('').map((d, i) => (
-          <DigitalDigit key={`m${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
-        <DigitalColon size={digitSize} theme={theme} />
-        {seconds.split('').map((d, i) => (
-          <DigitalDigit key={`s${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
-      </div>
+      {displayMode === 'digital' ? (
+        <div className={styles.mainClockTime}>
+          {hours.split('').map((d, i) => (
+            <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
+          ))}
+          <DigitalColon size={digitSize} theme={theme} />
+          {minutes.split('').map((d, i) => (
+            <DigitalDigit key={`m${i}`} value={d} size={digitSize} theme={theme} />
+          ))}
+          <DigitalColon size={digitSize} theme={theme} />
+          {seconds.split('').map((d, i) => (
+            <DigitalDigit key={`s${i}`} value={d} size={digitSize} theme={theme} />
+          ))}
+        </div>
+      ) : (
+        <div className={styles.analogClockWrapper}>
+          <AnalogClock time={time} size={analogSize} theme={theme} />
+        </div>
+      )}
 
       <div className={styles.mainClockDate} style={{ fontSize: `${fontSize * 0.35}px` }}>
         {formatDate(time, locale)}
@@ -343,15 +447,16 @@ interface SubClockCardProps {
   mainCity: City;
   theme: 'dark' | 'light';
   locale: Locale;
+  displayMode: 'digital' | 'analog';
   onClick: () => void;
   onRemove: () => void;
 }
 
 export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
-  city, time, mainCity, theme, locale, onClick, onRemove
+  city, time, mainCity, theme, locale, displayMode, onClick, onRemove
 }) => {
   const { hours, minutes, seconds } = formatTime(time);
-  const digitSize = 32;
+  const digitSize = 42;
   const timeDiff = getTimeDifference(mainCity.timezone, city.timezone, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale);
   const t = i18n[locale];
@@ -396,17 +501,23 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
       </div>
 
       <div className={styles.subClockTime}>
-        {hours.split('').map((d, i) => (
-          <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
-        <DigitalColon size={digitSize} theme={theme} />
-        {minutes.split('').map((d, i) => (
-          <DigitalDigit key={`m${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
-        <DigitalColon size={digitSize} theme={theme} />
-        {seconds.split('').map((d, i) => (
-          <DigitalDigit key={`s${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
+        {displayMode === 'analog' ? (
+          <AnalogClock time={time} size={110} theme={theme} />
+        ) : (
+          <>
+            {hours.split('').map((d, i) => (
+              <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
+            ))}
+            <DigitalColon size={digitSize} theme={theme} />
+            {minutes.split('').map((d, i) => (
+              <DigitalDigit key={`m${i}`} value={d} size={digitSize} theme={theme} />
+            ))}
+            <DigitalColon size={digitSize} theme={theme} />
+            {seconds.split('').map((d, i) => (
+              <DigitalDigit key={`s${i}`} value={d} size={digitSize} theme={theme} />
+            ))}
+          </>
+        )}
       </div>
 
       <div className={styles.subClockFooter}>
@@ -468,12 +579,14 @@ export default function ClockView() {
     mainClock: DEFAULT_MAIN,
     subClocks: DEFAULT_SUBS,
     fontSize: 50,
+    displayMode: 'digital',
   }));
   const [currentTime, setCurrentTime] = useState<Date>(() => new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [dndReady, setDndReady] = useState(false);
+  const [maxFontSize, setMaxFontSize] = useState(140);
   const isInitializedRef = useRef(false);
 
   // Load state from localStorage (only once)
@@ -492,6 +605,7 @@ export default function ClockView() {
           mainClock,
           subClocks: subClocks.length > 0 ? subClocks : DEFAULT_SUBS,
           fontSize: parsed.fontSize || 50,
+          displayMode: parsed.displayMode === 'analog' ? 'analog' : 'digital',
         });
       } catch (e) {
         console.error('Failed to parse saved state:', e);
@@ -509,6 +623,7 @@ export default function ClockView() {
       mainClockId: state.mainClock.id,
       subClockIds: state.subClocks.map(c => c.id),
       fontSize: state.fontSize,
+      displayMode: state.displayMode,
     };
     localStorage.setItem('worldClockState', JSON.stringify(toSave));
   }, [state]);
@@ -528,6 +643,16 @@ export default function ClockView() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Cap font size to fit screen width (digit total width = fontSize * 7.38 + 48)
+  useEffect(() => {
+    const updateMax = () => {
+      setMaxFontSize(Math.max(20, Math.floor((window.innerWidth - 148) / 7.38)));
+    };
+    updateMax();
+    window.addEventListener('resize', updateMax);
+    return () => window.removeEventListener('resize', updateMax);
+  }, []);
+
   // Fullscreen change listener
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -535,6 +660,18 @@ export default function ClockView() {
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  // Listen for display mode changes from SettingsDropdown
+  useEffect(() => {
+    const handleModeChange = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail === 'analog' || detail === 'digital') {
+        setState(prev => ({ ...prev, displayMode: detail }));
+      }
+    };
+    window.addEventListener('clockDisplayModeChange', handleModeChange);
+    return () => window.removeEventListener('clockDisplayModeChange', handleModeChange);
   }, []);
 
   const handleReorder = useCallback((newSubClocks: City[]) => {
@@ -565,11 +702,11 @@ export default function ClockView() {
   }, []);
 
   const adjustFontSize = useCallback((delta: number) => {
-    setState(prev => ({
-      ...prev,
-      fontSize: Math.min(140, Math.max(30, prev.fontSize + delta)),
-    }));
-  }, []);
+    setState(prev => {
+      const effective = Math.min(prev.fontSize, maxFontSize);
+      return { ...prev, fontSize: Math.min(140, Math.max(20, effective + delta)) };
+    });
+  }, [maxFontSize]);
 
   const existingCityIds = useMemo(() =>
     [state.mainClock.id, ...state.subClocks.map(c => c.id)],
@@ -600,9 +737,10 @@ export default function ClockView() {
         <MainClockDisplay
           city={state.mainClock}
           time={mainClockTime}
-          fontSize={state.fontSize}
+          fontSize={Math.min(state.fontSize, maxFontSize)}
           theme={theme}
           locale={locale}
+          displayMode={state.displayMode}
         >
           <div className={styles.controlPanel}>
             <ControlButton
@@ -640,6 +778,7 @@ export default function ClockView() {
                     mainCity={state.mainClock}
                     theme={theme}
                     locale={locale}
+                    displayMode={state.displayMode}
                     onClick={() => handleSwapToMain(city)}
                     onRemove={() => handleRemoveCity(city.id)}
                   />
@@ -658,6 +797,7 @@ export default function ClockView() {
                 mainCity={state.mainClock}
                 theme={theme}
                 locale={locale}
+                displayMode={state.displayMode}
                 onReorder={handleReorder}
                 onSwapToMain={handleSwapToMain}
                 onRemoveCity={handleRemoveCity}
@@ -676,6 +816,7 @@ export default function ClockView() {
                   mainCity={state.mainClock}
                   theme={theme}
                   locale={locale}
+                  displayMode={state.displayMode}
                   onClick={() => handleSwapToMain(city)}
                   onRemove={() => handleRemoveCity(city.id)}
                 />

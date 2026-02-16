@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import ShareButton from "@/components/ShareButton";
@@ -41,15 +41,24 @@ export default function SeveranceCalculatorClient() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
 
+    // 월급 입력 (기본)
+    const [monthlySalary, setMonthlySalary] = useState("");
+    // 3개월 직접 입력 토글
+    const [useDirectInput, setUseDirectInput] = useState(false);
+    const [baseSalary, setBaseSalary] = useState("");
+
+    // Common inputs
     const [joinDate, setJoinDate] = useState("");
     const [leaveDate, setLeaveDate] = useState("");
-    const [baseSalary, setBaseSalary] = useState("");
     const [annualBonus, setAnnualBonus] = useState("");
     const [annualLeaveAllowance, setAnnualLeaveAllowance] = useState("");
     const [dcReturnRate, setDcReturnRate] = useState("3.0");
     const [result, setResult] = useState<CalcResult | null>(null);
     const [isCalculating, setIsCalculating] = useState(false);
     const [showSteps, setShowSteps] = useState(false);
+    const [copyStatus, setCopyStatus] = useState(false);
+
+    const resultRef = useRef<HTMLDivElement>(null);
 
     // Korean income tax brackets (2026 기준)
     const taxBrackets = [
@@ -82,7 +91,10 @@ export default function SeveranceCalculatorClient() {
     };
 
     const calculateSeverance = () => {
-        if (!joinDate || !leaveDate || !baseSalary) {
+        // Get the 3-month salary based on mode
+        const salary3MonthStr = !useDirectInput ? monthlySalary : baseSalary;
+
+        if (!joinDate || !leaveDate || !salary3MonthStr) {
             alert(tInput('alertInput'));
             return;
         }
@@ -101,7 +113,9 @@ export default function SeveranceCalculatorClient() {
         setIsCalculating(true);
 
         setTimeout(() => {
-            const salary = parseInt(baseSalary.replace(/,/g, "")) || 0;
+            const rawSalary = parseInt(salary3MonthStr.replace(/,/g, "")) || 0;
+            // Simple mode: monthly × 3, Detailed mode: already 3-month total
+            const salary = !useDirectInput ? rawSalary * 3 : rawSalary;
             const bonus = parseInt(annualBonus.replace(/,/g, "")) || 0;
             const leaveAllowance = parseInt(annualLeaveAllowance.replace(/,/g, "")) || 0;
 
@@ -148,8 +162,8 @@ export default function SeveranceCalculatorClient() {
             const netSeverance = grossSeverance - totalTax;
 
             // DC pension calculation
-            const monthlySalary = salary / 3;
-            const dcMonthlyContribution = Math.floor(monthlySalary / 12);
+            const monthlySalaryVal = salary / 3;
+            const dcMonthlyContribution = Math.floor(monthlySalaryVal / 12);
             const dcTotalMonths = Math.floor(totalWorkingDays / 30.44);
             const dcReturnRateNum = parseFloat(dcReturnRate) / 100;
             // Simple compound interest approximation (monthly)
@@ -183,24 +197,128 @@ export default function SeveranceCalculatorClient() {
         }, 400);
     };
 
+    const formatDateInput = (value: string): string => {
+        const nums = value.replace(/[^\d]/g, "").slice(0, 8);
+        if (nums.length <= 4) return nums;
+        if (nums.length <= 6) return `${nums.slice(0, 4)}-${nums.slice(4)}`;
+        return `${nums.slice(0, 4)}-${nums.slice(4, 6)}-${nums.slice(6, 8)}`;
+    };
+
+    // 날짜 입력 핸들러: 끝에서 타이핑 시 자동포맷, 중간 편집 시 구조 유지
+    const handleDateChange = useCallback((
+        e: React.ChangeEvent<HTMLInputElement>,
+        setter: React.Dispatch<React.SetStateAction<string>>
+    ) => {
+        const input = e.target;
+        const value = e.target.value;
+        const pos = input.selectionStart ?? value.length;
+
+        if (pos >= value.length) {
+            setter(formatDateInput(value));
+        } else {
+            const cleaned = value.replace(/[^\d-]/g, "").slice(0, 10);
+            setter(cleaned);
+            requestAnimationFrame(() => {
+                input.setSelectionRange(pos, pos);
+            });
+        }
+    }, []);
+
+    // blur 시 날짜 정규화
+    const handleDateBlur = useCallback((
+        value: string,
+        setter: React.Dispatch<React.SetStateAction<string>>
+    ) => {
+        if (!value) return;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+
+        const parts = value.split('-');
+        if (parts.length === 3) {
+            const y = parts[0].replace(/\D/g, '').padStart(4, '0').slice(0, 4);
+            const m = parts[1].replace(/\D/g, '').padStart(2, '0').slice(0, 2);
+            const d = parts[2].replace(/\D/g, '').padStart(2, '0').slice(0, 2);
+            setter(`${y}-${m}-${d}`);
+            return;
+        }
+
+        const digits = value.replace(/\D/g, '');
+        if (digits.length >= 8) {
+            setter(`${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`);
+        }
+    }, []);
+
     const formatNumber = (value: string) => {
         const num = value.replace(/[^\d]/g, "");
         return num ? parseInt(num).toLocaleString("ko-KR") : "";
     };
 
-    const formatDateInput = (value: string): string => {
-        const nums = value.replace(/[^\d]/g, "");
-        if (nums.length <= 4) return nums;
-        if (nums.length <= 6) return `${nums.slice(0, 4)}-${nums.slice(4)}`;
-        return `${nums.slice(0, 4)}-${nums.slice(4, 6)}-${nums.slice(6, 8)}`;
-    };
+    const addQuickAmount = useCallback((setter: React.Dispatch<React.SetStateAction<string>>, currentValue: string, amount: number) => {
+        const current = parseInt(currentValue.replace(/,/g, "")) || 0;
+        const newValue = current + amount;
+        setter(newValue.toLocaleString("ko-KR"));
+    }, []);
 
     const getShareText = () => {
         if (!result) return '';
         return `💼 ${tResult("netTitle")}\n━━━━━━━━━━━━━━\n${tResult("grossTitle")}: ${result.grossSeverance.toLocaleString("ko-KR")}${tResult("currency")}\n${tTax("totalTax")}: -${result.totalTax.toLocaleString("ko-KR")}${tResult("currency")}\n${tResult("netTitle")}: ${result.netSeverance.toLocaleString("ko-KR")}${tResult("currency")}\n${tResult("servicePeriod")}: ${result.workingYears}${tResult("year")} ${result.workingMonths}${tResult("months")}\n\n📍 teck-tani.com/severance-calculator`;
     };
 
+    const copyResult = useCallback(() => {
+        if (!result) return;
+        const text = `${tResult("grossTitle")}: ${fmtKRW(result.grossSeverance)}${tResult("currency")}\n${tTax("totalTax")}: -${fmtKRW(result.totalTax)}${tResult("currency")}\n${tResult("netTitle")}: ${fmtKRW(result.netSeverance)}${tResult("currency")}\n${tResult("servicePeriod")}: ${result.workingYears}${tResult("year")} ${result.workingMonths}${tResult("months")}`;
+        navigator.clipboard.writeText(text).then(() => {
+            setCopyStatus(true);
+            setTimeout(() => setCopyStatus(false), 2000);
+        });
+    }, [result, tResult, tTax]);
+
+    const printResult = useCallback(() => {
+        window.print();
+    }, []);
+
     const fmtKRW = (n: number) => n.toLocaleString("ko-KR");
+
+    // Quick add button component
+    const QuickButtons = ({ setter, currentValue }: { setter: React.Dispatch<React.SetStateAction<string>>, currentValue: string }) => (
+        <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
+            <button
+                type="button"
+                className="sev-quick-btn"
+                onClick={() => addQuickAmount(setter, currentValue, 1_000_000)}
+                style={{
+                    padding: "4px 10px",
+                    fontSize: "0.75rem",
+                    fontWeight: "600",
+                    color: isDark ? "#94a3b8" : "#64748b",
+                    background: isDark ? "#0f172a" : "#f1f5f9",
+                    border: `1px solid ${isDark ? "#334155" : "#e2e8f0"}`,
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease"
+                }}
+            >
+                {tInput('quickAdd100')}
+            </button>
+            <button
+                type="button"
+                className="sev-quick-btn"
+                onClick={() => addQuickAmount(setter, currentValue, 100_000)}
+                style={{
+                    padding: "4px 10px",
+                    fontSize: "0.75rem",
+                    fontWeight: "600",
+                    color: isDark ? "#94a3b8" : "#64748b",
+                    background: isDark ? "#0f172a" : "#f1f5f9",
+                    border: `1px solid ${isDark ? "#334155" : "#e2e8f0"}`,
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease"
+                }}
+            >
+                {tInput('quickAdd10')}
+            </button>
+        </div>
+    );
 
     return (
         <div style={{ overflowX: 'hidden' }}>
@@ -229,6 +347,22 @@ export default function SeveranceCalculatorClient() {
                 .sev-steps-content {
                     animation: fadeIn 0.3s ease-out;
                     overflow: hidden;
+                }
+                .sev-quick-btn:hover {
+                    background: ${isDark ? '#1e293b' : '#e2e8f0'} !important;
+                    color: ${isDark ? '#e2e8f0' : '#1e293b'} !important;
+                }
+                .sev-copy-btn:hover, .sev-print-btn:hover {
+                    opacity: 0.85;
+                }
+
+                /* 인쇄 시 결과만 표시 */
+                @media print {
+                    body * { visibility: hidden; }
+                    .sev-print-area, .sev-print-area * { visibility: visible; }
+                    .sev-print-area { position: absolute; left: 0; top: 0; width: 100%; }
+                    .sev-no-print { display: none !important; }
+                    .seo-article { display: none !important; }
                 }
 
                 /* 모바일 최적화 */
@@ -315,8 +449,8 @@ export default function SeveranceCalculatorClient() {
                 }
             `}</style>
 
-            {/* Calculator Card - 컴팩트 */}
-            <div className="sev-calc-card" style={{
+            {/* Calculator Card */}
+            <div className="sev-calc-card sev-no-print" style={{
                 background: isDark ? "#1e293b" : "#f8f9fa",
                 padding: "24px",
                 borderRadius: "16px",
@@ -346,51 +480,107 @@ export default function SeveranceCalculatorClient() {
                             <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px" }}>
                                 {tInput('joinDate')}
                             </label>
-                            <input
-                                type="text"
-                                inputMode="numeric"
-                                className="sev-input"
-                                value={joinDate}
-                                onChange={(e) => setJoinDate(formatDateInput(e.target.value))}
-                                placeholder="YYYY-MM-DD"
-                                maxLength={10}
-                                style={{
-                                    width: "100%",
-                                    padding: "12px 14px",
-                                    fontSize: "0.95rem",
-                                    border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
-                                    borderRadius: "10px",
-                                    background: isDark ? "#0f172a" : "white",
-                                    color: isDark ? "#e2e8f0" : "#1f2937",
-                                    outline: "none",
-                                    transition: "all 0.15s ease"
-                                }}
-                            />
+                            <div style={{ position: "relative" }}>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    className="sev-input"
+                                    value={joinDate}
+                                    onChange={(e) => handleDateChange(e, setJoinDate)}
+                                    onBlur={() => handleDateBlur(joinDate, setJoinDate)}
+                                    placeholder="YYYY-MM-DD"
+                                    maxLength={10}
+                                    style={{
+                                        width: "100%",
+                                        padding: "12px 40px 12px 14px",
+                                        fontSize: "0.95rem",
+                                        border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                        borderRadius: "10px",
+                                        background: isDark ? "#0f172a" : "white",
+                                        color: isDark ? "#e2e8f0" : "#1f2937",
+                                        outline: "none",
+                                        transition: "all 0.15s ease"
+                                    }}
+                                />
+                                <input
+                                    type="date"
+                                    className="sev-date-hidden"
+                                    tabIndex={-1}
+                                    value={joinDate}
+                                    onChange={(e) => setJoinDate(e.target.value)}
+                                    style={{
+                                        position: "absolute",
+                                        right: "0",
+                                        top: "0",
+                                        width: "40px",
+                                        height: "100%",
+                                        opacity: 0,
+                                        cursor: "pointer"
+                                    }}
+                                />
+                                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke={isDark ? "#64748b" : "#9ca3af"} strokeWidth={2} style={{
+                                    position: "absolute",
+                                    right: "12px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    pointerEvents: "none"
+                                }}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
                             <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px" }}>
                                 {tInput('leaveDate')}
                             </label>
-                            <input
-                                type="text"
-                                inputMode="numeric"
-                                className="sev-input"
-                                value={leaveDate}
-                                onChange={(e) => setLeaveDate(formatDateInput(e.target.value))}
-                                placeholder="YYYY-MM-DD"
-                                maxLength={10}
-                                style={{
-                                    width: "100%",
-                                    padding: "12px 14px",
-                                    fontSize: "0.95rem",
-                                    border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
-                                    borderRadius: "10px",
-                                    background: isDark ? "#0f172a" : "white",
-                                    color: isDark ? "#e2e8f0" : "#1f2937",
-                                    outline: "none",
-                                    transition: "all 0.15s ease"
-                                }}
-                            />
+                            <div style={{ position: "relative" }}>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    className="sev-input"
+                                    value={leaveDate}
+                                    onChange={(e) => handleDateChange(e, setLeaveDate)}
+                                    onBlur={() => handleDateBlur(leaveDate, setLeaveDate)}
+                                    placeholder="YYYY-MM-DD"
+                                    maxLength={10}
+                                    style={{
+                                        width: "100%",
+                                        padding: "12px 40px 12px 14px",
+                                        fontSize: "0.95rem",
+                                        border: `1.5px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                        borderRadius: "10px",
+                                        background: isDark ? "#0f172a" : "white",
+                                        color: isDark ? "#e2e8f0" : "#1f2937",
+                                        outline: "none",
+                                        transition: "all 0.15s ease"
+                                    }}
+                                />
+                                <input
+                                    type="date"
+                                    className="sev-date-hidden"
+                                    tabIndex={-1}
+                                    value={leaveDate}
+                                    onChange={(e) => setLeaveDate(e.target.value)}
+                                    style={{
+                                        position: "absolute",
+                                        right: "0",
+                                        top: "0",
+                                        width: "40px",
+                                        height: "100%",
+                                        opacity: 0,
+                                        cursor: "pointer"
+                                    }}
+                                />
+                                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke={isDark ? "#64748b" : "#9ca3af"} strokeWidth={2} style={{
+                                    position: "absolute",
+                                    right: "12px",
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                    pointerEvents: "none"
+                                }}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -414,18 +604,75 @@ export default function SeveranceCalculatorClient() {
                         {tInput('salaryInfo') || '급여 정보'}
                     </div>
 
-                    {/* Base Salary */}
-                    <div style={{ marginBottom: "12px" }}>
-                        <label className="sev-label" style={{ display: "block", fontSize: "0.8rem", fontWeight: "500", color: isDark ? "#e2e8f0" : "#374151", marginBottom: "6px" }}>
+                    {/* 급여 입력 모드 세그먼트 토글 */}
+                    <div style={{
+                        display: "flex",
+                        borderRadius: "8px",
+                        background: isDark ? "#1e293b" : "#f1f5f9",
+                        padding: "3px",
+                        marginBottom: "10px",
+                        gap: "2px"
+                    }}>
+                        <button
+                            type="button"
+                            onClick={() => setUseDirectInput(false)}
+                            style={{
+                                flex: 1,
+                                padding: "7px 0",
+                                fontSize: "0.78rem",
+                                fontWeight: !useDirectInput ? "600" : "500",
+                                color: !useDirectInput
+                                    ? (isDark ? "#e2e8f0" : "#1e293b")
+                                    : (isDark ? "#64748b" : "#94a3b8"),
+                                background: !useDirectInput
+                                    ? (isDark ? "#334155" : "white")
+                                    : "transparent",
+                                border: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                                boxShadow: !useDirectInput ? (isDark ? "none" : "0 1px 2px rgba(0,0,0,0.06)") : "none"
+                            }}
+                        >
+                            {tInput('monthlySalary')}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setUseDirectInput(true)}
+                            style={{
+                                flex: 1,
+                                padding: "7px 0",
+                                fontSize: "0.78rem",
+                                fontWeight: useDirectInput ? "600" : "500",
+                                color: useDirectInput
+                                    ? (isDark ? "#e2e8f0" : "#1e293b")
+                                    : (isDark ? "#64748b" : "#94a3b8"),
+                                background: useDirectInput
+                                    ? (isDark ? "#334155" : "white")
+                                    : "transparent",
+                                border: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                                boxShadow: useDirectInput ? (isDark ? "none" : "0 1px 2px rgba(0,0,0,0.06)") : "none"
+                            }}
+                        >
                             {tInput('baseSalary')}
-                        </label>
+                        </button>
+                    </div>
+
+                    {/* 급여 입력 필드 */}
+                    <div style={{ marginBottom: "12px" }}>
                         <div style={{ position: "relative" }}>
                             <input
                                 type="text"
                                 className="sev-input sev-input-main"
-                                value={baseSalary}
-                                onChange={(e) => setBaseSalary(formatNumber(e.target.value))}
-                                placeholder={tInput('baseSalaryPlaceholder')}
+                                value={!useDirectInput ? monthlySalary : baseSalary}
+                                onChange={(e) => {
+                                    const v = formatNumber(e.target.value);
+                                    !useDirectInput ? setMonthlySalary(v) : setBaseSalary(v);
+                                }}
+                                placeholder={!useDirectInput ? tInput('monthlySalaryPlaceholder') : tInput('baseSalaryPlaceholder')}
                                 inputMode="numeric"
                                 style={{
                                     width: "100%",
@@ -451,9 +698,34 @@ export default function SeveranceCalculatorClient() {
                                 fontWeight: "500"
                             }}>{tResult('currency')}</span>
                         </div>
-                        <p className="sev-hint" style={{ fontSize: "0.75rem", color: isDark ? "#64748b" : "#9ca3af", marginTop: "4px" }}>
-                            {tInput('baseSalaryDesc')}
-                        </p>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" }}>
+                            <p className="sev-hint" style={{ fontSize: "0.75rem", color: isDark ? "#64748b" : "#9ca3af", margin: "4px 0 0 0" }}>
+                                {!useDirectInput ? tInput('monthlySalaryDesc') : tInput('baseSalaryDesc')}
+                            </p>
+                            <QuickButtons
+                                setter={!useDirectInput ? setMonthlySalary : setBaseSalary}
+                                currentValue={!useDirectInput ? monthlySalary : baseSalary}
+                            />
+                        </div>
+                        {!useDirectInput && monthlySalary && (
+                            <div style={{
+                                marginTop: "8px",
+                                padding: "6px 12px",
+                                background: isDark ? "#0f172a" : "#eff6ff",
+                                borderRadius: "8px",
+                                border: `1px solid ${isDark ? "#1e3a5f" : "#dbeafe"}`,
+                                fontSize: "0.78rem",
+                                color: isDark ? "#60a5fa" : "#3b82f6",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px"
+                            }}>
+                                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                3{tResult('months')}: {fmtKRW((parseInt(monthlySalary.replace(/,/g, "")) || 0) * 3)}{tResult('currency')}
+                            </div>
+                        )}
                     </div>
 
                     {/* Bonus and Leave Allowance */}
@@ -615,7 +887,7 @@ export default function SeveranceCalculatorClient() {
 
             {/* Result Section */}
             {result !== null && (
-                <>
+                <div ref={resultRef} className="sev-print-area">
                     {/* Main Result Card - Gross & Net */}
                     <div className="sev-result-card" style={{
                         background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)",
@@ -771,6 +1043,100 @@ export default function SeveranceCalculatorClient() {
                         }}>
                             {tResult('disclaimer')}
                         </p>
+                    </div>
+
+                    {/* Copy / Print Buttons */}
+                    <div className="sev-no-print" style={{
+                        display: "flex",
+                        gap: "8px",
+                        marginBottom: "16px",
+                        animation: "popIn 0.45s ease-out"
+                    }}>
+                        <button
+                            type="button"
+                            className="sev-copy-btn"
+                            onClick={copyResult}
+                            style={{
+                                flex: 1,
+                                padding: "10px",
+                                fontSize: "0.85rem",
+                                fontWeight: "600",
+                                color: isDark ? "#e2e8f0" : "#374151",
+                                background: isDark ? "#1e293b" : "#f8f9fa",
+                                border: `1.5px solid ${isDark ? "#334155" : "#e9ecef"}`,
+                                borderRadius: "10px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "6px",
+                                transition: "all 0.15s ease"
+                            }}
+                        >
+                            {copyStatus ? (
+                                <>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#22c55e" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    {tResult('copied')}
+                                </>
+                            ) : (
+                                <>
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    {tResult('copyResult')}
+                                </>
+                            )}
+                        </button>
+                        <button
+                            type="button"
+                            className="sev-print-btn"
+                            onClick={printResult}
+                            style={{
+                                flex: 1,
+                                padding: "10px",
+                                fontSize: "0.85rem",
+                                fontWeight: "600",
+                                color: isDark ? "#e2e8f0" : "#374151",
+                                background: isDark ? "#1e293b" : "#f8f9fa",
+                                border: `1.5px solid ${isDark ? "#334155" : "#e9ecef"}`,
+                                borderRadius: "10px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "6px",
+                                transition: "all 0.15s ease"
+                            }}
+                        >
+                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            {tResult('printResult')}
+                        </button>
+                        <ShareButton
+                            shareText={getShareText()}
+                            shareTitle={t('title')}
+                            disabled={!result}
+                            style={{
+                                flex: 1,
+                                padding: "10px",
+                                fontSize: "0.85rem",
+                                fontWeight: "600",
+                                color: isDark ? "#e2e8f0" : "#374151",
+                                background: isDark ? "#1e293b" : "#f8f9fa",
+                                border: `1.5px solid ${isDark ? "#334155" : "#e9ecef"}`,
+                                borderRadius: "10px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "6px",
+                                transition: "all 0.15s ease"
+                            }}
+                            iconSize={16}
+                        />
                     </div>
 
                     {/* DB/DC Pension Comparison */}
@@ -1140,16 +1506,12 @@ export default function SeveranceCalculatorClient() {
                             </div>
                         )}
                     </div>
-                </>
+                </div>
             )}
 
-            {/* Share Button */}
-            <div style={{ marginBottom: "24px" }}>
-                <ShareButton shareText={getShareText()} disabled={!result} />
-            </div>
 
             {/* SEO Content Section */}
-            <article style={{ maxWidth: '100%', margin: '40px auto 0', lineHeight: '1.7' }}>
+            <article className="sev-no-print" style={{ maxWidth: '100%', margin: '40px auto 0', lineHeight: '1.7' }}>
 
                 {/* 1. 정의 */}
                 <section style={{ marginBottom: '40px' }}>

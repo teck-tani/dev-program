@@ -219,6 +219,101 @@ const DigitalColon: React.FC<ColonProps> = React.memo(({ size, theme }) => {
 DigitalColon.displayName = 'DigitalColon';
 
 // ============================================
+// Analog Clock Component (SVG)
+// ============================================
+interface AnalogClockProps {
+  time: Date;
+  size: number;
+  theme: 'dark' | 'light';
+}
+
+const AnalogClock: React.FC<AnalogClockProps> = React.memo(({ time, size, theme }) => {
+  const hrs = time.getHours() % 12;
+  const min = time.getMinutes();
+  const sec = time.getSeconds();
+
+  const hourDeg = hrs * 30 + min * 0.5;
+  const minDeg = min * 6 + sec * 0.1;
+  const secDeg = sec * 6;
+
+  const isDark = theme === 'dark';
+  const handColor = isDark ? '#e2e8f0' : '#1e293b';
+  const faceBg = isDark ? '#1a2438' : '#ffffff';
+  const faceStroke = isDark ? '#2a3a52' : '#d4d4d4';
+  const numColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.55)';
+  const tickColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const accent = isDark ? '#00ff88' : '#e74c3c';
+
+  const c = 100;
+  const numR = 76;
+
+  const numbers = Array.from({ length: 12 }, (_, i) => {
+    const angle = (i * 30 - 90) * Math.PI / 180;
+    return {
+      n: String(i === 0 ? 12 : i),
+      x: c + numR * Math.cos(angle),
+      y: c + numR * Math.sin(angle) + 1,
+    };
+  });
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" className={styles.analogClock}>
+      {/* Face */}
+      <circle cx={c} cy={c} r={94} fill={faceBg} stroke={faceStroke} strokeWidth="1" />
+
+      {/* Subtle minute ticks */}
+      {Array.from({ length: 60 }, (_, i) => {
+        if (i % 5 === 0) return null;
+        const angle = (i * 6 - 90) * Math.PI / 180;
+        return (
+          <line key={i}
+            x1={c + 88 * Math.cos(angle)} y1={c + 88 * Math.sin(angle)}
+            x2={c + 91 * Math.cos(angle)} y2={c + 91 * Math.sin(angle)}
+            stroke={tickColor} strokeWidth="0.6"
+          />
+        );
+      })}
+
+      {/* Numbers 1–12 */}
+      {numbers.map(({ n, x, y }) => (
+        <text key={n} x={x} y={y} textAnchor="middle" dominantBaseline="central"
+          fill={numColor} fontSize="15" fontWeight="300"
+          style={{ fontFamily: "'Helvetica Neue', 'SF Pro Display', 'Inter', system-ui, sans-serif" }}
+        >{n}</text>
+      ))}
+
+      {/* Hour hand */}
+      <polygon
+        points={`${c - 3.5},${c + 8} ${c + 3.5},${c + 8} ${c + 1.2},${c - 42} ${c - 1.2},${c - 42}`}
+        fill={handColor}
+        transform={`rotate(${hourDeg}, ${c}, ${c})`}
+      />
+
+      {/* Minute hand */}
+      <polygon
+        points={`${c - 2.5},${c + 8} ${c + 2.5},${c + 8} ${c + 0.7},${c - 60} ${c - 0.7},${c - 60}`}
+        fill={handColor}
+        transform={`rotate(${minDeg}, ${c}, ${c})`}
+      />
+
+      {/* Second hand */}
+      <line
+        x1={c} y1={c + 14}
+        x2={c} y2={c - 68}
+        stroke={accent} strokeWidth="0.8" strokeLinecap="round"
+        transform={`rotate(${secDeg}, ${c}, ${c})`}
+      />
+
+      {/* Center dot */}
+      <circle cx={c} cy={c} r="4" fill={handColor} />
+      <circle cx={c} cy={c} r="1.8" fill={accent} />
+    </svg>
+  );
+});
+
+AnalogClock.displayName = 'AnalogClock';
+
+// ============================================
 // Sortable Sub Clock Card
 // ============================================
 interface SortableSubClockCardProps {
@@ -227,13 +322,14 @@ interface SortableSubClockCardProps {
   mainCity: City;
   theme: 'dark' | 'light';
   locale: Locale;
+  displayMode: 'digital' | 'analog';
   onClick: () => void;
   onRemove: () => void;
   getTimeForTimezone: (tz: string) => Date;
 }
 
 const SortableSubClockCard: React.FC<SortableSubClockCardProps> = React.memo(({
-  city, time, mainCity, theme, locale, onClick, onRemove, getTimeForTimezone
+  city, time, mainCity, theme, locale, displayMode, onClick, onRemove, getTimeForTimezone
 }) => {
   const {
     attributes,
@@ -251,7 +347,7 @@ const SortableSubClockCard: React.FC<SortableSubClockCardProps> = React.memo(({
   };
 
   const { hours, minutes, seconds } = formatTime(time);
-  const digitSize = 32;
+  const digitSize = 42;
   const timeDiff = getTimeDifference(mainCity.timezone, city.timezone, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale, getTimeForTimezone);
   const t = i18n[locale];
@@ -299,17 +395,23 @@ const SortableSubClockCard: React.FC<SortableSubClockCardProps> = React.memo(({
       </div>
 
       <div className={styles.subClockTime}>
-        {hours.split('').map((d, i) => (
-          <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
-        <DigitalColon size={digitSize} theme={theme} />
-        {minutes.split('').map((d, i) => (
-          <DigitalDigit key={`m${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
-        <DigitalColon size={digitSize} theme={theme} />
-        {seconds.split('').map((d, i) => (
-          <DigitalDigit key={`s${i}`} value={d} size={digitSize} theme={theme} />
-        ))}
+        {displayMode === 'analog' ? (
+          <AnalogClock time={time} size={110} theme={theme} />
+        ) : (
+          <>
+            {hours.split('').map((d, i) => (
+              <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
+            ))}
+            <DigitalColon size={digitSize} theme={theme} />
+            {minutes.split('').map((d, i) => (
+              <DigitalDigit key={`m${i}`} value={d} size={digitSize} theme={theme} />
+            ))}
+            <DigitalColon size={digitSize} theme={theme} />
+            {seconds.split('').map((d, i) => (
+              <DigitalDigit key={`s${i}`} value={d} size={digitSize} theme={theme} />
+            ))}
+          </>
+        )}
       </div>
 
       <div className={styles.subClockFooter}>
@@ -356,6 +458,7 @@ interface DndWrapperProps {
   mainCity: City;
   theme: 'dark' | 'light';
   locale: Locale;
+  displayMode: 'digital' | 'analog';
   onReorder: (newSubClocks: City[]) => void;
   onSwapToMain: (city: City) => void;
   onRemoveCity: (cityId: string) => void;
@@ -369,6 +472,7 @@ export default function DndWrapper({
   mainCity,
   theme,
   locale,
+  displayMode,
   onReorder,
   onSwapToMain,
   onRemoveCity,
@@ -421,6 +525,7 @@ export default function DndWrapper({
               mainCity={mainCity}
               theme={theme}
               locale={locale}
+              displayMode={displayMode}
               onClick={() => onSwapToMain(city)}
               onRemove={() => onRemoveCity(city.id)}
               getTimeForTimezone={getTimeForTimezone}

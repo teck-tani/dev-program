@@ -1,9 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Link, usePathname } from "@/navigation";
-import { FaTimes, FaSun, FaMoon, FaGlobe } from "react-icons/fa";
+import { FaTimes, FaSun, FaMoon, FaGlobe, FaClock } from "react-icons/fa";
 
 interface SettingsDropdownProps {
   onClose: () => void;
@@ -13,6 +14,39 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
   const t = useTranslations('Header');
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
+
+  const isClockPage = pathname === '/clock';
+  const [clockMode, setClockMode] = useState<'digital' | 'analog'>('digital');
+
+  // Load clock display mode from localStorage
+  useEffect(() => {
+    if (!isClockPage) return;
+    try {
+      const saved = localStorage.getItem('worldClockState');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.displayMode === 'analog') setClockMode('analog');
+      }
+    } catch { /* ignore */ }
+  }, [isClockPage]);
+
+  const toggleClockMode = () => {
+    const newMode = clockMode === 'digital' ? 'analog' : 'digital';
+    setClockMode(newMode);
+
+    // Update localStorage
+    try {
+      const saved = localStorage.getItem('worldClockState');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        parsed.displayMode = newMode;
+        localStorage.setItem('worldClockState', JSON.stringify(parsed));
+      }
+    } catch { /* ignore */ }
+
+    // Dispatch custom event for ClockView to listen
+    window.dispatchEvent(new CustomEvent('clockDisplayModeChange', { detail: newMode }));
+  };
 
   return (
     <>
@@ -47,6 +81,27 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
               </span>
             </button>
           </div>
+
+          {/* 시계 모드 설정 (시계 페이지에서만 표시) */}
+          {isClockPage && (
+            <div className="settings-item">
+              <div className="settings-label">
+                <FaClock />
+                <span>{t('settings.clockMode')}</span>
+              </div>
+              <button
+                className={`settings-toggle ${clockMode === 'analog' ? 'active' : ''}`}
+                onClick={toggleClockMode}
+              >
+                <span className="toggle-track">
+                  <span className="toggle-thumb" />
+                </span>
+                <span className="toggle-label">
+                  {clockMode === 'analog' ? t('settings.analogMode') : t('settings.digitalMode')}
+                </span>
+              </button>
+            </div>
+          )}
 
           {/* 언어 설정 */}
           <div className="settings-item">
