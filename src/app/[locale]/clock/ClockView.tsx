@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useLocale } from 'next-intl';
+import { Link } from '@/navigation';
 import styles from './ClockView.module.css';
 import { CITY_DATABASE, type City } from './CitySearchModal';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -94,6 +95,9 @@ const i18n = {
     removeCity: '도시 삭제',
     dragToReorder: '드래그하여 순서 변경',
     clickToSetMain: '메인으로 설정',
+    stopwatch: '스톱워치',
+    timer: '타이머',
+    alarm: '알람',
   },
   en: {
     addCity: 'Add City',
@@ -109,6 +113,9 @@ const i18n = {
     removeCity: 'Remove city',
     dragToReorder: 'Drag to reorder',
     clickToSetMain: 'Set as main',
+    stopwatch: 'Stopwatch',
+    timer: 'Timer',
+    alarm: 'Alarm',
   }
 };
 
@@ -160,13 +167,22 @@ const formatTime = (date: Date, timeFormat: '24h' | '12h' = '24h'): { hours: str
   };
 };
 
+const getWeekNumber = (date: Date): number => {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+};
+
 const formatDate = (date: Date, locale: Locale): string => {
   const t = i18n[locale];
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
   const dayOfWeek = t.days[date.getDay()];
-  return t.dateFormat(year, month, day, dayOfWeek);
+  const week = getWeekNumber(date);
+  const weekStr = locale === 'ko' ? `(${week}주차)` : `(W${week})`;
+  return `${t.dateFormat(year, month, day, dayOfWeek)} ${weekStr}`;
 };
 
 // Calculate actual timezone offset (accounts for DST)
@@ -202,8 +218,17 @@ const TIMEZONE_ABBR: Record<string, string> = {
   'America/Bogota': 'COT',
 };
 
+const isDST = (timezone: string): boolean => {
+  const jan = new Date(new Date().getFullYear(), 0, 1);
+  const jul = new Date(new Date().getFullYear(), 6, 1);
+  const janOffset = new Date(jan.toLocaleString('en-US', { timeZone: timezone })).getTime() - new Date(jan.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+  const julOffset = new Date(jul.toLocaleString('en-US', { timeZone: timezone })).getTime() - new Date(jul.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+  if (janOffset === julOffset) return false; // DST 없는 지역
+  const nowOffset = new Date(new Date().toLocaleString('en-US', { timeZone: timezone })).getTime() - new Date(new Date().toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+  return nowOffset === Math.max(janOffset, julOffset);
+};
+
 const getTimezoneAbbr = (timezone: string): string => {
-  // DST 적용 시 약어 변경 (미국/캐나다/유럽 등)
   const base = TIMEZONE_ABBR[timezone];
   if (!base) return '';
 
@@ -213,7 +238,6 @@ const getTimezoneAbbr = (timezone: string): string => {
       timeZoneName: 'short',
     }).formatToParts(new Date());
     const intlAbbr = parts.find(p => p.type === 'timeZoneName')?.value || '';
-    // Intl이 실제 약어를 반환하면 사용 (DST 자동 반영: EST→EDT 등)
     if (intlAbbr && !intlAbbr.startsWith('GMT')) return intlAbbr;
   } catch { /* ignore */ }
 
@@ -526,6 +550,7 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
   const timeDiff = getTimeDifference(mainCity.timezone, city.timezone, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale);
   const tzAbbr = getTimezoneAbbr(city.timezone);
+  const cityDST = isDST(city.timezone);
   const t = i18n[locale];
   const cityName = getCityName(city, locale);
 
@@ -563,7 +588,10 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
           <div className={styles.subClockCity}>
             <FlagImage countryCode={city.countryCode} size={18} /> {cityName}
           </div>
-          <div className={styles.subClockCountry}>{city.countryCode} {getCountryName(city, locale)}</div>
+          <div className={styles.subClockCountry}>
+            {city.countryCode} {getCountryName(city, locale)}
+            {cityDST && <span className={styles.dstBadge}>DST</span>}
+          </div>
         </div>
       </div>
 
@@ -919,6 +947,28 @@ export default function ClockView() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Related Tools */}
+        <div className={styles.relatedTools}>
+          <Link href="/stopwatch" className={`${styles.relatedToolBtn} ${styles[theme]}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/><path d="M12 2v3"/>
+            </svg>
+            {t.stopwatch}
+          </Link>
+          <Link href="/timer" className={`${styles.relatedToolBtn} ${styles[theme]}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 2h4"/><path d="M12 14V10"/><circle cx="12" cy="14" r="8"/>
+            </svg>
+            {t.timer}
+          </Link>
+          <Link href="/alarm" className={`${styles.relatedToolBtn} ${styles[theme]}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+            </svg>
+            {t.alarm}
+          </Link>
         </div>
 
       </div>

@@ -165,6 +165,67 @@
   margin-right: 4px;
 }
 
+.dstBadge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  margin-left: 4px;
+  border-radius: 3px;
+  vertical-align: middle;
+  letter-spacing: 0.03em;
+}
+
+.dark .dstBadge {
+  background: rgba(250, 204, 21, 0.2);
+  color: #facc15;
+}
+
+.light .dstBadge {
+  background: rgba(234, 179, 8, 0.15);
+  color: #b45309;
+}
+
+.relatedTools {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.relatedToolBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.dark.relatedToolBtn {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dark.relatedToolBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.light.relatedToolBtn {
+  background: rgba(0, 0, 0, 0.04);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.light.relatedToolBtn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
+}
+
 .mainClockDate {
   font-weight: 500;
 }

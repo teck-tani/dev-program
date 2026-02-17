@@ -138,6 +138,16 @@ const TIMEZONE_ABBR: Record<string, string> = {
   'America/Bogota': 'COT',
 };
 
+const isDST = (timezone: string): boolean => {
+  const jan = new Date(new Date().getFullYear(), 0, 1);
+  const jul = new Date(new Date().getFullYear(), 6, 1);
+  const janOffset = new Date(jan.toLocaleString('en-US', { timeZone: timezone })).getTime() - new Date(jan.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+  const julOffset = new Date(jul.toLocaleString('en-US', { timeZone: timezone })).getTime() - new Date(jul.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+  if (janOffset === julOffset) return false;
+  const nowOffset = new Date(new Date().toLocaleString('en-US', { timeZone: timezone })).getTime() - new Date(new Date().toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+  return nowOffset === Math.max(janOffset, julOffset);
+};
+
 const getTimezoneAbbr = (timezone: string): string => {
   const base = TIMEZONE_ABBR[timezone];
   if (!base) return '';
@@ -412,6 +422,7 @@ const SortableSubClockCard: React.FC<SortableSubClockCardProps> = React.memo(({
   const timeDiff = getTimeDifference(mainCity.timezone, city.timezone, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale, getTimeForTimezone);
   const tzAbbr = getTimezoneAbbr(city.timezone);
+  const cityDST = isDST(city.timezone);
   const t = i18n[locale];
   const cityName = getCityName(city, locale);
 
@@ -452,7 +463,10 @@ const SortableSubClockCard: React.FC<SortableSubClockCardProps> = React.memo(({
           <div className={styles.subClockCity}>
             <FlagImage countryCode={city.countryCode} size={18} /> {cityName}
           </div>
-          <div className={styles.subClockCountry}>{city.countryCode} {getCountryName(city, locale)}</div>
+          <div className={styles.subClockCountry}>
+            {city.countryCode} {getCountryName(city, locale)}
+            {cityDST && <span className={styles.dstBadge}>DST</span>}
+          </div>
         </div>
       </div>
 
