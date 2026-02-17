@@ -17,8 +17,9 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
 
   const isClockPage = pathname === '/clock';
   const [clockMode, setClockMode] = useState<'digital' | 'analog'>('digital');
+  const [timeFormat, setTimeFormat] = useState<'24h' | '12h'>('24h');
 
-  // Load clock display mode from localStorage
+  // Load clock settings from localStorage
   useEffect(() => {
     if (!isClockPage) return;
     try {
@@ -26,6 +27,7 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.displayMode === 'analog') setClockMode('analog');
+        if (parsed.timeFormat === '12h') setTimeFormat('12h');
       }
     } catch { /* ignore */ }
   }, [isClockPage]);
@@ -34,7 +36,6 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
     const newMode = clockMode === 'digital' ? 'analog' : 'digital';
     setClockMode(newMode);
 
-    // Update localStorage
     try {
       const saved = localStorage.getItem('worldClockState');
       if (saved) {
@@ -44,8 +45,23 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
       }
     } catch { /* ignore */ }
 
-    // Dispatch custom event for ClockView to listen
     window.dispatchEvent(new CustomEvent('clockDisplayModeChange', { detail: newMode }));
+  };
+
+  const toggleTimeFormat = () => {
+    const newFormat = timeFormat === '24h' ? '12h' : '24h';
+    setTimeFormat(newFormat);
+
+    try {
+      const saved = localStorage.getItem('worldClockState');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        parsed.timeFormat = newFormat;
+        localStorage.setItem('worldClockState', JSON.stringify(parsed));
+      }
+    } catch { /* ignore */ }
+
+    window.dispatchEvent(new CustomEvent('clockTimeFormatChange', { detail: newFormat }));
   };
 
   return (
@@ -84,23 +100,43 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
 
           {/* 시계 모드 설정 (시계 페이지에서만 표시) */}
           {isClockPage && (
-            <div className="settings-item">
-              <div className="settings-label">
-                <FaClock />
-                <span>{t('settings.clockMode')}</span>
+            <>
+              <div className="settings-item">
+                <div className="settings-label">
+                  <FaClock />
+                  <span>{t('settings.clockMode')}</span>
+                </div>
+                <button
+                  className={`settings-toggle ${clockMode === 'analog' ? 'active' : ''}`}
+                  onClick={toggleClockMode}
+                >
+                  <span className="toggle-track">
+                    <span className="toggle-thumb" />
+                  </span>
+                  <span className="toggle-label">
+                    {clockMode === 'analog' ? t('settings.analogMode') : t('settings.digitalMode')}
+                  </span>
+                </button>
               </div>
-              <button
-                className={`settings-toggle ${clockMode === 'analog' ? 'active' : ''}`}
-                onClick={toggleClockMode}
-              >
-                <span className="toggle-track">
-                  <span className="toggle-thumb" />
-                </span>
-                <span className="toggle-label">
-                  {clockMode === 'analog' ? t('settings.analogMode') : t('settings.digitalMode')}
-                </span>
-              </button>
-            </div>
+
+              <div className="settings-item">
+                <div className="settings-label">
+                  <FaClock />
+                  <span>{t('settings.timeFormat')}</span>
+                </div>
+                <button
+                  className={`settings-toggle ${timeFormat === '12h' ? 'active' : ''}`}
+                  onClick={toggleTimeFormat}
+                >
+                  <span className="toggle-track">
+                    <span className="toggle-thumb" />
+                  </span>
+                  <span className="toggle-label">
+                    {timeFormat === '12h' ? t('settings.12hMode') : t('settings.24hMode')}
+                  </span>
+                </button>
+              </div>
+            </>
           )}
 
           {/* 언어 설정 */}

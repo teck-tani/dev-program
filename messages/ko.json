@@ -96,7 +96,10 @@
       "language": "언어",
       "clockMode": "시계 모드",
       "analogMode": "아날로그",
-      "digitalMode": "디지털"
+      "digitalMode": "디지털",
+      "timeFormat": "시간 형식",
+      "24hMode": "24시간",
+      "12hMode": "12시간"
     }
   },
   "Footer": {

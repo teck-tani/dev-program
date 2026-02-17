@@ -96,7 +96,10 @@
       "language": "Language",
       "clockMode": "Clock Mode",
       "analogMode": "Analog",
-      "digitalMode": "Digital"
+      "digitalMode": "Digital",
+      "timeFormat": "Time Format",
+      "24hMode": "24H",
+      "12hMode": "12H"
     }
   },
   "Footer": {

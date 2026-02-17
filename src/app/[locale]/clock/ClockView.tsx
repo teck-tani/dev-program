@@ -73,6 +73,7 @@ interface ClockState {
   subClocks: City[];
   fontSize: number;
   displayMode: 'digital' | 'analog';
+  timeFormat: '24h' | '12h';
 }
 
 // ============================================
@@ -147,11 +148,15 @@ const getTimeForTimezone = (timezone: string): Date => {
   );
 };
 
-const formatTime = (date: Date): { hours: string; minutes: string; seconds: string } => {
+const formatTime = (date: Date, timeFormat: '24h' | '12h' = '24h'): { hours: string; minutes: string; seconds: string; period?: string } => {
+  const h = date.getHours();
   return {
-    hours: date.getHours().toString().padStart(2, '0'),
+    hours: timeFormat === '12h'
+      ? (h % 12 || 12).toString().padStart(2, '0')
+      : h.toString().padStart(2, '0'),
     minutes: date.getMinutes().toString().padStart(2, '0'),
     seconds: date.getSeconds().toString().padStart(2, '0'),
+    ...(timeFormat === '12h' ? { period: h < 12 ? 'AM' : 'PM' } : {}),
   };
 };
 
@@ -300,12 +305,15 @@ const AnalogClock: React.FC<AnalogClockProps> = React.memo(({ time, size, theme 
   const minDeg = min * 6 + sec * 0.1;
   const secDeg = sec * 6;
 
+  // 소형 시계(서브 시계)일 때 눈금/선 굵기 보정
+  const scale = size < 150 ? 200 / size : 1;
+
   const isDark = theme === 'dark';
   const handColor = isDark ? '#e2e8f0' : '#1e293b';
   const faceBg = isDark ? '#1a2438' : '#ffffff';
   const faceStroke = isDark ? '#2a3a52' : '#d4d4d4';
   const numColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.55)';
-  const tickColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const tickColor = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.2)';
   const accent = isDark ? '#00ff88' : '#e74c3c';
 
   const c = 100;
@@ -325,15 +333,27 @@ const AnalogClock: React.FC<AnalogClockProps> = React.memo(({ time, size, theme 
       {/* Face */}
       <circle cx={c} cy={c} r={94} fill={faceBg} stroke={faceStroke} strokeWidth="1" />
 
-      {/* Subtle minute ticks */}
+      {/* Hour ticks (5분 단위 굵은 눈금) */}
+      {Array.from({ length: 12 }, (_, i) => {
+        const angle = (i * 30 - 90) * Math.PI / 180;
+        return (
+          <line key={`h${i}`}
+            x1={c + 85 * Math.cos(angle)} y1={c + 85 * Math.sin(angle)}
+            x2={c + 91 * Math.cos(angle)} y2={c + 91 * Math.sin(angle)}
+            stroke={handColor} strokeWidth={1.5 * scale} strokeLinecap="round"
+          />
+        );
+      })}
+
+      {/* Minute ticks (1분 단위 얇은 눈금) */}
       {Array.from({ length: 60 }, (_, i) => {
         if (i % 5 === 0) return null;
         const angle = (i * 6 - 90) * Math.PI / 180;
         return (
-          <line key={i}
+          <line key={`m${i}`}
             x1={c + 88 * Math.cos(angle)} y1={c + 88 * Math.sin(angle)}
             x2={c + 91 * Math.cos(angle)} y2={c + 91 * Math.sin(angle)}
-            stroke={tickColor} strokeWidth="0.6"
+            stroke={tickColor} strokeWidth={0.6 * scale}
           />
         );
       })}
@@ -387,11 +407,12 @@ interface MainClockProps {
   theme: 'dark' | 'light';
   locale: Locale;
   displayMode: 'digital' | 'analog';
+  timeFormat: '24h' | '12h';
   children?: React.ReactNode;
 }
 
-const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fontSize, theme, locale, displayMode, children }) => {
-  const { hours, minutes, seconds } = formatTime(time);
+const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fontSize, theme, locale, displayMode, timeFormat, children }) => {
+  const { hours, minutes, seconds, period } = formatTime(time, timeFormat);
   const digitSize = fontSize * 1.8;
   const analogSize = Math.max(150, Math.min(fontSize * 4.5, 400));
 
@@ -411,6 +432,7 @@ const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fon
 
       {displayMode === 'digital' ? (
         <div className={styles.mainClockTime}>
+          {period && <span className={styles.ampm} style={{ fontSize: `${digitSize * 0.28}px` }}>{period}</span>}
           {hours.split('').map((d, i) => (
             <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
           ))}
@@ -448,14 +470,15 @@ interface SubClockCardProps {
   theme: 'dark' | 'light';
   locale: Locale;
   displayMode: 'digital' | 'analog';
+  timeFormat: '24h' | '12h';
   onClick: () => void;
   onRemove: () => void;
 }
 
 export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
-  city, time, mainCity, theme, locale, displayMode, onClick, onRemove
+  city, time, mainCity, theme, locale, displayMode, timeFormat, onClick, onRemove
 }) => {
-  const { hours, minutes, seconds } = formatTime(time);
+  const { hours, minutes, seconds, period } = formatTime(time, timeFormat);
   const digitSize = 42;
   const timeDiff = getTimeDifference(mainCity.timezone, city.timezone, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale);
@@ -505,6 +528,7 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
           <AnalogClock time={time} size={110} theme={theme} />
         ) : (
           <>
+            {period && <span className={styles.ampmSub}>{period}</span>}
             {hours.split('').map((d, i) => (
               <DigitalDigit key={`h${i}`} value={d} size={digitSize} theme={theme} />
             ))}
@@ -580,6 +604,7 @@ export default function ClockView() {
     subClocks: DEFAULT_SUBS,
     fontSize: 50,
     displayMode: 'digital',
+    timeFormat: '24h',
   }));
   const [currentTime, setCurrentTime] = useState<Date>(() => new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -606,6 +631,7 @@ export default function ClockView() {
           subClocks: subClocks.length > 0 ? subClocks : DEFAULT_SUBS,
           fontSize: parsed.fontSize || 50,
           displayMode: parsed.displayMode === 'analog' ? 'analog' : 'digital',
+          timeFormat: parsed.timeFormat === '12h' ? '12h' : '24h',
         });
       } catch (e) {
         console.error('Failed to parse saved state:', e);
@@ -624,6 +650,7 @@ export default function ClockView() {
       subClockIds: state.subClocks.map(c => c.id),
       fontSize: state.fontSize,
       displayMode: state.displayMode,
+      timeFormat: state.timeFormat,
     };
     localStorage.setItem('worldClockState', JSON.stringify(toSave));
   }, [state]);
@@ -672,6 +699,18 @@ export default function ClockView() {
     };
     window.addEventListener('clockDisplayModeChange', handleModeChange);
     return () => window.removeEventListener('clockDisplayModeChange', handleModeChange);
+  }, []);
+
+  // Listen for time format changes from SettingsDropdown
+  useEffect(() => {
+    const handleFormatChange = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail === '24h' || detail === '12h') {
+        setState(prev => ({ ...prev, timeFormat: detail }));
+      }
+    };
+    window.addEventListener('clockTimeFormatChange', handleFormatChange);
+    return () => window.removeEventListener('clockTimeFormatChange', handleFormatChange);
   }, []);
 
   const handleReorder = useCallback((newSubClocks: City[]) => {
@@ -741,6 +780,7 @@ export default function ClockView() {
           theme={theme}
           locale={locale}
           displayMode={state.displayMode}
+          timeFormat={state.timeFormat}
         >
           <div className={styles.controlPanel}>
             <ControlButton
@@ -779,6 +819,7 @@ export default function ClockView() {
                     theme={theme}
                     locale={locale}
                     displayMode={state.displayMode}
+                    timeFormat={state.timeFormat}
                     onClick={() => handleSwapToMain(city)}
                     onRemove={() => handleRemoveCity(city.id)}
                   />
@@ -798,6 +839,7 @@ export default function ClockView() {
                 theme={theme}
                 locale={locale}
                 displayMode={state.displayMode}
+                timeFormat={state.timeFormat}
                 onReorder={handleReorder}
                 onSwapToMain={handleSwapToMain}
                 onRemoveCity={handleRemoveCity}
@@ -817,6 +859,7 @@ export default function ClockView() {
                   theme={theme}
                   locale={locale}
                   displayMode={state.displayMode}
+                  timeFormat={state.timeFormat}
                   onClick={() => handleSwapToMain(city)}
                   onRemove={() => handleRemoveCity(city.id)}
                 />
