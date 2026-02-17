@@ -177,6 +177,49 @@ const getActualOffset = (timezone: string): number => {
   return (tzDate.getTime() - utcDate.getTime()) / (1000 * 60 * 60);
 };
 
+const TIMEZONE_ABBR: Record<string, string> = {
+  'Asia/Seoul': 'KST', 'Asia/Tokyo': 'JST', 'Asia/Shanghai': 'CST',
+  'Asia/Hong_Kong': 'HKT', 'Asia/Taipei': 'CST', 'Asia/Singapore': 'SGT',
+  'Asia/Bangkok': 'ICT', 'Asia/Ho_Chi_Minh': 'ICT', 'Asia/Jakarta': 'WIB',
+  'Asia/Kuala_Lumpur': 'MYT', 'Asia/Manila': 'PHT', 'Asia/Kolkata': 'IST',
+  'Asia/Dubai': 'GST', 'Asia/Riyadh': 'AST', 'Asia/Qatar': 'AST',
+  'Asia/Jerusalem': 'IST', 'Asia/Ulaanbaatar': 'ULAT', 'Asia/Almaty': 'ALMT',
+  'Asia/Tashkent': 'UZT', 'Asia/Vladivostok': 'VLAT',
+  'Australia/Sydney': 'AEST', 'Australia/Melbourne': 'AEST',
+  'Australia/Brisbane': 'AEST', 'Pacific/Auckland': 'NZST',
+  'Pacific/Guam': 'ChST', 'Pacific/Honolulu': 'HST',
+  'Europe/London': 'GMT', 'Europe/Paris': 'CET', 'Europe/Berlin': 'CET',
+  'Europe/Amsterdam': 'CET', 'Europe/Zurich': 'CET', 'Europe/Rome': 'CET',
+  'Europe/Madrid': 'CET', 'Europe/Brussels': 'CET', 'Europe/Moscow': 'MSK',
+  'Europe/Istanbul': 'TRT',
+  'Africa/Cairo': 'EET', 'Africa/Johannesburg': 'SAST',
+  'Africa/Nairobi': 'EAT', 'Africa/Lagos': 'WAT',
+  'America/New_York': 'EST', 'America/Toronto': 'EST',
+  'America/Chicago': 'CST', 'America/Denver': 'MST',
+  'America/Los_Angeles': 'PST', 'America/Vancouver': 'PST',
+  'America/Mexico_City': 'CST', 'America/Sao_Paulo': 'BRT',
+  'America/Argentina/Buenos_Aires': 'ART', 'America/Santiago': 'CLT',
+  'America/Bogota': 'COT',
+};
+
+const getTimezoneAbbr = (timezone: string): string => {
+  // DST 적용 시 약어 변경 (미국/캐나다/유럽 등)
+  const base = TIMEZONE_ABBR[timezone];
+  if (!base) return '';
+
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: timezone,
+      timeZoneName: 'short',
+    }).formatToParts(new Date());
+    const intlAbbr = parts.find(p => p.type === 'timeZoneName')?.value || '';
+    // Intl이 실제 약어를 반환하면 사용 (DST 자동 반영: EST→EDT 등)
+    if (intlAbbr && !intlAbbr.startsWith('GMT')) return intlAbbr;
+  } catch { /* ignore */ }
+
+  return base;
+};
+
 const getTimeDifference = (mainTimezone: string, targetTimezone: string, locale: Locale): string => {
   const t = i18n[locale];
   const mainOffset = getActualOffset(mainTimezone);
@@ -425,7 +468,7 @@ const MainClockDisplay: React.FC<MainClockProps> = React.memo(({ city, time, fon
             <FlagImage countryCode={city.countryCode} size={Math.round(fontSize * 0.55)} /> {getCityName(city, locale)}
           </div>
           <div className={styles.mainClockCountry} style={{ fontSize: `${fontSize * 0.28}px` }}>
-            {city.countryCode} {getCountryName(city, locale)}
+            {city.countryCode} {getCountryName(city, locale)} <span className={styles.tzAbbrMain}>{getTimezoneAbbr(city.timezone)}</span>
           </div>
         </div>
       </div>
@@ -482,6 +525,7 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
   const digitSize = 42;
   const timeDiff = getTimeDifference(mainCity.timezone, city.timezone, locale);
   const dayStatus = getDayStatus(mainCity.timezone, city.timezone, locale);
+  const tzAbbr = getTimezoneAbbr(city.timezone);
   const t = i18n[locale];
   const cityName = getCityName(city, locale);
 
@@ -548,7 +592,10 @@ export const SubClockCard: React.FC<SubClockCardProps> = React.memo(({
         <span className={`${styles.dayStatus} ${dayStatus === t.today ? styles.today : styles.other}`}>
           {dayStatus}
         </span>
-        <span className={styles.timeDiff}>{timeDiff}</span>
+        <span className={styles.timeDiff}>
+          {tzAbbr && <span className={styles.tzAbbr}>{tzAbbr}</span>}
+          {timeDiff}
+        </span>
       </div>
 
       {/* Set as main button */}
@@ -718,11 +765,10 @@ export default function ClockView() {
   }, []);
 
   const handleSwapToMain = useCallback((city: City) => {
-    setState(prev => ({
-      ...prev,
-      mainClock: city,
-      subClocks: [prev.mainClock, ...prev.subClocks.filter(c => c.id !== city.id)],
-    }));
+    setState(prev => {
+      const newSubClocks = prev.subClocks.map(c => c.id === city.id ? prev.mainClock : c);
+      return { ...prev, mainClock: city, subClocks: newSubClocks };
+    });
     window.scrollTo({ top: 0 });
   }, []);
 

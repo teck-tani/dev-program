@@ -152,6 +152,19 @@
   color: #475569;
 }
 
+.tzAbbrMain {
+  font-weight: 600;
+  opacity: 0.6;
+  margin-left: 2px;
+}
+
+.tzAbbr {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.65;
+  margin-right: 4px;
+}
+
 .mainClockDate {
   font-weight: 500;
 }
