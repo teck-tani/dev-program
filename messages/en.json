@@ -1507,9 +1507,10 @@
       "nonTaxableDesc": "* Meals up to 200,000 KRW are non-taxable",
       "dependents": "Dependents (Inc. Self)",
       "children": "Children (8-20 yrs)",
-      "calculate": "Calculate Net Income",
-      "calculating": "Calculating...",
-      "alertSalary": "Please enter your salary."
+      "modeReverse": "Reverse",
+      "targetNet": "Target Monthly Net Pay",
+      "targetNetPlaceholder": "Ex: 3,000,000",
+      "reset": "Reset"
     },
     "result": {
       "title": "Pay Details",
@@ -1527,7 +1528,8 @@
       "currency": "KRW",
       "netRate": "Net Rate",
       "chartNet": "Net",
-      "chartDeduction": "Deduction"
+      "chartDeduction": "Deduction",
+      "requiredSalary": "Required Annual Salary"
     },
     "info": {
       "title": "Deduction Items Explained",
@@ -1554,6 +1556,14 @@
         "severance": {
           "q": "Q. Difference between Severance Excluded/Included?",
           "a": "If 'Included', annual salary is divided by 13 (12 for monthly pay, 1 for severance). So monthly net pay is lower than 'Excluded' (salary / 12)."
+        },
+        "pensionCap": {
+          "q": "Q. Is there a cap on National Pension?",
+          "a": "Yes, as of 2026, National Pension has a monthly income cap of 5.9 million KRW. Even if your monthly salary exceeds 5.9M KRW, the max pension contribution is based on 5.9M KRW (265,500 KRW)."
+        },
+        "reverse": {
+          "q": "Q. How do I use the reverse calculation?",
+          "a": "Select 'Reverse' in input mode, then enter your desired monthly net salary. The calculator will automatically determine the required gross annual salary. Useful for salary negotiations."
         }
       }
     },
@@ -1570,15 +1580,60 @@
         "title": "2026 Insurance Rates",
         "p1": "Employee contribution rates for 2026: National Pension 4.5%, Health Insurance 3.545%, Long-term Care Insurance 12.27% of Health Insurance, Employment Insurance 0.9%. The employer also contributes the same rates (except for employment insurance), so the total contribution is doubled."
       },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "feat1": {
+            "title": "Real-time Auto Calculation",
+            "desc": "Insurance, tax, and net pay are calculated instantly as you type. No button needed — results update automatically on every input change."
+          },
+          "feat2": {
+            "title": "Reverse Calculation",
+            "desc": "Enter your desired monthly net pay and the calculator automatically determines the required gross annual salary. Perfect for salary negotiations."
+          },
+          "feat3": {
+            "title": "2026 Latest Rates",
+            "desc": "Reflects 2026 rates: National Pension (4.5%), Health Insurance (3.545%), Long-term Care (12.27%), Employment Insurance (0.9%), and 8-bracket income tax."
+          },
+          "feat4": {
+            "title": "Insurance Caps Applied",
+            "desc": "National Pension monthly income cap (5.9M KRW) is applied, ensuring accurate deductions even for high-income earners."
+          },
+          "feat5": {
+            "title": "Visual Salary Analysis",
+            "desc": "Donut chart shows net vs. deduction ratio at a glance, with animated numbers for intuitive result tracking."
+          }
+        }
+      },
       "howto": {
         "title": "How to Use",
         "steps": {
-          "step1": "Enter your gross annual salary (e.g., 36,000,000 KRW)",
-          "step2": "Select whether severance pay is included in your salary",
-          "step3": "Enter non-taxable amount like meal allowance (up to 200,000 KRW/month)",
-          "step4": "Select the number of dependents including yourself",
-          "step5": "Add children aged 8-20 if applicable",
-          "step6": "Click calculate to see your monthly net salary"
+          "step1": "<strong>Select Input Mode</strong> — Choose between Annual, Monthly, or Reverse (target net pay) mode.",
+          "step2": "<strong>Enter Amount</strong> — Enter your gross salary or desired net pay. Results calculate automatically as you type.",
+          "step3": "<strong>Select Severance Option</strong> — Choose whether severance pay is included or separate from salary.",
+          "step4": "<strong>Set Non-taxable & Dependents</strong> — Enter non-taxable amount and number of dependents including children.",
+          "step5": "<strong>View Results</strong> — See the full breakdown of insurance, tax deductions, and net salary in real-time."
+        }
+      },
+      "usecases": {
+        "title": "Use Cases",
+        "list": {
+          "uc1": {
+            "title": "Salary Negotiation Prep",
+            "desc": "Calculate net pay for different salary offers, or use reverse mode to find the required gross salary for your target take-home pay."
+          },
+          "uc2": {
+            "title": "First Job Planning",
+            "desc": "Before starting your first job, see exactly how much will be deposited into your account to plan your living expenses."
+          },
+          "uc3": {
+            "title": "Raise Impact Comparison",
+            "desc": "Compare net pay before and after a raise to understand the real increase. Tax brackets can affect the actual benefit."
+          },
+          "uc4": {
+            "title": "Severance Option Comparison",
+            "desc": "Toggle between included/excluded severance to see how the same salary yields different monthly net pay."
+          }
         }
       },
       "tips": {
@@ -1601,6 +1656,35 @@
           "r8": { "annual": "70M KRW", "monthly": "~4.55M KRW" },
           "r9": { "annual": "80M KRW", "monthly": "~5.10M KRW" },
           "r10": { "annual": "100M KRW", "monthly": "~6.20M KRW" }
+        }
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "list": {
+          "q1": {
+            "q": "What is non-taxable income?",
+            "a": "Salary items exempt from tax. Examples include meal allowance (up to 200,000 KRW/month), car allowance, and childcare allowance. Higher non-taxable amounts mean lower taxes and higher net pay."
+          },
+          "q2": {
+            "q": "What's the difference between severance excluded and included?",
+            "a": "With 'included' severance, total annual salary is divided by 13: 12 for monthly pay and 1 for severance. Same salary with 'included' severance results in lower monthly net pay."
+          },
+          "q3": {
+            "q": "What are the 4 major insurances?",
+            "a": "National Pension (4.5%), Health Insurance (3.545%), Long-term Care Insurance (12.27% of health), and Employment Insurance (0.9%). Both employee and employer share the contribution."
+          },
+          "q4": {
+            "q": "Is there a cap on National Pension?",
+            "a": "Yes, as of 2026, National Pension has a monthly income cap of 5.9 million KRW. Even if your salary exceeds this, the maximum pension contribution is 265,500 KRW."
+          },
+          "q5": {
+            "q": "What is the net pay for a 30M KRW salary?",
+            "a": "For a 30 million KRW annual salary, after deducting insurances and taxes, monthly net pay is approximately 2.2 million KRW. Exact amount varies by dependents and non-taxable items."
+          },
+          "q6": {
+            "q": "How do I use the reverse calculation?",
+            "a": "Select 'Reverse' in input mode, then enter your desired monthly net pay. The calculator determines the required gross annual salary automatically. Useful for salary negotiations."
+          }
         }
       },
       "privacy": {
@@ -1649,7 +1733,8 @@
       "alertInput": "Please enter all values.",
       "errorPrincipal": "Please enter an amount",
       "errorRate": "Please enter an interest rate",
-      "errorPeriod": "Please enter a period"
+      "errorPeriod": "Please enter a period",
+      "errorEarlyMonth": "Withdrawal month must be between 1 and the deposit period"
     },
     "result": {
       "title": "Calculation Result (Net)",
@@ -1696,7 +1781,24 @@
       "penaltyDesc": "50% of agreed rate",
       "estimatedAmount": "Estimated Amount",
       "loss": "Estimated Loss",
-      "lossVsMaturity": "Loss vs Maturity"
+      "lossVsMaturity": "Loss vs Maturity",
+      "earlyPrincipal": "Principal Deposited",
+      "earlyInterest": "Early Withdrawal Interest (Pre-tax)",
+      "earlyTax": "Interest Tax",
+      "penaltyRate": "Applied Rate"
+    },
+    "reverse": {
+      "enable": "Goal Reverse",
+      "targetAmount": "Target Amount",
+      "targetPlaceholder": "0",
+      "resultTitle": "Reverse Calculation Result",
+      "requiredDeposit": "Required Deposit",
+      "requiredMonthly": "Required Monthly Deposit",
+      "totalPrincipal": "Total Principal",
+      "totalInterest": "Interest Earned (Pre-tax)",
+      "tax": "Interest Tax",
+      "targetReached": "Target Amount",
+      "desc": "Calculate the amount needed to reach your savings goal"
     },
     "info": {
       "title": "Simple vs Compound Interest?",

@@ -59,7 +59,7 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
     };
 }
 
-// FAQ 구조화 데이터 생성
+// FAQ 구조화 데이터 생성 (6개)
 function generateFaqSchema(locale: string) {
     const faqData = locale === 'ko' ? [
         {
@@ -68,19 +68,23 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "퇴직금 별도/포함의 차이는 무엇인가요?",
-            answer: "'퇴직금 포함' 연봉제는 연봉 총액을 13으로 나누어 12는 월급으로, 1은 퇴직금으로 적립하는 방식입니다. 따라서 같은 연봉이라도 '퇴직금 포함'인 경우 월 실수령액이 더 적습니다."
+            answer: "'퇴직금 포함' 연봉제는 연봉 총액을 13으로 나누어 12는 월급으로, 1은 퇴직금으로 적립하는 방식입니다. 같은 연봉이라도 '퇴직금 포함'인 경우 월 실수령액이 더 적습니다."
         },
         {
             question: "4대보험이란 무엇인가요?",
             answer: "국민연금(4.5%), 건강보험(3.545%), 장기요양보험(건강보험의 12.27%), 고용보험(0.9%)을 합쳐 4대보험이라고 합니다. 근로자와 회사가 각각 일정 비율을 부담합니다."
         },
         {
+            question: "국민연금 상한액이 있나요?",
+            answer: "네, 2026년 기준 국민연금은 월 소득 590만원을 상한으로 적용됩니다. 월급이 590만원을 넘어도 국민연금 보험료는 590만원 기준(265,500원)이 최대입니다."
+        },
+        {
             question: "연봉 3000만원의 실수령액은 얼마인가요?",
             answer: "연봉 3000만원 기준, 4대보험과 세금을 제외하면 월 실수령액은 약 220만원 내외입니다. 부양가족 수, 비과세액 등에 따라 다소 차이가 있습니다."
         },
         {
-            question: "연봉 4000만원의 실수령액은 얼마인가요?",
-            answer: "연봉 4000만원 기준, 4대보험과 세금을 제외하면 월 실수령액은 약 285만원 내외입니다. 정확한 금액은 개인 상황에 따라 달라집니다."
+            question: "역산 기능은 어떻게 사용하나요?",
+            answer: "입력 방식에서 '역산'을 선택한 후 희망하는 월 실수령액을 입력하면, 해당 금액을 받기 위해 필요한 세전 연봉이 자동으로 계산됩니다. 연봉 협상이나 이직 시 유용합니다."
         }
     ] : [
         {
@@ -96,12 +100,16 @@ function generateFaqSchema(locale: string) {
             answer: "The 4 major insurances are National Pension (4.5%), Health Insurance (3.545%), Long-term Care Insurance (12.27% of Health Insurance), and Employment Insurance (0.9%). Both employees and employers share the contribution."
         },
         {
+            question: "Is there a cap on National Pension contributions?",
+            answer: "Yes, as of 2026, National Pension has a monthly income cap of 5.9 million KRW. Even if your monthly salary exceeds 5.9 million KRW, the maximum pension contribution is based on 5.9 million KRW (265,500 KRW)."
+        },
+        {
             question: "What is the net pay for a 30M KRW annual salary?",
             answer: "With a 30 million KRW annual salary, after deducting 4 major insurances and taxes, the estimated monthly net pay is approximately 2.2 million KRW. The exact amount may vary depending on the number of dependents and non-taxable items."
         },
         {
-            question: "What is the net pay for a 40M KRW annual salary?",
-            answer: "With a 40 million KRW annual salary, after deducting 4 major insurances and taxes, the estimated monthly net pay is approximately 2.85 million KRW. The exact amount depends on individual circumstances."
+            question: "How do I use the reverse calculation feature?",
+            answer: "Select 'Reverse' in the input mode, then enter your desired monthly net salary. The calculator will automatically determine the required gross annual salary. This is useful for salary negotiations and job changes."
         }
     ];
 
@@ -119,7 +127,7 @@ function generateFaqSchema(locale: string) {
     };
 }
 
-// HowTo 구조화 데이터 생성
+// HowTo 구조화 데이터 생성 (자동 계산 반영)
 function generateHowToSchema(locale: string) {
     const isKo = locale === 'ko';
 
@@ -133,8 +141,13 @@ function generateHowToSchema(locale: string) {
         "step": isKo ? [
             {
                 "@type": "HowToStep",
-                "name": "연봉 입력",
-                "text": "세전 연봉 금액을 입력합니다. 계약서에 명시된 연봉을 입력하세요."
+                "name": "입력 방식 선택",
+                "text": "연봉, 월급, 역산(희망 실수령액) 중 원하는 입력 방식을 선택합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "금액 입력",
+                "text": "세전 연봉/월급 또는 희망 실수령액을 입력합니다. 입력 즉시 결과가 자동 계산됩니다."
             },
             {
                 "@type": "HowToStep",
@@ -143,24 +156,24 @@ function generateHowToSchema(locale: string) {
             },
             {
                 "@type": "HowToStep",
-                "name": "비과세액 입력",
-                "text": "식대 등 비과세 항목의 월 금액을 입력합니다. 기본값은 20만원입니다."
+                "name": "비과세액·부양가족 설정",
+                "text": "식대 등 비과세액과 본인 포함 부양가족 수, 자녀 수를 입력합니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "부양가족 수 설정",
-                "text": "본인을 포함한 부양가족 수와 8세 이상 20세 이하 자녀 수를 입력합니다."
-            },
-            {
-                "@type": "HowToStep",
-                "name": "계산 결과 확인",
-                "text": "계산하기 버튼을 누르면 4대보험료, 소득세, 지방소득세와 함께 월 실수령액이 표시됩니다."
+                "name": "결과 확인",
+                "text": "4대보험, 소득세, 지방소득세 공제 내역과 월 실수령액을 확인합니다. 도넛 차트로 비율도 확인 가능합니다."
             }
         ] : [
             {
                 "@type": "HowToStep",
-                "name": "Enter Annual Salary",
-                "text": "Enter your gross annual salary as stated in your contract."
+                "name": "Select Input Mode",
+                "text": "Choose between Annual Salary, Monthly Salary, or Reverse (target net pay) mode."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Enter Amount",
+                "text": "Enter your gross salary or desired net pay. Results are calculated automatically as you type."
             },
             {
                 "@type": "HowToStep",
@@ -169,18 +182,13 @@ function generateHowToSchema(locale: string) {
             },
             {
                 "@type": "HowToStep",
-                "name": "Enter Non-taxable Amount",
-                "text": "Enter monthly non-taxable items like meal allowance. Default is 200,000 KRW."
-            },
-            {
-                "@type": "HowToStep",
-                "name": "Set Dependents",
-                "text": "Enter the number of dependents including yourself and children aged 8-20."
+                "name": "Set Non-taxable and Dependents",
+                "text": "Enter non-taxable amount (e.g., meal allowance) and number of dependents including children."
             },
             {
                 "@type": "HowToStep",
                 "name": "View Results",
-                "text": "Click calculate to see 4 major insurance deductions, income tax, and monthly net salary."
+                "text": "See the full breakdown of 4 major insurance deductions, income tax, and monthly net salary with a donut chart."
             }
         ]
     };
@@ -207,23 +215,25 @@ function generateWebAppSchema(locale: string) {
         },
         "featureList": isKo
             ? [
-                "4대보험 자동 계산 (국민연금, 건강보험, 장기요양, 고용보험)",
+                "실시간 자동 계산 (입력 즉시 결과 표시)",
+                "역산 기능 (희망 실수령액 → 필요 연봉)",
+                "4대보험 자동 계산 (국민연금 상한선 반영)",
                 "2026년 최신 세율 적용",
                 "퇴직금 포함/별도 선택",
                 "부양가족 공제 반영",
-                "비과세액 설정",
-                "실시간 계산 결과"
+                "도넛 차트 시각화"
             ]
             : [
-                "Auto-calculate 4 major insurances",
+                "Real-time auto-calculation",
+                "Reverse calculation (target net → required salary)",
+                "4 major insurances with pension cap",
                 "2026 latest tax rates",
                 "Severance pay options",
                 "Dependent deduction support",
-                "Non-taxable amount settings",
-                "Real-time calculation"
+                "Donut chart visualization"
             ],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "softwareVersion": "1.0"
+        "softwareVersion": "2.0"
     };
 }
 
@@ -242,7 +252,10 @@ function generateSalaryTableSchema(locale: string) {
 }
 
 const salaryTableRowKeys = ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10'] as const;
-const howToStepKeys = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6'] as const;
+const howToStepKeys = ['step1', 'step2', 'step3', 'step4', 'step5'] as const;
+const featureKeys = ['feat1', 'feat2', 'feat3', 'feat4', 'feat5'] as const;
+const usecaseKeys = ['uc1', 'uc2', 'uc3', 'uc4'] as const;
+const faqKeys = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6'] as const;
 
 export default async function SalaryCalculatorPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
@@ -277,41 +290,69 @@ export default async function SalaryCalculatorPage(props: { params: Promise<{ lo
             <PayCalClient />
 
             {/* SEO Content Section (SSR) */}
-            <article className="calc-article" aria-label={t('seo.ariaLabel')}>
-                <section className="calc-section">
-                    <h2 className="calc-section-title">{t('seo.description.title')}</h2>
-                    <p className="calc-section-desc">{t('seo.description.p1')}</p>
+            <article className="seo-article">
+                {/* 1. Description */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.description.title')}</h2>
+                    <p className="seo-text">{t('seo.description.p1')}</p>
                 </section>
 
-                <section className="calc-section">
-                    <h2 className="calc-section-title">{t('seo.insurance.title')}</h2>
-                    <p className="calc-section-desc">{t('seo.insurance.p1')}</p>
+                {/* 2. Features (NEW) */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.features.title')}</h2>
+                    <div className="seo-card-grid">
+                        {featureKeys.map((key) => (
+                            <div key={key} className="seo-card">
+                                <h3 className="seo-card-title">{t(`seo.features.list.${key}.title`)}</h3>
+                                <p className="seo-card-desc">{t(`seo.features.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
                 </section>
 
-                <section className="calc-section">
-                    <h2 className="calc-section-title">{t('seo.howto.title')}</h2>
-                    <ol className="calc-instruction-list">
+                {/* 3. Insurance Rates */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.insurance.title')}</h2>
+                    <p className="seo-text">{t('seo.insurance.p1')}</p>
+                </section>
+
+                {/* 4. How to Use */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.howto.title')}</h2>
+                    <ol className="seo-howto-list">
                         {howToStepKeys.map((key) => (
-                            <li key={key}>{t(`seo.howto.steps.${key}`)}</li>
+                            <li key={key} dangerouslySetInnerHTML={{ __html: t.raw(`seo.howto.steps.${key}`) }} />
                         ))}
                     </ol>
                 </section>
 
-                <section className="calc-section">
-                    <h2 className="calc-section-title">{t('seo.tips.title')}</h2>
-                    <p className="calc-section-desc">{t('seo.tips.p1')}</p>
+                {/* 5. Use Cases (NEW) */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.usecases.title')}</h2>
+                    <div className="seo-card-grid">
+                        {usecaseKeys.map((key) => (
+                            <div key={key} className="seo-card">
+                                <h3 className="seo-card-title">{t(`seo.usecases.list.${key}.title`)}</h3>
+                                <p className="seo-card-desc">{t(`seo.usecases.list.${key}.desc`)}</p>
+                            </div>
+                        ))}
+                    </div>
                 </section>
 
-                {/* 연봉별 실수령액표 */}
-                <section className="calc-section">
-                    <h2 className="calc-section-title">{t('seo.salaryTable.title')}</h2>
-                    <p className="calc-section-desc" style={{ fontSize: '0.9rem' }}>{t('seo.salaryTable.desc')}</p>
+                {/* 6. Tips */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.tips.title')}</h2>
+                    <p className="seo-text">{t('seo.tips.p1')}</p>
+                </section>
+
+                {/* 7. Salary Table */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.salaryTable.title')}</h2>
+                    <p className="seo-text" style={{ fontSize: '0.9rem' }}>{t('seo.salaryTable.desc')}</p>
                     <div className="paycal-salary-table" style={{ overflowX: 'auto', marginTop: '16px' }}>
                         <table style={{
-                            width: '100%',
-                            borderCollapse: 'collapse',
-                            borderRadius: '8px',
-                            overflow: 'hidden'
+                            width: '100%', borderCollapse: 'collapse',
+                            borderRadius: '8px', overflow: 'hidden'
                         }}>
                             <thead>
                                 <tr className="paycal-table-head">
@@ -335,10 +376,21 @@ export default async function SalaryCalculatorPage(props: { params: Promise<{ lo
                     </div>
                 </section>
 
-                {/* 개인정보 안내 */}
-                <section className="calc-section">
-                    <h2 className="calc-section-title">{t('seo.privacy.title')}</h2>
-                    <p className="calc-section-desc">{t('seo.privacy.text')}</p>
+                {/* 8. FAQ (NEW - SSR) */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.faq.title')}</h2>
+                    {faqKeys.map((key) => (
+                        <details key={key} className="seo-faq-item">
+                            <summary>{t(`seo.faq.list.${key}.q`)}</summary>
+                            <p>{t(`seo.faq.list.${key}.a`)}</p>
+                        </details>
+                    ))}
+                </section>
+
+                {/* 9. Privacy */}
+                <section className="seo-section">
+                    <h2 className="seo-section-title">{t('seo.privacy.title')}</h2>
+                    <p className="seo-text">{t('seo.privacy.text')}</p>
                 </section>
             </article>
         </>

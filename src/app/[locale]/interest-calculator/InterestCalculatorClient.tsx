@@ -302,7 +302,7 @@ export default function InterestCalculatorClient() {
     const tResult = useTranslations('InterestCalculator.result');
     const tMonthly = useTranslations('InterestCalculator.monthlyTable');
     const tEarlyWithdraw = useTranslations('InterestCalculator.earlyWithdraw');
-    const tCompare = useTranslations('InterestCalculator.compare');
+    const tReverse = useTranslations('InterestCalculator.reverse');
     const tInfo = useTranslations('InterestCalculator.info');
     const tTips = useTranslations('InterestCalculator.tips');
     const tFaq = useTranslations('InterestCalculator.faq');
@@ -326,13 +326,29 @@ export default function InterestCalculatorClient() {
         tax: number;
         afterTaxInterest: number;
         totalAmount: number;
+        earlyWithdraw?: {
+            principal: number;
+            interest: number;
+            tax: number;
+            estimatedAmount: number;
+            loss: number;
+            lossPercent: number;
+            penaltyRate: number;
+        };
+        reverseCalc?: {
+            requiredAmount: number;
+            totalPrincipal: number;
+            totalInterest: number;
+            tax: number;
+            targetAmount: number;
+        };
     } | null>(null);
     const [isCalculating, setIsCalculating] = useState(false);
     const [copied, setCopied] = useState(false);
-    const [compareMode, setCompareMode] = useState(false);
+    const [calcMode, setCalcMode] = useState<"normal" | "reverse">("normal");
     const [earlyWithdrawEnabled, setEarlyWithdrawEnabled] = useState(false);
     const [earlyWithdrawMonth, setEarlyWithdrawMonth] = useState("");
-    const [errors, setErrors] = useState<{ principal?: boolean; rate?: boolean; period?: boolean }>({});
+    const [errors, setErrors] = useState<{ principal?: boolean; rate?: boolean; period?: boolean; earlyMonth?: boolean }>({});
     const principalRef = useRef<HTMLDivElement>(null);
     const periodRef = useRef<HTMLDivElement>(null);
     const rateRef = useRef<HTMLDivElement>(null);
@@ -346,17 +362,45 @@ export default function InterestCalculatorClient() {
         }
     };
 
+    // Helper: calculate interest for given params
+    const calcInterest = (p: number, r: number, n: number, depositType: string, intType: string) => {
+        let totalInterest = 0;
+        let totalPrincipal = 0;
+        if (depositType === "deposit") {
+            totalPrincipal = p;
+            if (intType === "simple") {
+                totalInterest = p * r * (n / 12);
+            } else {
+                totalInterest = p * Math.pow(1 + r / 12, n) - p;
+            }
+        } else {
+            totalPrincipal = p * n;
+            if (intType === "simple") {
+                totalInterest = p * n * (n + 1) / 2 * (r / 12);
+            } else {
+                totalInterest = p * ((Math.pow(1 + r / 12, n + 1) - (1 + r / 12)) / (r / 12)) - (p * n);
+            }
+        }
+        return { totalPrincipal, totalInterest };
+    };
+
     const calculateInterest = () => {
         const p = parseInt(principal.replace(/,/g, "")) || 0;
         const rRaw = parseFloat(rate);
         const r = isNaN(rRaw) ? 0 : rRaw / 100;
         const n = parseInt(period) || 0;
+        const m = parseInt(earlyWithdrawMonth) || 0;
 
-        const newErrors = {
+        const newErrors: { principal?: boolean; rate?: boolean; period?: boolean; earlyMonth?: boolean } = {
             principal: p === 0,
             rate: isNaN(rRaw) || rRaw === 0,
             period: n === 0,
         };
+
+        if (earlyWithdrawEnabled && calcMode === "normal") {
+            newErrors.earlyMonth = m <= 0 || m >= n;
+        }
+
         setErrors(newErrors);
 
         if (newErrors.principal || newErrors.rate || newErrors.period) {
@@ -365,32 +409,88 @@ export default function InterestCalculatorClient() {
             return;
         }
 
+        if (newErrors.earlyMonth) return;
+
         setIsCalculating(true);
 
         setTimeout(() => {
-            let totalInterest = 0;
-            let totalPrincipal = 0;
+            const taxRate = getTaxRate();
 
-            if (type === "deposit") {
-                totalPrincipal = p;
-                if (interestType === "simple") {
-                    totalInterest = p * r * (n / 12);
+            // === 역산 모드 ===
+            if (calcMode === "reverse") {
+                const target = p; // 역산 모드에서는 principal 입력이 목표금액
+                let requiredAmount = 0;
+
+                if (type === "deposit") {
+                    if (interestType === "simple") {
+                        // target = P + P*r*(n/12)*(1-taxRate) → P = target / (1 + r*(n/12)*(1-taxRate))
+                        requiredAmount = target / (1 + r * (n / 12) * (1 - taxRate));
+                    } else {
+                        // target = P + (P*(1+r/12)^n - P)*(1-taxRate) = P*(1 + ((1+r/12)^n - 1)*(1-taxRate))
+                        const compoundFactor = Math.pow(1 + r / 12, n) - 1;
+                        requiredAmount = target / (1 + compoundFactor * (1 - taxRate));
+                    }
                 } else {
-                    totalInterest = p * Math.pow(1 + r / 12, n) - p;
+                    if (interestType === "simple") {
+                        // target = P*n + P*n*(n+1)/2*(r/12)*(1-taxRate)
+                        // target = P * (n + n*(n+1)/2*(r/12)*(1-taxRate))
+                        const factor = n + n * (n + 1) / 2 * (r / 12) * (1 - taxRate);
+                        requiredAmount = target / factor;
+                    } else {
+                        // target = P*n + (P*((1+r/12)^(n+1)-(1+r/12))/(r/12) - P*n)*(1-taxRate)
+                        const compoundSum = (Math.pow(1 + r / 12, n + 1) - (1 + r / 12)) / (r / 12);
+                        const factor = n + (compoundSum - n) * (1 - taxRate);
+                        requiredAmount = target / factor;
+                    }
                 }
-            } else {
-                totalPrincipal = p * n;
-                if (interestType === "simple") {
-                    totalInterest = p * n * (n + 1) / 2 * (r / 12);
-                } else {
-                    totalInterest = p * ((Math.pow(1 + r / 12, n + 1) - (1 + r / 12)) / (r / 12)) - (p * n);
-                }
+
+                requiredAmount = Math.ceil(requiredAmount);
+                const { totalPrincipal, totalInterest } = calcInterest(requiredAmount, r, n, type, interestType);
+                const tax = totalInterest * taxRate;
+
+                setResult({
+                    totalPrincipal,
+                    beforeTaxInterest: Math.round(totalInterest),
+                    tax: Math.round(tax),
+                    afterTaxInterest: Math.round(totalInterest - tax),
+                    totalAmount: Math.round(totalPrincipal + totalInterest - tax),
+                    reverseCalc: {
+                        requiredAmount,
+                        totalPrincipal,
+                        totalInterest: Math.round(totalInterest),
+                        tax: Math.round(tax),
+                        targetAmount: target,
+                    },
+                });
+
+                setIsCalculating(false);
+                return;
             }
 
-            const taxRate = getTaxRate();
+            // === 일반 모드 ===
+            const { totalPrincipal, totalInterest } = calcInterest(p, r, n, type, interestType);
             const tax = totalInterest * taxRate;
             const afterTaxInterest = totalInterest - tax;
             const totalAmount = totalPrincipal + afterTaxInterest;
+
+            // 중도해지 계산
+            let earlyWithdrawResult: typeof result extends null ? never : NonNullable<typeof result>['earlyWithdraw'] = undefined;
+            if (earlyWithdrawEnabled && m > 0 && m < n) {
+                const penaltyRate = r * 0.5;
+                const { totalPrincipal: earlyPrincipal, totalInterest: earlyInterest } = calcInterest(p, penaltyRate, m, type, interestType);
+                const earlyTax = earlyInterest * taxRate;
+                const earlyAmount = earlyPrincipal + earlyInterest - earlyTax;
+
+                earlyWithdrawResult = {
+                    principal: earlyPrincipal,
+                    interest: Math.round(earlyInterest),
+                    tax: Math.round(earlyTax),
+                    estimatedAmount: Math.round(earlyAmount),
+                    loss: Math.round(totalAmount - earlyAmount),
+                    lossPercent: totalAmount > 0 ? Math.round((totalAmount - earlyAmount) / totalAmount * 10000) / 100 : 0,
+                    penaltyRate: rRaw * 0.5,
+                };
+            }
 
             setResult({
                 totalPrincipal,
@@ -398,6 +498,7 @@ export default function InterestCalculatorClient() {
                 tax: Math.round(tax),
                 afterTaxInterest: Math.round(afterTaxInterest),
                 totalAmount: Math.round(totalAmount),
+                earlyWithdraw: earlyWithdrawResult,
             });
 
             setIsCalculating(false);
@@ -539,7 +640,7 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                 marginBottom: "24px",
                 border: `1px solid ${isDark ? "#334155" : "#e9ecef"}`,
             }}>
-                {/* Early Withdraw Toggle */}
+                {/* Mode Toggle Buttons */}
                 <div style={{
                     display: 'flex',
                     gap: '8px',
@@ -548,19 +649,46 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                 }}>
                     <button
                         onClick={() => setEarlyWithdrawEnabled(!earlyWithdrawEnabled)}
+                        disabled={calcMode === "reverse"}
                         style={{
                             padding: '8px 16px',
-                            background: earlyWithdrawEnabled ? (isDark ? '#334155' : '#e2e8f0') : 'transparent',
+                            background: earlyWithdrawEnabled && calcMode === "normal" ? (isDark ? '#334155' : '#e2e8f0') : 'transparent',
                             border: `1px solid ${isDark ? '#475569' : '#cbd5e1'}`,
                             borderRadius: '8px',
                             fontSize: '0.85rem',
                             fontWeight: '600',
                             color: isDark ? '#e2e8f0' : '#475569',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
+                            cursor: calcMode === "reverse" ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.2s',
+                            opacity: calcMode === "reverse" ? 0.4 : 1,
                         }}
                     >
                         {tEarlyWithdraw('enable')}
+                    </button>
+                    <button
+                        onClick={() => {
+                            const newMode = calcMode === "reverse" ? "normal" : "reverse";
+                            setCalcMode(newMode);
+                            if (newMode === "reverse") {
+                                setEarlyWithdrawEnabled(false);
+                            }
+                            setResult(null);
+                        }}
+                        style={{
+                            padding: '8px 16px',
+                            background: calcMode === "reverse"
+                                ? 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%)'
+                                : 'transparent',
+                            border: `1px solid ${calcMode === "reverse" ? '#2d5a87' : (isDark ? '#475569' : '#cbd5e1')}`,
+                            borderRadius: '8px',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            color: calcMode === "reverse" ? '#fff' : (isDark ? '#e2e8f0' : '#475569'),
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        {tReverse('enable')}
                     </button>
                 </div>
 
@@ -806,7 +934,9 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                         marginBottom: "8px",
                         letterSpacing: "0.01em",
                     }}>
-                        {type === "deposit" ? tInput('principalDeposit') : tInput('principalSavings')}
+                        {calcMode === "reverse"
+                            ? tReverse('targetAmount')
+                            : type === "deposit" ? tInput('principalDeposit') : tInput('principalSavings')}
                     </label>
                     <div style={{ position: "relative" as const }}>
                         <input
@@ -964,12 +1094,15 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 type="number"
                                 inputMode="numeric"
                                 value={earlyWithdrawMonth}
-                                onChange={(e) => setEarlyWithdrawMonth(e.target.value)}
+                                onChange={(e) => {
+                                    setEarlyWithdrawMonth(e.target.value);
+                                    if (errors.earlyMonth) setErrors(prev => ({ ...prev, earlyMonth: false }));
+                                }}
                                 placeholder="0"
                                 style={{
                                     width: "100%",
                                     padding: "14px 55px 14px 16px",
-                                    border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                    border: `2px solid ${errors.earlyMonth ? "#ef4444" : (isDark ? "#334155" : "#e5e7eb")}`,
                                     borderRadius: "14px",
                                     fontSize: "1rem",
                                     transition: "all 0.2s ease",
@@ -991,11 +1124,14 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                                 pointerEvents: "none" as const,
                             }}>{tInput('periodSuffix')}</span>
                         </div>
-                        <p style={{
-                            fontSize: '0.75rem',
-                            color: isDark ? '#64748b' : '#9ca3af',
-                            marginTop: '4px'
-                        }}>{tEarlyWithdraw('penaltyDesc')}</p>
+                        {errors.earlyMonth
+                            ? <p style={{ color: "#ef4444", fontSize: "0.8rem", marginTop: "6px", fontWeight: "500" }}>{tInput('errorEarlyMonth')}</p>
+                            : <p style={{
+                                fontSize: '0.75rem',
+                                color: isDark ? '#64748b' : '#9ca3af',
+                                marginTop: '4px'
+                            }}>{tEarlyWithdraw('penaltyDesc')}</p>
+                        }
                     </div>
                 )}
 
@@ -1041,8 +1177,8 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                 </button>
             </div>
 
-            {/* Result Card */}
-            {result && (
+            {/* Result Card — normal mode only */}
+            {result && calcMode === "normal" && (
                 <div className="interest-result-card" style={{
                     background: "linear-gradient(145deg, #1e3a5f 0%, #162d4a 50%, #0f1f33 100%)",
                     borderRadius: "24px",
@@ -1110,8 +1246,21 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                             <ShareButton
                                 shareText={getShareText()}
                                 shareTitle={tResult('title')}
-                                className=""
                                 disabled={!result}
+                                style={{
+                                    padding: '8px 12px',
+                                    background: 'rgba(255,255,255,0.1)',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    borderRadius: '8px',
+                                    color: '#fff',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: '600',
+                                    transition: 'all 0.2s',
+                                }}
                             />
                         </div>
                     </div>
@@ -1203,6 +1352,250 @@ ${tResult('finalAmount')}: ${result.totalAmount.toLocaleString()}${tResult('curr
                             tResult={tResult}
                         />
                     )}
+                </div>
+            )}
+
+            {/* Early Withdrawal Result Card */}
+            {result?.earlyWithdraw && calcMode === "normal" && (
+                <div style={{
+                    background: isDark
+                        ? 'linear-gradient(145deg, #451a03 0%, #78350f 50%, #451a03 100%)'
+                        : 'linear-gradient(145deg, #fef3c7 0%, #fde68a 50%, #fef3c7 100%)',
+                    borderRadius: '24px',
+                    padding: '28px',
+                    marginBottom: '24px',
+                    border: `1px solid ${isDark ? '#92400e' : '#f59e0b'}`,
+                    position: 'relative' as const,
+                    overflow: 'hidden',
+                }}>
+                    <h3 style={{
+                        fontSize: '1.15rem',
+                        fontWeight: '700',
+                        color: isDark ? '#fbbf24' : '#92400e',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                    }}>
+                        {tEarlyWithdraw('title')}
+                    </h3>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {/* Applied Rate */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : 'rgba(146,64,14,0.15)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#fcd34d' : '#78350f', fontSize: '0.9rem' }}>{tEarlyWithdraw('penaltyRate')}</span>
+                            <span style={{ color: isDark ? '#fbbf24' : '#92400e', fontSize: '0.95rem', fontWeight: '600' }}>
+                                {result.earlyWithdraw.penaltyRate.toFixed(2)}%
+                            </span>
+                        </div>
+
+                        {/* Principal */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : 'rgba(146,64,14,0.15)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#fcd34d' : '#78350f', fontSize: '0.9rem' }}>{tEarlyWithdraw('earlyPrincipal')}</span>
+                            <span style={{ color: isDark ? '#fbbf24' : '#92400e', fontSize: '0.95rem', fontWeight: '600' }}>
+                                {result.earlyWithdraw.principal.toLocaleString()}{tResult('currency')}
+                            </span>
+                        </div>
+
+                        {/* Interest */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : 'rgba(146,64,14,0.15)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#fcd34d' : '#78350f', fontSize: '0.9rem' }}>{tEarlyWithdraw('earlyInterest')}</span>
+                            <span style={{ color: isDark ? '#fbbf24' : '#92400e', fontSize: '0.95rem', fontWeight: '600' }}>
+                                +{result.earlyWithdraw.interest.toLocaleString()}{tResult('currency')}
+                            </span>
+                        </div>
+
+                        {/* Tax */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : 'rgba(146,64,14,0.15)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#fcd34d' : '#78350f', fontSize: '0.9rem' }}>{tEarlyWithdraw('earlyTax')}</span>
+                            <span style={{ color: isDark ? '#f87171' : '#dc2626', fontSize: '0.95rem', fontWeight: '600' }}>
+                                -{result.earlyWithdraw.tax.toLocaleString()}{tResult('currency')}
+                            </span>
+                        </div>
+
+                        {/* Estimated Amount */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '14px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : 'rgba(146,64,14,0.15)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#fbbf24' : '#92400e', fontSize: '1rem', fontWeight: '700' }}>{tEarlyWithdraw('estimatedAmount')}</span>
+                            <span style={{ color: isDark ? '#fbbf24' : '#92400e', fontSize: '1.2rem', fontWeight: '800' }}>
+                                <AnimatedNumber value={result.earlyWithdraw.estimatedAmount} />{tResult('currency')}
+                            </span>
+                        </div>
+
+                        {/* Loss */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : 'rgba(146,64,14,0.15)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#f87171' : '#dc2626', fontSize: '0.9rem' }}>{tEarlyWithdraw('loss')}</span>
+                            <span style={{ color: isDark ? '#f87171' : '#dc2626', fontSize: '0.95rem', fontWeight: '700' }}>
+                                -{result.earlyWithdraw.loss.toLocaleString()}{tResult('currency')}
+                            </span>
+                        </div>
+
+                        {/* Loss vs Maturity */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                        }}>
+                            <span style={{ color: isDark ? '#f87171' : '#dc2626', fontSize: '0.9rem' }}>{tEarlyWithdraw('lossVsMaturity')}</span>
+                            <span style={{ color: isDark ? '#f87171' : '#dc2626', fontSize: '1rem', fontWeight: '700' }}>
+                                -{result.earlyWithdraw.lossPercent}%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reverse Calculation Result Card */}
+            {result?.reverseCalc && calcMode === "reverse" && (
+                <div style={{
+                    background: isDark
+                        ? 'linear-gradient(145deg, #0c4a6e 0%, #075985 50%, #0c4a6e 100%)'
+                        : 'linear-gradient(145deg, #e0f2fe 0%, #bae6fd 50%, #e0f2fe 100%)',
+                    borderRadius: '24px',
+                    padding: '28px',
+                    marginBottom: '24px',
+                    border: `1px solid ${isDark ? '#0369a1' : '#38bdf8'}`,
+                    position: 'relative' as const,
+                    overflow: 'hidden',
+                }}>
+                    <h3 style={{
+                        fontSize: '1.15rem',
+                        fontWeight: '700',
+                        color: isDark ? '#38bdf8' : '#0c4a6e',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                    }}>
+                        {tReverse('resultTitle')}
+                    </h3>
+
+                    <p style={{
+                        fontSize: '0.8rem',
+                        color: isDark ? '#7dd3fc' : '#0369a1',
+                        marginBottom: '16px',
+                    }}>
+                        {tReverse('desc')}
+                    </p>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {/* Required Amount — Main highlight */}
+                        <div style={{
+                            background: isDark ? 'rgba(56,189,248,0.1)' : 'rgba(12,74,110,0.08)',
+                            borderRadius: '16px',
+                            padding: '20px',
+                            textAlign: 'center',
+                            marginBottom: '8px',
+                        }}>
+                            <div style={{
+                                fontSize: '0.85rem',
+                                color: isDark ? '#7dd3fc' : '#0369a1',
+                                marginBottom: '8px',
+                                fontWeight: '600',
+                            }}>
+                                {type === "deposit" ? tReverse('requiredDeposit') : tReverse('requiredMonthly')}
+                            </div>
+                            <div style={{
+                                fontSize: '1.8rem',
+                                fontWeight: '800',
+                                color: isDark ? '#38bdf8' : '#0c4a6e',
+                                letterSpacing: '-0.02em',
+                            }}>
+                                <AnimatedNumber value={result.reverseCalc.requiredAmount} duration={1000} />{tResult('currency')}
+                            </div>
+                        </div>
+
+                        {/* Total Principal */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(56,189,248,0.2)' : 'rgba(12,74,110,0.12)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#7dd3fc' : '#0369a1', fontSize: '0.9rem' }}>{tReverse('totalPrincipal')}</span>
+                            <span style={{ color: isDark ? '#38bdf8' : '#0c4a6e', fontSize: '0.95rem', fontWeight: '600' }}>
+                                {result.reverseCalc.totalPrincipal.toLocaleString()}{tResult('currency')}
+                            </span>
+                        </div>
+
+                        {/* Interest */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(56,189,248,0.2)' : 'rgba(12,74,110,0.12)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#7dd3fc' : '#0369a1', fontSize: '0.9rem' }}>{tReverse('totalInterest')}</span>
+                            <span style={{ color: isDark ? '#38bdf8' : '#0c4a6e', fontSize: '0.95rem', fontWeight: '600' }}>
+                                +{result.reverseCalc.totalInterest.toLocaleString()}{tResult('currency')}
+                            </span>
+                        </div>
+
+                        {/* Tax */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '10px 0',
+                            borderBottom: `1px solid ${isDark ? 'rgba(56,189,248,0.2)' : 'rgba(12,74,110,0.12)'}`,
+                        }}>
+                            <span style={{ color: isDark ? '#7dd3fc' : '#0369a1', fontSize: '0.9rem' }}>{tReverse('tax')}</span>
+                            <span style={{ color: isDark ? '#f87171' : '#dc2626', fontSize: '0.95rem', fontWeight: '600' }}>
+                                -{result.reverseCalc.tax.toLocaleString()}{tResult('currency')}
+                            </span>
+                        </div>
+
+                        {/* Target Amount */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '14px 0',
+                        }}>
+                            <span style={{ color: isDark ? '#38bdf8' : '#0c4a6e', fontSize: '1rem', fontWeight: '700' }}>{tReverse('targetReached')}</span>
+                            <span style={{ color: isDark ? '#38bdf8' : '#0c4a6e', fontSize: '1.2rem', fontWeight: '800' }}>
+                                <AnimatedNumber value={result.reverseCalc.targetAmount} />{tResult('currency')}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             )}
 
