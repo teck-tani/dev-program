@@ -34,6 +34,15 @@ export default function ServerTimeClient() {
   const [targetActive, setTargetActive] = useState(false);
   const [ticketingStatus, setTicketingStatus] = useState<"idle" | "waiting" | "go">("idle");
 
+  // Progress tracking: store countdown start time and total duration
+  const countdownStartRef = useRef<number | null>(null);
+  const countdownTotalRef = useRef<number>(0);
+
+  // Sound/vibration alert state
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const goAlertFiredRef = useRef(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
   // Copy state
   const [copied, setCopied] = useState(false);
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -124,38 +133,70 @@ export default function ServerTimeClient() {
     };
   }, [hydrated]);
 
+  // ===== GO! Sound & Vibration =====
+  const playGoAlert = useCallback(() => {
+    if (!soundEnabled) return;
+
+    // Vibration (mobile)
+    if (navigator.vibrate) {
+      navigator.vibrate([200, 100, 200, 100, 300]);
+    }
+
+    // Beep sound via Web Audio API
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioContext();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === "suspended") ctx.resume();
+
+      // Triple beep: 880Hz, 1046Hz, 1318Hz
+      const freqs = [880, 1046, 1318];
+      freqs.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = "sine";
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.25);
+        osc.start(ctx.currentTime + i * 0.15);
+        osc.stop(ctx.currentTime + i * 0.15 + 0.25);
+      });
+    } catch {
+      // Web Audio API not supported
+    }
+  }, [soundEnabled]);
+
   // ===== Ticketing Status Check =====
   useEffect(() => {
     if (!targetActive || currentTime === null) {
       setTicketingStatus("idle");
+      goAlertFiredRef.current = false;
       return;
     }
 
+    const remaining = getRemainingMs(currentTime, targetHour, targetMinute, targetSecond);
+
+    // "GO!" window: target reached (remaining wrapped to ~24h means we just passed it)
     const now = new Date(currentTime);
     const target = new Date(currentTime);
     target.setHours(targetHour, targetMinute, targetSecond, 0);
+    const diff = now.getTime() - target.getTime();
 
-    // If target is in the past for today, set for tomorrow
-    if (target.getTime() <= now.getTime() - 5000) {
-      // already more than 5s past
-      // Check if we're within the "GO!" window (0-5s after target)
-      const diff = now.getTime() - target.getTime();
-      if (diff >= 0 && diff < 5000) {
-        setTicketingStatus("go");
-      } else {
-        setTicketingStatus("waiting");
+    if (diff >= 0 && diff < 5000) {
+      setTicketingStatus("go");
+      if (!goAlertFiredRef.current) {
+        goAlertFiredRef.current = true;
+        playGoAlert();
       }
+    } else if (remaining > 0 && remaining < 24 * 60 * 60 * 1000) {
+      setTicketingStatus("waiting");
     } else {
-      const remaining = target.getTime() - now.getTime();
-      if (remaining <= 0 && remaining > -5000) {
-        setTicketingStatus("go");
-      } else if (remaining > 0) {
-        setTicketingStatus("waiting");
-      } else {
-        setTicketingStatus("waiting");
-      }
+      setTicketingStatus("waiting");
     }
-  }, [currentTime, targetActive, targetHour, targetMinute, targetSecond]);
+  }, [currentTime, targetActive, targetHour, targetMinute, targetSecond, playGoAlert]);
 
   // ===== Tab title update =====
   useEffect(() => {
@@ -184,13 +225,22 @@ export default function ServerTimeClient() {
 
   // ===== Handlers =====
   const handleSetTarget = useCallback(() => {
+    if (currentTime !== null) {
+      const remaining = getRemainingMs(currentTime, targetHour, targetMinute, targetSecond);
+      countdownStartRef.current = currentTime;
+      countdownTotalRef.current = remaining;
+    }
+    goAlertFiredRef.current = false;
     setTargetActive(true);
     setTicketingStatus("waiting");
-  }, []);
+  }, [currentTime, targetHour, targetMinute, targetSecond]);
 
   const handleClearTarget = useCallback(() => {
     setTargetActive(false);
     setTicketingStatus("idle");
+    countdownStartRef.current = null;
+    countdownTotalRef.current = 0;
+    goAlertFiredRef.current = false;
   }, []);
 
   const handlePresetNextHour = useCallback(() => {
@@ -200,6 +250,13 @@ export default function ServerTimeClient() {
     setTargetHour(nextHour);
     setTargetMinute(0);
     setTargetSecond(0);
+    // Calculate remaining for progress tracking
+    const target = new Date(currentTime);
+    target.setHours(nextHour, 0, 0, 0);
+    if (target.getTime() <= now.getTime()) target.setDate(target.getDate() + 1);
+    countdownStartRef.current = currentTime;
+    countdownTotalRef.current = target.getTime() - now.getTime();
+    goAlertFiredRef.current = false;
     setTargetActive(true);
   }, [currentTime]);
 
@@ -210,6 +267,9 @@ export default function ServerTimeClient() {
       setTargetHour(target.getHours());
       setTargetMinute(target.getMinutes());
       setTargetSecond(target.getSeconds());
+      countdownStartRef.current = currentTime;
+      countdownTotalRef.current = minutes * 60000;
+      goAlertFiredRef.current = false;
       setTargetActive(true);
     },
     [currentTime]
@@ -308,9 +368,11 @@ export default function ServerTimeClient() {
     ? getRemainingMs(currentTime, targetHour, targetMinute, targetSecond)
     : 0;
 
-  const progressPercent = currentTime !== null && targetActive
-    ? getProgressPercent(currentTime, targetHour, targetMinute, targetSecond)
-    : 0;
+  const progressPercent = (() => {
+    if (!targetActive || currentTime === null || countdownStartRef.current === null || countdownTotalRef.current <= 0) return 0;
+    const elapsed = currentTime - countdownStartRef.current;
+    return Math.min(100, Math.max(0, (elapsed / countdownTotalRef.current) * 100));
+  })();
 
   // ===== Render =====
   if (!hydrated || currentTime === null) {
@@ -377,9 +439,19 @@ export default function ServerTimeClient() {
 
       {/* Ticketing Section */}
       <div className={styles.ticketingSection}>
-        <div className={styles.sectionTitle}>
-          <span className={styles.sectionIcon}>{ticketingStatus === "go" ? "\u{1F3AF}" : "\u{1F3AB}"}</span>
-          {t("ticketingMode")}
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionTitle}>
+            <span className={styles.sectionIcon}>{ticketingStatus === "go" ? "\u{1F3AF}" : "\u{1F3AB}"}</span>
+            {t("ticketingMode")}
+          </div>
+          <button
+            className={`${styles.soundToggle} ${soundEnabled ? styles.soundToggleOn : styles.soundToggleOff}`}
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            aria-label={soundEnabled ? t("soundOn") : t("soundOff")}
+            title={soundEnabled ? t("soundOn") : t("soundOff")}
+          >
+            {soundEnabled ? "\u{1F50A}" : "\u{1F507}"}
+          </button>
         </div>
 
         {/* Target Time Input */}
@@ -514,17 +586,3 @@ function getRemainingMs(
   return target.getTime() - now.getTime();
 }
 
-function getProgressPercent(
-  currentTime: number,
-  targetH: number,
-  targetM: number,
-  targetS: number
-): number {
-  const remaining = getRemainingMs(currentTime, targetH, targetM, targetS);
-  // Total countdown is 24 hours max, but we'll use a reasonable scale
-  // If remaining > 1 hour, progress is slow
-  // For ticketing, most countdowns are within minutes
-  const totalMs = 24 * 60 * 60 * 1000;
-  const elapsed = totalMs - remaining;
-  return (elapsed / totalMs) * 100;
-}

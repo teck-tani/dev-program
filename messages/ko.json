@@ -5446,6 +5446,8 @@
       "copied": "복사됨!",
       "copySuccess": "시간이 클립보드에 복사되었습니다",
       "ticketingMode": "티켓팅 카운트다운",
+      "soundOn": "알림음 켜짐",
+      "soundOff": "알림음 꺼짐",
       "targetTime": "목표 시간",
       "hour": "시",
       "minute": "분",

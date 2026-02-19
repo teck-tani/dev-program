@@ -151,11 +151,17 @@
   margin-bottom: 24px;
 }
 
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
 .sectionTitle {
   font-size: 1.1rem;
   font-weight: 600;
   color: #1e293b;
-  margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -163,6 +169,35 @@
 
 .sectionIcon {
   font-size: 1.2rem;
+}
+
+.soundToggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.soundToggleOn {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+
+.soundToggleOff {
+  border-color: #e2e8f0;
+  opacity: 0.6;
+}
+
+.soundToggle:hover {
+  border-color: #6366f1;
+  transform: scale(1.05);
 }
 
 /* ===== Target Time Input ===== */
@@ -465,6 +500,20 @@
 
 :global(body[data-theme="dark"]) .sectionTitle {
   color: #e2e8f0;
+}
+
+:global(body[data-theme="dark"]) .soundToggle {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(body[data-theme="dark"]) .soundToggleOn {
+  border-color: #818cf8;
+  background: #1e1b4b;
+}
+
+:global(body[data-theme="dark"]) .soundToggle:hover {
+  border-color: #818cf8;
 }
 
 :global(body[data-theme="dark"]) .timeInput {

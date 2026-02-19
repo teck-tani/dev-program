@@ -5452,6 +5452,8 @@
       "copied": "Copied!",
       "copySuccess": "Time copied to clipboard",
       "ticketingMode": "Ticketing Countdown",
+      "soundOn": "Sound On",
+      "soundOff": "Sound Off",
       "targetTime": "Target Time",
       "hour": "Hour",
       "minute": "Min",
