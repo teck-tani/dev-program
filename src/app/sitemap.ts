@@ -1,6 +1,10 @@
 import { MetadataRoute } from 'next';
 import { getAllToolHrefs } from '@/config/tools';
 
+// 실제 콘텐츠 최종 수정일 (배포 시 수동 업데이트)
+// Google이 lastModified를 신뢰하도록 실제 변경 시에만 날짜를 갱신할 것
+const LAST_CONTENT_UPDATE = '2026-02-19';
+
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://teck-tani.com';
     const locales = ['ko', 'en'];
@@ -11,8 +15,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const toolUrls = tools.flatMap((tool) =>
         locales.map((locale) => ({
             url: `${baseUrl}/${locale}${tool}`,
-            lastModified: new Date(),
-            changeFrequency: 'daily' as const,
+            lastModified: new Date(LAST_CONTENT_UPDATE),
+            changeFrequency: (tool === '' ? 'daily' : 'weekly') as const,
             priority: tool === '' ? 1.0 : 0.7,
             alternates: {
                 languages: {
@@ -24,6 +28,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
         }))
     );
 
-    // TODO: 통화쌍 페이지는 도메인 권위도 확보 후 재추가 예정
     return toolUrls;
 }
