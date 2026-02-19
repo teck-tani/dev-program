@@ -6,28 +6,28 @@
 
 ## 확정 도구 (20개) → FINALIZED_TOOLS.md 참고
 
-| # | 도구명 | 경로 | 확정일 |
-|---|--------|------|--------|
-| 1 | 공학용 계산기 | /calculator | 2026-02-12 |
-| 2 | 퇴직금 계산기 | /severance-calculator | 2026-02-17 |
-| 3 | 온라인 시계 | /clock | 2026-02-18 |
-| 4 | Base64 변환기 | /base64-encoder | 2026-02-18 |
-| 5 | 바코드 생성기 | /barcode | 2026-02-12 |
-| 6 | 로또 번호 생성기 | /lotto-generator | 2026-02-17 |
-| 7 | 글자수 세기 | /character-counter | 2026-02-14 |
-| 8 | 이자 계산기 | /interest-calculator | 2026-02-18 |
-| 9 | 월급 계산기 | /salary-calculator | 2026-02-19 |
-| 10 | 배란일 계산기 | /ovulation-calculator | 2026-02-19 |
-| 11 | 만나이 계산기 | /korean-age-calculator | 2026-02-19 |
-| 12 | 더치페이 계산기 | /dutch-pay | 2026-02-19 |
-| 13 | BMI 계산기 | /bmi-calculator | 2026-02-19 |
-| 14 | 부가세 계산기 | /vat-calculator | 2026-02-19 |
-| 15 | 대출 상환 계산기 | /loan-calculator | 2026-02-19 |
-| 16 | 전월세 전환 계산기 | /rent-conversion | 2026-02-19 |
-| 17 | 할인율 계산기 | /discount-calculator | 2026-02-19 |
-| 18 | 주식 수익률 계산기 | /stock-calculator | 2026-02-19 |
-| 19 | 4대보험 계산기 | /insurance-calculator | 2026-02-19 |
-| 20 | 프리랜서 3.3% 계산기 | /freelancer-tax | 2026-02-19 |
+| # | 도구명 | 경로 | 확정일 | 색인요청 |
+|---|--------|------|--------|----------|
+| 1 | 공학용 계산기 | /calculator | 2026-02-12 | 완료 |
+| 2 | 퇴직금 계산기 | /severance-calculator | 2026-02-17 | 완료 |
+| 3 | 온라인 시계 | /clock | 2026-02-18 | 완료 |
+| 4 | Base64 변환기 | /base64-encoder | 2026-02-18 | 완료 |
+| 5 | 바코드 생성기 | /barcode | 2026-02-12 | 완료 |
+| 6 | 로또 번호 생성기 | /lotto-generator | 2026-02-17 | 완료 |
+| 7 | 글자수 세기 | /character-counter | 2026-02-14 | 완료 |
+| 8 | 이자 계산기 | /interest-calculator | 2026-02-18 | 완료 |
+| 9 | 월급 계산기 | /salary-calculator | 2026-02-19 | 완료 |
+| 10 | 배란일 계산기 | /ovulation-calculator | 2026-02-19 | 완료 |
+| 11 | 만나이 계산기 | /korean-age-calculator | 2026-02-19 | 완료 |
+| 12 | 더치페이 계산기 | /dutch-pay | 2026-02-19 | 완료 |
+| 13 | BMI 계산기 | /bmi-calculator | 2026-02-19 | 완료 |
+| 14 | 부가세 계산기 | /vat-calculator | 2026-02-19 | 완료 |
+| 15 | 대출 상환 계산기 | /loan-calculator | 2026-02-19 | 완료 |
+| 16 | 전월세 전환 계산기 | /rent-conversion | 2026-02-19 | 완료 |
+| 17 | 할인율 계산기 | /discount-calculator | 2026-02-19 | 완료 |
+| 18 | 주식 수익률 계산기 | /stock-calculator | 2026-02-19 | 완료 |
+| 19 | 4대보험 계산기 | /insurance-calculator | 2026-02-19 | 미완료(일일한도) |
+| 20 | 프리랜서 3.3% 계산기 | /freelancer-tax | 2026-02-19 | 완료 |
 
 ---
 

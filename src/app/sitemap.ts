@@ -16,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         locales.map((locale) => ({
             url: `${baseUrl}/${locale}${tool}`,
             lastModified: new Date(LAST_CONTENT_UPDATE),
-            changeFrequency: (tool === '' ? 'daily' : 'weekly') as const,
+            changeFrequency: tool === '' ? ('daily' as const) : ('weekly' as const),
             priority: tool === '' ? 1.0 : 0.7,
             alternates: {
                 languages: {
