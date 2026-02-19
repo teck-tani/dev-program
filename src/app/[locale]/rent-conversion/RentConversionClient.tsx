@@ -32,6 +32,7 @@ export default function RentConversionClient() {
     const [monthlyRent, setMonthlyRent] = useState("");
     const [conversionRate, setConversionRate] = useState("4.5");
     const [calculated, setCalculated] = useState(false);
+    const [validationError, setValidationError] = useState("");
 
     const rawJeonse = parseInputNumber(jeonseDeposit);
     const rawMonthlyDeposit = parseInputNumber(monthlyDeposit);
@@ -80,28 +81,29 @@ export default function RentConversionClient() {
     };
 
     const handleCalculate = useCallback(() => {
+        setValidationError("");
         if (mode === "jeonseToMonthly") {
             if (!rawJeonse || Number(rawJeonse) <= 0) {
-                alert(t("validation.jeonseRequired"));
+                setValidationError(t("validation.jeonseRequired"));
                 return;
             }
             if (rateNum <= 0) {
-                alert(t("validation.rateRequired"));
+                setValidationError(t("validation.rateRequired"));
                 return;
             }
             const jeonse = Number(rawJeonse);
             const deposit = Number(rawMonthlyDeposit) || 0;
             if (deposit >= jeonse) {
-                alert(t("validation.depositExceedsJeonse"));
+                setValidationError(t("validation.depositExceedsJeonse"));
                 return;
             }
         } else {
             if (!rawMonthlyRent || Number(rawMonthlyRent) <= 0) {
-                alert(t("validation.rentRequired"));
+                setValidationError(t("validation.rentRequired"));
                 return;
             }
             if (rateNum <= 0) {
-                alert(t("validation.rateRequired"));
+                setValidationError(t("validation.rateRequired"));
                 return;
             }
         }
@@ -114,6 +116,7 @@ export default function RentConversionClient() {
         setMonthlyRent("");
         setConversionRate("4.5");
         setCalculated(false);
+        setValidationError("");
     }, []);
 
     const handleModeChange = (newMode: ConversionMode) => {
@@ -122,6 +125,7 @@ export default function RentConversionClient() {
         setMonthlyDeposit("");
         setMonthlyRent("");
         setCalculated(false);
+        setValidationError("");
     };
 
     const handleNumberInput = (
@@ -144,6 +148,8 @@ export default function RentConversionClient() {
         <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 16px 40px" }}>
             {/* Mode Toggle */}
             <div
+                role="radiogroup"
+                aria-label={t("input.conversionRate")}
                 style={{
                     display: "flex",
                     borderRadius: 12,
@@ -155,6 +161,8 @@ export default function RentConversionClient() {
                 {(["jeonseToMonthly", "monthlyToJeonse"] as ConversionMode[]).map((m) => (
                     <button
                         key={m}
+                        role="radio"
+                        aria-checked={mode === m}
                         onClick={() => handleModeChange(m)}
                         style={{
                             flex: 1,
@@ -200,6 +208,7 @@ export default function RentConversionClient() {
                         {/* Jeonse Deposit */}
                         <div style={{ marginBottom: 20 }}>
                             <label
+                                htmlFor="jeonse-deposit"
                                 style={{
                                     display: "block",
                                     fontSize: "0.9rem",
@@ -212,6 +221,7 @@ export default function RentConversionClient() {
                             </label>
                             <div style={{ position: "relative" }}>
                                 <input
+                                    id="jeonse-deposit"
                                     type="text"
                                     inputMode="numeric"
                                     value={jeonseDeposit}
@@ -247,6 +257,7 @@ export default function RentConversionClient() {
                         {/* Monthly Deposit (for Jeonse→Monthly mode) */}
                         <div style={{ marginBottom: 20 }}>
                             <label
+                                htmlFor="monthly-deposit-jeonse"
                                 style={{
                                     display: "block",
                                     fontSize: "0.9rem",
@@ -259,6 +270,7 @@ export default function RentConversionClient() {
                             </label>
                             <div style={{ position: "relative" }}>
                                 <input
+                                    id="monthly-deposit-jeonse"
                                     type="text"
                                     inputMode="numeric"
                                     value={monthlyDeposit}
@@ -296,6 +308,7 @@ export default function RentConversionClient() {
                         {/* Monthly Deposit (for Monthly→Jeonse mode) */}
                         <div style={{ marginBottom: 20 }}>
                             <label
+                                htmlFor="monthly-deposit-monthly"
                                 style={{
                                     display: "block",
                                     fontSize: "0.9rem",
@@ -308,6 +321,7 @@ export default function RentConversionClient() {
                             </label>
                             <div style={{ position: "relative" }}>
                                 <input
+                                    id="monthly-deposit-monthly"
                                     type="text"
                                     inputMode="numeric"
                                     value={monthlyDeposit}
@@ -343,6 +357,7 @@ export default function RentConversionClient() {
                         {/* Monthly Rent */}
                         <div style={{ marginBottom: 20 }}>
                             <label
+                                htmlFor="monthly-rent"
                                 style={{
                                     display: "block",
                                     fontSize: "0.9rem",
@@ -355,6 +370,7 @@ export default function RentConversionClient() {
                             </label>
                             <div style={{ position: "relative" }}>
                                 <input
+                                    id="monthly-rent"
                                     type="text"
                                     inputMode="numeric"
                                     value={monthlyRent}
@@ -392,6 +408,7 @@ export default function RentConversionClient() {
                 {/* Conversion Rate */}
                 <div style={{ marginBottom: 24 }}>
                     <label
+                        htmlFor="conversion-rate"
                         style={{
                             display: "block",
                             fontSize: "0.9rem",
@@ -404,6 +421,7 @@ export default function RentConversionClient() {
                     </label>
                     <div style={{ position: "relative" }}>
                         <input
+                            id="conversion-rate"
                             type="text"
                             inputMode="decimal"
                             value={conversionRate}
@@ -446,6 +464,26 @@ export default function RentConversionClient() {
                     </p>
                 </div>
 
+                {/* Validation Error */}
+                {validationError && (
+                    <div
+                        role="alert"
+                        aria-live="polite"
+                        style={{
+                            marginBottom: 12,
+                            padding: "10px 14px",
+                            borderRadius: 10,
+                            background: isDark ? "#1c1917" : "#fef2f2",
+                            border: `1px solid ${isDark ? "#7f1d1d" : "#fecaca"}`,
+                            color: isDark ? "#fca5a5" : "#dc2626",
+                            fontSize: "0.85rem",
+                            fontWeight: 500,
+                        }}
+                    >
+                        {validationError}
+                    </div>
+                )}
+
                 {/* Buttons */}
                 <div style={{ display: "flex", gap: 10 }}>
                     <button
@@ -485,7 +523,8 @@ export default function RentConversionClient() {
 
             {/* Result Section */}
             {calculated && result && (
-                <div
+                <section
+                    aria-label={t("result.title")}
                     style={{
                         background: isDark ? "#1e293b" : "#ffffff",
                         borderRadius: 16,
@@ -736,7 +775,7 @@ export default function RentConversionClient() {
                                 : t("result.formulaMonthlyToJeonse")}
                         </div>
                     </div>
-                </div>
+                </section>
             )}
 
             {/* Share Button */}

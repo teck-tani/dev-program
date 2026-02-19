@@ -19,11 +19,11 @@ interface InsuranceResult {
     netSalary: number;
 }
 
-// 2026 rates
+// 2026 rates (연금개혁 반영)
 const RATES = {
-    nationalPension: 0.045, // 4.5% each
-    healthInsurance: 0.03545, // 3.545% each (2026)
-    longTermCareRate: 0.1295, // 12.95% of health insurance (2026)
+    nationalPension: 0.0475, // 4.75% each (9% → 9.5%, 2026년부터 단계적 인상)
+    healthInsurance: 0.03595, // 3.595% each (2026)
+    longTermCareRate: 0.1314, // 13.14% of health insurance (2026)
     employmentEmployee: 0.009, // 0.9%
     employmentEmployer: {
         small: 0.0115,    // 150인 미만
@@ -178,8 +178,8 @@ export default function InsuranceCalculatorClient() {
         {
             key: "nationalPension",
             label: t("insurance.nationalPension"),
-            rateEmployee: "4.5%",
-            rateEmployer: "4.5%",
+            rateEmployee: "4.75%",
+            rateEmployer: "4.75%",
             employee: result.nationalPension.employee,
             employer: result.nationalPension.employer,
             color: "#3b82f6",
@@ -187,8 +187,8 @@ export default function InsuranceCalculatorClient() {
         {
             key: "healthInsurance",
             label: t("insurance.healthInsurance"),
-            rateEmployee: "3.545%",
-            rateEmployer: "3.545%",
+            rateEmployee: "3.595%",
+            rateEmployer: "3.595%",
             employee: result.healthInsurance.employee,
             employer: result.healthInsurance.employer,
             color: "#10b981",
@@ -196,8 +196,8 @@ export default function InsuranceCalculatorClient() {
         {
             key: "longTermCare",
             label: t("insurance.longTermCare"),
-            rateEmployee: "12.95%",
-            rateEmployer: "12.95%",
+            rateEmployee: "13.14%",
+            rateEmployer: "13.14%",
             employee: result.longTermCare.employee,
             employer: result.longTermCare.employer,
             color: "#8b5cf6",

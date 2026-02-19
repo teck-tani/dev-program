@@ -257,6 +257,24 @@
   transform: scale(0.97);
 }
 
+.presetBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.presetBtn:disabled:hover {
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.presetBtn:disabled:active {
+  transform: none;
+}
+
 /* ===== Alarm List ===== */
 .alarmsSection {
   background: #ffffff;
@@ -614,6 +632,19 @@
   border-color: #818cf8;
   color: #818cf8;
   background: #1e1b4b;
+}
+
+:global(body[data-theme="dark"]) .presetBtn:disabled {
+  opacity: 0.3;
+  background: #0f172a;
+  border-color: #1e293b;
+  color: #475569;
+}
+
+:global(body[data-theme="dark"]) .presetBtn:disabled:hover {
+  border-color: #1e293b;
+  color: #475569;
+  background: #0f172a;
 }
 
 :global(body[data-theme="dark"]) .previewBtn {

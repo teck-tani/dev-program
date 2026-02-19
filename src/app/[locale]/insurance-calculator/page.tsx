@@ -68,7 +68,7 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "2026년 4대보험 요율은 어떻게 되나요?",
-            answer: "2026년 기준 국민연금은 근로자·사업주 각 4.5%(총 9%), 건강보험은 각 3.545%(총 7.09%), 장기요양보험은 건강보험료의 12.95%, 고용보험 근로자분은 0.9%입니다. 고용보험 사업주분은 기업 규모에 따라 0.9%~1.65%입니다."
+            answer: "2026년 기준 국민연금은 근로자·사업주 각 4.75%(총 9.5%), 건강보험은 각 3.595%(총 7.19%), 장기요양보험은 건강보험료의 13.14%, 고용보험 근로자분은 0.9%입니다. 고용보험 사업주분은 기업 규모에 따라 0.9%~1.65%입니다."
         },
         {
             question: "국민연금 상한액과 하한액은 얼마인가요?",
@@ -89,7 +89,7 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "What are the 2026 social insurance rates?",
-            answer: "For 2026, National Pension is 4.5% each for employee and employer (9% total), Health Insurance is 3.545% each (7.09% total), Long-term Care is 12.95% of health insurance premium, and Employment Insurance employee portion is 0.9%. Employer's employment insurance varies from 0.9% to 1.65% based on company size."
+            answer: "For 2026, National Pension is 4.75% each for employee and employer (9.5% total), Health Insurance is 3.595% each (7.19% total), Long-term Care is 13.14% of health insurance premium, and Employment Insurance employee portion is 0.9%. Employer's employment insurance varies from 0.9% to 1.65% based on company size."
         },
         {
             question: "What are the National Pension salary caps?",
@@ -197,7 +197,7 @@ function generateWebAppSchema(locale: string) {
         },
         "featureList": isKo
             ? [
-                "2026년 최신 요율 반영 (국민연금 4.5%, 건강보험 3.545%, 장기요양 12.95%)",
+                "2026년 최신 요율 반영 (국민연금 4.75%, 건강보험 3.595%, 장기요양 13.14%)",
                 "기업 규모별 고용보험 사업주 부담분 자동 계산",
                 "근로자·사업주 부담금 분리 표시",
                 "실수령액(세전 - 4대보험) 자동 계산",
@@ -205,7 +205,7 @@ function generateWebAppSchema(locale: string) {
                 "국민연금 상한·하한액 자동 적용"
             ]
             : [
-                "Latest 2026 rates (National Pension 4.5%, Health Insurance 3.545%, Long-term Care 12.95%)",
+                "Latest 2026 rates (National Pension 4.75%, Health Insurance 3.595%, Long-term Care 13.14%)",
                 "Automatic employer employment insurance rate by company size",
                 "Separate employee and employer contribution display",
                 "Net salary (gross minus insurance) automatic calculation",

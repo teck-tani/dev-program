@@ -1138,6 +1138,48 @@
             }
           }
         },
+        "chain": {
+          "description": {
+            "title": "Chain Timer",
+            "p1": "A chain timer that automatically runs multiple steps in sequence. Set a name and duration for each step, press start, and each step begins automatically when the previous one ends. Perfect for cooking, workouts, study sessions, presentations, and any multi-phase routine you want to manage with a single setup."
+          },
+          "features": {
+            "title": "Chain Timer Features",
+            "list": {
+              "f1": { "title": "⛓️ Auto Sequential Execution", "desc": "Steps run in order automatically. When one step ends, the next begins immediately without any alarm interruption." },
+              "f2": { "title": "🏷️ Named Steps", "desc": "Label each step like 'Warm-up', 'Main Workout', 'Cool-down' so you always know which phase you're in." },
+              "f3": { "title": "✅ Progress Tracking", "desc": "Completed steps are dimmed, the current step is highlighted — see your routine's progress in real time." },
+              "f4": { "title": "⏱️ Flexible Time Settings", "desc": "Set hours, minutes, and seconds independently for each step — from 30 seconds to several hours." }
+            }
+          },
+          "howto": {
+            "title": "How to Use Chain Timer",
+            "steps": {
+              "step1": "<strong>Step 1 - Add Steps:</strong> In the 'Chain Timer' card below the Timer tab, enter a name and time, then press + to add a step.",
+              "step2": "<strong>Step 2 - Review Order:</strong> Added steps appear in the list in order. Remove unwanted steps with the ✕ button.",
+              "step3": "<strong>Step 3 - Start:</strong> Press ▶ Start and the countdown begins from the first step.",
+              "step4": "<strong>Step 4 - Auto Progress:</strong> Each step transitions to the next automatically. The alarm sounds only when the final step completes."
+            }
+          },
+          "usecases": {
+            "title": "Use Cases",
+            "list": {
+              "u1": { "title": "🍳 Step-by-Step Cooking", "desc": "Sauté onions 3m → Grill meat 5m → Simmer sauce 10m — set up sequential cooking steps in one go." },
+              "u2": { "title": "🏃 Workout Routine", "desc": "Warm-up 5m → Main exercise 20m → Cool-down 5m → Stretching 10m — automate your full workout routine." },
+              "u3": { "title": "📚 Study Routine", "desc": "Vocabulary 15m → Grammar 20m → Listening 15m — manage subject-by-subject study time systematically." },
+              "u4": { "title": "🎤 Presentations", "desc": "Intro 2m → Main body 10m → Conclusion 3m → Q&A 5m — manage presentation sections with timed segments." }
+            }
+          },
+          "faq": {
+            "title": "FAQ",
+            "list": {
+              "q1": { "q": "How many steps can I add?", "a": "There's no limit on the number of steps. Add as many as you need for your routine." },
+              "q2": { "q": "Can I skip a specific step in the middle?", "a": "Currently only sequential execution is supported. Remove unwanted steps with the ✕ button before starting." },
+              "q3": { "q": "Can I add steps while the chain is running?", "a": "Steps cannot be modified during execution. Reset, edit your steps, and start again." },
+              "q4": { "q": "Does an alarm sound between steps?", "a": "No, intermediate steps transition silently to the next. The alarm only sounds when the very last step completes." }
+            }
+          }
+        },
         "multi": {
           "description": {
             "title": "Multi Timer",
@@ -2331,6 +2373,46 @@
         "title": "Privacy Notice",
         "text": "Your birthdate is processed entirely in the browser and is never sent to or stored on any server. All data is deleted when you close the page. You can use this tool with complete confidence."
       }
+    },
+    "tabs": {
+      "calculate": "Calculate",
+      "compare": "Compare"
+    },
+    "compare": {
+      "person1": "Person A",
+      "person2": "Person B",
+      "compareBtn": "Compare Ages",
+      "comparing": "Comparing...",
+      "ageDiff": "Age Difference",
+      "sameAge": "Same age!",
+      "alertInput": "Please enter both birthdates."
+    },
+    "zodiacPersonality": {
+      "monkey": "Clever, quick-witted, adaptable, and creative",
+      "rooster": "Diligent, observant, honest, and hardworking",
+      "dog": "Loyal, strong sense of justice, and trustworthy",
+      "pig": "Generous, optimistic, sincere, and warm-hearted",
+      "rat": "Smart, sociable, with excellent adaptability",
+      "ox": "Diligent, patient, and responsible",
+      "tiger": "Brave, confident, and charismatic",
+      "rabbit": "Gentle, delicate, polite, and considerate",
+      "dragon": "Energetic, ambitious, with strong leadership",
+      "snake": "Wise, elegant, with great intuition",
+      "horse": "Freedom-loving, active, and energetic",
+      "sheep": "Artistic, warm, and caring"
+    },
+    "compatibility": {
+      "title": "Zodiac Compatibility",
+      "best": "Perfect Match",
+      "bestDesc": "Six Harmonies — the most ideal compatibility",
+      "great": "Excellent",
+      "greatDesc": "Three Harmonies — a great combination",
+      "good": "Good",
+      "goodDesc": "Same zodiac — mutual understanding and empathy",
+      "neutral": "Average",
+      "neutralDesc": "General relationship — depends on effort",
+      "caution": "Challenging",
+      "cautionDesc": "Clash relationship — different personalities require effort"
     },
     "disqus": {
       "title": "International Age Calculator"
@@ -4281,6 +4363,117 @@
         "text": "Sensitive health information (menstrual cycle, ovulation dates, etc.) is stored only in your browser's localStorage and is never sent to external servers. All calculations are performed directly in your browser, ensuring your privacy is protected."
       }
     },
+    "medication": {
+      "title": "Medication Status",
+      "label": "Currently taking hormonal medication/birth control",
+      "options": {
+        "none": "None",
+        "pill": "Birth Control Pill",
+        "hormone": "Hormone Therapy",
+        "iud": "Hormonal IUD",
+        "other": "Other Hormonal Medication"
+      },
+      "warning": "⚠️ Taking {medication} may suppress or disrupt ovulation. Results from this calculator may not be accurate. Please consult your doctor.",
+      "warningPill": "Birth control pills suppress ovulation. Ovulation typically resumes within 1-3 months after stopping.",
+      "warningHormone": "Hormone therapy affects ovulation cycles. It may take several months for normal cycles to resume after treatment ends.",
+      "warningIud": "Hormonal IUDs may suppress ovulation in some women. Ovulation typically resumes quickly after removal.",
+      "warningOther": "Hormonal medications can affect ovulation cycles. Consult your doctor for accurate ovulation tracking."
+    },
+    "confidence": {
+      "title": "Cycle Confidence",
+      "score": "Confidence",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "noData": "Insufficient Data",
+      "desc": "Based on {count} recent cycle records",
+      "noDataDesc": "Confidence analysis will be available after 3 or more calculations.",
+      "highDesc": "Your cycle is very regular. Calculation results are likely accurate.",
+      "mediumDesc": "Your cycle is slightly irregular. Use results as a reference.",
+      "lowDesc": "Significant cycle variation detected. Consider using ovulation test kits.",
+      "avgCycle": "Average Cycle",
+      "stdDev": "Std. Deviation"
+    },
+    "pregnancyTest": {
+      "title": "Recommended Pregnancy Test Timing",
+      "recommended": "Recommended Test Date",
+      "earliest": "Earliest Detection Date",
+      "desc": "12-14 days after ovulation (around your next expected period) is the most accurate time for a pregnancy test.",
+      "tip": "Testing with first morning urine provides higher hCG concentration for better accuracy."
+    },
+    "bbt": {
+      "title": "Basal Body Temperature (BBT) Tracking",
+      "subtitle": "Record your temperature every morning upon waking",
+      "date": "Date",
+      "temp": "Temperature (°C)",
+      "add": "Add Record",
+      "clear": "Clear All",
+      "noData": "No BBT records yet. Measure your temperature at the same time every morning and record it here.",
+      "chartTitle": "BBT Trend Chart",
+      "ovulationLine": "Estimated Ovulation Line",
+      "avgBefore": "Pre-Ovulation Average",
+      "avgAfter": "Post-Ovulation Average",
+      "shift": "Temperature Shift Detected",
+      "shiftDesc": "A temperature rise of 0.3°C or more was detected on {date}. This point is estimated as ovulation.",
+      "noShift": "No clear temperature shift detected yet. Keep recording.",
+      "info": "After ovulation, progesterone causes basal body temperature to rise by 0.3-0.5°C. This pattern helps estimate the actual ovulation date.",
+      "tempPlaceholder": "36.5"
+    },
+    "symptom": {
+      "title": "Symptom Tracking",
+      "subtitle": "Record today's symptoms",
+      "date": "Date",
+      "add": "Add Record",
+      "clear": "Clear All",
+      "noData": "No symptom records yet. Recording symptoms around your period helps identify patterns.",
+      "list": {
+        "cramps": "Cramps/Abdominal Pain",
+        "headache": "Headache",
+        "bloating": "Bloating",
+        "breastTenderness": "Breast Tenderness",
+        "moodSwings": "Mood Swings",
+        "acne": "Acne/Skin Issues",
+        "fatigue": "Fatigue",
+        "backPain": "Back Pain",
+        "nausea": "Nausea",
+        "discharge": "Discharge Changes"
+      },
+      "intensity": {
+        "label": "Intensity",
+        "mild": "Mild",
+        "moderate": "Moderate",
+        "severe": "Severe"
+      },
+      "note": "Note",
+      "notePlaceholder": "Enter additional notes",
+      "history": "Symptom History",
+      "pmsAlert": "Expected PMS Period",
+      "pmsDesc": "PMS symptoms may appear 7-10 days before your next period.",
+      "pmsStart": "Expected PMS Start"
+    },
+    "fertility": {
+      "title": "Fertility Score",
+      "age": "Age",
+      "agePlaceholder": "Enter your age",
+      "ageUnit": "years",
+      "score": "Fertility Score",
+      "outOf": "/ 100",
+      "factors": "Assessment Factors",
+      "ageFactor": "Age Factor",
+      "cycleFactor": "Cycle Regularity",
+      "rangeFactor": "Cycle Range",
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "low": "Low",
+      "desc": {
+        "excellent": "Both age and cycle regularity are excellent. Great conditions for pregnancy planning.",
+        "good": "Overall good condition. Maintain regular lifestyle habits.",
+        "fair": "Some factors are at average levels. Lifestyle improvements and regular checkups are recommended.",
+        "low": "Professional consultation is recommended. Age or cycle irregularity may be affecting fertility."
+      },
+      "disclaimer": "This score is a rough reference based only on age and cycle regularity. Actual fertility is determined by many factors, so consult a specialist for accurate assessment."
+    },
     "disqus": {
       "title": "Ovulation Calculator"
     }
@@ -4299,6 +4492,7 @@
     "modeEqual": "Equal Split",
     "modeCustom": "Custom Input",
     "modeItem": "Item-based",
+    "modeWeighted": "Weighted",
     "totalAmountLabel": "Total Amount",
     "totalAmountPlaceholder": "Enter total amount",
     "currency": "",
@@ -4319,6 +4513,7 @@
     "resultPerPerson": "Per Person",
     "settlementTitle": "Transfers Needed",
     "noSettlement": "Everyone paid the same amount. No settlement needed!",
+    "itemNoSettlement": "Everyone paid their own share. No additional settlement needed!",
     "copyResult": "Copy",
     "copied": "Copied!",
     "shareResult": "Share",
@@ -4333,6 +4528,20 @@
     "sharedBy": "Shared by",
     "itemTotalSummary": "Item total: {total}",
     "itemShareTitle": "Cost per Person",
+    "itemPaidBy": "Paid by",
+    "weightLabel": "Weight",
+    "weightedShareTitle": "Weighted Cost Breakdown",
+    "groupLabel": "Group Management",
+    "saveGroup": "Save",
+    "loadGroup": "Load",
+    "groupNamePlaceholder": "Group name",
+    "noGroups": "No saved groups.",
+    "ocrButton": "Scan Receipt",
+    "ocrProcessing": "Scanning...",
+    "ocrFailed": "Receipt recognition failed. Please try again.",
+    "exportImage": "Save Image",
+    "exportingImage": "Generating...",
+    "restoreHistory": "Restore",
     "historyTitle": "Recent History",
     "clearHistory": "Clear",
     "guideTitle": "How to Use",
@@ -5669,7 +5878,22 @@
       "calculate": "Calculate BMI",
       "reset": "Reset",
       "heightPlaceholder": "e.g. 170",
-      "weightPlaceholder": "e.g. 65"
+      "weightPlaceholder": "e.g. 65",
+      "unitMetric": "kg / cm",
+      "unitImperial": "lb / ft",
+      "modeAdult": "Adult",
+      "modeChild": "Child (2-19)",
+      "heightFt": "Height (ft)",
+      "heightIn": "Inches (in)",
+      "weightLb": "Weight (lb)",
+      "heightFtPlaceholder": "e.g. 5",
+      "heightInPlaceholder": "e.g. 7",
+      "weightLbPlaceholder": "e.g. 143",
+      "age": "Age",
+      "agePlaceholder": "2-19 years",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "gender": "Gender"
     },
     "result": {
       "title": "Result",
@@ -5685,7 +5909,14 @@
       "obeseClass3": "Obese Class III",
       "unit": "kg/m²",
       "weightUnit": "kg",
-      "to": "~"
+      "weightUnitLb": "lb",
+      "to": "~",
+      "childUnderweight": "Underweight",
+      "childNormal": "Normal",
+      "childOverweight": "Overweight",
+      "childObese": "Obese",
+      "percentile": "Percentile",
+      "childInfo": "Age {age}, {gender}"
     },
     "table": {
       "title": "WHO BMI Classification",
@@ -5697,6 +5928,29 @@
       "obeseClass1": "Obese Class I",
       "obeseClass2": "Obese Class II",
       "obeseClass3": "Obese Class III"
+    },
+    "childTable": {
+      "title": "Child BMI-for-Age Percentile (WHO)",
+      "category": "Category",
+      "percentileRange": "Percentile Range",
+      "childUnderweight": "Underweight",
+      "childNormal": "Normal",
+      "childOverweight": "Overweight",
+      "childObese": "Obese"
+    },
+    "history": {
+      "title": "BMI History",
+      "chartTitle": "BMI Trend Chart",
+      "date": "Date",
+      "bmiValue": "BMI",
+      "classification": "Classification",
+      "clearHistory": "Clear History",
+      "clearConfirm": "Delete all BMI records?",
+      "noHistory": "No records yet",
+      "expand": "Show History",
+      "collapse": "Hide History",
+      "entries": "entries",
+      "deleteOne": "Delete"
     },
     "seo": {
       "description": {
@@ -5722,6 +5976,14 @@
           "feat4": {
             "title": "Normal Weight Range",
             "desc": "Shows the normal weight range (BMI 18.5-24.9) based on your entered height."
+          },
+          "feat5": {
+            "title": "Unit Conversion (kg↔lb, cm↔ft)",
+            "desc": "Freely switch between metric and imperial units to calculate in your preferred measurement system."
+          },
+          "feat6": {
+            "title": "Child/Adolescent BMI",
+            "desc": "Ages 2-19 are assessed using WHO BMI-for-age percentile criteria adjusted for age and sex."
           }
         }
       },
@@ -5776,13 +6038,21 @@
           },
           "q5": {
             "q": "Is my data safe with this calculator?",
-            "a": "Yes, all calculations are processed in your browser and your height and weight information is never sent to any server. No personal health data is collected or stored."
+            "a": "Yes, all calculations are processed in your browser and your height and weight information is never sent to any server. BMI history is stored only in your browser's localStorage and can be deleted at any time."
+          },
+          "q6": {
+            "q": "What criteria does the child mode use?",
+            "a": "The child (2-19 years) mode uses WHO BMI-for-age percentile criteria. Compared to children of the same age and sex, below the 5th percentile is underweight, 5th-84th is normal, 85th-94th is overweight, and 95th percentile or above is obese."
+          },
+          "q7": {
+            "q": "Can I calculate in pounds and feet?",
+            "a": "Yes, use the unit toggle (kg/cm ↔ lb/ft) at the top to enter height in feet/inches and weight in pounds. The calculator internally converts to metric units for accurate BMI calculation."
           }
         }
       },
       "privacy": {
         "title": "Privacy Notice",
-        "text": "This BMI calculator processes all calculations in your browser. Your height and weight information is never transmitted to or stored on any server. Personal health data is processed only on your device."
+        "text": "This BMI calculator processes all calculations in your browser. Your health data is never transmitted to any server. BMI history is stored only in your browser's localStorage and can be deleted at any time with the 'Clear History' button."
       }
     }
   },
@@ -5819,6 +6089,14 @@
       "title": "Calculation History",
       "empty": "No calculation history yet",
       "clear": "Clear All"
+    },
+    "preset": {
+      "general": "Standard 10%",
+      "simplified15": "Simplified 1.5%",
+      "simplified20": "Simplified 2%",
+      "simplified30": "Simplified 3%",
+      "simplified40": "Simplified 4%",
+      "zeroRated": "Zero-rated 0%"
     },
     "unit": "",
     "seo": {
@@ -5927,12 +6205,53 @@
       "periodYear": "Years",
       "periodMonth": "Months",
       "calculate": "Calculate",
-      "reset": "Reset"
+      "reset": "Reset",
+      "quick": {
+        "10m": "10M",
+        "50m": "50M",
+        "100m": "100M",
+        "300m": "300M"
+      },
+      "gracePeriod": "Grace Period",
+      "gracePeriodUnit": "months",
+      "gracePeriodNone": "None"
     },
     "method": {
       "equalPayment": "Equal Payment",
       "equalPrincipal": "Equal Principal",
       "bullet": "Bullet"
+    },
+    "earlyRepayment": {
+      "title": "Early Repayment Simulation",
+      "show": "Early Repayment Simulation",
+      "hide": "Hide Simulation",
+      "month": "Repayment Month",
+      "monthSuffix": "month",
+      "amount": "Extra Payment",
+      "savedInterest": "Interest Saved",
+      "originalTotal": "Original Interest",
+      "newTotal": "New Interest",
+      "reducedMonths": "Months Saved",
+      "monthsUnit": " months",
+      "noSavings": "No savings for this condition."
+    },
+    "chart": {
+      "principal": "Principal",
+      "interest": "Interest"
+    },
+    "action": {
+      "copy": "Copy Result",
+      "copied": "Copied!",
+      "print": "Print"
+    },
+    "validation": {
+      "amountRequired": "Please enter the loan amount.",
+      "rateRequired": "Please enter the annual interest rate.",
+      "periodRequired": "Please enter the loan period.",
+      "graceExceedsPeriod": "Grace period cannot exceed loan period.",
+      "rateHigh": "Interest rate exceeds 30%. Use the result as a reference only.",
+      "periodLong": "Loan period exceeds 40 years. Use the result as a reference only.",
+      "graceTooLong": "Only {months} month(s) of actual repayment. Monthly burden may be very high."
     },
     "result": {
       "title": "Calculation Results",
@@ -5960,11 +6279,6 @@
       "totalPayment": "Total Payment",
       "totalInterest": "Total Interest",
       "description": "Equal Payment pays the same amount every month. Equal Principal has higher initial payments but less total interest. Bullet pays only interest during the term and repays principal at maturity."
-    },
-    "validation": {
-      "amountRequired": "Please enter the loan amount.",
-      "rateRequired": "Please enter the annual interest rate.",
-      "periodRequired": "Please enter the loan period."
     },
     "seo": {
       "description": {
@@ -6935,7 +7249,12 @@
       "sellingPrice": "Selling Price"
     },
     "button": {
-      "reset": "Reset"
+      "reset": "Reset",
+      "copy": "Copy Result",
+      "copied": "Copied!"
+    },
+    "notice": {
+      "priceIncrease": "This is a price increase, not a discount"
     },
     "result": {
       "title": "Calculation Result",
@@ -6944,7 +7263,8 @@
       "finalPrice": "Sale Price (Final)",
       "marginRate": "Margin Rate",
       "marginAmount": "Margin Amount",
-      "markupRate": "Markup Rate"
+      "markupRate": "Markup Rate",
+      "increaseRate": "Increase Rate"
     },
     "formula": {
       "title": "Formulas",
@@ -7090,7 +7410,7 @@
       "nationalPension": "National Pension",
       "healthInsurance": "Health Insurance",
       "longTermCare": "Long-term Care",
-      "longTermCareNote": "12.95% of Health Ins.",
+      "longTermCareNote": "13.14% of Health Ins.",
       "employmentInsurance": "Employment Ins."
     },
     "table": {
@@ -7115,7 +7435,7 @@
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "2026 Latest Rates", "desc": "Reflects 2026 rates: National Pension 4.5%, Health 3.545%, Long-term Care 12.95%, Employment 0.9%." },
+          "feat1": { "title": "2026 Latest Rates", "desc": "Reflects 2026 rates: National Pension 4.75%, Health 3.595%, Long-term Care 13.14%, Employment 0.9%." },
           "feat2": { "title": "Employee vs Employer", "desc": "Compare employee and employer contributions side by side." },
           "feat3": { "title": "Company Size Options", "desc": "Reflects different employment insurance rates by company size." },
           "feat4": { "title": "Net Salary Estimate", "desc": "Instantly see estimated net salary after all deductions." }
@@ -7152,11 +7472,11 @@
           },
           "q3": {
             "q": "What are the 2026 rates?",
-            "a": "National Pension 9% (4.5% each), Health 7.09% (3.545% each), Long-term Care 12.95% of health premium, Employment 0.9% for employees."
+            "a": "National Pension 9.5% (4.75% each), Health 7.19% (3.595% each), Long-term Care 13.14% of health premium, Employment 0.9% for employees."
           },
           "q4": {
             "q": "Is long-term care insurance separate?",
-            "a": "Long-term care is calculated as a percentage of health insurance premiums (12.95% in 2026) and paid together with health insurance."
+            "a": "Long-term care is calculated as a percentage of health insurance premiums (13.14% in 2026) and paid together with health insurance."
           },
           "q5": {
             "q": "Are these calculations accurate?",
@@ -7218,6 +7538,12 @@
       "netAmountFormula": "Contract Amount - Total Withholding (= Contract Amount x 96.7%)"
     },
     "unit": "KRW",
+    "chart": {
+      "title": "Tax Ratio",
+      "netRate": "Net Rate",
+      "chartNet": "Net Amount",
+      "chartTax": "Withholding"
+    },
     "seo": {
       "description": {
         "title": "What is the Freelancer 3.3% Tax Calculator?",

@@ -23,9 +23,16 @@ export default function StopwatchView() {
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
     const [laps, setLaps] = useState<LapRecord[]>([]);
+    const [confirmClear, setConfirmClear] = useState(false);
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
     const lastLapTimeRef = useRef<number>(0);
+    const timeRef = useRef<number>(0);
+    const lapsRef = useRef<LapRecord[]>([]);
+
+    // refs를 state와 동기화
+    useEffect(() => { timeRef.current = time; }, [time]);
+    useEffect(() => { lapsRef.current = laps; }, [laps]);
 
     // localStorage에서 랩 데이터 로드 + 마지막 시간 복원
     useEffect(() => {
@@ -47,9 +54,16 @@ export default function StopwatchView() {
     }, []);
 
     // 랩 데이터가 변경될 때 localStorage에 저장
+    const isInitialMount = useRef(true);
     useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
         if (laps.length > 0) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(laps));
+        } else {
+            localStorage.removeItem(STORAGE_KEY);
         }
     }, [laps]);
 
@@ -102,18 +116,18 @@ export default function StopwatchView() {
         };
     };
 
-    const handleLap = () => {
-        if (!isRunning && time === 0) return;
+    const handleLap = useCallback(() => {
+        const currentTime = timeRef.current;
+        if (currentTime === 0) return;
 
         // 소리 + 진동 피드백
         playLapSound();
         triggerVibration();
 
-        const currentTime = time;
         const lapTime = currentTime - lastLapTimeRef.current;
 
         const newLap: LapRecord = {
-            lapNumber: laps.length + 1,
+            lapNumber: lapsRef.current.length + 1,
             lapTime: lapTime,
             totalTime: currentTime,
             timestamp: new Date().toISOString()
@@ -121,19 +135,26 @@ export default function StopwatchView() {
 
         setLaps(prev => [...prev, newLap]);
         lastLapTimeRef.current = currentTime;
-    };
+    }, [playLapSound, triggerVibration]);
 
-    const handleReset = () => {
+    const handleReset = useCallback(() => {
         setIsRunning(false);
         setTime(0);
         lastLapTimeRef.current = 0;
-    };
+    }, []);
 
-    const handleClearLaps = () => {
+    const handleClearLaps = useCallback(() => {
+        if (!confirmClear) {
+            setConfirmClear(true);
+            // 3초 후 자동으로 확인 상태 해제
+            setTimeout(() => setConfirmClear(false), 3000);
+            return;
+        }
         setLaps([]);
         localStorage.removeItem(STORAGE_KEY);
         lastLapTimeRef.current = 0;
-    };
+        setConfirmClear(false);
+    }, [confirmClear]);
 
     const handleDeleteLap = (lapNumber: number) => {
         setLaps(prev => {
@@ -153,7 +174,7 @@ export default function StopwatchView() {
             lap.lapNumber,
             formatTime(lap.lapTime, hasHours),
             formatTime(lap.totalTime, hasHours),
-            new Date(lap.timestamp).toLocaleString()
+            `"${new Date(lap.timestamp).toLocaleString()}"`
         ]);
 
         // BOM 추가하여 한글 깨짐 방지
@@ -213,9 +234,7 @@ export default function StopwatchView() {
                     break;
                 case 'KeyL':
                     e.preventDefault();
-                    if (isRunning || time > 0) {
-                        handleLap();
-                    }
+                    handleLap();
                     break;
                 case 'KeyR':
                     e.preventDefault();
@@ -226,7 +245,7 @@ export default function StopwatchView() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [handleToggle, isRunning, time]);
+    }, [handleToggle, handleLap, handleReset]);
 
     // 가장 빠른/느린 랩 찾기
     const fastestLapIndex = laps.length > 1
@@ -250,53 +269,35 @@ export default function StopwatchView() {
         ? laps[slowestLapIndex].lapTime
         : 0;
 
-    return (
-        <div style={{
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '8px 0',
-        }}>
-            {/* 시간 표시 */}
-            {(() => {
-                const timeDisplay = formatMainTime(time);
-                const mainFontSize = timeDisplay.hasHours
-                    ? 'clamp(3rem, 15vw, 5.5rem)'
-                    : 'clamp(3rem, 15vw, 6rem)';
-                const csFontSize = timeDisplay.hasHours
-                    ? 'clamp(1.5rem, 7vw, 2.5rem)'
-                    : 'clamp(1.5rem, 7vw, 3rem)';
+    const timeDisplay = formatMainTime(time);
 
-                return (
-                    <div style={{
-                        marginBottom: '24px',
-                        fontVariantNumeric: 'tabular-nums',
-                        fontFamily: "'SF Mono', 'Roboto Mono', 'Consolas', monospace",
-                        fontWeight: 600,
-                        color: theme === 'dark' ? '#67e8f9' : '#0891b2',
-                        letterSpacing: '0.02em',
-                        display: 'flex',
-                        alignItems: 'baseline',
-                        justifyContent: 'center',
-                    }}>
-                        <span style={{ fontSize: mainFontSize }}>
-                            {timeDisplay.main}
-                        </span>
-                        <span style={{ fontSize: csFontSize, opacity: 0.7 }}>
-                            {timeDisplay.cs}
-                        </span>
-                    </div>
-                );
-            })()}
+    return (
+        <div className="sw-view-container" role="region" aria-label={t('start')}>
+            {/* 시간 표시 */}
+            <div
+                className={`sw-time-display ${timeDisplay.hasHours ? 'sw-time-has-hours' : ''}`}
+                role="timer"
+                aria-live="off"
+                aria-atomic="true"
+                aria-label={formatTime(time)}
+                style={{ color: theme === 'dark' ? '#67e8f9' : '#0891b2' }}
+            >
+                <span className={`sw-time-main ${timeDisplay.hasHours ? 'sw-time-main-hours' : ''}`}>
+                    {timeDisplay.main}
+                </span>
+                <span className={`sw-time-cs ${timeDisplay.hasHours ? 'sw-time-cs-hours' : ''}`}>
+                    {timeDisplay.cs}
+                </span>
+                {isRunning && <span className="sw-running-dot" aria-hidden="true" />}
+            </div>
 
             {/* 스톱워치 전용 설정 */}
-            <div className="sw-settings">
+            <div className="sw-settings" role="group" aria-label={t('lapSound')}>
                 <button
                     className={`sw-setting-btn ${settings.soundEnabled ? 'active' : ''}`}
                     onClick={toggleSound}
-                    title={t('lapSound')}
+                    aria-label={`${t('lapSound')}: ${settings.soundEnabled ? 'ON' : 'OFF'}`}
+                    aria-pressed={settings.soundEnabled}
                 >
                     {settings.soundEnabled ? <FaVolumeUp /> : <FaVolumeMute />}
                     <span>{t('lapSound')}</span>
@@ -304,39 +305,29 @@ export default function StopwatchView() {
                 <button
                     className={`sw-setting-btn ${settings.vibrationEnabled ? 'active' : ''}`}
                     onClick={toggleVibration}
-                    title={t('vibration')}
+                    aria-label={`${t('vibration')}: ${settings.vibrationEnabled ? 'ON' : 'OFF'}`}
+                    aria-pressed={settings.vibrationEnabled}
                 >
                     <FaMobileAlt />
                     <span>{t('vibration')}</span>
                 </button>
             </div>
 
-            {/* 컨트롤 버튼 */}
             {/* 단축키 안내 */}
-            <div className="sw-shortcuts">
+            <div className="sw-shortcuts" aria-label={t('shortcutStartStop')}>
                 <span><kbd className="sw-kbd">Space</kbd> {t('shortcutStartStop')}</span>
                 <span><kbd className="sw-kbd">L</kbd> {t('shortcutLap')}</span>
                 <span><kbd className="sw-kbd">R</kbd> {t('shortcutReset')}</span>
             </div>
 
             {/* 컨트롤 버튼 */}
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
+            <div className="sw-controls" role="group" aria-label="Controls">
                 {/* 초기 상태: 시작 버튼만 */}
                 {time === 0 && !isRunning && (
                     <button
                         onClick={() => setIsRunning(true)}
-                        style={{
-                            padding: '14px 48px',
-                            borderRadius: '12px',
-                            fontSize: '1.1rem',
-                            fontWeight: 'bold',
-                            border: 'none',
-                            cursor: 'pointer',
-                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                            color: 'white',
-                            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-                            transition: 'all 0.2s ease',
-                        }}
+                        className="sw-btn sw-btn-start sw-btn-start-large"
+                        aria-label={t('start')}
                     >
                         {t('start')}
                     </button>
@@ -347,35 +338,15 @@ export default function StopwatchView() {
                     <>
                         <button
                             onClick={() => setIsRunning(false)}
-                            style={{
-                                padding: '14px 36px',
-                                borderRadius: '12px',
-                                fontSize: '1rem',
-                                fontWeight: 'bold',
-                                border: 'none',
-                                cursor: 'pointer',
-                                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                                color: 'white',
-                                boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
-                                transition: 'all 0.2s ease',
-                            }}
+                            className="sw-btn sw-btn-pause"
+                            aria-label={t('pause')}
                         >
                             {t('pause')}
                         </button>
                         <button
                             onClick={handleLap}
-                            style={{
-                                padding: '14px 36px',
-                                borderRadius: '12px',
-                                fontSize: '1rem',
-                                fontWeight: 'bold',
-                                border: 'none',
-                                cursor: 'pointer',
-                                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                                color: 'white',
-                                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
-                                transition: 'all 0.2s ease',
-                            }}
+                            className="sw-btn sw-btn-lap"
+                            aria-label={t('lap')}
                         >
                             {t('lap')}
                         </button>
@@ -387,35 +358,15 @@ export default function StopwatchView() {
                     <>
                         <button
                             onClick={() => setIsRunning(true)}
-                            style={{
-                                padding: '14px 36px',
-                                borderRadius: '12px',
-                                fontSize: '1rem',
-                                fontWeight: 'bold',
-                                border: 'none',
-                                cursor: 'pointer',
-                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                color: 'white',
-                                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-                                transition: 'all 0.2s ease',
-                            }}
+                            className="sw-btn sw-btn-start"
+                            aria-label={t('continue')}
                         >
                             {t('continue')}
                         </button>
                         <button
                             onClick={handleReset}
-                            style={{
-                                padding: '14px 36px',
-                                borderRadius: '12px',
-                                fontSize: '1rem',
-                                fontWeight: 'bold',
-                                border: 'none',
-                                cursor: 'pointer',
-                                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                                color: 'white',
-                                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
-                                transition: 'all 0.2s ease',
-                            }}
+                            className="sw-btn sw-btn-reset"
+                            aria-label={t('reset')}
                         >
                             {t('reset')}
                         </button>
@@ -425,7 +376,7 @@ export default function StopwatchView() {
 
             {/* 랩 리스트 */}
             {laps.length > 0 && (
-                <div className="sw-lap-container">
+                <div className="sw-lap-container" role="region" aria-label={t('lapList')}>
                     {/* 랩 리스트 헤더 */}
                     <div className="sw-lap-header">
                         <span className="sw-lap-header-text">
@@ -434,7 +385,7 @@ export default function StopwatchView() {
                     </div>
 
                     {/* 랩 리스트 테이블 */}
-                    <div className="sw-lap-table">
+                    <div className="sw-lap-table" role="list">
                         {[...laps].reverse().map((lap, idx) => {
                             const originalIndex = laps.length - 1 - idx;
                             const isFastest = originalIndex === fastestLapIndex && laps.length > 1;
@@ -444,6 +395,7 @@ export default function StopwatchView() {
                                 <div
                                     key={lap.lapNumber}
                                     className={`sw-lap-row ${isFastest ? 'sw-lap-fastest' : ''} ${isSlowest ? 'sw-lap-slowest' : ''}`}
+                                    role="listitem"
                                     style={{
                                         borderBottom: idx < laps.length - 1 ? undefined : 'none',
                                     }}
@@ -460,6 +412,7 @@ export default function StopwatchView() {
                                     <button
                                         onClick={() => handleDeleteLap(lap.lapNumber)}
                                         className="sw-lap-delete"
+                                        aria-label={`${t('clearLaps')} #${lap.lapNumber}`}
                                     >
                                         ✕
                                     </button>
@@ -470,11 +423,15 @@ export default function StopwatchView() {
 
                     {/* 버튼들 */}
                     <div className="sw-lap-actions">
-                        <button onClick={handleExportExcel} className="sw-btn-export">
+                        <button onClick={handleExportExcel} className="sw-btn-export" aria-label={t('exportExcel')}>
                             {t('exportExcel')}
                         </button>
-                        <button onClick={handleClearLaps} className="sw-btn-clear">
-                            {t('clearLaps')}
+                        <button
+                            onClick={handleClearLaps}
+                            className={`sw-btn-clear ${confirmClear ? 'sw-btn-clear-confirm' : ''}`}
+                            aria-label={confirmClear ? t('clearLaps') + ' - confirm' : t('clearLaps')}
+                        >
+                            {confirmClear ? `${t('clearLaps')}?` : t('clearLaps')}
                         </button>
                     </div>
 
@@ -489,7 +446,7 @@ export default function StopwatchView() {
 
                     {/* 통계 섹션 - 랩 2개 이상일 때 표시 */}
                     {laps.length > 1 && (
-                        <div className="sw-stats-container">
+                        <div className="sw-stats-container" role="region" aria-label={t('avgLapTime')}>
                             <div className="sw-stats-row">
                                 <span className="sw-stats-label">{t('avgLapTime')}</span>
                                 <span className="sw-stats-value">{formatTime(averageLapTime, hasHoursInLaps)}</span>

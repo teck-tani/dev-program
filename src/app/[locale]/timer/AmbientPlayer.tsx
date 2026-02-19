@@ -10,90 +10,50 @@ const AMBIENT_ICONS: Record<AmbientType, string> = {
 };
 const AMBIENT_TYPES: AmbientType[] = ["rain", "cafe", "whiteNoise", "fire", "ocean", "forest"];
 
-function createNoise(ctx: AudioContext, type: AmbientType): { source: AudioBufferSourceNode; gain: GainNode } {
-    const sampleRate = ctx.sampleRate;
-    const duration = 4;
-    const bufferSize = sampleRate * duration;
-    const buffer = ctx.createBuffer(2, bufferSize, sampleRate);
-    const gain = ctx.createGain();
-    gain.gain.value = 0.15;
+const AMBIENT_FILES: Record<AmbientType, string> = {
+    rain: "/sounds/ambient/rain.mp3",
+    cafe: "/sounds/ambient/cafe.mp3",
+    whiteNoise: "/sounds/ambient/white-noise.mp3",
+    fire: "/sounds/ambient/fire.mp3",
+    ocean: "/sounds/ambient/ocean.mp3",
+    forest: "/sounds/ambient/forest.mp3",
+};
 
-    for (let ch = 0; ch < 2; ch++) {
-        const data = buffer.getChannelData(ch);
-        switch (type) {
-            case "whiteNoise":
-                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-                break;
-            case "rain": {
-                let b0 = 0;
-                for (let i = 0; i < bufferSize; i++) {
-                    const w = Math.random() * 2 - 1;
-                    b0 = 0.98 * b0 + 0.02 * w;
-                    data[i] = b0 * 3 + (Math.random() > 0.998 ? (Math.random() - 0.5) * 0.3 : 0);
-                }
-                break;
-            }
-            case "cafe":
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * 0.3 + Math.sin(i / 800) * 0.05 + (Math.random() > 0.995 ? (Math.random() - 0.5) * 0.2 : 0);
-                }
-                break;
-            case "fire": {
-                let f0 = 0;
-                for (let i = 0; i < bufferSize; i++) {
-                    f0 = 0.95 * f0 + 0.05 * (Math.random() * 2 - 1);
-                    data[i] = f0 * 2 + Math.sin(i / 200 + Math.random()) * 0.1;
-                }
-                break;
-            }
-            case "ocean":
-                for (let i = 0; i < bufferSize; i++) {
-                    const wave = Math.sin((i / sampleRate) * Math.PI * 0.15) * 0.5 + 0.5;
-                    data[i] = (Math.random() * 2 - 1) * wave * 0.8;
-                }
-                break;
-            case "forest": {
-                let b1 = 0;
-                for (let i = 0; i < bufferSize; i++) {
-                    b1 = 0.99 * b1 + 0.01 * (Math.random() * 2 - 1);
-                    data[i] = b1 * 2 + (Math.random() > 0.997 ? Math.sin(i / 30 + Math.random() * 100) * 0.15 : 0);
-                }
-                break;
-            }
-        }
-    }
-
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    source.connect(gain);
-    gain.connect(ctx.destination);
-    return { source, gain };
-}
-
-export default function AmbientPlayer() {
+export default function AmbientPlayer({ mode }: { mode: string }) {
     const t = useTranslations("Clock.Timer.ambient");
     const [active, setActive] = useState<AmbientType | null>(null);
     const [volume, setVolume] = useState(30);
-    const ctxRef = useRef<AudioContext | null>(null);
-    const sourceRef = useRef<AudioBufferSourceNode | null>(null);
-    const gainRef = useRef<GainNode | null>(null);
+    const [loading, setLoading] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const stop = useCallback(() => {
-        if (sourceRef.current) { try { sourceRef.current.stop(); } catch {} sourceRef.current = null; }
-        gainRef.current = null;
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            audioRef.current = null;
+        }
         setActive(null);
     }, []);
 
     const play = useCallback((type: AmbientType) => {
         stop();
-        if (!ctxRef.current) ctxRef.current = new AudioContext();
-        if (ctxRef.current.state === "suspended") ctxRef.current.resume();
-        const { source, gain } = createNoise(ctxRef.current, type);
-        gain.gain.value = volume / 100 * 0.3;
-        source.start();
-        sourceRef.current = source;
-        gainRef.current = gain;
+        setLoading(true);
+
+        const audio = new Audio(AMBIENT_FILES[type]);
+        audio.loop = true;
+        audio.volume = volume / 100;
+        audio.preload = "auto";
+
+        audio.addEventListener("canplaythrough", () => {
+            setLoading(false);
+            audio.play().catch(() => setLoading(false));
+        }, { once: true });
+
+        audio.addEventListener("error", () => {
+            setLoading(false);
+        }, { once: true });
+
+        audioRef.current = audio;
         setActive(type);
     }, [stop, volume]);
 
@@ -101,10 +61,21 @@ export default function AmbientPlayer() {
         if (active === type) stop(); else play(type);
     }, [active, stop, play]);
 
+    // 볼륨 변경 시 반영
     useEffect(() => {
-        if (gainRef.current) gainRef.current.gain.value = volume / 100 * 0.3;
+        if (audioRef.current) audioRef.current.volume = volume / 100;
     }, [volume]);
 
+    // 탭(모드) 전환 시 배경음 정지
+    const prevModeRef = useRef(mode);
+    useEffect(() => {
+        if (prevModeRef.current !== mode) {
+            stop();
+            prevModeRef.current = mode;
+        }
+    }, [mode, stop]);
+
+    // 언마운트 시 정리
     useEffect(() => { return () => { stop(); }; }, [stop]);
 
     return (
@@ -113,9 +84,12 @@ export default function AmbientPlayer() {
             <div className={styles.ambientGrid}>
                 {AMBIENT_TYPES.map(type => (
                     <button key={type} onClick={() => toggle(type)}
-                        className={`${styles.ambientBtn} ${active === type ? styles.ambientActive : ""}`}>
+                        className={`${styles.ambientBtn} ${active === type ? styles.ambientActive : ""}`}
+                        disabled={loading && active !== type}>
                         <span className={styles.ambientIcon}>{AMBIENT_ICONS[type]}</span>
-                        <span className={styles.ambientLabel}>{t(type)}</span>
+                        <span className={styles.ambientLabel}>
+                            {loading && active === type ? "..." : t(type)}
+                        </span>
                     </button>
                 ))}
             </div>

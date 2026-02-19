@@ -70,7 +70,9 @@
       "mcp__plugin_playwright_playwright__browser_hover",
       "mcp__plugin_playwright_playwright__browser_navigate_back",
       "mcp__plugin_playwright_playwright__browser_network_requests",
-      "mcp__plugin_playwright_playwright__browser_select_option"
+      "mcp__plugin_playwright_playwright__browser_select_option",
+      "Bash(del \"c:\\\\tani\\\\dev-program\\\\.next\\\\lock\")",
+      "Bash(taskkill:*)"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

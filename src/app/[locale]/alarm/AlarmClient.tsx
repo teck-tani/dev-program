@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import styles from "./alarm.module.css";
 
 // ===== Types =====
@@ -129,6 +129,7 @@ function playSchoolBell(ctx: AudioContext, duration: number): OscillatorNode {
 // ===== Component =====
 export default function AlarmClient() {
   const t = useTranslations("Alarm");
+  const locale = useLocale();
 
   // Current time - initialize with null to avoid hydration mismatch
   const [now, setNow] = useState<Date | null>(null);
@@ -147,12 +148,16 @@ export default function AlarmClient() {
   // Notification
   const [notifPermission, setNotifPermission] = useState<NotificationPermission>("default");
 
+  // Modal focus trap ref
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
   // Audio refs
   const classicAudioRef = useRef<HTMLAudioElement | null>(null);
   const currentOscRef = useRef<OscillatorNode | null>(null);
   const alarmLoopRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isPreviewing, setIsPreviewing] = useState(false);
+  const firedAlarmsRef = useRef<Set<string>>(new Set());
 
   // Load alarms from localStorage
   useEffect(() => {
@@ -194,13 +199,26 @@ export default function AlarmClient() {
     const currentM = now.getMinutes();
     const currentS = now.getSeconds();
 
-    if (currentS !== 0) return; // Only check at :00 seconds
-
+    // 해당 분(HH:MM) 안에 있을 때만 체크 (0~59초 어디서든 감지)
     for (const alarm of alarms) {
-      if (alarm.enabled && alarm.hour === currentH && alarm.minute === currentM) {
-        triggerAlarm(alarm.id);
-        break;
-      }
+      if (!alarm.enabled || alarm.hour !== currentH || alarm.minute !== currentM) continue;
+
+      const firedKey = `${alarm.id}_${currentH}_${currentM}`;
+      if (firedAlarmsRef.current.has(firedKey)) continue;
+
+      firedAlarmsRef.current.add(firedKey);
+      triggerAlarm(alarm.id);
+      break;
+    }
+
+    // 분이 바뀌면 이전 fired 기록 정리
+    if (currentS === 0) {
+      const currentKey = `_${currentH}_${currentM}`;
+      firedAlarmsRef.current.forEach((key) => {
+        if (!key.endsWith(currentKey)) {
+          firedAlarmsRef.current.delete(key);
+        }
+      });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [now, hydrated, ringingAlarmId]);
@@ -231,16 +249,36 @@ export default function AlarmClient() {
     document.title = t("meta.title");
   }, [now, alarms, ringingAlarmId, t]);
 
+  // Stop only audio/oscillator (not the alarm loop)
+  const stopAudioOnly = useCallback(() => {
+    if (classicAudioRef.current) {
+      classicAudioRef.current.pause();
+      classicAudioRef.current.currentTime = 0;
+    }
+    if (currentOscRef.current) {
+      try {
+        currentOscRef.current.stop();
+      } catch {
+        // already stopped
+      }
+      currentOscRef.current = null;
+    }
+  }, []);
+
   // Play alarm sound
   const playSound = useCallback((sound: SoundType, duration: number = 3) => {
-    stopCurrentSound();
+    stopAudioOnly();
 
     if (sound === "classic") {
       if (!classicAudioRef.current) {
         classicAudioRef.current = new Audio("/alarm.mp3");
       }
       classicAudioRef.current.currentTime = 0;
-      classicAudioRef.current.play().catch(() => {});
+      classicAudioRef.current.play().catch(() => {
+        // mp3 로드 실패 시 Web Audio API fallback (gentle chime)
+        const ctx = getAudioContext();
+        currentOscRef.current = playGentleChime(ctx, duration);
+      });
       return;
     }
 
@@ -265,26 +303,16 @@ export default function AlarmClient() {
     }
 
     currentOscRef.current = osc;
-  }, []);
+  }, [stopAudioOnly]);
 
+  // Stop all sound + alarm loop (for dismiss/snooze/cleanup)
   const stopCurrentSound = useCallback(() => {
-    if (classicAudioRef.current) {
-      classicAudioRef.current.pause();
-      classicAudioRef.current.currentTime = 0;
-    }
-    if (currentOscRef.current) {
-      try {
-        currentOscRef.current.stop();
-      } catch {
-        // already stopped
-      }
-      currentOscRef.current = null;
-    }
+    stopAudioOnly();
     if (alarmLoopRef.current) {
       clearInterval(alarmLoopRef.current);
       alarmLoopRef.current = null;
     }
-  }, []);
+  }, [stopAudioOnly]);
 
   const triggerAlarm = useCallback(
     (alarmId: string) => {
@@ -409,6 +437,36 @@ export default function AlarmClient() {
     }, 3000);
   }, [isPreviewing, inputSound, playSound, stopCurrentSound]);
 
+  // Modal focus trap
+  useEffect(() => {
+    if (!ringingAlarmId || !modalRef.current) return;
+
+    const modal = modalRef.current;
+    const focusableEls = modal.querySelectorAll<HTMLElement>("button");
+    if (focusableEls.length > 0) focusableEls[0].focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || focusableEls.length === 0) return;
+      const first = focusableEls[0];
+      const last = focusableEls[focusableEls.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    modal.addEventListener("keydown", handleKeyDown);
+    return () => modal.removeEventListener("keydown", handleKeyDown);
+  }, [ringingAlarmId]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -457,7 +515,7 @@ export default function AlarmClient() {
       <div className={styles.timeSection}>
         <div className={styles.timeLabel}>{t("currentTime")}</div>
         <div className={styles.timeDisplay}>{formatTime(displayNow)}</div>
-        <div className={styles.dateDisplay}>{formatDate(displayNow, "ko")}</div>
+        <div className={styles.dateDisplay}>{formatDate(displayNow, locale)}</div>
       </div>
 
       {/* Notification Permission Banner */}
@@ -592,6 +650,9 @@ export default function AlarmClient() {
                       className={`${styles.toggleBtn} ${alarm.enabled ? styles.toggleBtnActive : ""}`}
                       onClick={() => toggleAlarm(alarm.id)}
                       title={alarm.enabled ? t("enabled") : t("disabled")}
+                      role="switch"
+                      aria-checked={alarm.enabled}
+                      aria-label={`${formatAlarmTime(alarm.hour, alarm.minute)} ${alarm.enabled ? t("enabled") : t("disabled")}`}
                     >
                       <span className={styles.toggleKnob} />
                     </button>
@@ -608,7 +669,7 @@ export default function AlarmClient() {
 
       {/* Alarm Ringing Modal */}
       {ringingAlarm && (
-        <div className={styles.modalOverlay}>
+        <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-label={t("alarmRinging")} ref={modalRef}>
           <div className={styles.modalContent}>
             <div className={styles.modalIcon}>🔔</div>
             <div className={styles.modalTime}>{formatAlarmTime(ringingAlarm.hour, ringingAlarm.minute)}</div>

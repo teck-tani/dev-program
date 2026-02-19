@@ -13,6 +13,7 @@ export default function DiscountCalculatorClient() {
     const isDark = theme === 'dark';
 
     const [mode, setMode] = useState<CalcMode>("discountRate");
+    const [copied, setCopied] = useState(false);
 
     // 할인율 계산 모드: 원가 + 할인가 → 할인율
     const [originalPrice1, setOriginalPrice1] = useState("");
@@ -150,6 +151,22 @@ export default function DiscountCalculatorClient() {
     const hasResult = (mode === "discountRate" && resultDiscountRate !== null)
         || (mode === "discountPrice" && resultDiscountedPrice !== null)
         || (mode === "margin" && resultMarginRate !== null);
+
+    // 인상 여부 판단 (할인율 계산 모드에서 할인가 > 원가)
+    const isIncrease = mode === "discountRate" && resultDiscountRate !== null && resultDiscountRate < 0;
+
+    // 결과 복사
+    const handleCopy = async () => {
+        const text = getShareText();
+        if (!text) return;
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            // fallback
+        }
+    };
 
     const modes: CalcMode[] = ["discountRate", "discountPrice", "margin"];
 
@@ -298,25 +315,19 @@ export default function DiscountCalculatorClient() {
                             <label style={labelStyle}>{t("label.discountRate")}</label>
                             <div style={{ position: "relative" }}>
                                 <input
-                                    type="number"
+                                    type="text"
+                                    inputMode="decimal"
                                     value={discountRateInput}
-                                    onChange={(e) => setDiscountRateInput(e.target.value)}
-                                    placeholder="0"
-                                    min="0"
-                                    max="100"
-                                    step="0.1"
-                                    style={{
-                                        ...inputStyle,
-                                        width: "180px",
-                                        paddingRight: "40px",
+                                    onChange={(e) => {
+                                        const v = e.target.value.replace(/[^0-9.]/g, "");
+                                        setDiscountRateInput(v);
                                     }}
+                                    placeholder="0"
+                                    style={inputStyle}
                                     onFocus={handleFocus}
                                     onBlur={handleBlur}
                                 />
-                                <span style={{
-                                    ...unitStyle,
-                                    right: "16px",
-                                }}>%</span>
+                                <span style={unitStyle}>%</span>
                             </div>
                         </div>
                     </>
@@ -396,21 +407,37 @@ export default function DiscountCalculatorClient() {
                         {t("result.title")}
                     </h3>
 
-                    {/* 할인율 */}
+                    {/* 인상 안내 */}
+                    {isIncrease && (
+                        <div style={{
+                            padding: "10px 14px",
+                            marginBottom: "12px",
+                            borderRadius: "8px",
+                            background: isDark ? "#3b1a1a" : "#fef2f2",
+                            border: `1px solid ${isDark ? "#7f1d1d" : "#fecaca"}`,
+                            fontSize: "0.8rem",
+                            color: isDark ? "#fca5a5" : "#dc2626",
+                            fontWeight: 500,
+                        }}>
+                            {t("notice.priceIncrease")}
+                        </div>
+                    )}
+
+                    {/* 할인율 / 인상율 */}
                     <ResultRow
-                        label={t("result.discountRate")}
-                        value={`${resultDiscountRate.toFixed(1)}%`}
+                        label={isIncrease ? t("result.increaseRate") : t("result.discountRate")}
+                        value={`${isIncrease ? "+" : ""}${Math.abs(resultDiscountRate).toFixed(1)}%`}
                         isDark={isDark}
                         isHighlight
-                        accentColor={isDark ? "#f59e0b" : "#d97706"}
+                        accentColor={isIncrease ? (isDark ? "#ef4444" : "#dc2626") : (isDark ? "#f59e0b" : "#d97706")}
                     />
-                    {/* 할인 금액 */}
+                    {/* 할인/인상 금액 */}
                     <ResultRow
                         label={t("result.discountAmount")}
-                        value={`${formatNumber(resultDiscountAmount!)} ${t("unit")}`}
+                        value={`${isIncrease ? "+" : ""}${formatNumber(Math.abs(resultDiscountAmount!))} ${t("unit")}`}
                         isDark={isDark}
                         isHighlight
-                        accentColor={isDark ? "#3b82f6" : "#2563eb"}
+                        accentColor={isIncrease ? (isDark ? "#ef4444" : "#dc2626") : (isDark ? "#3b82f6" : "#2563eb")}
                     />
                     {/* 원가 */}
                     <ResultRow
@@ -538,9 +565,34 @@ export default function DiscountCalculatorClient() {
                 </div>
             )}
 
-            {/* Share Button */}
-            <div style={{ marginBottom: "16px" }}>
-                <ShareButton shareText={getShareText()} disabled={!hasResult} />
+            {/* Copy & Share Buttons */}
+            <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+                <button
+                    onClick={handleCopy}
+                    disabled={!hasResult}
+                    style={{
+                        flex: 1,
+                        padding: "12px 16px",
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        border: `1px solid ${isDark ? "#555" : "#d1d5db"}`,
+                        borderRadius: "10px",
+                        background: copied
+                            ? (isDark ? "#065f46" : "#d1fae5")
+                            : (isDark ? "#2a2a2a" : "#f9fafb"),
+                        color: copied
+                            ? (isDark ? "#6ee7b7" : "#059669")
+                            : (isDark ? "#ccc" : "#555"),
+                        cursor: hasResult ? "pointer" : "not-allowed",
+                        opacity: hasResult ? 1 : 0.5,
+                        transition: "all 0.2s",
+                    }}
+                >
+                    {copied ? t("button.copied") : t("button.copy")}
+                </button>
+                <div style={{ flex: 1 }}>
+                    <ShareButton shareText={getShareText()} disabled={!hasResult} />
+                </div>
             </div>
 
             {/* 참고 공식 카드 */}

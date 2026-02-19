@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import ShareButton from "@/components/ShareButton";
@@ -15,6 +15,20 @@ function formatDateInput(value: string): string {
 
 function isValidDateFormat(value: string): boolean {
     return /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+/** YYYY-MM-DD 문자열을 로컬 타임존 Date 객체로 파싱 (UTC 오프셋 버그 방지) */
+function parseLocalDate(dateStr: string): Date {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+
+/** 날짜 문자열이 실제 존재하는 날짜인지 검증 */
+function isRealDate(dateStr: string): boolean {
+    if (!isValidDateFormat(dateStr)) return false;
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
 }
 
 function getZodiacSign(month: number, day: number): string {
@@ -70,6 +84,30 @@ const MILESTONE_AGES = [
     { age: 100, key: 'sangsu' },
 ];
 
+const ZODIAC_KEYS = ['monkey', 'rooster', 'dog', 'pig', 'rat', 'ox', 'tiger', 'rabbit', 'dragon', 'snake', 'horse', 'sheep'];
+// 육합 (Six Harmonies) - Best compatibility pairs
+const YUKAP_PAIRS: [number, number][] = [[4, 5], [6, 3], [7, 2], [8, 1], [9, 0], [10, 11]];
+// 삼합 (Three Harmonies) groups
+const SAMHAP_GROUPS: number[][] = [[4, 8, 0], [5, 9, 1], [6, 10, 2], [7, 11, 3]];
+// 충 (Clash) pairs
+const CHUNG_PAIRS: [number, number][] = [[4, 10], [5, 11], [6, 0], [7, 1], [8, 2], [9, 3]];
+
+function getCompatibility(idx1: number, idx2: number): 'best' | 'great' | 'good' | 'neutral' | 'caution' {
+    if (idx1 === idx2) return 'good';
+    for (const [a, b] of YUKAP_PAIRS) if ((idx1 === a && idx2 === b) || (idx1 === b && idx2 === a)) return 'best';
+    for (const group of SAMHAP_GROUPS) if (group.includes(idx1) && group.includes(idx2)) return 'great';
+    for (const [a, b] of CHUNG_PAIRS) if ((idx1 === a && idx2 === b) || (idx1 === b && idx2 === a)) return 'caution';
+    return 'neutral';
+}
+
+const COMPAT_COLORS: Record<string, string> = {
+    best: '#ec4899', great: '#8b5cf6', good: '#3b82f6', neutral: '#6b7280', caution: '#f59e0b',
+};
+
+const COMPAT_STARS: Record<string, number> = {
+    best: 5, great: 4, good: 3, neutral: 2, caution: 1,
+};
+
 interface MilestoneData {
     age: number;
     key: string;
@@ -94,11 +132,25 @@ interface AgeResult {
     milestones: MilestoneData[];
 }
 
+interface CompareResult {
+    person1: { manAge: number; koreanAge: number; yearAge: number; zodiacIndex: number; };
+    person2: { manAge: number; koreanAge: number; yearAge: number; zodiacIndex: number; };
+    diffYears: number;
+    diffMonths: number;
+    diffDays: number;
+    totalDiffDays: number;
+    olderPerson: 1 | 2 | 0;
+    compatibility: 'best' | 'great' | 'good' | 'neutral' | 'caution';
+}
+
 export default function KoreanAgeCalculatorClient() {
     const t = useTranslations('KoreanAgeCalculator');
     const tInput = useTranslations('KoreanAgeCalculator.input');
     const tResult = useTranslations('KoreanAgeCalculator.result');
     const tInfo = useTranslations('KoreanAgeCalculator.info');
+    const tCompare = useTranslations('KoreanAgeCalculator.compare');
+    const tZodiac = useTranslations('KoreanAgeCalculator.zodiacPersonality');
+    const tCompat = useTranslations('KoreanAgeCalculator.compatibility');
     const locale = useLocale();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
@@ -111,24 +163,63 @@ export default function KoreanAgeCalculatorClient() {
     const [result, setResult] = useState<AgeResult | null>(null);
     const [isCalculating, setIsCalculating] = useState(false);
 
+    const [mode, setMode] = useState<'calculate' | 'compare'>('calculate');
+    const [person1Date, setPerson1Date] = useState("");
+    const [person2Date, setPerson2Date] = useState("");
+    const [compareResult, setCompareResult] = useState<CompareResult | null>(null);
+    const [isComparing, setIsComparing] = useState(false);
+
     const zodiacs = locale === 'ko'
         ? ["원숭이", "닭", "개", "돼지", "쥐", "소", "호랑이", "토끼", "용", "뱀", "말", "양"]
         : ["Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Sheep"];
 
-    const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setBirthDate(formatDateInput(e.target.value));
-    };
+    const handleDateChange = useCallback((
+        e: React.ChangeEvent<HTMLInputElement>,
+        setter: React.Dispatch<React.SetStateAction<string>>
+    ) => {
+        const input = e.target;
+        const value = e.target.value;
+        const pos = input.selectionStart ?? value.length;
 
-    const handleReferenceDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setReferenceDate(formatDateInput(e.target.value));
-    };
+        if (pos >= value.length) {
+            setter(formatDateInput(value));
+        } else {
+            const cleaned = value.replace(/[^\d-]/g, "").slice(0, 10);
+            setter(cleaned);
+            requestAnimationFrame(() => {
+                input.setSelectionRange(pos, pos);
+            });
+        }
+    }, []);
+
+    const handleDateBlur = useCallback((
+        value: string,
+        setter: React.Dispatch<React.SetStateAction<string>>
+    ) => {
+        if (!value) return;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+
+        const parts = value.split('-');
+        if (parts.length === 3) {
+            const y = parts[0].replace(/\D/g, '').padStart(4, '0').slice(0, 4);
+            const m = parts[1].replace(/\D/g, '').padStart(2, '0').slice(0, 2);
+            const d = parts[2].replace(/\D/g, '').padStart(2, '0').slice(0, 2);
+            setter(`${y}-${m}-${d}`);
+            return;
+        }
+
+        const digits = value.replace(/\D/g, '');
+        if (digits.length >= 8) {
+            setter(`${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`);
+        }
+    }, []);
 
     const calculateAge = () => {
-        if (!birthDate || !isValidDateFormat(birthDate)) {
+        if (!birthDate || !isRealDate(birthDate)) {
             alert(tInput('alertInput'));
             return;
         }
-        if (!isValidDateFormat(referenceDate)) {
+        if (!isRealDate(referenceDate)) {
             alert(locale === 'ko' ? '기준일을 올바르게 입력해주세요.' : 'Please enter a valid reference date.');
             return;
         }
@@ -136,11 +227,11 @@ export default function KoreanAgeCalculatorClient() {
         setIsCalculating(true);
 
         setTimeout(() => {
-            const birth = new Date(birthDate);
-            const ref = new Date(referenceDate);
+            const birth = parseLocalDate(birthDate);
+            const ref = parseLocalDate(referenceDate);
 
-            if (isNaN(birth.getTime()) || isNaN(ref.getTime())) {
-                alert(locale === 'ko' ? '올바른 날짜를 입력해주세요.' : 'Please enter a valid date.');
+            if (birth > ref) {
+                alert(locale === 'ko' ? '생년월일이 기준일보다 미래입니다.' : 'Birth date cannot be after reference date.');
                 setIsCalculating(false);
                 return;
             }
@@ -207,6 +298,93 @@ export default function KoreanAgeCalculatorClient() {
         }, 300);
     };
 
+    const compareAge = () => {
+        if (!person1Date || !isRealDate(person1Date) || !person2Date || !isRealDate(person2Date)) {
+            alert(tCompare('alertInput'));
+            return;
+        }
+        setIsComparing(true);
+        setTimeout(() => {
+            const d1 = parseLocalDate(person1Date);
+            const d2 = parseLocalDate(person2Date);
+            const now = new Date();
+
+            function calcManAge(birth: Date, ref: Date): number {
+                let age = ref.getFullYear() - birth.getFullYear();
+                const m = ref.getMonth() - birth.getMonth();
+                if (m < 0 || (m === 0 && ref.getDate() < birth.getDate())) age--;
+                return age;
+            }
+
+            const p1 = {
+                manAge: calcManAge(d1, now),
+                koreanAge: now.getFullYear() - d1.getFullYear() + 1,
+                yearAge: now.getFullYear() - d1.getFullYear(),
+                zodiacIndex: d1.getFullYear() % 12,
+            };
+            const p2 = {
+                manAge: calcManAge(d2, now),
+                koreanAge: now.getFullYear() - d2.getFullYear() + 1,
+                yearAge: now.getFullYear() - d2.getFullYear(),
+                zodiacIndex: d2.getFullYear() % 12,
+            };
+
+            const earlier = d1 <= d2 ? d1 : d2;
+            const later = d1 <= d2 ? d2 : d1;
+            const olderPerson: 1 | 2 | 0 = d1 < d2 ? 1 : d1 > d2 ? 2 : 0;
+
+            let diffYears = later.getFullYear() - earlier.getFullYear();
+            let diffMonths = later.getMonth() - earlier.getMonth();
+            let diffDays = later.getDate() - earlier.getDate();
+            if (diffDays < 0) {
+                diffMonths--;
+                const prevMonth = new Date(later.getFullYear(), later.getMonth(), 0);
+                diffDays += prevMonth.getDate();
+            }
+            if (diffMonths < 0) {
+                diffYears--;
+                diffMonths += 12;
+            }
+            const totalDiffDays = Math.abs(Math.floor((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
+
+            setCompareResult({
+                person1: p1, person2: p2,
+                diffYears, diffMonths, diffDays, totalDiffDays, olderPerson,
+                compatibility: getCompatibility(p1.zodiacIndex, p2.zodiacIndex),
+            });
+            setIsComparing(false);
+        }, 300);
+    };
+
+    const renderDateInput = (value: string, setter: React.Dispatch<React.SetStateAction<string>>, placeholder: string) => (
+        <div style={{ position: 'relative' }}>
+            <input className="age-input" type="text" inputMode="numeric"
+                value={value} onChange={(e) => handleDateChange(e, setter)}
+                onBlur={() => handleDateBlur(value, setter)}
+                placeholder={placeholder} maxLength={10}
+                style={{
+                    width: '100%', padding: '14px 40px 14px 16px',
+                    border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                    borderRadius: '14px', fontSize: '1.1rem', fontWeight: '500',
+                    letterSpacing: '0.05em', transition: 'all 0.2s',
+                    background: isDark ? '#0f172a' : '#fff',
+                    color: isDark ? '#e2e8f0' : '#1f2937',
+                    boxSizing: 'border-box', outline: 'none', textAlign: 'center',
+                }}
+            />
+            <input type="date" tabIndex={-1}
+                value={value} onChange={(e) => setter(e.target.value)}
+                style={{ position: 'absolute', right: 0, top: 0, width: '40px', height: '100%', opacity: 0, cursor: 'pointer' }}
+            />
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"
+                stroke={isDark ? '#64748b' : '#9ca3af'} strokeWidth={2}
+                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                <path strokeLinecap="round" strokeLinejoin="round"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        </div>
+    );
+
     const genColor = result ? GENERATION_COLORS[result.generation] || '#6b7280' : '#6b7280';
 
     const getShareText = () => {
@@ -228,24 +406,64 @@ export default function KoreanAgeCalculatorClient() {
                 marginBottom: '24px',
                 border: isDark ? '1px solid #334155' : '1px solid rgba(139, 92, 246, 0.15)',
             }}>
+                {/* Tab Selector */}
+                <div className="age-tabs" style={{
+                    display: 'flex', gap: '4px', marginBottom: '24px',
+                    background: isDark ? '#0f172a' : '#f1f5f9',
+                    borderRadius: '12px', padding: '4px',
+                }}>
+                    {(['calculate', 'compare'] as const).map(tab => (
+                        <button key={tab} className="age-tab-btn" onClick={() => { setMode(tab); setResult(null); setCompareResult(null); }}
+                            style={{
+                                flex: 1, padding: '10px 16px', border: 'none', borderRadius: '10px',
+                                fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s',
+                                background: mode === tab ? '#6366f1' : 'transparent',
+                                color: mode === tab ? '#fff' : (isDark ? '#94a3b8' : '#64748b'),
+                            }}>
+                            {t(`tabs.${tab}`)}
+                        </button>
+                    ))}
+                </div>
+
+                {mode === 'calculate' && (<>
                 <div className="age-section" style={{ marginBottom: '24px' }}>
                     <label className="age-label" style={{
                         display: 'block', fontSize: '0.875rem', fontWeight: '600',
                         color: isDark ? '#f1f5f9' : '#374151', marginBottom: '8px',
                     }}>{tInput('birthDate')}</label>
-                    <input className="age-input" type="text" inputMode="numeric"
-                        value={birthDate} onChange={handleBirthDateChange}
-                        placeholder="1990-01-01" maxLength={10}
-                        style={{
-                            width: '100%', padding: '14px 16px',
-                            border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
-                            borderRadius: '14px', fontSize: '1.1rem', fontWeight: '500',
-                            letterSpacing: '0.05em', transition: 'all 0.2s',
-                            background: isDark ? '#0f172a' : '#fff',
-                            color: isDark ? '#e2e8f0' : '#1f2937',
-                            boxSizing: 'border-box', outline: 'none', textAlign: 'center',
-                        }}
-                    />
+                    <div style={{ position: 'relative' }}>
+                        <input className="age-input" type="text" inputMode="numeric"
+                            value={birthDate} onChange={(e) => handleDateChange(e, setBirthDate)}
+                            onBlur={() => handleDateBlur(birthDate, setBirthDate)}
+                            placeholder="1990-01-01" maxLength={10}
+                            style={{
+                                width: '100%', padding: '14px 40px 14px 16px',
+                                border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                                borderRadius: '14px', fontSize: '1.1rem', fontWeight: '500',
+                                letterSpacing: '0.05em', transition: 'all 0.2s',
+                                background: isDark ? '#0f172a' : '#fff',
+                                color: isDark ? '#e2e8f0' : '#1f2937',
+                                boxSizing: 'border-box', outline: 'none', textAlign: 'center',
+                            }}
+                        />
+                        <input type="date" tabIndex={-1}
+                            value={birthDate} onChange={(e) => setBirthDate(e.target.value)}
+                            style={{
+                                position: 'absolute', right: 0, top: 0,
+                                width: '40px', height: '100%',
+                                opacity: 0, cursor: 'pointer',
+                            }}
+                        />
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24"
+                            stroke={isDark ? '#64748b' : '#9ca3af'} strokeWidth={2}
+                            style={{
+                                position: 'absolute', right: '12px', top: '50%',
+                                transform: 'translateY(-50%)', pointerEvents: 'none',
+                            }}>
+                            <path strokeLinecap="round" strokeLinejoin="round"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
                     <p style={{ fontSize: '0.75rem', color: isDark ? '#64748b' : '#9ca3af', marginTop: '6px', textAlign: 'center' }}>
                         {locale === 'ko' ? '숫자 8자리 입력 (예: 19900101)' : 'Enter 8 digits (e.g., 19900101)'}
                     </p>
@@ -256,19 +474,39 @@ export default function KoreanAgeCalculatorClient() {
                         display: 'block', fontSize: '0.875rem', fontWeight: '600',
                         color: isDark ? '#f1f5f9' : '#374151', marginBottom: '8px',
                     }}>{tInput('referenceDate')}</label>
-                    <input className="age-input" type="text" inputMode="numeric"
-                        value={referenceDate} onChange={handleReferenceDateChange}
-                        placeholder="2024-01-01" maxLength={10}
-                        style={{
-                            width: '100%', padding: '14px 16px',
-                            border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
-                            borderRadius: '14px', fontSize: '1.1rem', fontWeight: '500',
-                            letterSpacing: '0.05em', transition: 'all 0.2s',
-                            background: isDark ? '#0f172a' : '#fff',
-                            color: isDark ? '#e2e8f0' : '#1f2937',
-                            boxSizing: 'border-box', outline: 'none', textAlign: 'center',
-                        }}
-                    />
+                    <div style={{ position: 'relative' }}>
+                        <input className="age-input" type="text" inputMode="numeric"
+                            value={referenceDate} onChange={(e) => handleDateChange(e, setReferenceDate)}
+                            onBlur={() => handleDateBlur(referenceDate, setReferenceDate)}
+                            placeholder="2024-01-01" maxLength={10}
+                            style={{
+                                width: '100%', padding: '14px 40px 14px 16px',
+                                border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                                borderRadius: '14px', fontSize: '1.1rem', fontWeight: '500',
+                                letterSpacing: '0.05em', transition: 'all 0.2s',
+                                background: isDark ? '#0f172a' : '#fff',
+                                color: isDark ? '#e2e8f0' : '#1f2937',
+                                boxSizing: 'border-box', outline: 'none', textAlign: 'center',
+                            }}
+                        />
+                        <input type="date" tabIndex={-1}
+                            value={referenceDate} onChange={(e) => setReferenceDate(e.target.value)}
+                            style={{
+                                position: 'absolute', right: 0, top: 0,
+                                width: '40px', height: '100%',
+                                opacity: 0, cursor: 'pointer',
+                            }}
+                        />
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24"
+                            stroke={isDark ? '#64748b' : '#9ca3af'} strokeWidth={2}
+                            style={{
+                                position: 'absolute', right: '12px', top: '50%',
+                                transform: 'translateY(-50%)', pointerEvents: 'none',
+                            }}>
+                            <path strokeLinecap="round" strokeLinejoin="round"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
                 </div>
 
                 <button className="age-calc-btn" onClick={calculateAge} disabled={isCalculating}
@@ -293,7 +531,181 @@ export default function KoreanAgeCalculatorClient() {
                         </span>
                     ) : tInput('calculate')}
                 </button>
+                </>)}
+
+                {mode === 'compare' && (<>
+                <div className="age-section" style={{ marginBottom: '16px' }}>
+                    <label className="age-label" style={{
+                        display: 'block', fontSize: '0.875rem', fontWeight: '600',
+                        color: isDark ? '#f1f5f9' : '#374151', marginBottom: '8px',
+                    }}>{tCompare('person1')}</label>
+                    {renderDateInput(person1Date, setPerson1Date, "1990-01-01")}
+                </div>
+
+                <div className="age-section" style={{ marginBottom: '24px' }}>
+                    <label className="age-label" style={{
+                        display: 'block', fontSize: '0.875rem', fontWeight: '600',
+                        color: isDark ? '#f1f5f9' : '#374151', marginBottom: '8px',
+                    }}>{tCompare('person2')}</label>
+                    {renderDateInput(person2Date, setPerson2Date, "1995-06-15")}
+                </div>
+
+                <button className="age-calc-btn" onClick={compareAge} disabled={isComparing}
+                    style={{
+                        width: '100%', padding: '18px 24px', border: 'none', borderRadius: '16px',
+                        fontSize: '1.1rem', fontWeight: '700', cursor: 'pointer',
+                        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+                        color: '#fff',
+                        boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4), 0 4px 8px rgba(139, 92, 246, 0.25)',
+                        transition: 'all 0.3s', letterSpacing: '0.02em',
+                        opacity: isComparing ? 0.8 : 1, transform: isComparing ? 'scale(0.98)' : 'scale(1)',
+                    }}
+                >
+                    {isComparing ? (
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            <span style={{
+                                width: '18px', height: '18px',
+                                border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff',
+                                borderRadius: '50%', animation: 'spin 0.8s linear infinite',
+                            }} />
+                            {tCompare('comparing')}
+                        </span>
+                    ) : tCompare('compareBtn')}
+                </button>
+                </>)}
             </div>
+
+            {/* Comparison Results */}
+            {compareResult && mode === 'compare' && (
+                <div style={{
+                    background: isDark
+                        ? 'linear-gradient(145deg, #1f2937 0%, #111827 50%, #0f172a 100%)'
+                        : 'linear-gradient(145deg, #ffffff 0%, #faf5ff 100%)',
+                    borderRadius: '24px', padding: '28px', marginBottom: '24px',
+                    position: 'relative', overflow: 'hidden',
+                    border: isDark ? 'none' : '1px solid rgba(139, 92, 246, 0.15)',
+                    boxShadow: isDark ? 'none' : '0 4px 24px rgba(99, 102, 241, 0.12)',
+                }}>
+                    {/* Two columns */}
+                    <div className="age-compare-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                        {[
+                            { label: tCompare('person1'), data: compareResult.person1 },
+                            { label: tCompare('person2'), data: compareResult.person2 },
+                        ].map((person, i) => (
+                            <div key={i} style={{
+                                background: isDark
+                                    ? (i === 0 ? 'rgba(99,102,241,0.1)' : 'rgba(249,115,22,0.1)')
+                                    : (i === 0 ? 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)' : 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)'),
+                                borderRadius: '16px', padding: '20px', textAlign: 'center',
+                                border: `1px solid ${i === 0
+                                    ? (isDark ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.25)')
+                                    : (isDark ? 'rgba(249,115,22,0.2)' : 'rgba(249,115,22,0.25)')}`,
+                            }}>
+                                <h3 style={{ fontSize: '0.85rem', color: i === 0 ? (isDark ? '#a5b4fc' : '#4f46e5') : (isDark ? '#fdba74' : '#ea580c'), marginBottom: '12px', fontWeight: '600' }}>
+                                    {person.label}
+                                </h3>
+                                <div style={{ fontSize: '2rem', fontWeight: '800', color: isDark ? '#fff' : '#1f2937', marginBottom: '4px' }}>
+                                    {person.data.manAge}<span style={{ fontSize: '0.9rem', color: i === 0 ? (isDark ? '#a5b4fc' : '#4f46e5') : (isDark ? '#fdba74' : '#ea580c') }}>{locale === 'ko' ? '세' : ''}</span>
+                                </div>
+                                <div style={{ fontSize: '0.8rem', color: isDark ? 'rgba(255,255,255,0.5)' : '#6b7280', marginBottom: '10px' }}>
+                                    {tResult('koreanAge')} {person.data.koreanAge}{locale === 'ko' ? '세' : ''}
+                                </div>
+                                <div style={{
+                                    padding: '6px 12px', display: 'inline-block',
+                                    background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(99,102,241,0.08)',
+                                    borderRadius: '20px', fontSize: '0.85rem',
+                                    color: isDark ? '#e2e8f0' : '#374151',
+                                }}>
+                                    {zodiacs[person.data.zodiacIndex]}{locale === 'ko' ? '띠' : ''}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Age Difference */}
+                    <div style={{
+                        background: isDark
+                            ? 'linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(99,102,241,0.1) 100%)'
+                            : 'linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(99,102,241,0.06) 100%)',
+                        borderRadius: '14px', padding: '16px 20px', marginBottom: '20px',
+                        border: `1px solid ${isDark ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.15)'}`,
+                        textAlign: 'center',
+                    }}>
+                        <span style={{ color: isDark ? '#c4b5fd' : '#7c3aed', fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px' }}>
+                            {tCompare('ageDiff')}
+                        </span>
+                        {compareResult.olderPerson === 0 ? (
+                            <span style={{ color: isDark ? '#fff' : '#1f2937', fontSize: '1.1rem', fontWeight: '700' }}>
+                                {tCompare('sameAge')}
+                            </span>
+                        ) : (
+                            <span style={{ color: isDark ? '#fff' : '#1f2937', fontSize: '1.1rem', fontWeight: '700' }}>
+                                {compareResult.diffYears > 0 && `${compareResult.diffYears}${tResult('yearsUnit')}`}
+                                {compareResult.diffMonths > 0 && `${compareResult.diffMonths}${tResult('monthsUnit')}`}
+                                {compareResult.diffDays > 0 && `${compareResult.diffDays}${tResult('daysUnit')}`}
+                                {compareResult.diffYears === 0 && compareResult.diffMonths === 0 && compareResult.diffDays === 0 && tCompare('sameAge')}
+                                <span style={{ fontSize: '0.85rem', color: isDark ? '#c4b5fd' : '#7c3aed', marginLeft: '8px' }}>
+                                    ({compareResult.totalDiffDays.toLocaleString()}{tResult('daysUnit')})
+                                </span>
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Compatibility */}
+                    <div style={{
+                        background: isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
+                        borderRadius: '16px', padding: '20px',
+                        border: isDark ? 'none' : '1px solid #e5e7eb',
+                    }}>
+                        <h3 style={{ fontSize: '1rem', fontWeight: '700', color: isDark ? '#fff' : '#1f2937', marginBottom: '16px' }}>
+                            {tCompat('title')}
+                        </h3>
+                        <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                            <span style={{ fontSize: '1.5rem', letterSpacing: '4px' }}>
+                                {[1,2,3,4,5].map(i => (
+                                    <span key={i} style={{ color: i <= COMPAT_STARS[compareResult.compatibility] ? COMPAT_COLORS[compareResult.compatibility] : (isDark ? 'rgba(255,255,255,0.15)' : '#e5e7eb') }}>★</span>
+                                ))}
+                            </span>
+                        </div>
+                        <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                            <span style={{
+                                background: COMPAT_COLORS[compareResult.compatibility],
+                                color: '#fff', fontSize: '1rem', fontWeight: '700',
+                                padding: '6px 20px', borderRadius: '20px',
+                            }}>
+                                {tCompat(compareResult.compatibility)}
+                            </span>
+                        </div>
+                        <p style={{ textAlign: 'center', fontSize: '0.85rem', color: isDark ? 'rgba(255,255,255,0.6)' : '#6b7280', marginBottom: '16px' }}>
+                            {tCompat(`${compareResult.compatibility}Desc`)}
+                        </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {[compareResult.person1, compareResult.person2].map((p, i) => (
+                                <div key={i} style={{
+                                    padding: '12px 16px',
+                                    background: isDark ? 'rgba(255,255,255,0.03)' : (i === 0 ? 'rgba(99,102,241,0.05)' : 'rgba(249,115,22,0.05)'),
+                                    borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px',
+                                    border: isDark ? 'none' : '1px solid #f1f5f9',
+                                }}>
+                                    <span style={{
+                                        background: i === 0 ? 'rgba(99,102,241,0.3)' : 'rgba(249,115,22,0.3)',
+                                        color: '#fff', fontSize: '0.75rem', fontWeight: '700',
+                                        padding: '3px 10px', borderRadius: '12px', flexShrink: 0,
+                                    }}>
+                                        {i === 0 ? 'A' : 'B'}
+                                    </span>
+                                    <span style={{ color: isDark ? '#e2e8f0' : '#1f2937', fontSize: '0.85rem', fontWeight: '600', flexShrink: 0 }}>
+                                        {zodiacs[p.zodiacIndex]}{locale === 'ko' ? '띠' : ''}
+                                    </span>
+                                    <span className="age-compat-desc" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : '#6b7280', fontSize: '0.8rem' }}>
+                                        {tZodiac(ZODIAC_KEYS[p.zodiacIndex])}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Result Card */}
             {result && (
@@ -373,6 +785,14 @@ export default function KoreanAgeCalculatorClient() {
                                     <strong style={{ color: '#fff', fontSize: '1rem' }}>
                                         {zodiacs[result.zodiacIndex]}{locale === 'ko' ? '띠' : ''}
                                     </strong>
+                                </div>
+
+                                {/* 띠 성격 */}
+                                <div style={{
+                                    padding: '10px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px',
+                                    fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', lineHeight: '1.5',
+                                }}>
+                                    {tZodiac(ZODIAC_KEYS[result.zodiacIndex])}
                                 </div>
 
                                 {/* 별자리 */}
@@ -608,6 +1028,10 @@ export default function KoreanAgeCalculatorClient() {
                     .age-result-desc { display: none !important; }
                     .age-extra-title { font-size: 0.9rem !important; margin-bottom: 12px !important; }
                     .age-extra-row { padding: 10px 12px !important; font-size: 0.85rem !important; }
+                    .age-compare-grid { gap: 8px !important; }
+                    .age-tabs { margin-bottom: 16px !important; }
+                    .age-tab-btn { padding: 8px 12px !important; font-size: 0.8rem !important; }
+                    .age-compat-desc { font-size: 0.7rem !important; }
                 }
             `}</style>
         </div>

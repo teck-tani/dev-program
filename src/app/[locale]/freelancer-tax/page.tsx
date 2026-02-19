@@ -247,14 +247,7 @@ export default async function FreelancerTaxPage({ params }: { params: Promise<{ 
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
-            <div className="container page-container" style={{ maxWidth: "800px", padding: "0 20px" }}>
-                <style>{`
-                    @media (max-width: 600px) {
-                        .page-container {
-                            padding: 0 10px !important;
-                        }
-                    }
-                `}</style>
+            <div style={{ maxWidth: "900px", margin: "0 auto", padding: "0 16px" }}>
                 <FreelancerTaxClient />
             </div>
 

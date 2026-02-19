@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { IoCopyOutline, IoTrashOutline } from "react-icons/io5";
@@ -22,6 +22,50 @@ interface HistoryEntry {
     result: CalcResult;
 }
 
+interface RatePreset {
+    key: string;
+    rate: number;
+}
+
+const RATE_PRESETS: RatePreset[] = [
+    { key: "general", rate: 10 },
+    { key: "simplified15", rate: 1.5 },
+    { key: "simplified20", rate: 2 },
+    { key: "simplified30", rate: 3 },
+    { key: "simplified40", rate: 4 },
+    { key: "zeroRated", rate: 0 },
+];
+
+// 순수 계산 함수 (컴포넌트 외부)
+function computeVat(amount: number, ratePercent: number, mode: CalcMode): CalcResult | null {
+    if (amount <= 0) return null;
+    const rate = ratePercent / 100;
+    if (isNaN(rate) || rate < 0) return null;
+
+    switch (mode) {
+        case "fromSupply": {
+            const vat = Math.floor(amount * rate);
+            return { supplyAmount: amount, vatAmount: vat, totalAmount: amount + vat };
+        }
+        case "fromTotal": {
+            const supply = Math.floor(amount / (1 + rate));
+            const vat = amount - supply;
+            return { supplyAmount: supply, vatAmount: vat, totalAmount: amount };
+        }
+        case "fromVat": {
+            const supply = rate > 0 ? Math.floor(amount / rate) : 0;
+            return { supplyAmount: supply, vatAmount: amount, totalAmount: supply + amount };
+        }
+    }
+}
+
+// 세율로 매칭되는 프리셋 키 찾기
+function findPresetKey(rateStr: string): string {
+    const rate = parseFloat(rateStr);
+    const match = RATE_PRESETS.find(p => p.rate === rate);
+    return match ? match.key : "";
+}
+
 export default function VatCalculatorClient() {
     const t = useTranslations('VatCalculator');
     const { theme } = useTheme();
@@ -33,6 +77,7 @@ export default function VatCalculatorClient() {
     const [result, setResult] = useState<CalcResult | null>(null);
     const [copiedField, setCopiedField] = useState<string | null>(null);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
+    const [activePreset, setActivePreset] = useState<string>("general");
 
     // Load history from localStorage
     useEffect(() => {
@@ -77,65 +122,36 @@ export default function VatCalculatorClient() {
         setInputValue(num.toLocaleString("ko-KR"));
     };
 
-    // Calculate VAT
-    const calculate = useCallback(() => {
+    // 히스토리 디바운스 타이머
+    const historyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+    // 자동 계산 (즉시) + 히스토리 저장 (디바운스 1초)
+    useEffect(() => {
         const amount = parseInput(inputValue);
-        if (amount <= 0) return;
-
-        const rate = parseFloat(vatRate) / 100;
-        if (isNaN(rate) || rate < 0) return;
-
-        let calcResult: CalcResult;
-
-        switch (mode) {
-            case "fromSupply": {
-                const vat = Math.floor(amount * rate);
-                calcResult = {
-                    supplyAmount: amount,
-                    vatAmount: vat,
-                    totalAmount: amount + vat,
-                };
-                break;
-            }
-            case "fromTotal": {
-                const supply = Math.floor(amount / (1 + rate));
-                const vat = amount - supply;
-                calcResult = {
-                    supplyAmount: supply,
-                    vatAmount: vat,
-                    totalAmount: amount,
-                };
-                break;
-            }
-            case "fromVat": {
-                const supply = rate > 0 ? Math.floor(amount / rate) : 0;
-                calcResult = {
-                    supplyAmount: supply,
-                    vatAmount: amount,
-                    totalAmount: supply + amount,
-                };
-                break;
-            }
-        }
+        const ratePercent = parseFloat(vatRate);
+        const calcResult = computeVat(amount, ratePercent, mode);
 
         setResult(calcResult);
 
-        // Save to history
-        saveHistory({
-            id: Date.now().toString(),
-            mode,
-            inputValue: amount,
-            vatRate: parseFloat(vatRate),
-            result: calcResult,
-        });
-    }, [inputValue, vatRate, mode, saveHistory]);
+        // 이전 타이머 취소
+        if (historyTimerRef.current) clearTimeout(historyTimerRef.current);
 
-    // Auto-calculate on input change
-    useEffect(() => {
-        const amount = parseInput(inputValue);
-        if (amount > 0) {
-            calculate();
+        // 유효한 결과만 1초 후 히스토리 저장 (키 입력 중간값 방지)
+        if (calcResult && amount > 0) {
+            historyTimerRef.current = setTimeout(() => {
+                saveHistory({
+                    id: Date.now().toString(),
+                    mode,
+                    inputValue: amount,
+                    vatRate: ratePercent,
+                    result: calcResult,
+                });
+            }, 1000);
         }
+
+        return () => {
+            if (historyTimerRef.current) clearTimeout(historyTimerRef.current);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inputValue, vatRate, mode]);
 
@@ -153,6 +169,7 @@ export default function VatCalculatorClient() {
         setInputValue("");
         setResult(null);
         setVatRate("10");
+        setActivePreset("general");
     };
 
     // Get input label based on mode
@@ -194,6 +211,8 @@ export default function VatCalculatorClient() {
                             setInputValue("");
                             setResult(null);
                         }}
+                        aria-pressed={mode === m}
+                        aria-label={t(`mode.${m}`)}
                         style={{
                             flex: 1,
                             padding: "12px 8px",
@@ -225,22 +244,27 @@ export default function VatCalculatorClient() {
             }}>
                 {/* Amount Input */}
                 <div style={{ marginBottom: "16px" }}>
-                    <label style={{
-                        display: "block",
-                        fontSize: "0.9rem",
-                        fontWeight: 600,
-                        marginBottom: "8px",
-                        color: isDark ? "#e0e0e0" : "#333",
-                    }}>
+                    <label
+                        htmlFor="vat-amount-input"
+                        style={{
+                            display: "block",
+                            fontSize: "0.9rem",
+                            fontWeight: 600,
+                            marginBottom: "8px",
+                            color: isDark ? "#e0e0e0" : "#333",
+                        }}
+                    >
                         {getInputLabel()}
                     </label>
                     <div style={{ position: "relative" }}>
                         <input
+                            id="vat-amount-input"
                             type="text"
                             inputMode="numeric"
                             value={inputValue}
                             onChange={(e) => handleInputChange(e.target.value)}
                             placeholder="0"
+                            aria-label={getInputLabel()}
                             style={{
                                 width: "100%",
                                 padding: "14px 50px 14px 16px",
@@ -274,49 +298,100 @@ export default function VatCalculatorClient() {
                     </div>
                 </div>
 
-                {/* VAT Rate Input */}
-                <div style={{ marginBottom: "16px" }}>
-                    <label style={{
-                        display: "block",
-                        fontSize: "0.9rem",
-                        fontWeight: 600,
-                        marginBottom: "8px",
-                        color: isDark ? "#e0e0e0" : "#333",
-                    }}>
+                {/* VAT Rate Presets */}
+                <div style={{ marginBottom: "12px" }}>
+                    <label
+                        htmlFor="vat-rate-input"
+                        style={{
+                            display: "block",
+                            fontSize: "0.9rem",
+                            fontWeight: 600,
+                            marginBottom: "8px",
+                            color: isDark ? "#e0e0e0" : "#333",
+                        }}
+                    >
                         {t("label.vatRate")}
                     </label>
-                    <input
-                        type="number"
-                        value={vatRate}
-                        onChange={(e) => setVatRate(e.target.value)}
-                        min="0"
-                        max="100"
-                        step="0.1"
-                        style={{
-                            width: "120px",
-                            padding: "10px 14px",
-                            fontSize: "1rem",
-                            fontWeight: 600,
-                            border: `2px solid ${isDark ? "#444" : "#d1d5db"}`,
-                            borderRadius: "10px",
-                            background: isDark ? "#2a2a2a" : "#fafafa",
-                            color: isDark ? "#fff" : "#111",
-                            outline: "none",
-                            boxSizing: "border-box",
-                        }}
-                    />
-                    <span style={{
-                        marginLeft: "10px",
-                        fontSize: "0.8rem",
-                        color: isDark ? "#888" : "#999",
+                    <div style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "6px",
+                        marginBottom: "10px",
                     }}>
-                        {t("label.vatRateDesc")}
-                    </span>
+                        {RATE_PRESETS.map((preset) => {
+                            const isActive = activePreset === preset.key;
+                            return (
+                                <button
+                                    key={preset.key}
+                                    onClick={() => {
+                                        setVatRate(preset.rate.toString());
+                                        setActivePreset(preset.key);
+                                    }}
+                                    aria-label={t(`preset.${preset.key}`)}
+                                    aria-pressed={isActive}
+                                    style={{
+                                        padding: "6px 12px",
+                                        fontSize: "0.78rem",
+                                        fontWeight: isActive ? 700 : 500,
+                                        border: `1.5px solid ${isActive
+                                            ? (isDark ? "#3b82f6" : "#2563eb")
+                                            : (isDark ? "#444" : "#d1d5db")}`,
+                                        borderRadius: "20px",
+                                        background: isActive
+                                            ? (isDark ? "#1e3a5f" : "#dbeafe")
+                                            : (isDark ? "#2a2a2a" : "#f9fafb"),
+                                        color: isActive
+                                            ? (isDark ? "#93c5fd" : "#1d4ed8")
+                                            : (isDark ? "#ccc" : "#555"),
+                                        cursor: "pointer",
+                                        transition: "all 0.15s ease",
+                                        whiteSpace: "nowrap",
+                                    }}
+                                >
+                                    {t(`preset.${preset.key}`)}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <input
+                            id="vat-rate-input"
+                            type="number"
+                            value={vatRate}
+                            onChange={(e) => {
+                                setVatRate(e.target.value);
+                                setActivePreset("");
+                            }}
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            aria-label={t("label.vatRate")}
+                            style={{
+                                width: "100px",
+                                padding: "10px 14px",
+                                fontSize: "1rem",
+                                fontWeight: 600,
+                                border: `2px solid ${isDark ? "#444" : "#d1d5db"}`,
+                                borderRadius: "10px",
+                                background: isDark ? "#2a2a2a" : "#fafafa",
+                                color: isDark ? "#fff" : "#111",
+                                outline: "none",
+                                boxSizing: "border-box",
+                            }}
+                        />
+                        <span style={{
+                            fontSize: "0.8rem",
+                            color: isDark ? "#888" : "#999",
+                        }}>
+                            %
+                        </span>
+                    </div>
                 </div>
 
                 {/* Reset Button */}
                 <button
                     onClick={handleReset}
+                    aria-label={t("button.reset")}
                     style={{
                         padding: "8px 20px",
                         fontSize: "0.85rem",
@@ -424,6 +499,7 @@ export default function VatCalculatorClient() {
                     {history.length > 0 && (
                         <button
                             onClick={clearHistory}
+                            aria-label={t("history.clear")}
                             style={{
                                 display: "flex",
                                 alignItems: "center",
@@ -459,7 +535,9 @@ export default function VatCalculatorClient() {
                                 key={entry.id}
                                 onClick={() => {
                                     setMode(entry.mode);
-                                    setVatRate(entry.vatRate.toString());
+                                    const rateStr = entry.vatRate.toString();
+                                    setVatRate(rateStr);
+                                    setActivePreset(findPresetKey(rateStr));
                                     setInputValue(entry.inputValue.toLocaleString("ko-KR"));
                                     setResult(entry.result);
                                 }}
@@ -580,6 +658,7 @@ function ResultCard({
                     e.stopPropagation();
                     onCopy();
                 }}
+                aria-label={copied ? copiedText : `${label} ${copyText}`}
                 style={{
                     display: "flex",
                     alignItems: "center",

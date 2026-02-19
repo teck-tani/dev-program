@@ -193,7 +193,12 @@ export default function TimerView() {
             }
             const presets = localStorage.getItem(PRESETS_KEY);
             if (presets) setUserPresets(JSON.parse(presets));
-        } catch {}
+        } catch (e) {
+            if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+                console.warn('Timer: localStorage quota exceeded. Clearing old data.');
+                try { localStorage.removeItem(STORAGE_KEY); } catch {}
+            }
+        }
     }, []);
 
     // ===== Save on change =====
@@ -206,7 +211,11 @@ export default function TimerView() {
                 timeLeft: isRunning ? undefined : timeLeft,
                 isRunning, endTime: isRunning ? endTimeRef.current : undefined,
             }));
-        } catch {}
+        } catch (e) {
+            if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+                console.warn('Timer: localStorage quota exceeded while saving.');
+            }
+        }
     }, [mode, selectedSound, vibrationOn, volume, voiceCountdown, pomoWork, pomoBreak, pomoLongBreak,
         pomoAutoStart, duration, timeLeft, isRunning, isSetting, pomoPhase, pomoSession, inputValues]);
 
@@ -483,12 +492,12 @@ export default function TimerView() {
         if (total === 0 || !presetName.trim() || userPresets.length >= 10) return;
         const newPresets = [...userPresets, { name: presetName.trim(), seconds: total }];
         setUserPresets(newPresets); setPresetName("");
-        localStorage.setItem(PRESETS_KEY, JSON.stringify(newPresets));
+        try { localStorage.setItem(PRESETS_KEY, JSON.stringify(newPresets)); } catch {}
     };
     const deletePreset = (idx: number) => {
         const newPresets = userPresets.filter((_, i) => i !== idx);
         setUserPresets(newPresets);
-        localStorage.setItem(PRESETS_KEY, JSON.stringify(newPresets));
+        try { localStorage.setItem(PRESETS_KEY, JSON.stringify(newPresets)); } catch {}
     };
 
     const getShareText = () => {
@@ -946,7 +955,7 @@ export default function TimerView() {
                 )}
 
                 {/* Ambient Player */}
-                <AmbientPlayer />
+                <AmbientPlayer mode={mode} />
 
                 {/* Pomodoro Stats & Tasks */}
                 {mode === 'pomodoro' && (
@@ -958,7 +967,7 @@ export default function TimerView() {
             </div>
 
             {/* SEO Content Section - mode별 다른 콘텐츠 */}
-            <TimerSeoSection mode={mode} />
+            <TimerSeoSection mode={mode} isChainActive={chainSteps.length > 0} />
         </div>
     );
 }
@@ -969,9 +978,9 @@ const howToStepKeys = ['step1', 'step2', 'step3', 'step4'] as const;
 const useCaseKeys = ['u1', 'u2', 'u3', 'u4'] as const;
 const faqKeys = ['q1', 'q2', 'q3', 'q4'] as const;
 
-function TimerSeoSection({ mode }: { mode: string }) {
+function TimerSeoSection({ mode, isChainActive }: { mode: string; isChainActive: boolean }) {
     const t = useTranslations('Clock.Timer');
-    const seoMode = mode === 'multi-timer' ? 'multi' : mode;
+    const seoMode = mode === 'timer' && isChainActive ? 'chain' : mode === 'multi-timer' ? 'multi' : mode;
 
     return (
         <div className={styles.seoWrapper}>

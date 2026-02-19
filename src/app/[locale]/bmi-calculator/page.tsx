@@ -83,7 +83,15 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "이 계산기의 데이터는 안전한가요?",
-            answer: "네, 모든 계산은 브라우저에서만 처리되며 입력하신 키와 몸무게 정보는 서버로 전송되지 않습니다. 어떠한 개인 건강 데이터도 수집하거나 저장하지 않습니다."
+            answer: "네, 모든 계산은 브라우저에서만 처리되며 입력하신 키와 몸무게 정보는 서버로 전송되지 않습니다. BMI 기록은 브라우저의 localStorage에만 저장되며 언제든 삭제할 수 있습니다."
+        },
+        {
+            question: "소아청소년 모드는 어떤 기준을 사용하나요?",
+            answer: "소아청소년(2~19세) 모드는 WHO BMI-for-age 백분위수 기준을 사용합니다. 같은 나이, 같은 성별의 아동과 비교하여 5백분위 미만은 저체중, 5~84백분위는 정상, 85~94백분위는 과체중, 95백분위 이상은 비만으로 분류합니다."
+        },
+        {
+            question: "파운드, 피트 단위로 계산할 수 있나요?",
+            answer: "네, 상단의 단위 전환 토글(kg/cm ↔ lb/ft)을 사용하면 파운드와 피트/인치 단위로 키와 몸무게를 입력할 수 있습니다. 내부적으로 메트릭 단위로 변환하여 정확한 BMI를 계산합니다."
         }
     ] : [
         {
@@ -104,7 +112,15 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "Is my data safe with this calculator?",
-            answer: "Yes, all calculations are processed in your browser and your height and weight information is never sent to any server. No personal health data is collected or stored."
+            answer: "Yes, all calculations are processed in your browser and your height and weight information is never sent to any server. BMI history is stored only in your browser's localStorage and can be deleted at any time."
+        },
+        {
+            question: "What criteria does the child mode use?",
+            answer: "The child (2-19 years) mode uses WHO BMI-for-age percentile criteria. Compared to children of the same age and sex, below the 5th percentile is underweight, 5th-84th is normal, 85th-94th is overweight, and 95th percentile or above is obese."
+        },
+        {
+            question: "Can I calculate in pounds and feet?",
+            answer: "Yes, use the unit toggle (kg/cm ↔ lb/ft) at the top to enter height in feet/inches and weight in pounds. The calculator internally converts to metric units for accurate BMI calculation."
         }
     ];
 
@@ -136,13 +152,18 @@ function generateHowToSchema(locale: string) {
         "step": isKo ? [
             {
                 "@type": "HowToStep",
-                "name": "키 입력",
-                "text": "키(cm) 입력란에 본인의 키를 입력합니다. (예: 170)"
+                "name": "모드 선택",
+                "text": "성인 또는 소아청소년(2~19세) 모드를 선택합니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "몸무게 입력",
-                "text": "몸무게(kg) 입력란에 현재 체중을 입력합니다. (예: 65)"
+                "name": "단위 선택",
+                "text": "미터법(kg/cm) 또는 야드파운드법(lb/ft) 중 원하는 단위를 선택합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "키와 몸무게 입력",
+                "text": "키와 몸무게를 입력합니다. 소아 모드에서는 나이와 성별도 입력합니다."
             },
             {
                 "@type": "HowToStep",
@@ -151,19 +172,24 @@ function generateHowToSchema(locale: string) {
             },
             {
                 "@type": "HowToStep",
-                "name": "결과 확인",
-                "text": "BMI 수치, 비만도 분류, 정상 체중 범위를 확인하세요."
+                "name": "결과 및 추이 확인",
+                "text": "BMI 수치, 비만도 분류를 확인하고, 기록된 BMI 추이 그래프를 참고하세요."
             }
         ] : [
             {
                 "@type": "HowToStep",
-                "name": "Enter Height",
-                "text": "Enter your height in the height (cm) field. (e.g. 170)"
+                "name": "Select Mode",
+                "text": "Choose Adult or Child (ages 2-19) mode."
             },
             {
                 "@type": "HowToStep",
-                "name": "Enter Weight",
-                "text": "Enter your current weight in the weight (kg) field. (e.g. 65)"
+                "name": "Choose Units",
+                "text": "Select Metric (kg/cm) or Imperial (lb/ft) measurement system."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Enter Height and Weight",
+                "text": "Enter your height and weight. In child mode, also enter age and gender."
             },
             {
                 "@type": "HowToStep",
@@ -172,8 +198,8 @@ function generateHowToSchema(locale: string) {
             },
             {
                 "@type": "HowToStep",
-                "name": "Check Results",
-                "text": "Review your BMI value, obesity classification, and normal weight range."
+                "name": "Review Results and Trends",
+                "text": "Check your BMI value, classification, and review the BMI trend chart for historical data."
             }
         ]
     };
@@ -204,7 +230,9 @@ function generateWebAppSchema(locale: string) {
                 "WHO 기준 6단계 비만도 분류",
                 "시각적 BMI 게이지 바",
                 "정상 체중 범위 안내",
-                "비만도 분류표",
+                "kg/cm ↔ lb/ft 단위 변환",
+                "BMI 기록 및 추이 그래프",
+                "소아청소년(2-19세) WHO 백분위 기준 판정",
                 "모바일 반응형 디자인",
                 "다크 모드 지원"
             ]
@@ -213,12 +241,14 @@ function generateWebAppSchema(locale: string) {
                 "WHO 6-level obesity classification",
                 "Visual BMI gauge bar",
                 "Normal weight range guide",
-                "Classification table",
+                "Metric/Imperial unit toggle (kg/cm ↔ lb/ft)",
+                "BMI history with trend chart",
+                "Child (2-19) WHO percentile-based classification",
                 "Mobile responsive design",
                 "Dark mode support"
             ],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "softwareVersion": "1.0"
+        "softwareVersion": "2.0"
     };
 }
 
@@ -231,10 +261,10 @@ export default async function BmiCalculatorPage({ params }: { params: Promise<{ 
     const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
 
-    const featureKeys = ["feat1", "feat2", "feat3", "feat4"] as const;
+    const featureKeys = ["feat1", "feat2", "feat3", "feat4", "feat5", "feat6"] as const;
     const howtoKeys = ["s1", "s2", "s3", "s4"] as const;
     const usecaseKeys = ["uc1", "uc2", "uc3", "uc4"] as const;
-    const faqKeys = ["q1", "q2", "q3", "q4", "q5"] as const;
+    const faqKeys = ["q1", "q2", "q3", "q4", "q5", "q6", "q7"] as const;
 
     return (
         <>
