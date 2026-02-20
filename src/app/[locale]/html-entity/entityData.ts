@@ -164,6 +164,48 @@ export const ENTITY_DATA: EntityItem[] = [
     { char: "\u2702", code: 9986, descKo: "가위", descEn: "Scissors", category: "shapes" },
     { char: "\u270F", code: 9999, descKo: "연필", descEn: "Pencil", category: "shapes" },
 
+    // ===== Additional Arrows =====
+    { char: "\u21B0", code: 8624, descKo: "위쪽 꺾인 화살표", descEn: "Up arrow with tip left", category: "arrows" },
+    { char: "\u21B1", code: 8625, descKo: "위쪽 꺾인 화살표 (오른쪽)", descEn: "Up arrow with tip right", category: "arrows" },
+    { char: "\u21B2", code: 8626, descKo: "아래쪽 꺾인 화살표", descEn: "Down arrow with tip left", category: "arrows" },
+    { char: "\u21B3", code: 8627, descKo: "아래쪽 꺾인 화살표 (오른쪽)", descEn: "Down arrow with tip right", category: "arrows" },
+    { char: "\u21BA", code: 8634, descKo: "반시계 방향 화살표", descEn: "Anticlockwise arrow", category: "arrows" },
+    { char: "\u21BB", code: 8635, descKo: "시계 방향 화살표", descEn: "Clockwise arrow", category: "arrows" },
+    { char: "\u21C4", code: 8644, descKo: "좌우 반대 화살표", descEn: "Right and left arrows", category: "arrows" },
+    { char: "\u21C5", code: 8645, descKo: "상하 반대 화살표", descEn: "Up and down arrows", category: "arrows" },
+    { char: "\u27A1", code: 10145, descKo: "검은 오른쪽 화살표", descEn: "Black right arrow", category: "arrows" },
+    { char: "\u2B05", code: 11013, descKo: "검은 왼쪽 화살표", descEn: "Black left arrow", category: "arrows" },
+    { char: "\u2B06", code: 11014, descKo: "검은 위쪽 화살표", descEn: "Black up arrow", category: "arrows" },
+    { char: "\u2B07", code: 11015, descKo: "검은 아래쪽 화살표", descEn: "Black down arrow", category: "arrows" },
+
+    // ===== Additional Math Symbols =====
+    { char: "\u2243", code: 8771, named: "&sime;", descKo: "약 같음", descEn: "Asymptotically equal", category: "math" },
+    { char: "\u2261", code: 8801, named: "&equiv;", descKo: "합동", descEn: "Identical to", category: "math" },
+    { char: "\u2262", code: 8802, descKo: "합동 아님", descEn: "Not identical to", category: "math" },
+    { char: "\u226A", code: 8810, descKo: "매우 작음", descEn: "Much less than", category: "math" },
+    { char: "\u226B", code: 8811, descKo: "매우 큼", descEn: "Much greater than", category: "math" },
+    { char: "\u2295", code: 8853, named: "&oplus;", descKo: "원 안 플러스", descEn: "Circled plus", category: "math" },
+    { char: "\u2297", code: 8855, named: "&otimes;", descKo: "원 안 곱셈", descEn: "Circled times", category: "math" },
+    { char: "\u22C5", code: 8901, named: "&sdot;", descKo: "점 곱", descEn: "Dot operator", category: "math" },
+    { char: "\u2207", code: 8711, named: "&nabla;", descKo: "나블라", descEn: "Nabla", category: "math" },
+    { char: "\u2220", code: 8736, named: "&ang;", descKo: "각", descEn: "Angle", category: "math" },
+    { char: "\u22A5", code: 8869, named: "&perp;", descKo: "수직", descEn: "Perpendicular", category: "math" },
+    { char: "\u2235", code: 8757, descKo: "왜냐하면", descEn: "Because", category: "math" },
+
+    // ===== Additional Shapes/Symbols =====
+    { char: "\u2764", code: 10084, descKo: "빨간 하트", descEn: "Heavy heart", category: "shapes" },
+    { char: "\u2B50", code: 11088, descKo: "금색 별", descEn: "Gold star", category: "shapes" },
+    { char: "\u25C0", code: 9664, descKo: "왼쪽 삼각형", descEn: "Left triangle", category: "shapes" },
+    { char: "\u25B6", code: 9654, descKo: "오른쪽 삼각형 (재생)", descEn: "Right triangle (play)", category: "shapes" },
+    { char: "\u2610", code: 9744, descKo: "빈 체크박스", descEn: "Ballot box", category: "shapes" },
+    { char: "\u2611", code: 9745, descKo: "체크된 체크박스", descEn: "Ballot box with check", category: "shapes" },
+    { char: "\u2612", code: 9746, descKo: "X 체크박스", descEn: "Ballot box with X", category: "shapes" },
+    { char: "\u266D", code: 9837, descKo: "플랫 (음악)", descEn: "Music flat", category: "shapes" },
+    { char: "\u266E", code: 9838, descKo: "내추럴 (음악)", descEn: "Music natural", category: "shapes" },
+    { char: "\u266F", code: 9839, descKo: "샤프 (음악)", descEn: "Music sharp", category: "shapes" },
+    { char: "\u2601", code: 9729, descKo: "구름", descEn: "Cloud", category: "shapes" },
+    { char: "\u2604", code: 9732, descKo: "혜성", descEn: "Comet", category: "shapes" },
+
     // ===== Latin Extended =====
     { char: "\u00C0", code: 192, named: "&Agrave;", descKo: "A 그레이브", descEn: "A grave", category: "latin" },
     { char: "\u00C1", code: 193, named: "&Aacute;", descKo: "A 아큐트", descEn: "A acute", category: "latin" },

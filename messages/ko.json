@@ -3247,7 +3247,7 @@
     "meta": {
       "title": "JSON 포맷터 | JSON 정리/검증/압축 - 무료 온라인 개발자 도구",
       "description": "복잡한 JSON을 보기 좋게 정리하고 문법 오류를 검증하는 무료 온라인 도구입니다. Minify, 들여쓰기 설정 등 개발자 필수 기능을 제공합니다.",
-      "keywords": "JSON 포맷터, JSON 정리, JSON 검증, JSON Beautify, JSON Minify, JSON Validator, 개발자 도구",
+      "keywords": "JSON 포맷터, JSON 정리, JSON 검증, JSON Beautify, JSON Minify, JSON Validator, JSON 자동복구, JSON to YAML, JSON to CSV, JSON to TypeScript, JSON 이스케이프, JSONPath, 개발자 도구",
       "ogTitle": "JSON 포맷터 | JSON 정리 & 검증 도구",
       "ogDescription": "지저분한 JSON을 깔끔하게! 포맷팅, 검증, 압축까지 한 번에 해결하세요."
     },
@@ -3257,6 +3257,9 @@
       "format": "정리 (Beautify)",
       "minify": "압축 (Minify)",
       "validate": "검증",
+      "repair": "자동 복구",
+      "escape": "Escape",
+      "unescape": "Unescape",
       "copy": "복사",
       "copied": "복사됨!",
       "clear": "지우기",
@@ -3286,7 +3289,24 @@
     },
     "error": {
       "empty": "JSON을 입력해주세요.",
-      "invalid": "유효하지 않은 JSON"
+      "invalid": "유효하지 않은 JSON",
+      "line": "줄",
+      "column": "열"
+    },
+    "repair": {
+      "success": "복구 완료",
+      "noIssues": "수정할 항목이 없습니다.",
+      "trailingCommas": "불필요한 쉼표 {count}개 제거",
+      "singleQuotes": "작은따옴표 {count}개 → 큰따옴표 변환",
+      "comments": "주석 {count}개 제거",
+      "unquotedKeys": "따옴표 없는 키 {count}개 수정",
+      "failedAfterRepair": "자동 복구 후에도 유효하지 않은 JSON입니다. 수동으로 확인해주세요."
+    },
+    "escape": {
+      "error": "이스케이프 처리 중 오류가 발생했습니다."
+    },
+    "convert": {
+      "csvNotArray": "CSV 변환은 객체 배열에서만 가능합니다."
     },
     "stats": {
       "success": "변환 완료",
@@ -3307,6 +3327,18 @@
       "minify": {
         "title": "📦 압축 (Minify)",
         "desc": "불필요한 공백을 제거하여 파일 크기를 최소화합니다."
+      },
+      "repair": {
+        "title": "🔧 자동 복구 (Auto-Repair)",
+        "desc": "트레일링 쉼표, 작은따옴표, 주석, 따옴표 없는 키 등 흔한 JSON 오류를 자동으로 수정합니다."
+      },
+      "convert": {
+        "title": "🔄 YAML/CSV 변환",
+        "desc": "JSON 데이터를 YAML이나 CSV 형식으로 변환하여 복사하거나 다운로드할 수 있습니다."
+      },
+      "typescript": {
+        "title": "📝 TypeScript 생성",
+        "desc": "JSON 구조를 분석하여 TypeScript 인터페이스를 자동으로 생성합니다."
       }
     },
     "faq": {
@@ -3320,7 +3352,11 @@
       "q4": "Q. JSON 파일의 최대 크기는 얼마인가요?",
       "a4": "JSON 자체에는 크기 제한이 없지만, 이 도구는 브라우저에서 실행되므로 수 MB 이내의 데이터를 처리하기에 적합합니다. 매우 큰 파일은 전용 에디터를 사용하시기 바랍니다.",
       "q5": "Q. Minify(압축)는 왜 사용하나요?",
-      "a5": "JSON 파일에서 불필요한 공백과 줄바꿈을 제거하여 파일 크기를 줄입니다. API 응답이나 설정 파일을 배포할 때 전송 속도를 높이고 저장 공간을 절약할 수 있습니다."
+      "a5": "JSON 파일에서 불필요한 공백과 줄바꿈을 제거하여 파일 크기를 줄입니다. API 응답이나 설정 파일을 배포할 때 전송 속도를 높이고 저장 공간을 절약할 수 있습니다.",
+      "q6": "Q. JSON 자동 복구는 어떤 오류를 고칠 수 있나요?",
+      "a6": "트레일링 쉼표, 작은따옴표, JavaScript 주석(//와 /* */), 따옴표 없는 키 등 흔한 JSON 문법 오류를 자동으로 수정합니다.",
+      "q7": "Q. JSON을 TypeScript 인터페이스로 변환할 수 있나요?",
+      "a7": "네, JSON 데이터를 입력하면 자동으로 TypeScript 인터페이스를 생성합니다. 중첩 객체, 배열, 옵셔널 필드, 유니온 타입까지 지원합니다."
     },
     "seo": {
       "howto": {
@@ -3329,7 +3365,8 @@
           "s1": "<strong>JSON 붙여넣기</strong> — 포맷팅하려는 JSON 데이터를 입력창에 붙여넣으세요.",
           "s2": "<strong>정리(Beautify) 클릭</strong> — 버튼을 누르면 들여쓰기가 적용된 깔끔한 JSON으로 변환됩니다.",
           "s3": "<strong>트리 뷰로 확인</strong> — 텍스트/트리 뷰 모드를 전환하여 데이터 구조를 시각적으로 탐색하세요.",
-          "s4": "<strong>결과 복사</strong> — 복사 버튼을 눌러 포맷된 JSON을 클립보드에 저장하세요."
+          "s4": "<strong>변환 뷰 확인</strong> — YAML, CSV, TypeScript 등 다양한 뷰 모드로 결과를 확인하세요.",
+          "s5": "<strong>결과 복사/다운로드</strong> — 복사 또는 다운로드 버튼으로 원하는 형식의 결과를 저장하세요."
         }
       },
       "usecases": {
@@ -3350,6 +3387,14 @@
           "learning": {
             "title": "학습 & 데이터 분석",
             "desc": "복잡한 JSON 구조를 트리 뷰로 시각화하여 데이터 모델을 이해합니다."
+          },
+          "convert": {
+            "title": "데이터 변환",
+            "desc": "JSON을 YAML이나 CSV로 변환하여 다른 시스템이나 스프레드시트에서 활용합니다."
+          },
+          "typescript": {
+            "title": "TypeScript 개발",
+            "desc": "API 응답 JSON으로 TypeScript 인터페이스를 자동 생성하여 타입 안전한 코드를 작성합니다."
           }
         }
       },
@@ -3687,6 +3732,9 @@
       }
     },
     "doubleEncodingWarning": "이중 인코딩이 감지되었습니다! 이미 인코딩된 텍스트를 다시 인코딩하면 문제가 발생할 수 있습니다.",
+    "batchMode": "배치 모드",
+    "batchInfo": "배치 모드: 여러 줄의 텍스트를 한 번에 처리합니다. 각 줄이 개별적으로 인코딩/디코딩됩니다.",
+    "base64Info": "Base64 URL-safe: +/= 대신 -_ 를 사용하여 URL에 안전한 Base64 인코딩을 수행합니다. JWT, OAuth 등에서 사용됩니다.",
     "parser": {
       "title": "URL 구조 분석 & 쿼리 편집기",
       "placeholder": "분석할 URL을 입력하세요 (예: https://example.com/path?key=value)",
@@ -4736,6 +4784,18 @@
     "clearBtn": "초기화",
     "uploadBtn": ".sql 파일 열기",
     "downloadBtn": ".sql 파일 저장",
+    "lineNumbers": "줄 번호",
+    "complexity": {
+      "title": "쿼리 복잡도",
+      "simple": "단순",
+      "moderate": "보통",
+      "complex": "복잡",
+      "very_complex": "매우 복잡",
+      "tables": "테이블",
+      "subqueries": "서브쿼리 깊이",
+      "conditions": "조건",
+      "aggregates": "집계함수"
+    },
     "guideTitle": "사용 가이드",
     "guideStep1Title": "SQL 쿼리 입력",
     "guideStep1Desc": "왼쪽 입력 영역에 정렬하려는 SQL 쿼리를 붙여넣으세요. 로그에서 복사한 한 줄 쿼리도 OK!",
@@ -7940,6 +8000,9 @@
     "refDescription": "설명",
     "formatLabel": "인코딩 형식",
     "searchPlaceholder": "문자, 엔티티명, 설명으로 검색...",
+    "previewTitle": "시각적 미리보기",
+    "previewDesc": "인코딩된 텍스트의 실제 렌더링 결과",
+    "previewDescDecode": "디코딩된 원본 텍스트",
     "seo": {
       "description": {
         "title": "HTML 엔티티 변환기란?",
@@ -8069,6 +8132,10 @@
       "zeroUnit": "0단위 제거",
       "rgbShorthand": "RGB 축약"
     },
+    "gzipSize": "Gzip 크기",
+    "gzipSaved": "압축",
+    "vendorAdd": "프리픽스 추가",
+    "vendorRemove": "프리픽스 제거",
     "diffTitle": "Before / After 비교",
     "diffRemoved": "삭제",
     "diffAdded": "추가",
@@ -8339,14 +8406,21 @@
       "upload": ".md 업로드",
       "exportHtml": "HTML 내보내기",
       "exportPdf": "PDF 내보내기",
-      "toc": "목차"
+      "toc": "목차",
+      "downloadMd": ".md 다운로드"
     },
     "toast": {
       "copiedMd": "Markdown이 클립보드에 복사되었습니다.",
       "copiedHtml": "HTML이 클립보드에 복사되었습니다.",
       "cleared": "에디터가 초기화되었습니다.",
       "uploaded": ".md 파일이 로드되었습니다.",
-      "exportedHtml": "HTML 파일이 다운로드되었습니다."
+      "exportedHtml": "HTML 파일이 다운로드되었습니다.",
+      "downloadedMd": "Markdown 파일이 다운로드되었습니다."
+    },
+    "stats": {
+      "words": "단어",
+      "chars": "자",
+      "lines": "줄"
     },
     "seo": {
       "description": {

@@ -3,10 +3,23 @@
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaCopy, FaExchangeAlt, FaTrash } from "react-icons/fa";
+import { FaCopy, FaExchangeAlt, FaTrash, FaListOl } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 
 type EncodeMode = 'component' | 'uri';
+
+// Base64 URL-safe encoding/decoding
+function base64UrlEncode(text: string): string {
+    const base64 = btoa(unescape(encodeURIComponent(text)));
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64UrlDecode(text: string): string {
+    let base64 = text.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = base64.length % 4;
+    if (pad) base64 += '='.repeat(4 - pad);
+    return decodeURIComponent(escape(atob(base64)));
+}
 
 interface ParsedUrl {
     protocol: string;
@@ -73,16 +86,18 @@ export default function UrlEncoderClient() {
     const [output, setOutput] = useState("");
     const [mode, setMode] = useState<'encode' | 'decode'>('encode');
     const [encodeMode, setEncodeMode] = useState<EncodeMode>('component');
-    const [encodeType, setEncodeType] = useState<'url' | 'html'>('url');
+    const [encodeType, setEncodeType] = useState<'url' | 'html' | 'base64url'>('url');
     const [error, setError] = useState("");
     const [copied, setCopied] = useState(false);
     const [showParser, setShowParser] = useState(false);
     const [parserInput, setParserInput] = useState("");
     const [queryParams, setQueryParams] = useState<[string, string][]>([]);
+    const [batchMode, setBatchMode] = useState(false);
 
-    const encode = useCallback((text: string) => {
+    const encodeSingle = useCallback((text: string) => {
         try {
             setError("");
+            if (encodeType === 'base64url') return base64UrlEncode(text);
             if (encodeType === 'html') return htmlEncode(text);
             return encodeMode === 'component' ? encodeURIComponent(text) : encodeURI(text);
         } catch {
@@ -91,9 +106,10 @@ export default function UrlEncoderClient() {
         }
     }, [encodeMode, encodeType, t]);
 
-    const decode = useCallback((text: string) => {
+    const decodeSingle = useCallback((text: string) => {
         try {
             setError("");
+            if (encodeType === 'base64url') return base64UrlDecode(text);
             if (encodeType === 'html') return htmlDecode(text);
             return encodeMode === 'component' ? decodeURIComponent(text) : decodeURI(text);
         } catch {
@@ -104,8 +120,21 @@ export default function UrlEncoderClient() {
 
     const handleConvert = useCallback(() => {
         if (!input.trim()) { setOutput(""); return; }
-        setOutput(mode === 'encode' ? encode(input) : decode(input));
-    }, [input, mode, encode, decode]);
+        if (batchMode) {
+            const lines = input.split('\n');
+            const results = lines.map(line => {
+                if (!line.trim()) return '';
+                try {
+                    return mode === 'encode' ? encodeSingle(line) : decodeSingle(line);
+                } catch {
+                    return `[ERROR] ${line}`;
+                }
+            });
+            setOutput(results.join('\n'));
+        } else {
+            setOutput(mode === 'encode' ? encodeSingle(input) : decodeSingle(input));
+        }
+    }, [input, mode, batchMode, encodeSingle, decodeSingle]);
 
     const handleInputChange = (value: string) => {
         setInput(value);
@@ -132,12 +161,23 @@ export default function UrlEncoderClient() {
     };
 
     const fillExample = () => {
+        if (batchMode) {
+            setInput(mode === 'encode'
+                ? "한글 검색어\nhello world\n특수문자 !@#$%"
+                : "https%3A%2F%2Fexample.com\n%ED%95%9C%EA%B8%80\nhello%20world");
+            setOutput("");
+            return;
+        }
         if (mode === 'encode') {
-            setInput(encodeType === 'html'
+            setInput(encodeType === 'base64url'
+                ? 'Hello, World! 안녕하세요'
+                : encodeType === 'html'
                 ? '<script>alert("XSS")</script>'
                 : "https://example.com/search?q=한글 검색어&name=홍길동");
         } else {
-            setInput(encodeType === 'html'
+            setInput(encodeType === 'base64url'
+                ? 'SGVsbG8sIFdvcmxkISDslYjrhZXtlZjshLjsmpQ'
+                : encodeType === 'html'
                 ? '&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;'
                 : "https%3A%2F%2Fexample.com%2Fsearch%3Fq%3D%ED%95%9C%EA%B8%80%20%EA%B2%80%EC%83%89%EC%96%B4%26name%3D%ED%99%8D%EA%B8%B8%EB%8F%99");
         }
@@ -146,6 +186,7 @@ export default function UrlEncoderClient() {
 
     // Double encoding detection
     const isDoubleEncoded = useMemo(() => {
+        if (encodeType === 'base64url') return false;
         if (mode === 'decode' && encodeType === 'url') return detectDoubleEncoding(input);
         if (mode === 'encode' && encodeType === 'url') return detectDoubleEncoding(output);
         return false;
@@ -209,31 +250,37 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
 
     return (
         <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
-            {/* Encode Type Toggle (URL vs HTML) */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '16px' }}>
+            {/* Encode Type Toggle (URL vs HTML vs Base64 URL-safe) */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
                 <div style={{
                     display: 'flex', background: isDark ? '#0f172a' : '#f3f4f6',
                     borderRadius: '10px', padding: '4px', gap: '4px',
                 }}>
-                    <button onClick={() => { setEncodeType('url'); setOutput(''); }}
-                        style={{
-                            padding: '8px 18px', borderRadius: '8px', border: 'none',
-                            background: encodeType === 'url' ? '#667eea' : 'transparent',
-                            color: encodeType === 'url' ? 'white' : isDark ? '#94a3b8' : '#666',
-                            fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
-                        }}>
-                        URL
-                    </button>
-                    <button onClick={() => { setEncodeType('html'); setOutput(''); }}
-                        style={{
-                            padding: '8px 18px', borderRadius: '8px', border: 'none',
-                            background: encodeType === 'html' ? '#667eea' : 'transparent',
-                            color: encodeType === 'html' ? 'white' : isDark ? '#94a3b8' : '#666',
-                            fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
-                        }}>
-                        HTML Entity
-                    </button>
+                    {(['url', 'html', 'base64url'] as const).map((type) => (
+                        <button key={type} onClick={() => { setEncodeType(type); setOutput(''); }}
+                            style={{
+                                padding: '8px 18px', borderRadius: '8px', border: 'none',
+                                background: encodeType === type ? '#667eea' : 'transparent',
+                                color: encodeType === type ? 'white' : isDark ? '#94a3b8' : '#666',
+                                fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
+                            }}>
+                            {type === 'url' ? 'URL' : type === 'html' ? 'HTML Entity' : 'Base64 URL-safe'}
+                        </button>
+                    ))}
                 </div>
+                {/* Batch Mode Toggle */}
+                <button onClick={() => { setBatchMode(!batchMode); setOutput(''); }}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '8px 16px', borderRadius: '8px',
+                        border: `2px solid ${batchMode ? '#667eea' : isDark ? '#334155' : '#ddd'}`,
+                        background: batchMode ? (isDark ? 'rgba(102,126,234,0.15)' : '#eef2ff') : 'transparent',
+                        color: batchMode ? '#667eea' : isDark ? '#94a3b8' : '#666',
+                        fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
+                    }}>
+                    <FaListOl size={14} />
+                    {t('batchMode')}
+                </button>
             </div>
 
             {/* Mode Toggle */}
@@ -258,8 +305,32 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                     }}>{t('decode')}</button>
             </div>
 
+            {/* Batch Mode Info */}
+            {batchMode && (
+                <div style={{
+                    padding: '10px 16px', background: isDark ? 'rgba(102,126,234,0.1)' : '#eef2ff',
+                    border: `1px solid ${isDark ? '#334155' : '#c7d2fe'}`, borderRadius: '8px',
+                    marginBottom: '16px', textAlign: 'center', fontSize: '0.85rem',
+                    color: isDark ? '#93c5fd' : '#4338ca',
+                }}>
+                    {t('batchInfo')}
+                </div>
+            )}
+
+            {/* Base64 URL-safe Info */}
+            {encodeType === 'base64url' && (
+                <div style={{
+                    padding: '10px 16px', background: isDark ? 'rgba(102,126,234,0.1)' : '#f0fdf4',
+                    border: `1px solid ${isDark ? '#334155' : '#bbf7d0'}`, borderRadius: '8px',
+                    marginBottom: '16px', textAlign: 'center', fontSize: '0.85rem',
+                    color: isDark ? '#86efac' : '#166534',
+                }}>
+                    {t('base64Info')}
+                </div>
+            )}
+
             {/* Encode Mode Options (URL only) */}
-            {encodeType === 'url' && (
+            {encodeType === 'url' && !batchMode && (
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "20px", marginBottom: "20px", flexWrap: "wrap" }}>
                     <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
                         <input type="radio" name="encodeMode" checked={encodeMode === 'component'}

@@ -228,6 +228,42 @@ function highlightSQL(sql: string, isDark: boolean): string {
 }
 
 
+// ===== Query Complexity Analysis =====
+interface QueryComplexity {
+    joinCount: number;
+    subqueryDepth: number;
+    tableCount: number;
+    conditionCount: number;
+    aggregateCount: number;
+    level: 'simple' | 'moderate' | 'complex' | 'very_complex';
+}
+
+function analyzeQueryComplexity(sql: string): QueryComplexity {
+    const upper = sql.toUpperCase();
+    // Count JOINs
+    const joinCount = (upper.match(/\b(INNER|LEFT|RIGHT|FULL|CROSS|NATURAL)?\s*JOIN\b/g) || []).length;
+    // Count subquery depth
+    let maxDepth = 0, depth = 0;
+    for (const ch of sql) {
+        if (ch === '(') { depth++; maxDepth = Math.max(maxDepth, depth); }
+        else if (ch === ')') depth--;
+    }
+    // Subtract 1 for non-subquery parentheses (simple function calls)
+    const subqueryDepth = Math.max(0, maxDepth - (upper.includes('SELECT') ? 0 : 1));
+    // Count tables (FROM + JOIN targets)
+    const fromMatches = upper.match(/\bFROM\s+\w+/g) || [];
+    const joinMatches = upper.match(/\bJOIN\s+\w+/g) || [];
+    const tableCount = fromMatches.length + joinMatches.length;
+    // Count conditions (WHERE, AND, OR)
+    const conditionCount = (upper.match(/\b(WHERE|AND|OR|HAVING)\b/g) || []).length;
+    // Count aggregates
+    const aggregateCount = (upper.match(/\b(COUNT|SUM|AVG|MIN|MAX|GROUP_CONCAT|STRING_AGG)\s*\(/g) || []).length;
+    // Determine level
+    const score = joinCount * 3 + subqueryDepth * 5 + tableCount * 2 + conditionCount + aggregateCount * 2;
+    const level = score <= 5 ? 'simple' : score <= 15 ? 'moderate' : score <= 30 ? 'complex' : 'very_complex';
+    return { joinCount, subqueryDepth, tableCount, conditionCount, aggregateCount, level };
+}
+
 export default function SqlFormatterClient() {
     const t = useTranslations('SqlFormatter');
     const { theme } = useTheme();
@@ -240,6 +276,7 @@ export default function SqlFormatterClient() {
     const [dialect, setDialect] = useState<SqlDialect>('sql');
     const [copied, setCopied] = useState(false);
     const [isFormatting, setIsFormatting] = useState(false);
+    const [showLineNumbers, setShowLineNumbers] = useState(true);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Highlighted HTML for the output pane
@@ -249,6 +286,12 @@ export default function SqlFormatterClient() {
     }, [output, isDark]);
 
     const outputLines = output ? output.split('\n').length : 0;
+
+    // Query complexity analysis
+    const complexity = useMemo(() => {
+        if (!input.trim()) return null;
+        return analyzeQueryComplexity(input);
+    }, [input]);
 
     const handleFormat = useCallback(async () => {
         if (!input.trim()) return;
@@ -408,6 +451,17 @@ ${inputLines} lines → ${outputLines} lines (${dialect.toUpperCase()})
                         />
                         <span style={{ fontSize: "0.95rem" }}>{t('uppercase')}</span>
                     </label>
+
+                    {/* Line numbers checkbox */}
+                    <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+                        <input
+                            type="checkbox"
+                            checked={showLineNumbers}
+                            onChange={(e) => setShowLineNumbers(e.target.checked)}
+                            style={{ width: "16px", height: "16px" }}
+                        />
+                        <span style={{ fontSize: "0.95rem" }}>{t('lineNumbers')}</span>
+                    </label>
                 </div>
             </div>
 
@@ -465,16 +519,27 @@ ${inputLines} lines → ${outputLines} lines (${dialect.toUpperCase()})
                     </div>
                     {output ? (
                         <pre style={{
-                            width: "100%", minHeight: "350px", padding: "15px",
+                            width: "100%", minHeight: "350px", padding: showLineNumbers ? "15px 15px 15px 0" : "15px",
                             margin: 0, overflowX: "auto", overflowY: "auto", resize: "vertical",
                             fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
                             fontSize: "0.9rem", lineHeight: 1.6,
                             boxSizing: "border-box", background: isDark ? "#0f172a" : "#f5f7f5",
                             color: isDark ? "#e2e8f0" : "#1f2937",
                             whiteSpace: "pre-wrap", wordBreak: "break-word",
-                            flex: 1
+                            flex: 1, display: showLineNumbers ? "flex" : "block",
                         }}>
-                            <code dangerouslySetInnerHTML={{ __html: highlightedOutput }} />
+                            {showLineNumbers && (
+                                <span style={{
+                                    display: "inline-block", textAlign: "right", paddingRight: "12px",
+                                    paddingLeft: "12px", borderRight: `1px solid ${isDark ? "#334155" : "#e2e8f0"}`,
+                                    marginRight: "12px", color: isDark ? "#475569" : "#9ca3af",
+                                    userSelect: "none", flexShrink: 0, whiteSpace: "pre",
+                                    minWidth: `${String(outputLines).length * 0.6 + 1}em`,
+                                }}>
+                                    {output.split('\n').map((_, i) => `${i + 1}`).join('\n')}
+                                </span>
+                            )}
+                            <code dangerouslySetInnerHTML={{ __html: highlightedOutput }} style={{ flex: 1 }} />
                         </pre>
                     ) : (
                         <div style={{
@@ -565,6 +630,33 @@ ${inputLines} lines → ${outputLines} lines (${dialect.toUpperCase()})
                     {t('clearBtn')}
                 </button>
             </div>
+
+            {/* Query Complexity Analysis */}
+            {complexity && input.trim() && (
+                <div style={{
+                    background: isDark ? "#1e293b" : "white", borderRadius: "10px",
+                    boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.1)", padding: "16px 20px",
+                    marginBottom: "15px", display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center",
+                }}>
+                    <div style={{ fontWeight: 600, fontSize: "0.9rem", color: isDark ? "#f1f5f9" : "#333" }}>
+                        {t('complexity.title')}
+                    </div>
+                    <span style={{
+                        padding: "4px 12px", borderRadius: "12px", fontSize: "0.8rem", fontWeight: 600,
+                        background: complexity.level === 'simple' ? '#dcfce7' : complexity.level === 'moderate' ? '#fef3c7' : complexity.level === 'complex' ? '#fed7aa' : '#fecaca',
+                        color: complexity.level === 'simple' ? '#166534' : complexity.level === 'moderate' ? '#92400e' : complexity.level === 'complex' ? '#9a3412' : '#991b1b',
+                    }}>
+                        {t(`complexity.${complexity.level}`)}
+                    </span>
+                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", fontSize: "0.82rem", color: isDark ? "#94a3b8" : "#666" }}>
+                        <span>JOIN: <strong style={{ color: isDark ? "#f1f5f9" : "#333" }}>{complexity.joinCount}</strong></span>
+                        <span>{t('complexity.tables')}: <strong style={{ color: isDark ? "#f1f5f9" : "#333" }}>{complexity.tableCount}</strong></span>
+                        <span>{t('complexity.subqueries')}: <strong style={{ color: isDark ? "#f1f5f9" : "#333" }}>{complexity.subqueryDepth}</strong></span>
+                        <span>{t('complexity.conditions')}: <strong style={{ color: isDark ? "#f1f5f9" : "#333" }}>{complexity.conditionCount}</strong></span>
+                        <span>{t('complexity.aggregates')}: <strong style={{ color: isDark ? "#f1f5f9" : "#333" }}>{complexity.aggregateCount}</strong></span>
+                    </div>
+                </div>
+            )}
 
             {/* File upload / download row */}
             <div style={{

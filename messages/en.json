@@ -3574,6 +3574,9 @@
       }
     },
     "doubleEncodingWarning": "Double encoding detected! Re-encoding already encoded text may cause issues.",
+    "batchMode": "Batch Mode",
+    "batchInfo": "Batch mode: Process multiple lines at once. Each line is encoded/decoded individually.",
+    "base64Info": "Base64 URL-safe: Uses -_ instead of +/= for URL-safe Base64 encoding. Used in JWT, OAuth, etc.",
     "parser": {
       "title": "URL Parser & Query Editor",
       "placeholder": "Enter a URL to parse (e.g., https://example.com/path?key=value)",
@@ -3766,7 +3769,7 @@
     "meta": {
       "title": "JSON Formatter | Online Validator & Beautifier - Free Tool",
       "description": "Free online JSON formatter and validator. Beautify, minify, and validate JSON data in real-time. Essential tool for developers and API testing.",
-      "keywords": "JSON formatter, JSON validator, JSON beautifier, JSON minifier, online JSON tool, JSON parser, API testing, developer tool",
+      "keywords": "JSON formatter, JSON validator, JSON beautifier, JSON minifier, JSON auto-repair, JSON to YAML, JSON to CSV, JSON to TypeScript, JSON escape, JSONPath, online JSON tool, developer tool",
       "ogTitle": "JSON Formatter | Beautify & Validate JSON Online",
       "ogDescription": "Format, validate, and minify JSON data in real-time. Free online tool for developers!"
     },
@@ -3776,6 +3779,9 @@
       "format": "Format",
       "minify": "Minify",
       "validate": "Validate",
+      "repair": "Auto-Repair",
+      "escape": "Escape",
+      "unescape": "Unescape",
       "copy": "Copy",
       "copied": "Copied!",
       "clear": "Clear",
@@ -3805,7 +3811,24 @@
     },
     "error": {
       "empty": "Please enter JSON data.",
-      "invalid": "Invalid JSON"
+      "invalid": "Invalid JSON",
+      "line": "Line",
+      "column": "Column"
+    },
+    "repair": {
+      "success": "Repair complete",
+      "noIssues": "No issues found to fix.",
+      "trailingCommas": "Removed {count} trailing comma(s)",
+      "singleQuotes": "Converted {count} single quote(s) to double quotes",
+      "comments": "Removed {count} comment(s)",
+      "unquotedKeys": "Quoted {count} unquoted key(s)",
+      "failedAfterRepair": "JSON is still invalid after auto-repair. Please check manually."
+    },
+    "escape": {
+      "error": "Error during escape/unescape operation."
+    },
+    "convert": {
+      "csvNotArray": "CSV conversion requires an array of objects."
     },
     "stats": {
       "success": "Formatted successfully",
@@ -3826,6 +3849,18 @@
       "minify": {
         "title": "Minify",
         "desc": "Remove whitespace to reduce file size for production use."
+      },
+      "repair": {
+        "title": "Auto-Repair",
+        "desc": "Automatically fix common JSON errors like trailing commas, single quotes, comments, and unquoted keys."
+      },
+      "convert": {
+        "title": "YAML/CSV Conversion",
+        "desc": "Convert JSON data to YAML or CSV format for copying or downloading."
+      },
+      "typescript": {
+        "title": "TypeScript Generation",
+        "desc": "Automatically generate TypeScript interfaces by analyzing JSON structure."
       }
     },
     "faq": {
@@ -3839,7 +3874,11 @@
       "q4": "Q. Is there a maximum file size for JSON?",
       "a4": "JSON itself has no size limit, but this tool runs in the browser, so it works best with data within a few MB. For very large files, consider using a dedicated editor.",
       "q5": "Q. Why use Minify?",
-      "a5": "Minify removes unnecessary whitespace and line breaks from JSON files to reduce file size. This improves transfer speed and saves storage when deploying API responses or configuration files."
+      "a5": "Minify removes unnecessary whitespace and line breaks from JSON files to reduce file size. This improves transfer speed and saves storage when deploying API responses or configuration files.",
+      "q6": "Q. What errors can JSON auto-repair fix?",
+      "a6": "Auto-repair can fix trailing commas, single quotes, JavaScript comments (// and /* */), and unquoted keys - the most common JSON syntax errors.",
+      "q7": "Q. Can I convert JSON to TypeScript interfaces?",
+      "a7": "Yes, the TypeScript view automatically generates interfaces from your JSON data, including support for nested objects, arrays, optional fields, and union types."
     },
     "seo": {
       "howto": {
@@ -3848,7 +3887,8 @@
           "s1": "<strong>Paste JSON</strong> — Paste the JSON data you want to format into the input field.",
           "s2": "<strong>Click Format</strong> — Press the button to convert it to cleanly indented JSON.",
           "s3": "<strong>View as Tree</strong> — Switch between text/tree view modes to visually explore the data structure.",
-          "s4": "<strong>Copy Result</strong> — Click the copy button to save the formatted JSON to your clipboard."
+          "s4": "<strong>Switch View Modes</strong> — Explore results in YAML, CSV, or TypeScript view modes.",
+          "s5": "<strong>Copy or Download</strong> — Copy or download the result in your preferred format."
         }
       },
       "usecases": {
@@ -3869,6 +3909,14 @@
           "learning": {
             "title": "Learning & Data Analysis",
             "desc": "Visualize complex JSON structures in tree view to understand data models."
+          },
+          "convert": {
+            "title": "Data Conversion",
+            "desc": "Convert JSON to YAML or CSV for use in other systems or spreadsheets."
+          },
+          "typescript": {
+            "title": "TypeScript Development",
+            "desc": "Auto-generate TypeScript interfaces from API response JSON for type-safe code."
           }
         }
       },
@@ -4742,6 +4790,18 @@
     "clearBtn": "Clear",
     "uploadBtn": "Open .sql file",
     "downloadBtn": "Save .sql file",
+    "lineNumbers": "Line Numbers",
+    "complexity": {
+      "title": "Query Complexity",
+      "simple": "Simple",
+      "moderate": "Moderate",
+      "complex": "Complex",
+      "very_complex": "Very Complex",
+      "tables": "Tables",
+      "subqueries": "Subquery Depth",
+      "conditions": "Conditions",
+      "aggregates": "Aggregates"
+    },
     "guideTitle": "How to Use",
     "guideStep1Title": "Enter SQL Query",
     "guideStep1Desc": "Paste the SQL query you want to format in the left input area. Single-line queries from logs work great!",
@@ -7946,6 +8006,9 @@
     "refDescription": "Description",
     "formatLabel": "Encoding Format",
     "searchPlaceholder": "Search by character, entity name, or description...",
+    "previewTitle": "Visual Preview",
+    "previewDesc": "Actual rendering result of encoded text",
+    "previewDescDecode": "Decoded original text",
     "seo": {
       "description": {
         "title": "What is an HTML Entity Converter?",
@@ -8075,6 +8138,10 @@
       "zeroUnit": "Zero unit removed",
       "rgbShorthand": "RGB shorthand"
     },
+    "gzipSize": "Gzip Size",
+    "gzipSaved": "compressed",
+    "vendorAdd": "Add Prefixes",
+    "vendorRemove": "Remove Prefixes",
     "diffTitle": "Before / After Diff",
     "diffRemoved": "Removed",
     "diffAdded": "Added",
@@ -8345,14 +8412,21 @@
       "upload": "Upload .md",
       "exportHtml": "Export HTML",
       "exportPdf": "Export PDF",
-      "toc": "Table of Contents"
+      "toc": "Table of Contents",
+      "downloadMd": "Download .md"
     },
     "toast": {
       "copiedMd": "Markdown copied to clipboard.",
       "copiedHtml": "HTML copied to clipboard.",
       "cleared": "Editor has been cleared.",
       "uploaded": ".md file has been loaded.",
-      "exportedHtml": "HTML file has been downloaded."
+      "exportedHtml": "HTML file has been downloaded.",
+      "downloadedMd": "Markdown file has been downloaded."
+    },
+    "stats": {
+      "words": "words",
+      "chars": "chars",
+      "lines": "lines"
     },
     "seo": {
       "description": {

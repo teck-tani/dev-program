@@ -1,11 +1,84 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaCompress, FaExpand, FaTrash, FaFileCode, FaDownload, FaExclamationTriangle, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 import { downloadFile } from "@/utils/fileDownload";
+
+// ===== Gzip Size Estimation =====
+async function estimateGzipSize(text: string): Promise<number | null> {
+    if (typeof CompressionStream === 'undefined') return null;
+    try {
+        const blob = new Blob([text]);
+        const cs = new CompressionStream('gzip');
+        const compressedStream = blob.stream().pipeThrough(cs);
+        const reader = compressedStream.getReader();
+        let totalSize = 0;
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            totalSize += value.byteLength;
+        }
+        return totalSize;
+    } catch {
+        return null;
+    }
+}
+
+// ===== Vendor Prefix Processing =====
+const VENDOR_PREFIXABLE_PROPS: Record<string, string[]> = {
+    'appearance': ['-webkit-appearance', '-moz-appearance'],
+    'user-select': ['-webkit-user-select', '-moz-user-select', '-ms-user-select'],
+    'transform': ['-webkit-transform', '-ms-transform'],
+    'transition': ['-webkit-transition'],
+    'animation': ['-webkit-animation'],
+    'flex': ['-webkit-flex', '-ms-flex'],
+    'flex-direction': ['-webkit-flex-direction', '-ms-flex-direction'],
+    'justify-content': ['-webkit-justify-content'],
+    'align-items': ['-webkit-align-items'],
+    'backdrop-filter': ['-webkit-backdrop-filter'],
+    'background-clip': ['-webkit-background-clip'],
+    'text-size-adjust': ['-webkit-text-size-adjust', '-ms-text-size-adjust'],
+    'hyphens': ['-webkit-hyphens', '-ms-hyphens'],
+    'column-count': ['-webkit-column-count', '-moz-column-count'],
+    'column-gap': ['-webkit-column-gap', '-moz-column-gap'],
+    'box-decoration-break': ['-webkit-box-decoration-break'],
+};
+
+function addVendorPrefixes(css: string): { css: string; count: number } {
+    let count = 0;
+    let result = css;
+    for (const [prop, prefixes] of Object.entries(VENDOR_PREFIXABLE_PROPS)) {
+        const regex = new RegExp(`(^|[{;\\s])${prop.replace('-', '\\-')}\\s*:`, 'gm');
+        const matches = result.match(regex);
+        if (matches) {
+            for (const match of matches) {
+                const propLine = match.trimStart();
+                // Find the full declaration
+                const lineRegex = new RegExp(`(${prop.replace('-', '\\-')}\\s*:[^;]+;)`, 'g');
+                result = result.replace(lineRegex, (fullMatch) => {
+                    const prefixedLines = prefixes.map(p => fullMatch.replace(prop, p)).join('\n  ');
+                    count += prefixes.length;
+                    return prefixedLines + '\n  ' + fullMatch;
+                });
+            }
+        }
+    }
+    return { css: result, count };
+}
+
+function removeVendorPrefixes(css: string): { css: string; count: number } {
+    let count = 0;
+    let result = css;
+    const prefixPattern = /\s*-(?:webkit|moz|ms|o)-[a-zA-Z-]+\s*:[^;]+;\s*/g;
+    const matches = result.match(prefixPattern);
+    if (matches) count = matches.length;
+    result = result.replace(prefixPattern, '\n');
+    result = result.replace(/\n\s*\n/g, '\n');
+    return { css: result, count };
+}
 
 // ===== Advanced CSS Minify =====
 interface MinifyResult {
@@ -242,6 +315,7 @@ export default function CssMinifierClient() {
     const [copied, setCopied] = useState(false);
     const [toast, setToast] = useState("");
     const [showDiff, setShowDiff] = useState(false);
+    const [gzipSize, setGzipSize] = useState<{ original: number | null; result: number | null }>({ original: null, result: null });
     const outputRef = useRef<HTMLTextAreaElement>(null);
 
     // Real-time processing
@@ -276,6 +350,46 @@ export default function CssMinifierClient() {
         if (!input.trim() || !output) return [];
         return computeDiff(input, output);
     }, [input, output]);
+
+    // Gzip size estimation
+    useEffect(() => {
+        if (!input.trim() || !output) {
+            setGzipSize({ original: null, result: null });
+            return;
+        }
+        let cancelled = false;
+        Promise.all([estimateGzipSize(input), estimateGzipSize(output)]).then(([orig, res]) => {
+            if (!cancelled) setGzipSize({ original: orig, result: res });
+        });
+        return () => { cancelled = true; };
+    }, [input, output]);
+
+    const handleAddPrefixes = useCallback(() => {
+        if (!input.trim()) return;
+        const { css, count } = addVendorPrefixes(input);
+        if (count > 0) {
+            setInput(css);
+            showToastFn(`${isKo ? '벤더 프리픽스 추가' : 'Vendor prefixes added'}: ${count}`);
+        } else {
+            showToastFn(isKo ? '추가할 프리픽스 없음' : 'No prefixes to add');
+        }
+    }, [input, isKo]);
+
+    const handleRemovePrefixes = useCallback(() => {
+        if (!input.trim()) return;
+        const { css, count } = removeVendorPrefixes(input);
+        if (count > 0) {
+            setInput(css);
+            showToastFn(`${isKo ? '벤더 프리픽스 제거' : 'Vendor prefixes removed'}: ${count}`);
+        } else {
+            showToastFn(isKo ? '제거할 프리픽스 없음' : 'No prefixes to remove');
+        }
+    }, [input, isKo]);
+
+    function showToastFn(msg: string) {
+        setToast(msg);
+        setTimeout(() => setToast(""), 2000);
+    }
 
     const showToast = useCallback((msg: string) => {
         setToast(msg);
@@ -367,6 +481,22 @@ export default function CssMinifierClient() {
                 }}>
                     <FaTrash size={12} /> {t("clear")}
                 </button>
+                <button onClick={handleAddPrefixes} disabled={!input} style={{
+                    padding: "8px 16px", border: `1px solid ${borderColor}`, borderRadius: 8,
+                    background: cardBg, color: !input ? secondaryText : '#16a34a', fontSize: 13,
+                    cursor: !input ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 6,
+                    opacity: !input ? 0.5 : 1,
+                }}>
+                    + {t("vendorAdd")}
+                </button>
+                <button onClick={handleRemovePrefixes} disabled={!input} style={{
+                    padding: "8px 16px", border: `1px solid ${borderColor}`, borderRadius: 8,
+                    background: cardBg, color: !input ? secondaryText : '#dc2626', fontSize: 13,
+                    cursor: !input ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 6,
+                    opacity: !input ? 0.5 : 1,
+                }}>
+                    − {t("vendorRemove")}
+                </button>
                 {output && (
                     <button onClick={handleDownload} style={{
                         padding: "8px 16px", border: `1px solid ${borderColor}`, borderRadius: 8,
@@ -419,7 +549,7 @@ export default function CssMinifierClient() {
             {stats && (
                 <div style={{ background: cardBg, borderRadius: 12, padding: 16, marginBottom: 16, border: `1px solid ${borderColor}` }}>
                     <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: secondaryText }}>{t("stats")}</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: gzipSize.original !== null ? "repeat(4, 1fr)" : "repeat(3, 1fr)", gap: 12 }}>
                         <div style={{ textAlign: "center", padding: 12, borderRadius: 8, background: isDark ? "#1a1a2e" : "#f0f0f0" }}>
                             <div style={{ fontSize: 11, color: secondaryText, marginBottom: 4 }}>{t("originalSize")}</div>
                             <div style={{ fontSize: 18, fontWeight: 700, color: textColor }}>{stats.originalBytes.toLocaleString()}</div>
@@ -442,6 +572,17 @@ export default function CssMinifierClient() {
                                 {stats.savedBytes >= 0 ? "-" : "+"}{Math.abs(Number(stats.savedPercent))}%
                             </div>
                         </div>
+                        {gzipSize.result !== null && (
+                            <div style={{ textAlign: "center", padding: 12, borderRadius: 8, background: isDark ? "#1a1a2e" : "#f0f4ff", border: isDark ? "1px solid #333" : "1px solid #dbeafe" }}>
+                                <div style={{ fontSize: 11, color: secondaryText, marginBottom: 4 }}>{t("gzipSize")}</div>
+                                <div style={{ fontSize: 18, fontWeight: 700, color: accentColor }}>
+                                    {gzipSize.result.toLocaleString()}
+                                </div>
+                                <div style={{ fontSize: 11, color: accentColor, fontWeight: 600 }}>
+                                    {gzipSize.original ? `${((1 - gzipSize.result / gzipSize.original) * 100).toFixed(1)}% ${t("gzipSaved")}` : t("bytes")}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Optimization Report */}

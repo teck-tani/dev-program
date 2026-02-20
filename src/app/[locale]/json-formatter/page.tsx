@@ -69,14 +69,14 @@ function generateHowToSchema(locale: string) {
             : "How to format and validate JSON data",
         "step": isKo ? [
             { "@type": "HowToStep", "name": "JSON 붙여넣기", "text": "포맷팅하려는 JSON 데이터를 입력창에 붙여넣으세요." },
-            { "@type": "HowToStep", "name": "정리(Beautify) 클릭", "text": "버튼을 누르면 들여쓰기가 적용된 깔끔한 JSON으로 변환됩니다." },
-            { "@type": "HowToStep", "name": "트리 뷰로 확인", "text": "텍스트/트리 뷰 모드를 전환하여 데이터 구조를 시각적으로 탐색하세요." },
-            { "@type": "HowToStep", "name": "결과 복사", "text": "복사 버튼을 눌러 포맷된 JSON을 클립보드에 저장하세요." }
+            { "@type": "HowToStep", "name": "자동 복구 또는 정리", "text": "깨진 JSON은 '자동 복구' 버튼으로 수정하고, '정리' 버튼으로 포맷팅합니다." },
+            { "@type": "HowToStep", "name": "변환 뷰 확인", "text": "텍스트, 트리, YAML, CSV, TypeScript 등 다양한 뷰 모드로 결과를 확인하세요." },
+            { "@type": "HowToStep", "name": "결과 복사/다운로드", "text": "복사 또는 다운로드 버튼으로 원하는 형식의 결과를 저장하세요." }
         ] : [
             { "@type": "HowToStep", "name": "Paste JSON", "text": "Paste the JSON data you want to format into the input field." },
-            { "@type": "HowToStep", "name": "Click Format", "text": "Press the button to convert it to cleanly indented JSON." },
-            { "@type": "HowToStep", "name": "View as Tree", "text": "Switch between text/tree view modes to visually explore the data structure." },
-            { "@type": "HowToStep", "name": "Copy Result", "text": "Click the copy button to save the formatted JSON to your clipboard." }
+            { "@type": "HowToStep", "name": "Auto-Repair or Format", "text": "Use 'Auto-Repair' to fix broken JSON, then click 'Format' to beautify it." },
+            { "@type": "HowToStep", "name": "Switch View Modes", "text": "Explore results in Text, Tree, YAML, CSV, or TypeScript view modes." },
+            { "@type": "HowToStep", "name": "Copy or Download", "text": "Copy or download the result in your preferred format." }
         ]
     };
 }
@@ -92,16 +92,24 @@ function generateFaqSchema(locale: string) {
             answer: "압축된 JSON을 읽기 쉽게 정리하거나, JSON 문법 오류를 찾아 수정할 때 사용합니다. API 응답 분석, 설정 파일 편집, 데이터 검증 등에 유용합니다."
         },
         {
-            question: "JSON과 JavaScript 객체의 차이는?",
-            answer: "JSON은 문자열 형태의 데이터 포맷이고, JavaScript 객체는 프로그래밍 언어의 데이터 타입입니다. JSON에서는 키를 반드시 큰따옴표로 감싸야 하고, 함수나 undefined를 값으로 가질 수 없습니다."
+            question: "JSON 자동 복구는 어떤 오류를 고칠 수 있나요?",
+            answer: "트레일링 쉼표, 작은따옴표, JavaScript 주석(//와 /* */), 따옴표 없는 키 등 흔한 JSON 문법 오류를 자동으로 수정합니다."
+        },
+        {
+            question: "JSON을 TypeScript 인터페이스로 변환할 수 있나요?",
+            answer: "네, JSON 데이터를 입력하면 자동으로 TypeScript 인터페이스를 생성합니다. 중첩 객체, 배열, 옵셔널 필드, 유니온 타입까지 지원합니다."
+        },
+        {
+            question: "JSON을 CSV로 변환하려면?",
+            answer: "JSON 데이터가 객체 배열 형태일 때 CSV 탭이 자동으로 활성화됩니다. 변환된 CSV를 복사하거나 .csv 파일로 다운로드할 수 있습니다."
         },
         {
             question: "JSON 파일의 최대 크기는 얼마인가요?",
-            answer: "JSON 자체에는 크기 제한이 없지만, 이 도구는 브라우저에서 실행되므로 수 MB 이내의 데이터를 처리하기에 적합합니다. 매우 큰 파일은 전용 에디터를 사용하시기 바랍니다."
+            answer: "JSON 자체에는 크기 제한이 없지만, 이 도구는 브라우저에서 실행되므로 수 MB 이내의 데이터를 처리하기에 적합합니다."
         },
         {
-            question: "Minify(압축)는 왜 사용하나요?",
-            answer: "JSON 파일에서 불필요한 공백과 줄바꿈을 제거하여 파일 크기를 줄입니다. API 응답이나 설정 파일을 배포할 때 전송 속도를 높이고 저장 공간을 절약할 수 있습니다."
+            question: "Escape/Unescape는 무엇인가요?",
+            answer: "Escape는 JSON 문자열을 다른 코드에 삽입할 수 있도록 이스케이프 처리합니다. Unescape는 이스케이프된 문자열을 원래 JSON으로 복원합니다."
         }
     ] : [
         {
@@ -113,16 +121,24 @@ function generateFaqSchema(locale: string) {
             answer: "It's used to prettify compressed JSON for readability or to find and fix JSON syntax errors. Useful for API response analysis, config file editing, and data validation."
         },
         {
-            question: "What's the difference between JSON and JavaScript objects?",
-            answer: "JSON is a string-based data format, while JavaScript objects are a programming language data type. In JSON, keys must be wrapped in double quotes, and functions or undefined cannot be values."
+            question: "What errors can JSON auto-repair fix?",
+            answer: "Auto-repair can fix trailing commas, single quotes, JavaScript comments (// and /* */), and unquoted keys - the most common JSON syntax errors."
+        },
+        {
+            question: "Can I convert JSON to TypeScript interfaces?",
+            answer: "Yes, the TypeScript view automatically generates interfaces from your JSON data, including support for nested objects, arrays, optional fields, and union types."
+        },
+        {
+            question: "How do I convert JSON to CSV?",
+            answer: "When your JSON data is an array of objects, the CSV tab automatically appears. You can copy or download the converted CSV data."
         },
         {
             question: "Is there a maximum file size for JSON?",
-            answer: "JSON itself has no size limit, but this tool runs in the browser, so it works best with data within a few MB. For very large files, consider using a dedicated editor."
+            answer: "JSON itself has no size limit, but this tool runs in the browser, so it works best with data within a few MB."
         },
         {
-            question: "Why use Minify?",
-            answer: "Minify removes unnecessary whitespace and line breaks from JSON files to reduce file size. This improves transfer speed and saves storage when deploying API responses or configuration files."
+            question: "What is Escape/Unescape?",
+            answer: "Escape converts a JSON string for embedding in code. Unescape restores an escaped string back to its original JSON form."
         }
     ];
 
@@ -144,17 +160,17 @@ function generateWebAppSchema(locale: string) {
         "@type": "WebApplication",
         "name": isKo ? "JSON 포맷터" : "JSON Formatter",
         "description": isKo
-            ? "JSON 데이터를 보기 좋게 정리하고 문법 오류를 검증하는 무료 온라인 도구"
-            : "Free online tool to prettify JSON data and validate syntax errors",
+            ? "JSON 포맷팅, 자동 복구, YAML/CSV/TypeScript 변환까지 지원하는 무료 온라인 도구"
+            : "Free online tool for JSON formatting, auto-repair, and conversion to YAML, CSV, and TypeScript",
         "url": `${baseUrl}/${locale}/json-formatter`,
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
         "featureList": isKo
-            ? ["JSON 포맷팅", "문법 검증", "들여쓰기 설정", "압축(Minify)", "복사 기능"]
-            : ["JSON formatting", "Syntax validation", "Indentation settings", "Minify", "Copy function"],
+            ? ["JSON 포맷팅", "문법 검증", "JSON 자동 복구", "JSON→YAML 변환", "JSON→CSV 변환", "TypeScript 인터페이스 생성", "JSON 이스케이프/언이스케이프", "JSONPath 쿼리", "트리 뷰", "키 정렬"]
+            : ["JSON formatting", "Syntax validation", "JSON auto-repair", "JSON to YAML conversion", "JSON to CSV conversion", "TypeScript interface generation", "JSON escape/unescape", "JSONPath query", "Tree view", "Key sorting"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "softwareVersion": "1.0"
+        "softwareVersion": "2.0"
     };
 }
 
@@ -167,8 +183,8 @@ export default async function JsonFormatterPage({ params }: { params: Promise<{ 
     const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
 
-    const howtoKeys = ['s1', 's2', 's3', 's4'];
-    const usecaseKeys = ['api', 'debug', 'config', 'learning'];
+    const howtoKeys = ['s1', 's2', 's3', 's4', 's5'];
+    const usecaseKeys = ['api', 'debug', 'config', 'learning', 'convert', 'typescript'];
 
     return (
         <>
@@ -177,12 +193,6 @@ export default async function JsonFormatterPage({ params }: { params: Promise<{ 
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }} />
 
             <div className="container" style={{ maxWidth: '1100px', padding: '20px' }}>
-                <section style={{ textAlign: 'center', marginBottom: '30px' }}>
-                    <h1 style={{ marginBottom: '15px' }}>{t('title')}</h1>
-                    <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}
-                        dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
-                </section>
-
                 <JsonFormatterClient />
 
                 <article className="seo-article">
@@ -193,7 +203,7 @@ export default async function JsonFormatterPage({ params }: { params: Promise<{ 
                         </h2>
                         <p className="seo-text">{t('info.desc')}</p>
                         <div className="seo-card-grid">
-                            {(['format', 'validate', 'minify'] as const).map((key) => (
+                            {(['format', 'validate', 'minify', 'repair', 'convert', 'typescript'] as const).map((key) => (
                                 <div key={key} className="seo-card">
                                     <h3 className="seo-card-title">{t(`info.${key}.title`)}</h3>
                                     <p className="seo-card-desc">{t(`info.${key}.desc`)}</p>
@@ -228,7 +238,7 @@ export default async function JsonFormatterPage({ params }: { params: Promise<{ 
                     {/* 4. FAQ */}
                     <section className="seo-section">
                         <h2 className="seo-section-title">{t('faq.title')}</h2>
-                        {(['q1', 'q2', 'q3', 'q4', 'q5'] as const).map((qKey, i) => (
+                        {(['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'] as const).map((qKey, i) => (
                             <details key={qKey} className="seo-faq-item">
                                 <summary>{t(`faq.${qKey}`)}</summary>
                                 <p>{t(`faq.a${i + 1}`)}</p>

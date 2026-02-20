@@ -349,6 +349,61 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                 </div>
             </div>
 
+            {/* Visual Preview Panel */}
+            {output && mode === 'encode' && (
+                <div style={{
+                    background: cardBg, borderRadius: "12px", boxShadow: cardShadow,
+                    padding: "16px 20px", marginBottom: "20px",
+                }}>
+                    <div style={{
+                        display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px"
+                    }}>
+                        <label style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333", fontSize: "0.9rem" }}>
+                            {t('previewTitle')}
+                        </label>
+                        <span style={{ fontSize: "0.75rem", color: isDark ? "#64748b" : "#9ca3af" }}>
+                            {t('previewDesc')}
+                        </span>
+                    </div>
+                    <div style={{
+                        padding: "14px 16px", borderRadius: "8px",
+                        border: `1px dashed ${isDark ? "#334155" : "#d1d5db"}`,
+                        background: isDark ? "#0f172a" : "#fafafa",
+                        fontSize: "1rem", lineHeight: "1.8",
+                        color: isDark ? "#e2e8f0" : "#1f2937",
+                    }}
+                        dangerouslySetInnerHTML={{ __html: output }}
+                    />
+                </div>
+            )}
+
+            {output && mode === 'decode' && (
+                <div style={{
+                    background: cardBg, borderRadius: "12px", boxShadow: cardShadow,
+                    padding: "16px 20px", marginBottom: "20px",
+                }}>
+                    <div style={{
+                        display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px"
+                    }}>
+                        <label style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333", fontSize: "0.9rem" }}>
+                            {t('previewTitle')}
+                        </label>
+                        <span style={{ fontSize: "0.75rem", color: isDark ? "#64748b" : "#9ca3af" }}>
+                            {t('previewDescDecode')}
+                        </span>
+                    </div>
+                    <div style={{
+                        padding: "14px 16px", borderRadius: "8px",
+                        border: `1px dashed ${isDark ? "#334155" : "#d1d5db"}`,
+                        background: isDark ? "#0f172a" : "#fafafa",
+                        fontSize: "1rem", lineHeight: "1.8",
+                        color: isDark ? "#e2e8f0" : "#1f2937",
+                    }}>
+                        {output}
+                    </div>
+                </div>
+            )}
+
             {error && (
                 <div style={{
                     padding: "12px 20px", background: isDark ? "#450a0a" : "#fee2e2",

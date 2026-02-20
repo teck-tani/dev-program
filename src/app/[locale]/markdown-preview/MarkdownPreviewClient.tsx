@@ -3,9 +3,18 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaCopy, FaCheck, FaCode, FaEye, FaTrash, FaFileAlt, FaUpload, FaFilePdf, FaFileCode, FaListUl } from "react-icons/fa";
+import { FaCopy, FaCheck, FaCode, FaEye, FaTrash, FaFileAlt, FaUpload, FaFilePdf, FaFileCode, FaListUl, FaDownload } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 import { downloadFile } from "@/utils/fileDownload";
+
+// Word/character count utility
+function countWords(text: string): { words: number; chars: number; charsNoSpace: number; lines: number } {
+    const lines = text.split('\n').length;
+    const chars = text.length;
+    const charsNoSpace = text.replace(/\s/g, '').length;
+    const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+    return { words, chars, charsNoSpace, lines };
+}
 
 // ===== Emoji shortcode map (top ~100) =====
 const EMOJI_MAP: Record<string, string> = {
@@ -43,20 +52,24 @@ function highlightCode(code: string, lang: string): string {
         .replace(/>/g, '&gt;');
 
     const langLower = lang.toLowerCase();
-    if (!['javascript', 'js', 'typescript', 'ts', 'python', 'py', 'html', 'css', 'json', 'bash', 'sh', 'shell'].includes(langLower)) {
+    if (!['javascript', 'js', 'typescript', 'ts', 'python', 'py', 'html', 'css', 'json', 'bash', 'sh', 'shell',
+        'go', 'golang', 'java', 'ruby', 'rb', 'rust', 'rs', 'c', 'cpp', 'c++', 'csharp', 'cs', 'sql'].includes(langLower)) {
         return escaped;
     }
 
     let result = escaped;
 
     // Comments
-    if (['javascript', 'js', 'typescript', 'ts', 'css'].includes(langLower)) {
+    if (['javascript', 'js', 'typescript', 'ts', 'css', 'go', 'golang', 'java', 'rust', 'rs', 'c', 'cpp', 'c++', 'csharp', 'cs'].includes(langLower)) {
         result = result.replace(/(\/\/[^\n]*)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
         result = result.replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
-    } else if (['python', 'py', 'bash', 'sh', 'shell'].includes(langLower)) {
+    } else if (['python', 'py', 'bash', 'sh', 'shell', 'ruby', 'rb'].includes(langLower)) {
         result = result.replace(/(#[^\n]*)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
     } else if (langLower === 'html') {
         result = result.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
+    } else if (langLower === 'sql') {
+        result = result.replace(/(--[^\n]*)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
+        result = result.replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color:#6b7280;font-style:italic">$1</span>');
     }
 
     // Strings
@@ -79,6 +92,18 @@ function highlightCode(code: string, lang: string): string {
         keywords = ['if', 'then', 'else', 'elif', 'fi', 'for', 'do', 'done', 'while', 'case', 'esac', 'function', 'return', 'exit', 'echo', 'export', 'source', 'local', 'readonly', 'set', 'unset'];
     } else if (langLower === 'css') {
         keywords = ['@media', '@import', '@keyframes', '@font-face', '!important'];
+    } else if (['go', 'golang'].includes(langLower)) {
+        keywords = ['package', 'import', 'func', 'return', 'var', 'const', 'type', 'struct', 'interface', 'map', 'chan', 'go', 'defer', 'select', 'case', 'default', 'if', 'else', 'for', 'range', 'switch', 'break', 'continue', 'fallthrough', 'nil', 'true', 'false', 'make', 'new', 'append', 'len', 'cap', 'error'];
+    } else if (langLower === 'java') {
+        keywords = ['public', 'private', 'protected', 'static', 'final', 'abstract', 'class', 'interface', 'extends', 'implements', 'import', 'package', 'new', 'return', 'void', 'int', 'long', 'double', 'float', 'boolean', 'char', 'String', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'try', 'catch', 'finally', 'throw', 'throws', 'this', 'super', 'null', 'true', 'false', 'instanceof', 'synchronized', 'volatile', 'enum', 'default'];
+    } else if (['ruby', 'rb'].includes(langLower)) {
+        keywords = ['def', 'end', 'class', 'module', 'if', 'elsif', 'else', 'unless', 'while', 'until', 'for', 'do', 'begin', 'rescue', 'ensure', 'raise', 'return', 'yield', 'block_given?', 'require', 'include', 'attr_accessor', 'attr_reader', 'puts', 'print', 'nil', 'true', 'false', 'self', 'super', 'then', 'and', 'or', 'not', 'in', 'when', 'case', 'lambda', 'proc'];
+    } else if (['rust', 'rs'].includes(langLower)) {
+        keywords = ['fn', 'let', 'mut', 'const', 'static', 'struct', 'enum', 'impl', 'trait', 'pub', 'mod', 'use', 'crate', 'self', 'super', 'if', 'else', 'match', 'for', 'while', 'loop', 'break', 'continue', 'return', 'as', 'ref', 'move', 'async', 'await', 'unsafe', 'where', 'type', 'true', 'false', 'Some', 'None', 'Ok', 'Err', 'Vec', 'String', 'Box', 'Option', 'Result'];
+    } else if (['c', 'cpp', 'c++', 'csharp', 'cs'].includes(langLower)) {
+        keywords = ['int', 'long', 'float', 'double', 'char', 'void', 'bool', 'unsigned', 'signed', 'const', 'static', 'extern', 'struct', 'union', 'enum', 'typedef', 'sizeof', 'return', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'default', 'goto', 'include', 'define', 'ifdef', 'ifndef', 'endif', 'NULL', 'nullptr', 'true', 'false', 'class', 'public', 'private', 'protected', 'virtual', 'override', 'template', 'namespace', 'using', 'new', 'delete', 'try', 'catch', 'throw', 'auto', 'string', 'vector', 'map', 'set'];
+    } else if (langLower === 'sql') {
+        keywords = ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'NOT', 'IN', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'AS', 'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE', 'CREATE', 'TABLE', 'ALTER', 'DROP', 'INDEX', 'NULL', 'IS', 'LIKE', 'BETWEEN', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'EXISTS', 'UNION', 'ALL', 'ASC', 'DESC', 'WITH', 'HAVING', 'OFFSET'];
     }
 
     if (keywords.length > 0) {
@@ -627,6 +652,16 @@ export default function MarkdownPreviewClient() {
         showToast(t("toast.cleared"));
     }, [showToast, t]);
 
+    // .md file download
+    const handleDownloadMd = useCallback(() => {
+        if (!markdown.trim()) return;
+        downloadFile(markdown, 'document.md', 'text/markdown');
+        showToast(t("toast.downloadedMd"));
+    }, [markdown, showToast, t]);
+
+    // Word count stats
+    const wordStats = useMemo(() => countWords(markdown), [markdown]);
+
     // .md file upload
     const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -1008,6 +1043,10 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
                     <FaFilePdf size={12} />
                     {t("action.exportPdf")}
                 </button>
+                <button onClick={handleDownloadMd} disabled={!markdown.trim()} style={{ ...btnStyle(), opacity: markdown.trim() ? 1 : 0.5 }}>
+                    <FaDownload size={12} />
+                    {t("action.downloadMd")}
+                </button>
                 <button onClick={handleSample} style={btnStyle()}>
                     <FaFileAlt size={12} />
                     {t("action.sample")}
@@ -1082,6 +1121,17 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
                     <div style={panelHeaderStyle}>
                         <FaCode size={14} />
                         {t("editor.label")}
+                        {markdown.length > 0 && (
+                            <span style={{
+                                marginLeft: 'auto', fontSize: '0.75rem', fontWeight: 400,
+                                color: isDark ? '#64748b' : '#9ca3af',
+                                display: 'flex', gap: '10px',
+                            }}>
+                                <span>{wordStats.words} {t("stats.words")}</span>
+                                <span>{wordStats.chars} {t("stats.chars")}</span>
+                                <span>{wordStats.lines} {t("stats.lines")}</span>
+                            </span>
+                        )}
                     </div>
                     <textarea
                         ref={editorRef}
