@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import ShareButton from "@/components/ShareButton";
 import styles from "./servertime.module.css";
@@ -18,7 +18,6 @@ export default function ServerTimeClient() {
 
   // Time state
   const [currentTime, setCurrentTime] = useState<number | null>(null);
-  const [hydrated, setHydrated] = useState(false);
 
   // Sync state
   const [sync, setSync] = useState<SyncState>({
@@ -32,11 +31,13 @@ export default function ServerTimeClient() {
   const [targetMinute, setTargetMinute] = useState(0);
   const [targetSecond, setTargetSecond] = useState(0);
   const [targetActive, setTargetActive] = useState(false);
-  const [ticketingStatus, setTicketingStatus] = useState<"idle" | "waiting" | "go">("idle");
 
-  // Progress tracking: store countdown start time and total duration
-  const countdownStartRef = useRef<number | null>(null);
-  const countdownTotalRef = useRef<number>(0);
+  // GO! flash overlay
+  const [showGoFlash, setShowGoFlash] = useState(false);
+
+  // Progress tracking
+  const [countdownStart, setCountdownStart] = useState<number | null>(null);
+  const [countdownTotal, setCountdownTotal] = useState<number>(0);
 
   // Sound/vibration alert state
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -51,6 +52,36 @@ export default function ServerTimeClient() {
   const rafRef = useRef<number | null>(null);
   const syncOffsetRef = useRef<number>(0);
   const resyncTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // localStorage loaded flag (prevents saving initial 0,0,0 before restore)
+  const isLoadedRef = useRef(false);
+
+  // 3..2..1 beep tracking
+  const lastCountdown321Ref = useRef<number | null>(null);
+
+  // ===== Derived: ticketingStatus & countdown321 =====
+  const { ticketingStatus, countdown321 } = useMemo((): {
+    ticketingStatus: "idle" | "waiting" | "go";
+    countdown321: null | 3 | 2 | 1;
+  } => {
+    if (!targetActive || currentTime === null) {
+      return { ticketingStatus: "idle", countdown321: null };
+    }
+
+    const remaining = getRemainingMs(currentTime, targetHour, targetMinute, targetSecond);
+    const now = new Date(currentTime);
+    const target = new Date(currentTime);
+    target.setHours(targetHour, targetMinute, targetSecond, 0);
+    const diff = now.getTime() - target.getTime();
+
+    if (diff >= 0 && diff < 5000) {
+      return { ticketingStatus: "go", countdown321: null };
+    } else if (remaining > 0 && remaining <= 3000) {
+      return { ticketingStatus: "waiting", countdown321: Math.ceil(remaining / 1000) as 3 | 2 | 1 };
+    } else {
+      return { ticketingStatus: "waiting", countdown321: null };
+    }
+  }, [targetActive, currentTime, targetHour, targetMinute, targetSecond]);
 
   // ===== Server Time Sync =====
   const measureOffset = useCallback(async (apiUrl: string, parseTimestamp: (data: unknown) => number) => {
@@ -67,8 +98,6 @@ export default function ServerTimeClient() {
   const syncWithServer = useCallback(async () => {
     setSync((prev) => ({ ...prev, status: "syncing" }));
 
-    // Source 1: Internal API (fast, reliable)
-    // Source 2: worldtimeapi.org (external fallback)
     const sources = [
       { url: "/api/server-time", parse: (d: { timestamp: number }) => d.timestamp },
       { url: "https://worldtimeapi.org/api/timezone/Asia/Seoul", parse: (d: { datetime: string }) => new Date(d.datetime).getTime() },
@@ -82,7 +111,6 @@ export default function ServerTimeClient() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           samples.push(await measureOffset(source.url, source.parse as (data: any) => number));
         }
-        // Pick median by latency (most stable sample)
         samples.sort((a, b) => a.latency - b.latency);
         const median = samples[1];
 
@@ -92,32 +120,44 @@ export default function ServerTimeClient() {
           offset: Math.round(median.offset),
           lastSynced: Date.now(),
         });
-        return; // Success — stop trying other sources
+        return;
       } catch {
         // Try next source
       }
     }
 
-    // All sources failed
     setSync((prev) => ({ ...prev, status: "failed" }));
     syncOffsetRef.current = 0;
   }, [measureOffset]);
 
-  // Initial sync + auto re-sync every 10 minutes
+  // Initial sync + load localStorage + auto re-sync every 10 minutes
   useEffect(() => {
-    setHydrated(true);
-    syncWithServer();
+    // Restore saved target time
+    const h = parseInt(localStorage.getItem("servertime_h") || "0") || 0;
+    const m = parseInt(localStorage.getItem("servertime_m") || "0") || 0;
+    const s = parseInt(localStorage.getItem("servertime_s") || "0") || 0;
+    setTargetHour(Math.min(23, Math.max(0, h)));
+    setTargetMinute(Math.min(59, Math.max(0, m)));
+    setTargetSecond(Math.min(59, Math.max(0, s)));
+    isLoadedRef.current = true;
 
+    syncWithServer();
     resyncTimerRef.current = setInterval(syncWithServer, 10 * 60 * 1000);
     return () => {
       if (resyncTimerRef.current) clearInterval(resyncTimerRef.current);
     };
   }, [syncWithServer]);
 
+  // Save target time to localStorage whenever it changes
+  useEffect(() => {
+    if (!isLoadedRef.current) return;
+    localStorage.setItem("servertime_h", String(targetHour));
+    localStorage.setItem("servertime_m", String(targetMinute));
+    localStorage.setItem("servertime_s", String(targetSecond));
+  }, [targetHour, targetMinute, targetSecond]);
+
   // ===== Animation Loop (requestAnimationFrame) =====
   useEffect(() => {
-    if (!hydrated) return;
-
     const tick = () => {
       const now = Date.now() + syncOffsetRef.current;
       setCurrentTime(now);
@@ -131,18 +171,43 @@ export default function ServerTimeClient() {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [hydrated]);
+  }, []);
+
+  // ===== Countdown beep (3, 2, 1) =====
+  const playCountdownBeep = useCallback((num: number) => {
+    if (!soundEnabled) return;
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioContext();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === "suspended") ctx.resume();
+
+      // 1 = higher pitch for urgency
+      const freq = num === 1 ? 1046 : 880;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.18);
+    } catch {
+      // Web Audio API not supported
+    }
+  }, [soundEnabled]);
 
   // ===== GO! Sound & Vibration =====
   const playGoAlert = useCallback(() => {
     if (!soundEnabled) return;
 
-    // Vibration (mobile)
     if (navigator.vibrate) {
       navigator.vibrate([200, 100, 200, 100, 300]);
     }
 
-    // Beep sound via Web Audio API
     try {
       if (!audioCtxRef.current) {
         audioCtxRef.current = new AudioContext();
@@ -169,34 +234,29 @@ export default function ServerTimeClient() {
     }
   }, [soundEnabled]);
 
-  // ===== Ticketing Status Check =====
+  // ===== Side effects: 3..2..1 beep =====
   useEffect(() => {
-    if (!targetActive || currentTime === null) {
-      setTicketingStatus("idle");
+    if (countdown321 !== null && countdown321 !== lastCountdown321Ref.current) {
+      playCountdownBeep(countdown321);
+      lastCountdown321Ref.current = countdown321;
+    } else if (countdown321 === null) {
+      lastCountdown321Ref.current = null;
+    }
+  }, [countdown321, playCountdownBeep]);
+
+  // ===== Side effects: GO! alert & flash =====
+  useEffect(() => {
+    if (ticketingStatus === "go" && !goAlertFiredRef.current) {
+      goAlertFiredRef.current = true;
+      playGoAlert();
+      setShowGoFlash(true);
+      const timer = setTimeout(() => setShowGoFlash(false), 900);
+      return () => clearTimeout(timer);
+    }
+    if (ticketingStatus !== "go") {
       goAlertFiredRef.current = false;
-      return;
     }
-
-    const remaining = getRemainingMs(currentTime, targetHour, targetMinute, targetSecond);
-
-    // "GO!" window: target reached (remaining wrapped to ~24h means we just passed it)
-    const now = new Date(currentTime);
-    const target = new Date(currentTime);
-    target.setHours(targetHour, targetMinute, targetSecond, 0);
-    const diff = now.getTime() - target.getTime();
-
-    if (diff >= 0 && diff < 5000) {
-      setTicketingStatus("go");
-      if (!goAlertFiredRef.current) {
-        goAlertFiredRef.current = true;
-        playGoAlert();
-      }
-    } else if (remaining > 0 && remaining < 24 * 60 * 60 * 1000) {
-      setTicketingStatus("waiting");
-    } else {
-      setTicketingStatus("waiting");
-    }
-  }, [currentTime, targetActive, targetHour, targetMinute, targetSecond, playGoAlert]);
+  }, [ticketingStatus, playGoAlert]);
 
   // ===== Tab title update =====
   useEffect(() => {
@@ -227,19 +287,17 @@ export default function ServerTimeClient() {
   const handleSetTarget = useCallback(() => {
     if (currentTime !== null) {
       const remaining = getRemainingMs(currentTime, targetHour, targetMinute, targetSecond);
-      countdownStartRef.current = currentTime;
-      countdownTotalRef.current = remaining;
+      setCountdownStart(currentTime);
+      setCountdownTotal(remaining);
     }
     goAlertFiredRef.current = false;
     setTargetActive(true);
-    setTicketingStatus("waiting");
   }, [currentTime, targetHour, targetMinute, targetSecond]);
 
   const handleClearTarget = useCallback(() => {
     setTargetActive(false);
-    setTicketingStatus("idle");
-    countdownStartRef.current = null;
-    countdownTotalRef.current = 0;
+    setCountdownStart(null);
+    setCountdownTotal(0);
     goAlertFiredRef.current = false;
   }, []);
 
@@ -250,12 +308,11 @@ export default function ServerTimeClient() {
     setTargetHour(nextHour);
     setTargetMinute(0);
     setTargetSecond(0);
-    // Calculate remaining for progress tracking
     const target = new Date(currentTime);
     target.setHours(nextHour, 0, 0, 0);
     if (target.getTime() <= now.getTime()) target.setDate(target.getDate() + 1);
-    countdownStartRef.current = currentTime;
-    countdownTotalRef.current = target.getTime() - now.getTime();
+    setCountdownStart(currentTime);
+    setCountdownTotal(target.getTime() - now.getTime());
     goAlertFiredRef.current = false;
     setTargetActive(true);
   }, [currentTime]);
@@ -267,8 +324,8 @@ export default function ServerTimeClient() {
       setTargetHour(target.getHours());
       setTargetMinute(target.getMinutes());
       setTargetSecond(target.getSeconds());
-      countdownStartRef.current = currentTime;
-      countdownTotalRef.current = minutes * 60000;
+      setCountdownStart(currentTime);
+      setCountdownTotal(minutes * 60000);
       goAlertFiredRef.current = false;
       setTargetActive(true);
     },
@@ -291,7 +348,6 @@ export default function ServerTimeClient() {
       if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
       copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
-      // fallback
       const textarea = document.createElement("textarea");
       textarea.value = timeStr;
       document.body.appendChild(textarea);
@@ -369,13 +425,13 @@ export default function ServerTimeClient() {
     : 0;
 
   const progressPercent = (() => {
-    if (!targetActive || currentTime === null || countdownStartRef.current === null || countdownTotalRef.current <= 0) return 0;
-    const elapsed = currentTime - countdownStartRef.current;
-    return Math.min(100, Math.max(0, (elapsed / countdownTotalRef.current) * 100));
+    if (!targetActive || currentTime === null || countdownStart === null || countdownTotal <= 0) return 0;
+    const elapsed = currentTime - countdownStart;
+    return Math.min(100, Math.max(0, (elapsed / countdownTotal) * 100));
   })();
 
   // ===== Render =====
-  if (!hydrated || currentTime === null) {
+  if (currentTime === null) {
     return (
       <div className={styles.container}>
         <div className={styles.timeSection}>
@@ -390,180 +446,205 @@ export default function ServerTimeClient() {
   }
 
   return (
-    <div className={styles.container}>
-      {/* Current Time Section */}
-      <div className={styles.timeSection}>
-        <div className={styles.timeLabel}>{t("currentTime")}</div>
-        <div className={styles.timeDisplay}>
-          <span>{formatTimeDisplay(currentTime)}</span>
-          <span className={styles.msDisplay}>.{formatMs(currentTime)}</span>
-        </div>
-
-        {/* Compact info row: date + sync + copy */}
-        <div className={styles.infoRow}>
-          <span className={styles.dateDisplay}>{formatDate(currentTime)}</span>
-          <span className={styles.infoDivider}>·</span>
-          <span
-            className={`${styles.syncBadge} ${
-              sync.status === "synced"
-                ? styles.syncBadgeSynced
-                : sync.status === "syncing"
-                ? styles.syncBadgeSyncing
-                : styles.syncBadgeFailed
-            }`}
+    <>
+      {/* 3..2..1 Countdown Overlay */}
+      {countdown321 !== null && targetActive && (
+        <div className={styles.countdown321Overlay}>
+          <div
+            className={`${styles.countdown321Number} ${countdown321 === 1 ? styles.countdown321Red : ""}`}
+            key={countdown321}
           >
-            {sync.status === "synced"
-              ? t("synced")
-              : sync.status === "syncing"
-              ? t("syncing")
-              : t("syncFailed")}
-            {sync.status === "synced" && (
-              <span className={styles.offsetText}>
-                {" "}{sync.offset > 0 ? "+" : ""}{sync.offset}ms
-              </span>
-            )}
-          </span>
-          {sync.status === "failed" && (
-            <button className={styles.resyncBtn} onClick={syncWithServer}>
-              {t("retry")}
-            </button>
-          )}
-          <span className={styles.infoDivider}>·</span>
-          <button className={`${styles.copyBtn} ${copied ? styles.copyBtnCopied : ""}`} onClick={handleCopyTime}>
-            {copied ? t("copied") : t("copyTime")}
-          </button>
-          <span className={styles.infoDivider}>·</span>
-          <ShareButton shareText={getShareText()} className={styles.copyBtn} />
-        </div>
-      </div>
-
-      {/* Ticketing Section */}
-      <div className={styles.ticketingSection}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitle}>
-            <span className={styles.sectionIcon}>{ticketingStatus === "go" ? "\u{1F3AF}" : "\u{1F3AB}"}</span>
-            {t("ticketingMode")}
-          </div>
-          <button
-            className={`${styles.soundToggle} ${soundEnabled ? styles.soundToggleOn : styles.soundToggleOff}`}
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            aria-label={soundEnabled ? t("soundOn") : t("soundOff")}
-            title={soundEnabled ? t("soundOn") : t("soundOff")}
-          >
-            {soundEnabled ? "\u{1F50A}" : "\u{1F507}"}
-          </button>
-        </div>
-
-        {/* Target Time Input */}
-        <div className={styles.targetInputRow}>
-          <div className={styles.inputGroup}>
-            <span className={styles.inputLabel}>{t("hour")}</span>
-            <input
-              type="number"
-              className={styles.timeInput}
-              min={0}
-              max={23}
-              value={targetHour}
-              onChange={(e) => setTargetHour(Math.min(23, Math.max(0, parseInt(e.target.value) || 0)))}
-            />
-          </div>
-          <span className={styles.timeSeparator}>:</span>
-          <div className={styles.inputGroup}>
-            <span className={styles.inputLabel}>{t("minute")}</span>
-            <input
-              type="number"
-              className={styles.timeInput}
-              min={0}
-              max={59}
-              value={targetMinute}
-              onChange={(e) => setTargetMinute(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
-            />
-          </div>
-          <span className={styles.timeSeparator}>:</span>
-          <div className={styles.inputGroup}>
-            <span className={styles.inputLabel}>{t("second")}</span>
-            <input
-              type="number"
-              className={styles.timeInput}
-              min={0}
-              max={59}
-              value={targetSecond}
-              onChange={(e) => setTargetSecond(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
-            />
+            {countdown321}
           </div>
         </div>
+      )}
 
-        {/* Quick Presets */}
-        <div className={styles.presetGrid}>
-          <button className={styles.presetBtn} onClick={handlePresetNextHour}>
-            {t("presetNextHour")}
-          </button>
-          <button className={styles.presetBtn} onClick={() => handlePresetPlus(1)}>
-            {t("presetPlus1m")}
-          </button>
-          <button className={styles.presetBtn} onClick={() => handlePresetPlus(5)}>
-            {t("presetPlus5m")}
-          </button>
-          <button className={styles.presetBtn} onClick={() => handlePresetPlus(10)}>
-            {t("presetPlus10m")}
-          </button>
-        </div>
+      {/* GO! Flash Overlay */}
+      {showGoFlash && (
+        <div className={styles.goFlashOverlay} />
+      )}
 
-        {/* Set / Clear buttons */}
-        <div className={styles.targetActions}>
-          {!targetActive ? (
-            <button className={styles.setTargetBtn} onClick={handleSetTarget}>
-              {t("setTarget")}
-            </button>
-          ) : (
-            <button className={styles.clearTargetBtn} onClick={handleClearTarget}>
-              {t("clearTarget")}
-            </button>
-          )}
-        </div>
+      <div className={styles.container}>
+        {/* Current Time Section */}
+        <div className={styles.timeSection}>
+          <div className={styles.timeLabel}>{t("currentTime")}</div>
+          <div className={styles.timeDisplay}>
+            <span>{formatTimeDisplay(currentTime)}</span>
+            <span className={styles.msDisplay}>.{formatMs(currentTime)}</span>
+          </div>
 
-        {/* Countdown Display */}
-        {targetActive && (
-          <div className={styles.countdownSection}>
-            {/* Progress Bar */}
-            <div className={styles.progressBarContainer}>
-              <div
-                className={styles.progressBar}
-                style={{ width: `${Math.min(100, progressPercent)}%` }}
-              />
-            </div>
-
-            {/* Status */}
-            <div
-              className={`${styles.statusBadge} ${
-                ticketingStatus === "go" ? styles.statusGo : styles.statusReady
+          {/* Compact info row: date + sync + copy */}
+          <div className={styles.infoRow}>
+            <span className={styles.dateDisplay}>{formatDate(currentTime)}</span>
+            <span className={styles.infoDivider}>·</span>
+            <span
+              className={`${styles.syncBadge} ${
+                sync.status === "synced"
+                  ? styles.syncBadgeSynced
+                  : sync.status === "syncing"
+                  ? styles.syncBadgeSyncing
+                  : styles.syncBadgeFailed
               }`}
             >
-              {ticketingStatus === "go" ? t("go") : t("waiting")}
-            </div>
+              {sync.status === "synced"
+                ? t("synced")
+                : sync.status === "syncing"
+                ? t("syncing")
+                : t("syncFailed")}
+              {sync.status === "synced" && (
+                <span className={styles.offsetText}>
+                  {" "}{sync.offset > 0 ? "+" : ""}{sync.offset}ms
+                </span>
+              )}
+            </span>
+            {sync.status === "failed" && (
+              <button className={styles.resyncBtn} onClick={syncWithServer}>
+                {t("retry")}
+              </button>
+            )}
+            <span className={styles.infoDivider}>·</span>
+            <button className={`${styles.copyBtn} ${copied ? styles.copyBtnCopied : ""}`} onClick={handleCopyTime}>
+              {copied ? t("copied") : t("copyTime")}
+            </button>
+            <span className={styles.infoDivider}>·</span>
+            <ShareButton shareText={getShareText()} className={styles.copyBtn} />
+          </div>
+        </div>
 
-            {/* Countdown */}
-            <div className={styles.countdownDisplay}>
-              <div className={styles.countdownLabel}>{t("remaining")}</div>
-              <div
-                className={`${styles.countdownTime} ${
-                  ticketingStatus === "go" ? styles.countdownTimeGo : ""
-                }`}
-              >
-                {ticketingStatus === "go" ? t("timeUp") : formatCountdown(remainingMs)}
-              </div>
+        {/* Ticketing Section */}
+        <div className={styles.ticketingSection}>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionIcon}>{ticketingStatus === "go" ? "\u{1F3AF}" : "\u{1F3AB}"}</span>
+              {t("ticketingMode")}
             </div>
+            <button
+              className={`${styles.soundToggle} ${soundEnabled ? styles.soundToggleOn : styles.soundToggleOff}`}
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              aria-label={soundEnabled ? t("soundOn") : t("soundOff")}
+              title={soundEnabled ? t("soundOn") : t("soundOff")}
+            >
+              {soundEnabled ? "\u{1F50A}" : "\u{1F507}"}
+            </button>
+          </div>
 
-            {/* Target Time */}
-            <div className={styles.targetDisplay}>
-              {t("targetTime")}: {String(targetHour).padStart(2, "0")}:
-              {String(targetMinute).padStart(2, "0")}:
-              {String(targetSecond).padStart(2, "0")}
+          {/* Target Time Input */}
+          <div className={styles.targetInputRow}>
+            <div className={styles.inputGroup}>
+              <span className={styles.inputLabel}>{t("hour")}</span>
+              <input
+                type="number"
+                className={styles.timeInput}
+                min={0}
+                max={23}
+                value={targetHour}
+                onChange={(e) => setTargetHour(Math.min(23, Math.max(0, parseInt(e.target.value) || 0)))}
+              />
+            </div>
+            <span className={styles.timeSeparator}>:</span>
+            <div className={styles.inputGroup}>
+              <span className={styles.inputLabel}>{t("minute")}</span>
+              <input
+                type="number"
+                className={styles.timeInput}
+                min={0}
+                max={59}
+                value={targetMinute}
+                onChange={(e) => setTargetMinute(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
+              />
+            </div>
+            <span className={styles.timeSeparator}>:</span>
+            <div className={styles.inputGroup}>
+              <span className={styles.inputLabel}>{t("second")}</span>
+              <input
+                type="number"
+                className={styles.timeInput}
+                min={0}
+                max={59}
+                value={targetSecond}
+                onChange={(e) => setTargetSecond(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
+              />
             </div>
           </div>
-        )}
+
+          {/* Quick Presets */}
+          <div className={styles.presetGrid}>
+            <button className={styles.presetBtn} onClick={handlePresetNextHour}>
+              {t("presetNextHour")}
+            </button>
+            <button className={styles.presetBtn} onClick={() => handlePresetPlus(1)}>
+              {t("presetPlus1m")}
+            </button>
+            <button className={styles.presetBtn} onClick={() => handlePresetPlus(5)}>
+              {t("presetPlus5m")}
+            </button>
+            <button className={styles.presetBtn} onClick={() => handlePresetPlus(10)}>
+              {t("presetPlus10m")}
+            </button>
+          </div>
+
+          {/* Set / Clear buttons */}
+          <div className={styles.targetActions}>
+            {!targetActive ? (
+              <button className={styles.setTargetBtn} onClick={handleSetTarget}>
+                {t("setTarget")}
+              </button>
+            ) : (
+              <button className={styles.clearTargetBtn} onClick={handleClearTarget}>
+                {t("clearTarget")}
+              </button>
+            )}
+          </div>
+
+          {/* Countdown Display */}
+          {targetActive && (
+            <div className={styles.countdownSection}>
+              {/* Progress Bar */}
+              <div className={styles.progressBarContainer}>
+                <div
+                  className={styles.progressBar}
+                  style={{ width: `${Math.min(100, progressPercent)}%` }}
+                />
+              </div>
+
+              {/* Status */}
+              <div
+                className={`${styles.statusBadge} ${
+                  ticketingStatus === "go" ? styles.statusGo : styles.statusReady
+                }`}
+              >
+                {ticketingStatus === "go" ? t("go") : t("waiting")}
+              </div>
+
+              {/* Countdown */}
+              <div className={styles.countdownDisplay}>
+                <div className={styles.countdownLabel}>{t("remaining")}</div>
+                <div
+                  className={`${styles.countdownTime} ${
+                    ticketingStatus === "go"
+                      ? styles.countdownTimeGo
+                      : countdown321 === 1
+                      ? styles.countdownTimeRed
+                      : countdown321 !== null
+                      ? styles.countdownTimeUrgent
+                      : ""
+                  }`}
+                >
+                  {ticketingStatus === "go" ? t("timeUp") : formatCountdown(remainingMs)}
+                </div>
+              </div>
+
+              {/* Target Time */}
+              <div className={styles.targetDisplay}>
+                {t("targetTime")}: {String(targetHour).padStart(2, "0")}:
+                {String(targetMinute).padStart(2, "0")}:
+                {String(targetSecond).padStart(2, "0")}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -585,4 +666,3 @@ function getRemainingMs(
 
   return target.getTime() - now.getTime();
 }
-

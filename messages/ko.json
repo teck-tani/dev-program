@@ -3328,7 +3328,9 @@
       "format": "출력 형식",
       "formatJpeg": "JPEG (사진 추천)",
       "formatWebp": "WebP (최적 압축)",
-      "formatPng": "PNG (투명도 유지)"
+      "formatPng": "PNG (투명도 유지)",
+      "formatAvif": "AVIF (최신 고효율)",
+      "avifUnsupported": "브라우저 미지원"
     },
     "warnings": {
       "transparency": "PNG 이미지에 투명 배경이 포함되어 있습니다. JPEG로 변환 시 투명 영역이 흰색으로 대체됩니다. 투명도를 유지하려면 PNG 또는 WebP를 선택하세요."
@@ -3336,7 +3338,8 @@
     "buttons": {
       "compress": "압축하기",
       "compressing": "압축 중...",
-      "downloadAll": "전체 다운로드",
+      "downloadAll": "다운로드",
+      "downloadZip": "ZIP 다운로드",
       "clearAll": "전체 삭제",
       "compare": "비교"
     },
@@ -5607,7 +5610,77 @@
       "maxWarning": "최대 20개까지 등록할 수 있습니다.",
       "copied": "복사됨!",
       "copy": "복사",
-      "deleteConfirm": "이 이벤트를 삭제하시겠습니까?"
+      "deleteConfirm": "이 이벤트를 삭제하시겠습니까?",
+
+      "tabs": { "events": "D-Day", "milestones": "기념일", "couple": "커플", "dateCalc": "날짜계산" },
+      "unit": { "years": "년 ", "months": "개월 ", "weeks": "주 " },
+      "startDate": "시작일 (진행률용)",
+      "repeat": "반복",
+      "repeatNone": "없음",
+      "repeatYearly": "매년",
+      "lunar": "음력",
+      "lunarLabel": "음력",
+      "solarLabel": "양력",
+      "lunarDate": "음력 날짜",
+      "shareUrl": "URL 공유",
+      "exportIcal": "달력(.ics)",
+
+      "presets": {
+        "title": "빠른 추가",
+        "suneung": "수능",
+        "newYear": "새해",
+        "christmas": "크리스마스",
+        "seollal": "설날",
+        "chuseok": "추석",
+        "childrenDay": "어린이날"
+      },
+
+      "milestone": {
+        "title": "기념일 마일스톤",
+        "baseDate": "기준일",
+        "dayBased": "일수 기반 마일스톤",
+        "yearBased": "주년 기반 마일스톤",
+        "daysAfter": "일",
+        "anniversary": "주년"
+      },
+
+      "couple": {
+        "title": "커플 기념일",
+        "startDate": "사귄 날",
+        "together": "함께한 날",
+        "dayMilestones": "일수 기념일",
+        "monthlyEvents": "매월 14일 기념일",
+        "monthly14": {
+          "1": "다이어리데이 (1/14)",
+          "2": "발렌타인데이 (2/14)",
+          "3": "화이트데이 (3/14)",
+          "4": "블랙데이 (4/14)",
+          "5": "로즈데이 (5/14)",
+          "6": "키스데이 (6/14)",
+          "7": "실버데이 (7/14)",
+          "8": "그린데이 (8/14)",
+          "9": "뮤직데이 (9/14)",
+          "10": "와인데이 (10/14)",
+          "11": "무비데이 (11/14)",
+          "12": "허그데이 (12/14)"
+        }
+      },
+
+      "dateCalc": {
+        "title": "날짜 계산기",
+        "addSubtract": "날짜 더하기/빼기",
+        "baseDate": "기준일",
+        "operation": "연산",
+        "add": "더하기",
+        "subtract": "빼기",
+        "daysInput": "일수",
+        "result": "결과",
+        "diffTitle": "두 날짜 차이",
+        "fromDate": "시작일",
+        "toDate": "종료일"
+      },
+
+      "cal": { "sun": "일", "mon": "월", "tue": "화", "wed": "수", "thu": "목", "fri": "금", "sat": "토" }
     },
     "seo": {
       "description": {
@@ -8788,6 +8861,18 @@
       "height": "세로 (px)",
       "percent": "비율 (%)",
       "lockRatio": "비율 잠금",
+      "presets": "빠른 프리셋",
+      "presetsOpen": "프리셋 보기",
+      "presetsClose": "프리셋 닫기",
+      "presetCategories": {
+        "social": "소셜미디어",
+        "mobile": "모바일 기기",
+        "web": "웹 / 기타"
+      },
+      "cropMode": "크롭 방식",
+      "cropStretch": "늘리기",
+      "cropFit": "맞추기 (여백)",
+      "cropSmart": "스마트 크롭",
       "format": "출력 형식",
       "formatOriginal": "원본 유지",
       "formatJpeg": "JPEG",

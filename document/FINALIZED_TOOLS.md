@@ -6,7 +6,7 @@
 
 ---
 
-## 확정 도구 목록 (총 20개)
+## 확정 도구 목록 (총 23개)
 
 ### 계산기 (15개)
 | # | 도구명 | 경로 | 확정일 | 비고 |
@@ -37,11 +37,14 @@
 |---|--------|------|--------|------|
 | 1 | Base64 변환기 | /base64-encoder | 2026-02-18 | 텍스트/파일 인코딩·디코딩, URL-safe, 드래그앤드롭, 결과 복사 |
 
-### 유틸리티 (2개)
+### 유틸리티 (5개)
 | # | 도구명 | 경로 | 확정일 | 비고 |
 |---|--------|------|--------|------|
 | 1 | 바코드 생성기 | /barcode | 2026-02-12 | 다중 형식, 대량생성, 설정 영속화 |
 | 2 | 로또 번호 생성기 | /lotto-generator | 2026-02-17 | 물리시뮬레이션 애니메이션, 고정/제외번호, 멀티세트, 통계, API연동 |
+| 3 | QR코드 생성기 | /qr-generator | 2026-02-20 | 텍스트/URL·WiFi·vCard 3종, 색상 커스터마이징, 로고 삽입(H등급 자동), PNG·SVG 다운로드, 클립보드 복사, 공유 |
+| 4 | 이미지 압축기 | /image-compressor | 2026-02-20 | JPEG·WebP·PNG·AVIF(감지) 4종, ZIP 다운로드, Before/After 비교 슬라이더, 투명도 경고, 일괄처리, 설정변경 재압축 |
+| 5 | 이미지 리사이즈 | /image-resize | 2026-02-20 | 디바이스별 프리셋 13종(소셜/모바일/웹), 스마트 크롭(Sobel 엣지+2D전처리합), 맞추기(레터박스), 퍼센트/픽셀 모드, 일괄처리, ZIP 다운로드 |
 
 ### 텍스트 (1개)
 | # | 도구명 | 경로 | 확정일 | 비고 |
@@ -52,7 +55,7 @@
 
 ## 규칙
 
-1. **코드 수정 금지**: `src/app/[locale]/calculator/`, `src/app/[locale]/barcode/`, `src/app/[locale]/character-counter/`, `src/app/[locale]/severance-calculator/`, `src/app/[locale]/lotto-generator/`, `src/app/[locale]/base64-encoder/`, `src/app/[locale]/interest-calculator/`, `src/app/[locale]/salary-calculator/`, `src/app/[locale]/ovulation-calculator/`, `src/app/[locale]/korean-age-calculator/`, `src/app/[locale]/dutch-pay/`, `src/app/[locale]/bmi-calculator/`, `src/app/[locale]/vat-calculator/`, `src/app/[locale]/loan-calculator/`, `src/app/[locale]/rent-conversion/`, `src/app/[locale]/discount-calculator/`, `src/app/[locale]/insurance-calculator/`, `src/app/[locale]/stock-calculator/`, `src/app/[locale]/freelancer-tax/` 하위 파일 수정 불가
+1. **코드 수정 금지**: `src/app/[locale]/calculator/`, `src/app/[locale]/barcode/`, `src/app/[locale]/character-counter/`, `src/app/[locale]/severance-calculator/`, `src/app/[locale]/lotto-generator/`, `src/app/[locale]/base64-encoder/`, `src/app/[locale]/interest-calculator/`, `src/app/[locale]/salary-calculator/`, `src/app/[locale]/ovulation-calculator/`, `src/app/[locale]/korean-age-calculator/`, `src/app/[locale]/dutch-pay/`, `src/app/[locale]/bmi-calculator/`, `src/app/[locale]/vat-calculator/`, `src/app/[locale]/loan-calculator/`, `src/app/[locale]/rent-conversion/`, `src/app/[locale]/discount-calculator/`, `src/app/[locale]/insurance-calculator/`, `src/app/[locale]/stock-calculator/`, `src/app/[locale]/freelancer-tax/`, `src/app/[locale]/qr-generator/`, `src/app/[locale]/image-compressor/`, `src/app/[locale]/image-resize/` 하위 파일 수정 불가
 2. **번역 수정 금지**: `messages/ko.json`, `messages/en.json` 내 해당 도구 번역 키 수정 불가
    - Calculator: `Calculator.*`, `Index.tools.calculator`
    - Barcode: `Barcode.*`, `Index.tools.barcode`
@@ -73,6 +76,9 @@
    - InsuranceCalculator: `InsuranceCalculator.*`, `Index.tools.insuranceCalculator`
    - StockCalculator: `StockCalculator.*`, `Index.tools.stockCalculator`
    - FreelancerTax: `FreelancerTax.*`, `Index.tools.freelancerTax`
+   - QrGenerator: `QrGenerator.*`, `Index.tools.qrGenerator`
+   - ImageCompressor: `ImageCompressor.*`, `Index.tools.imageCompressor`
+   - ImageResize: `ImageResize.*`, `Index.tools.imageResize`
 3. **SEO 수정 금지**: 해당 도구의 `page.tsx` 내 JSON-LD, 메타데이터 수정 불가
 4. **예외**: 사용자가 명시적으로 "이 도구 수정해" 라고 요청한 경우에만 수정 가능
 

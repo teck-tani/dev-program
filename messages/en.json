@@ -3049,7 +3049,9 @@
       "format": "Output Format",
       "formatJpeg": "JPEG (Photos)",
       "formatWebp": "WebP (Best compression)",
-      "formatPng": "PNG (Transparency)"
+      "formatPng": "PNG (Transparency)",
+      "formatAvif": "AVIF (Next-gen format)",
+      "avifUnsupported": "Not supported"
     },
     "warnings": {
       "transparency": "This PNG image has transparency. Converting to JPEG will replace transparent areas with white. Choose PNG or WebP to preserve transparency."
@@ -3057,7 +3059,8 @@
     "buttons": {
       "compress": "Compress",
       "compressing": "Compressing...",
-      "downloadAll": "Download All",
+      "downloadAll": "Download",
+      "downloadZip": "Download ZIP",
       "clearAll": "Clear All",
       "compare": "Compare"
     },
@@ -5613,7 +5616,77 @@
       "maxWarning": "You can register up to 20 events.",
       "copied": "Copied!",
       "copy": "Copy",
-      "deleteConfirm": "Are you sure you want to delete this event?"
+      "deleteConfirm": "Are you sure you want to delete this event?",
+
+      "tabs": { "events": "D-Day", "milestones": "Milestones", "couple": "Couple", "dateCalc": "Date Calc" },
+      "unit": { "years": "y ", "months": "mo ", "weeks": "w " },
+      "startDate": "Start Date (for progress)",
+      "repeat": "Repeat",
+      "repeatNone": "None",
+      "repeatYearly": "Yearly",
+      "lunar": "Lunar",
+      "lunarLabel": "Lunar",
+      "solarLabel": "Solar",
+      "lunarDate": "Lunar Date",
+      "shareUrl": "Share URL",
+      "exportIcal": "Calendar(.ics)",
+
+      "presets": {
+        "title": "Quick Add",
+        "suneung": "CSAT (Korea)",
+        "newYear": "New Year",
+        "christmas": "Christmas",
+        "seollal": "Lunar New Year",
+        "chuseok": "Chuseok",
+        "childrenDay": "Children's Day"
+      },
+
+      "milestone": {
+        "title": "Anniversary Milestones",
+        "baseDate": "Base Date",
+        "dayBased": "Day-based Milestones",
+        "yearBased": "Year-based Milestones",
+        "daysAfter": " days",
+        "anniversary": " Anniversary"
+      },
+
+      "couple": {
+        "title": "Couple Anniversary",
+        "startDate": "Start Date",
+        "together": "together",
+        "dayMilestones": "Day Milestones",
+        "monthlyEvents": "Monthly 14th Events",
+        "monthly14": {
+          "1": "Diary Day (1/14)",
+          "2": "Valentine's Day (2/14)",
+          "3": "White Day (3/14)",
+          "4": "Black Day (4/14)",
+          "5": "Rose Day (5/14)",
+          "6": "Kiss Day (6/14)",
+          "7": "Silver Day (7/14)",
+          "8": "Green Day (8/14)",
+          "9": "Music Day (9/14)",
+          "10": "Wine Day (10/14)",
+          "11": "Movie Day (11/14)",
+          "12": "Hug Day (12/14)"
+        }
+      },
+
+      "dateCalc": {
+        "title": "Date Calculator",
+        "addSubtract": "Add / Subtract Days",
+        "baseDate": "Base Date",
+        "operation": "Operation",
+        "add": "Add",
+        "subtract": "Subtract",
+        "daysInput": "Days",
+        "result": "Result",
+        "diffTitle": "Date Difference",
+        "fromDate": "From",
+        "toDate": "To"
+      },
+
+      "cal": { "sun": "Sun", "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat" }
     },
     "seo": {
       "description": {
@@ -8794,6 +8867,18 @@
       "height": "Height (px)",
       "percent": "Scale (%)",
       "lockRatio": "Lock Aspect Ratio",
+      "presets": "Quick Presets",
+      "presetsOpen": "Show Presets",
+      "presetsClose": "Hide Presets",
+      "presetCategories": {
+        "social": "Social Media",
+        "mobile": "Mobile Devices",
+        "web": "Web / Other"
+      },
+      "cropMode": "Crop Mode",
+      "cropStretch": "Stretch",
+      "cropFit": "Fit (Letterbox)",
+      "cropSmart": "Smart Crop",
       "format": "Output Format",
       "formatOriginal": "Keep Original",
       "formatJpeg": "JPEG",

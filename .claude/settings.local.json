@@ -73,7 +73,8 @@
       "mcp__plugin_playwright_playwright__browser_select_option",
       "Bash(del \"c:\\\\tani\\\\dev-program\\\\.next\\\\lock\")",
       "Bash(taskkill:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(python3:*)"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"
