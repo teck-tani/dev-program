@@ -2453,6 +2453,12 @@
     "favorite": "즐겨찾기 추가",
     "unfavorite": "즐겨찾기 해제",
     "favoritesTitle": "즐겨찾기",
+    "recentTitle": "최근 사용",
+    "recentClear": "기록 삭제",
+    "tabAll": "전체",
+    "tabEmoji": "이모지",
+    "tabSpecial": "특수문자",
+    "searchPlaceholderName": "이름·문자 검색 (예: 하트, 화살표...)",
     "tips": {
       "title": "이모지(Emoji) 사용 꿀팁",
       "desc": "이모지는 텍스트만으로는 전달하기 어려운 감정과 뉘앙스를 효과적으로 표현해줍니다. 특히 모바일 환경에서 가독성을 높이고 친근감을 주는 데 큰 역할을 합니다.",
@@ -2798,6 +2804,30 @@
     "tints": "틴트 (밝게)",
     "shades": "셰이드 (어둡게)",
     "currentColor": "현재 색상",
+    "hsvNote": "HSV(Hue, Saturation, Value) — 포토샵, 피그마 등 디자인 툴에서 주로 사용하는 색상 형식입니다.",
+    "nearestColorName": "가장 가까운 CSS 색상 이름",
+    "tailwindTitle": "가장 가까운 Tailwind 색상",
+    "tailwindDesc": "입력한 색상과 가장 유사한 Tailwind CSS 색상 클래스를 찾아드립니다.",
+    "tailwindCopy": "클래스 복사",
+    "tailwindCopied": "복사됨!",
+    "eyedropperBtn": "화면에서 색상 추출 (스포이드)",
+    "eyedropperUnsupported": "이 브라우저는 EyeDropper를 지원하지 않습니다.",
+    "gradientTitle": "CSS 그라디언트 생성기",
+    "gradientDesc": "두 색상 사이의 그라디언트 CSS 코드를 자동 생성합니다.",
+    "gradientColor1": "색상 1",
+    "gradientColor2": "색상 2",
+    "gradientLinear": "선형",
+    "gradientRadial": "방사형",
+    "gradientPreview": "미리보기",
+    "gradientCode": "CSS 코드",
+    "gradientDirRight": "→ 오른쪽",
+    "gradientDirLeft": "← 왼쪽",
+    "gradientDirDown": "↓ 아래",
+    "gradientDirUp": "↑ 위",
+    "gradientDirBR": "↘ 우하단",
+    "gradientDirBL": "↙ 좌하단",
+    "shareUrlBtn": "URL로 공유",
+    "shareUrlCopied": "URL 복사됨!",
     "info": {
       "title": "색상 코드 형식 안내",
       "hex": {
@@ -2988,6 +3018,31 @@
       "a4": "KB(킬로바이트)는 1,000바이트, KiB(키비바이트)는 1,024바이트입니다. 이 도구는 컴퓨터에서 일반적으로 사용하는 1,024 기준을 사용합니다."
     },
     "seo": {
+      "description": {
+        "title": "파일 크기 변환기란?",
+        "text": "파일 크기 변환기는 Bit, Byte, KB, MB, GB, TB, PB 등 다양한 디지털 저장 용량 단위를 실시간으로 변환해주는 무료 온라인 도구입니다. 숫자를 입력하고 단위를 선택하면 모든 단위로 즉시 변환됩니다. 이진법(1024 기준)과 십진법(1000 기준)을 모두 지원하여 운영체제별·제조사별 용량 차이도 한눈에 비교할 수 있습니다."
+      },
+      "features": {
+        "title": "주요 기능",
+        "list": {
+          "f1": {
+            "title": "7단위 실시간 변환",
+            "desc": "Bit, Byte, KB, MB, GB, TB, PB 7가지 단위를 동시에 변환합니다. 결과 카드를 클릭하면 기준 단위가 즉시 변경됩니다."
+          },
+          "f2": {
+            "title": "이진법 / 십진법 선택",
+            "desc": "컴퓨터 표준(1024 기준)과 하드디스크 제조사 표준(1000 기준)을 토글로 전환하여 OS별 차이를 비교합니다."
+          },
+          "f3": {
+            "title": "전송 시간 계산",
+            "desc": "4G LTE, 5G, WiFi 6, USB 2.0/3.0, Ethernet 6가지 네트워크·저장장치 속도별 파일 전송 소요 시간을 자동 계산합니다."
+          },
+          "f4": {
+            "title": "저장 용량 비교",
+            "desc": "입력한 크기로 MP3, 사진, FHD 영화, 4K 영화, AAA 게임 등 실생활 콘텐츠를 몇 개 저장할 수 있는지 직관적으로 표시합니다."
+          }
+        }
+      },
       "howto": {
         "title": "파일 크기 변환기 사용 방법",
         "steps": {
@@ -3869,13 +3924,18 @@
         "deselectAll": "전체 해제",
         "rotateCCW": "반시계 방향 회전",
         "rotateCW": "시계 방향 회전",
-        "deleteHint": "선택한 페이지를 삭제하려면 위의 삭제 버튼을 사용하세요"
+        "deleteHint": "선택한 페이지를 삭제하려면 위의 삭제 버튼을 사용하세요",
+        "pageNum": "페이지 {num}",
+        "deleteSelected": "선택 {count}개 삭제 후 저장"
       },
       "options": {
         "title": "분리 옵션",
         "all": "모든 페이지를 개별 PDF로 분리",
         "range": "특정 페이지만 추출",
-        "rangePlaceholder": "예: 1-3, 5, 7-9"
+        "rangePlaceholder": "예: 1-3, 5, 7-9",
+        "output": "출력 방식",
+        "outputIndividual": "각 페이지를 개별 PDF로 저장 (ZIP)",
+        "outputMerged": "선택 페이지를 하나의 PDF로 저장"
       },
       "button": "PDF 분리",
       "processing": "처리 중..."
@@ -4049,6 +4109,7 @@
     "stats": {
       "added": "추가: {count}줄",
       "removed": "삭제: {count}줄",
+      "modified": "변경: {count}줄",
       "unchanged": "동일: {count}줄"
     },
     "result": {
@@ -4176,11 +4237,15 @@
     "player": "참가자",
     "result": "결과",
     "addPlayer": "참가자 추가",
+    "removePlayer": "참가자 삭제",
     "generateLadder": "사다리 생성",
     "startGame": "게임 시작",
     "playing": "진행 중...",
+    "racing": "레이스 중...",
     "reset": "다시 하기",
-    "gameResults": "게임 결과"
+    "gameResults": "게임 결과",
+    "modeRace": "레이스 모드",
+    "modeSequential": "순차 모드"
   },
   "OvulationCalculator": {
     "meta": {
@@ -5014,6 +5079,11 @@
       "step2": "<strong>URL 붙여넣기</strong>: 위 입력란에 복사한 URL을 붙여넣고 '추출하기' 버튼을 클릭합니다.",
       "step3": "<strong>다운로드</strong>: 원하는 화질의 썸네일에서 '다운로드' 버튼을 클릭하여 이미지를 저장합니다."
     },
+    "history": {
+      "title": "최근 검색",
+      "clearAll": "전체 삭제",
+      "noTitle": "(제목 없음)"
+    },
     "faq": {
       "title": "자주 묻는 질문",
       "q1": {
@@ -5037,7 +5107,7 @@
       "description": {
         "title": "유튜브 썸네일 다운로드란?",
         "p1": "유튜브 썸네일 추출기는 유튜브 영상의 URL만 입력하면 해당 영상의 미리보기 이미지(썸네일)를 다양한 해상도로 다운로드할 수 있는 무료 온라인 도구입니다. 별도의 프로그램 설치나 회원가입 없이 바로 사용할 수 있습니다.",
-        "p2": "최고 화질(1280x720)부터 기본 화질(120x90)까지 5가지 해상도를 지원하며, 동영상 제목, 조회수, 업로드일 등 메타데이터도 함께 확인할 수 있습니다. 모든 해상도를 한 번에 다운로드하는 배치 기능과 라이트박스 미리보기도 제공합니다."
+        "p2": "최고 화질(1280x720)부터 기본 화질(120x90)까지 5가지 해상도를 지원하며, 동영상 제목, 채널명 등 메타데이터도 함께 확인할 수 있습니다. 모든 해상도를 한 번에 다운로드하는 배치 기능과 라이트박스 미리보기도 제공합니다."
       },
       "features": {
         "title": "주요 기능",
@@ -5052,7 +5122,7 @@
           },
           "feat3": {
             "title": "동영상 메타데이터",
-            "desc": "영상 제목, 조회수, 업로드일 등 동영상 정보를 함께 확인할 수 있습니다."
+            "desc": "영상 제목, 채널명 등 동영상 정보를 함께 확인할 수 있습니다."
           },
           "feat4": {
             "title": "라이트박스 미리보기",
@@ -6509,6 +6579,12 @@
       "crackMillionYears": "약 {time}백만 년",
       "crackBillionYears": "약 {time}억 년"
     },
+    "hibp": {
+      "checkBtn": "유출 확인",
+      "safe": "유출 없음",
+      "leaked": "{count}회 유출됨",
+      "error": "확인 실패"
+    },
     "seo": {
       "description": {
         "title": "비밀번호 생성기란?",
@@ -6745,6 +6821,7 @@
     "uppercase": "대문자",
     "hyphens": "하이픈 포함",
     "generate": "UUID 생성",
+    "generating": "생성 중...",
     "result": "생성 결과",
     "copy": "복사",
     "copyAll": "전체 복사",
@@ -6758,8 +6835,18 @@
     "version": {
       "label": "UUID 버전",
       "v1Desc": "타임스탬프",
+      "v3Desc": "MD5 네임스페이스",
       "v4Desc": "랜덤",
+      "v5Desc": "SHA-1 네임스페이스",
       "v7Desc": "시간 정렬"
+    },
+    "namespace": {
+      "label": "네임스페이스",
+      "custom": "커스텀",
+      "customPlaceholder": "커스텀 네임스페이스 UUID 입력...",
+      "nameLabel": "이름 (Name)",
+      "namePlaceholder": "UUID를 생성할 이름을 입력하세요...",
+      "nameHint": "같은 네임스페이스+이름 조합은 항상 동일한 UUID를 생성합니다"
     },
     "validate": {
       "title": "UUID 유효성 검사",
@@ -8340,7 +8427,22 @@
       "dice": "주사위",
       "coin": "동전",
       "shuffle": "셔플",
-      "team": "팀 나누기"
+      "team": "팀 나누기",
+      "weighted": "가중치"
+    },
+    "weighted": {
+      "itemLabel": "항목",
+      "weightLabel": "가중치",
+      "probLabel": "확률",
+      "itemPlaceholder": "항목 이름",
+      "addItem": "항목 추가",
+      "removeItem": "항목 삭제",
+      "pick": "뽑기",
+      "picking": "뽑는 중...",
+      "probability": "당첨 확률",
+      "weight": "가중치",
+      "history": "뽑기 기록",
+      "clearHistory": "기록 지우기"
     },
     "copied": "복사되었습니다!",
     "copyAll": "전체 복사",
@@ -8978,15 +9080,16 @@
   },
   "ImageConverter": {
     "meta": {
-      "title": "이미지 포맷 변환 | PNG, JPG, WebP 변환기 - 무료 온라인",
-      "description": "PNG, JPG, WebP 간 이미지 포맷을 자유롭게 변환하세요. 품질 조절, 다중 파일 일괄 변환 지원. 서버 업로드 없이 브라우저에서 즉시 처리.",
-      "keywords": "이미지 변환,PNG JPG 변환,WebP 변환,이미지 포맷 변환,사진 형식 변환,무료 이미지 변환기",
-      "ogTitle": "이미지 포맷 변환기 - PNG, JPG, WebP 무료 변환",
-      "ogDescription": "PNG, JPG, WebP 간 이미지 포맷 변환. 품질 조절, 다중 파일 일괄 처리 지원."
+      "title": "이미지 포맷 변환 | PNG, JPG, WebP, AVIF, HEIC 변환기 - 무료 온라인",
+      "description": "PNG, JPG, WebP, AVIF, HEIC 등 이미지 포맷을 자유롭게 변환하세요. 업로드 즉시 자동 변환, 품질 조절, 일괄 ZIP 다운로드 지원. 브라우저에서 즉시 처리.",
+      "keywords": "이미지 변환,PNG JPG 변환,WebP 변환,AVIF 변환,HEIC 변환,이미지 포맷 변환,사진 형식 변환,무료 이미지 변환기,아이폰 사진 변환",
+      "ogTitle": "이미지 포맷 변환기 - PNG, JPG, WebP, AVIF, HEIC 무료 변환",
+      "ogDescription": "PNG, JPG, WebP, AVIF, HEIC 이미지 포맷 변환. 자동 변환, 품질 조절, ZIP 다운로드 지원."
     },
     "upload": {
       "title": "이미지를 드래그하거나 클릭하여 업로드",
-      "subtitle": "JPG, PNG, WebP, GIF, BMP 등 지원"
+      "subtitle": "JPG, PNG, WebP, AVIF, GIF, BMP, HEIC(iPhone) 등 지원",
+      "ariaLabel": "클릭하거나 드래그하여 이미지 업로드"
     },
     "settings": {
       "title": "변환 설정",
@@ -8994,6 +9097,7 @@
       "formatJpeg": "JPEG (.jpg)",
       "formatPng": "PNG (.png)",
       "formatWebp": "WebP (.webp)",
+      "formatAvif": "AVIF (.avif)",
       "quality": "품질",
       "qualityHint": "PNG는 무손실이므로 품질 설정이 적용되지 않습니다."
     },
@@ -9002,6 +9106,7 @@
       "converting": "변환 중...",
       "download": "다운로드",
       "downloadAll": "전체 다운로드",
+      "downloadZip": "ZIP 다운로드",
       "clearAll": "전체 삭제"
     },
     "summary": {
@@ -9014,10 +9119,12 @@
       "converting": "변환 중...",
       "error": "오류 발생",
       "download": "저장",
-      "reduced": "절감"
+      "reduced": "절감",
+      "removeAriaLabel": "{name} 삭제"
     },
     "warnings": {
-      "transparency": "JPEG 형식은 투명도를 지원하지 않습니다. 투명 배경이 있는 이미지는 흰색 배경으로 대체됩니다."
+      "transparency": "JPEG 형식은 투명도를 지원하지 않습니다. 투명 배경이 있는 이미지는 흰색 배경으로 대체됩니다.",
+      "exif": "이미지 변환 시 EXIF 메타데이터(촬영일시, GPS, 카메라 정보 등)가 제거됩니다. 원본 파일은 그대로 보존됩니다."
     },
     "info": {
       "title": "이미지 포맷 변환 정보",
@@ -9055,39 +9162,51 @@
       "q5": {
         "q": "이미지가 서버로 전송되나요?",
         "a": "아니요, 모든 변환은 브라우저의 Canvas API를 사용하여 로컬에서 수행됩니다. 이미지가 외부 서버로 전송되지 않습니다."
+      },
+      "q6": {
+        "q": "AVIF 형식이란 무엇인가요?",
+        "a": "AVIF는 AV1 코덱 기반의 최신 이미지 형식으로, JPG보다 최대 50% 작은 파일 크기를 제공합니다. Chrome 85+, Firefox 93+ 등 최신 브라우저에서 지원됩니다. 브라우저가 AVIF를 지원할 때만 옵션이 표시됩니다."
+      },
+      "q7": {
+        "q": "iPhone의 HEIC 파일도 변환할 수 있나요?",
+        "a": "네, iPhone 등 Apple 기기에서 촬영한 HEIC/HEIF 이미지를 JPG, PNG, WebP 등으로 변환할 수 있습니다. 업로드 시 자동으로 감지하여 처리합니다."
       }
     },
     "seo": {
       "description": {
         "title": "이미지 포맷 변환기란?",
-        "p1": "이미지 포맷 변환기는 PNG, JPG, WebP 등 다양한 이미지 형식 간 변환을 지원하는 무료 온라인 도구입니다. 브라우저에서 직접 처리되어 빠르고 안전합니다.",
-        "p2": "웹사이트 최적화를 위한 WebP 변환, 호환성을 위한 JPG 변환, 투명도가 필요한 PNG 변환 등 다양한 용도로 활용할 수 있습니다."
+        "p1": "이미지 포맷 변환기는 PNG, JPG, WebP, AVIF, HEIC 등 다양한 이미지 형식 간 변환을 지원하는 무료 온라인 도구입니다. 브라우저에서 직접 처리되어 빠르고 안전하며, 업로드 즉시 자동으로 변환이 시작됩니다.",
+        "p2": "웹 최적화를 위한 WebP/AVIF 변환, 호환성을 위한 JPG 변환, iPhone HEIC 사진의 범용 포맷 전환 등 다양한 용도로 활용할 수 있습니다. 다중 파일을 일괄 변환하고 ZIP으로 한 번에 다운로드하세요."
       },
       "features": {
         "title": "주요 기능",
         "list": {
-          "feat1": { "title": "다양한 포맷 지원", "desc": "PNG, JPG, WebP 간 자유로운 변환을 지원합니다." },
-          "feat2": { "title": "품질 조절", "desc": "JPG, WebP 변환 시 출력 품질을 1~100%로 세밀하게 조절할 수 있습니다." },
-          "feat3": { "title": "일괄 변환", "desc": "여러 이미지를 한 번에 업로드하고 동일 설정으로 일괄 변환합니다." },
-          "feat4": { "title": "투명도 경고", "desc": "투명 배경 이미지를 JPG로 변환할 때 사전 경고를 표시합니다." }
+          "feat1": { "title": "5가지 포맷 지원", "desc": "PNG, JPG, WebP, AVIF, HEIC(iPhone) 간 자유로운 변환을 지원합니다." },
+          "feat2": { "title": "업로드 즉시 자동 변환", "desc": "이미지를 업로드하는 순간 자동으로 변환이 시작됩니다. 설정 변경 시에도 즉시 재변환됩니다." },
+          "feat3": { "title": "ZIP 일괄 다운로드", "desc": "여러 이미지를 한 번에 변환하고 ZIP 파일로 한 번에 다운로드합니다." },
+          "feat4": { "title": "품질 조절 + 투명도 경고", "desc": "JPG/WebP/AVIF 품질을 세밀하게 조절하고, 투명 배경 이미지 변환 시 자동 경고를 표시합니다." },
+          "feat5": { "title": "AVIF 지원 (최신 포맷)", "desc": "브라우저가 지원하는 경우 AVIF로 변환하여 JPG 대비 최대 50% 파일 크기를 줄입니다." },
+          "feat6": { "title": "HEIC 지원 (iPhone 사진)", "desc": "iPhone에서 촬영한 HEIC/HEIF 파일을 드래그앤드롭으로 바로 변환합니다." }
         }
       },
       "howto": {
         "title": "사용 방법",
         "steps": {
-          "step1": "<strong>이미지 업로드</strong> — 변환할 이미지를 드래그하거나 클릭하여 업로드합니다.",
-          "step2": "<strong>출력 형식 선택</strong> — JPG, PNG, WebP 중 원하는 출력 형식을 선택합니다.",
-          "step3": "<strong>품질 조절</strong> — JPG/WebP의 경우 품질 슬라이더로 출력 품질을 조절합니다.",
-          "step4": "<strong>변환 및 다운로드</strong> — 변환 버튼을 클릭한 후 개별 또는 전체 다운로드합니다."
+          "step1": "<strong>이미지 업로드</strong> — JPG, PNG, WebP, HEIC 등을 드래그하거나 클릭하여 업로드합니다.",
+          "step2": "<strong>출력 형식 선택</strong> — JPG, PNG, WebP, AVIF 중 원하는 출력 형식을 선택합니다.",
+          "step3": "<strong>품질 조절</strong> — 슬라이더를 조절하면 설정이 즉시 반영되어 재변환됩니다.",
+          "step4": "<strong>ZIP 다운로드</strong> — 변환 완료 후 개별 저장하거나, 여러 장은 ZIP으로 한 번에 다운로드합니다."
         }
       },
       "usecases": {
         "title": "활용 사례",
         "list": {
-          "uc1": { "title": "웹사이트 성능 최적화", "desc": "PNG/JPG 이미지를 WebP로 변환하여 웹페이지 로딩 속도를 크게 개선합니다." },
-          "uc2": { "title": "호환성 확보", "desc": "WebP를 지원하지 않는 환경을 위해 JPG/PNG로 변환합니다." },
-          "uc3": { "title": "투명 배경 변환", "desc": "JPG 이미지를 PNG로 변환하여 배경 편집이 가능한 형식으로 만듭니다." },
-          "uc4": { "title": "파일 용량 줄이기", "desc": "PNG를 JPG/WebP로 변환하여 파일 크기를 대폭 줄입니다." }
+          "uc1": { "title": "웹사이트 성능 최적화", "desc": "PNG/JPG 이미지를 WebP 또는 AVIF로 변환하여 웹페이지 로딩 속도를 크게 개선합니다." },
+          "uc2": { "title": "iPhone 사진 공유", "desc": "HEIC로 저장된 iPhone 사진을 JPG로 변환하여 어디서든 공유할 수 있습니다." },
+          "uc3": { "title": "투명 배경 작업", "desc": "JPG 이미지를 PNG로 변환하여 배경 편집이 가능한 형식으로 만듭니다." },
+          "uc4": { "title": "파일 용량 줄이기", "desc": "PNG를 JPG/WebP/AVIF로 변환하여 파일 크기를 대폭 줄입니다." },
+          "uc5": { "title": "디자인 에셋 변환", "desc": "디자인 툴에서 내보낸 PNG/WebP 에셋을 납품 요구사항에 맞게 일괄 변환합니다." },
+          "uc6": { "title": "블로그/SNS 이미지 최적화", "desc": "사진을 WebP로 변환하고 품질을 조절하여 업로드 용량 제한에 맞게 최적화합니다." }
         }
       },
       "privacy": {
@@ -9110,12 +9229,8 @@
     },
     "settings": {
       "title": "파비콘 설정",
-      "sizes": "생성할 크기",
       "selectAll": "전체 선택",
-      "deselectAll": "전체 해제",
-      "format": "출력 형식",
-      "formatIco": "ICO (브라우저 탭 아이콘)",
-      "formatPng": "PNG (웹앱/모바일)"
+      "deselectAll": "전체 해제"
     },
     "preview": {
       "title": "미리보기",
@@ -9128,7 +9243,9 @@
       "downloadIco": "ICO 다운로드",
       "downloadPng": "PNG 다운로드",
       "downloadAll": "전체 다운로드",
-      "clearAll": "초기화"
+      "clearAll": "초기화",
+      "copy": "복사",
+      "copied": "복사됨!"
     },
     "sizes": {
       "s16": "16x16 (브라우저 탭)",
@@ -9141,22 +9258,7 @@
     },
     "code": {
       "title": "HTML 코드",
-      "hint": "아래 코드를 HTML <head> 태그에 추가하세요."
-    },
-    "info": {
-      "title": "파비콘 생성기 정보",
-      "privacy": {
-        "title": "개인정보 보호",
-        "desc": "모든 처리는 브라우저에서 수행되며, 이미지가 서버로 전송되지 않습니다."
-      },
-      "quality": {
-        "title": "고품질 변환",
-        "desc": "Canvas API를 사용하여 선명한 파비콘을 생성합니다."
-      },
-      "bulk": {
-        "title": "다양한 크기",
-        "desc": "16x16부터 512x512까지 필요한 크기를 선택하여 생성합니다."
-      }
+      "hint": "아래 코드를 HTML '<'head'>' 태그에 추가하세요."
     },
     "faq": {
       "title": "자주 묻는 질문",

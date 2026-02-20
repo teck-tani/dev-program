@@ -168,6 +168,7 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
     const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
 
+    const featureKeys = ['f1', 'f2', 'f3', 'f4'];
     const howtoKeys = ['s1', 's2', 's3', 's4'];
     const usecaseKeys = ['cloud', 'transfer', 'web', 'server'];
 
@@ -190,7 +191,26 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
                 <FileSizeConverterClient />
 
                 <article style={{ maxWidth: 700, margin: '60px auto 0', padding: '0 20px' }}>
-                    {/* 1. Description (existing info table) */}
+                    {/* 1. Description */}
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.description.title')}</h2>
+                        <p className="seo-text">{t('seo.description.text')}</p>
+                    </section>
+
+                    {/* 2. Key Features */}
+                    <section className="seo-section">
+                        <h2 className="seo-section-title">{t('seo.features.title')}</h2>
+                        <div className="seo-card-grid">
+                            {featureKeys.map((key) => (
+                                <div key={key} className="seo-card">
+                                    <h3 className="seo-card-title">{t(`seo.features.list.${key}.title`)}</h3>
+                                    <p className="seo-card-desc">{t(`seo.features.list.${key}.desc`)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* 3. Unit Reference Table */}
                     <section className="seo-section">
                         <h2 className="seo-section-title">
                             {t('info.title')}
@@ -224,7 +244,7 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
                         <p style={{ fontSize: '0.9rem', color: '#666' }}>{t('info.note')}</p>
                     </section>
 
-                    {/* 2. How to Use */}
+                    {/* 4. How to Use */}
                     <section className="seo-section">
                         <h2 className="seo-section-title">{t('seo.howto.title')}</h2>
                         <ol className="seo-howto-list">
@@ -234,7 +254,7 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
                         </ol>
                     </section>
 
-                    {/* 3. Use Cases */}
+                    {/* 5. Use Cases */}
                     <section className="seo-section">
                         <h2 className="seo-section-title">{t('seo.usecases.title')}</h2>
                         <div className="seo-card-grid">
@@ -247,7 +267,7 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
                         </div>
                     </section>
 
-                    {/* 4. FAQ */}
+                    {/* 6. FAQ */}
                     <section className="seo-section">
                         <h2 className="seo-section-title">{t('faq.title')}</h2>
                         {[1, 2, 3, 4].map((i) => (
@@ -258,7 +278,7 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
                         ))}
                     </section>
 
-                    {/* 5. Privacy */}
+                    {/* 7. Privacy */}
                     <section className="seo-section">
                         <h2 className="seo-section-title">{t('seo.privacy.title')}</h2>
                         <p className="seo-text">{t('seo.privacy.text')}</p>

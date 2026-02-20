@@ -25,30 +25,22 @@ const defaultSettings: StopwatchSettings = {
 const StopwatchSettingsContext = createContext<StopwatchSettingsContextType | undefined>(undefined);
 
 export function StopwatchSettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<StopwatchSettings>(defaultSettings);
-  const [mounted, setMounted] = useState(false);
+  const [settings, setSettings] = useState<StopwatchSettings>(() => {
+    if (typeof window === 'undefined') return defaultSettings;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return { ...defaultSettings, ...JSON.parse(saved) };
+    } catch { /* 파싱 실패 시 기본값 사용 */ }
+    return defaultSettings;
+  });
+  const isFirstRender = useRef(true);
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // localStorage에서 설정 로드
+  // 설정 변경 시 저장 (초기 마운트 시에는 저장 안 함)
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setSettings({ ...defaultSettings, ...parsed });
-      } catch {
-        // 파싱 실패 시 기본값 사용
-      }
-    }
-    setMounted(true);
-  }, []);
-
-  // 설정 변경 시 저장
-  useEffect(() => {
-    if (mounted) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    }
-  }, [settings, mounted]);
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  }, [settings]);
 
   const toggleSound = useCallback(() => {
     setSettings(prev => ({ ...prev, soundEnabled: !prev.soundEnabled }));

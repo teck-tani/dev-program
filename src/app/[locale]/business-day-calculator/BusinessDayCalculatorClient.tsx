@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaCalendarAlt, FaPlus, FaMinus, FaExchangeAlt, FaCopy, FaCheck, FaTrash, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaCalendarAlt, FaPlus, FaMinus, FaExchangeAlt, FaCopy, FaCheck, FaTrash, FaChevronLeft, FaChevronRight, FaSync } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 
 // ===== Korean Holidays 2025-2035 =====
@@ -224,6 +224,30 @@ const KOREAN_HOLIDAYS_EN: Record<string, string> = {
     '크리스마스': 'Christmas',
 };
 
+// ===== API-fetched holiday cache =====
+// API에서 가져온 공휴일 데이터를 하드코딩 데이터에 병합
+const apiHolidayCache: Record<string, Record<string, string>> = {}; // year → { 'YYYY-MM-DD': name }
+
+async function fetchHolidaysFromApi(year: number): Promise<Record<string, string>> {
+    if (apiHolidayCache[year]) return apiHolidayCache[year];
+    try {
+        const res = await fetch(`/api/holidays?year=${year}`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        if (!data.holidays || data.error) return {};
+        const map: Record<string, string> = {};
+        for (const h of data.holidays) {
+            if (h.isHoliday && h.date && h.name) {
+                map[h.date] = h.name;
+            }
+        }
+        apiHolidayCache[year] = map;
+        return map;
+    } catch {
+        return {};
+    }
+}
+
 type Mode = 'add' | 'between' | 'dday';
 
 interface CustomHoliday {
@@ -258,35 +282,33 @@ function isWeekend(date: Date): boolean {
     return day === 0 || day === 6;
 }
 
-function isHoliday(date: Date, includeWorkersDay: boolean, customHolidays: CustomHoliday[] = []): boolean {
+function isHoliday(date: Date, includeWorkersDay: boolean, customHolidays: CustomHoliday[] = [], holidayMap: Record<string, string> = KOREAN_HOLIDAYS): boolean {
     const key = formatDate(date);
-    // Check built-in holidays
-    if (KOREAN_HOLIDAYS[key]) {
-        if (!includeWorkersDay && KOREAN_HOLIDAYS[key] === '근로자의 날') return false;
+    if (holidayMap[key]) {
+        if (!includeWorkersDay && holidayMap[key] === '근로자의 날') return false;
         return true;
     }
-    // Check custom holidays
     if (customHolidays.some(h => h.date === key)) return true;
     return false;
 }
 
-function getHolidayName(date: Date, customHolidays: CustomHoliday[] = []): string {
+function getHolidayName(date: Date, customHolidays: CustomHoliday[] = [], holidayMap: Record<string, string> = KOREAN_HOLIDAYS): string {
     const key = formatDate(date);
-    if (KOREAN_HOLIDAYS[key]) return KOREAN_HOLIDAYS[key];
+    if (holidayMap[key]) return holidayMap[key];
     const custom = customHolidays.find(h => h.date === key);
     if (custom) return custom.name;
     return '';
 }
 
-function isCustomHolidayDate(date: Date, customHolidays: CustomHoliday[]): boolean {
+function isCustomHolidayDate(date: Date, customHolidays: CustomHoliday[], holidayMap: Record<string, string> = KOREAN_HOLIDAYS): boolean {
     const key = formatDate(date);
-    return customHolidays.some(h => h.date === key) && !KOREAN_HOLIDAYS[key];
+    return customHolidays.some(h => h.date === key) && !holidayMap[key];
 }
 
-function isBuiltInHoliday(date: Date, includeWorkersDay: boolean): boolean {
+function isBuiltInHoliday(date: Date, includeWorkersDay: boolean, holidayMap: Record<string, string> = KOREAN_HOLIDAYS): boolean {
     const key = formatDate(date);
-    if (!KOREAN_HOLIDAYS[key]) return false;
-    if (!includeWorkersDay && KOREAN_HOLIDAYS[key] === '근로자의 날') return false;
+    if (!holidayMap[key]) return false;
+    if (!includeWorkersDay && holidayMap[key] === '근로자의 날') return false;
     return true;
 }
 
@@ -307,7 +329,7 @@ interface AddResult {
     holidays: { date: string; name: string }[];
 }
 
-function addBusinessDays(startDate: Date, days: number, includeWorkersDay: boolean, customHolidays: CustomHoliday[] = []): AddResult {
+function addBusinessDays(startDate: Date, days: number, includeWorkersDay: boolean, customHolidays: CustomHoliday[] = [], holidayMap: Record<string, string> = KOREAN_HOLIDAYS): AddResult {
     const direction = days >= 0 ? 1 : -1;
     let remaining = Math.abs(days);
     const current = new Date(startDate);
@@ -321,8 +343,8 @@ function addBusinessDays(startDate: Date, days: number, includeWorkersDay: boole
             weekends++;
             continue;
         }
-        if (isHoliday(current, includeWorkersDay, customHolidays)) {
-            const name = getHolidayName(current, customHolidays);
+        if (isHoliday(current, includeWorkersDay, customHolidays, holidayMap)) {
+            const name = getHolidayName(current, customHolidays, holidayMap);
             holidays.push({ date: formatDate(current), name });
             continue;
         }
@@ -341,7 +363,7 @@ interface CountResult {
     holidays: { date: string; name: string }[];
 }
 
-function countBusinessDays(start: Date, end: Date, includeWorkersDay: boolean, customHolidays: CustomHoliday[] = []): CountResult {
+function countBusinessDays(start: Date, end: Date, includeWorkersDay: boolean, customHolidays: CustomHoliday[] = [], holidayMap: Record<string, string> = KOREAN_HOLIDAYS): CountResult {
     let businessDays = 0;
     let weekends = 0;
     const holidays: { date: string; name: string }[] = [];
@@ -362,8 +384,8 @@ function countBusinessDays(start: Date, end: Date, includeWorkersDay: boolean, c
             weekends++;
             continue;
         }
-        if (isHoliday(current, includeWorkersDay, customHolidays)) {
-            const name = getHolidayName(current, customHolidays);
+        if (isHoliday(current, includeWorkersDay, customHolidays, holidayMap)) {
+            const name = getHolidayName(current, customHolidays, holidayMap);
             holidays.push({ date: formatDate(current), name });
             continue;
         }
@@ -390,30 +412,77 @@ export default function BusinessDayCalculatorClient() {
     // Toast state
     const [toast, setToast] = useState<string | null>(null);
 
-    // Custom holidays state
-    const [customHolidays, setCustomHolidays] = useState<CustomHoliday[]>([]);
+    // API-fetched holidays (연도별로 합산)
+    const [apiHolidays, setApiHolidays] = useState<Record<string, string>>({});
+    const [apiStatus, setApiStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+    const fetchedYearsRef = useRef<Set<number>>(new Set());
+
+    // Custom holidays state - localStorage에서 초기값 로드
+    const [customHolidays, setCustomHolidays] = useState<CustomHoliday[]>(() => {
+        try {
+            const saved = localStorage.getItem('customHolidays');
+            if (saved) return JSON.parse(saved) as CustomHoliday[];
+        } catch { /* ignore */ }
+        return [];
+    });
     const [newHolidayDate, setNewHolidayDate] = useState('');
     const [newHolidayName, setNewHolidayName] = useState('');
 
     // Calendar state
     const [calendarDate, setCalendarDate] = useState(new Date());
 
-    // Deadline state
-    const [deadlines, setDeadlines] = useState<Deadline[]>([]);
+    // Deadline state - localStorage에서 초기값 로드
+    const [deadlines, setDeadlines] = useState<Deadline[]>(() => {
+        try {
+            const saved = localStorage.getItem('deadlines');
+            if (saved) return JSON.parse(saved) as Deadline[];
+        } catch { /* ignore */ }
+        return [];
+    });
     const [newDeadlineLabel, setNewDeadlineLabel] = useState('');
     const [newDeadlineDate, setNewDeadlineDate] = useState('');
 
-    // Load from localStorage
+    // 초기 로드 시 현재 연도 + 다음 연도 가져오기
     useEffect(() => {
-        try {
-            const saved = localStorage.getItem('customHolidays');
-            if (saved) setCustomHolidays(JSON.parse(saved));
-        } catch { /* ignore */ }
-        try {
-            const saved = localStorage.getItem('deadlines');
-            if (saved) setDeadlines(JSON.parse(saved));
-        } catch { /* ignore */ }
+        const currentYear = new Date().getFullYear();
+        const yearsToLoad = [currentYear, currentYear + 1];
+        (async () => {
+            setApiStatus('loading');
+            let anySuccess = false;
+            for (const year of yearsToLoad) {
+                if (fetchedYearsRef.current.has(year)) { anySuccess = true; continue; }
+                fetchedYearsRef.current.add(year);
+                const data = await fetchHolidaysFromApi(year);
+                if (Object.keys(data).length > 0) {
+                    setApiHolidays(prev => ({ ...prev, ...data }));
+                    anySuccess = true;
+                }
+            }
+            setApiStatus(anySuccess ? 'ok' : 'error');
+        })();
     }, []);
+
+    // startDate/endDate/ddayTarget 연도가 바뀌면 해당 연도 추가 로드
+    useEffect(() => {
+        const years = new Set<number>();
+        [startDate, endDate, ddayTarget].forEach(d => {
+            if (d) {
+                const y = parseInt(d.slice(0, 4));
+                if (!isNaN(y) && y >= 2000 && y <= 2040) years.add(y);
+            }
+        });
+        (async () => {
+            for (const year of years) {
+                if (fetchedYearsRef.current.has(year)) continue;
+                fetchedYearsRef.current.add(year);
+                const data = await fetchHolidaysFromApi(year);
+                if (Object.keys(data).length > 0) {
+                    setApiHolidays(prev => ({ ...prev, ...data }));
+                    setApiStatus('ok');
+                }
+            }
+        })();
+    }, [startDate, endDate, ddayTarget]);
 
     // Save custom holidays
     useEffect(() => {
@@ -429,6 +498,12 @@ export default function BusinessDayCalculatorClient() {
         setToast(msg);
         setTimeout(() => setToast(null), 2000);
     }, []);
+
+    // API 데이터와 하드코딩 데이터를 병합한 통합 공휴일 맵
+    // API 데이터가 있는 날짜는 API 우선, 없으면 하드코딩 사용
+    const mergedHolidays = useMemo<Record<string, string>>(() => {
+        return { ...KOREAN_HOLIDAYS, ...apiHolidays };
+    }, [apiHolidays]);
 
     // Locale detection
     const isKo = t('modeAdd') !== 'Add/Subtract Days';
@@ -469,16 +544,16 @@ export default function BusinessDayCalculatorClient() {
         const days = parseInt(businessDays);
         if (isNaN(days) || days === 0) return null;
         const actualDays = direction === 'subtract' ? -days : days;
-        return addBusinessDays(start, actualDays, includeWorkersDay, customHolidays);
-    }, [startDate, businessDays, direction, includeWorkersDay, customHolidays]);
+        return addBusinessDays(start, actualDays, includeWorkersDay, customHolidays, mergedHolidays);
+    }, [startDate, businessDays, direction, includeWorkersDay, customHolidays, mergedHolidays]);
 
     // ===== BETWEEN MODE RESULT =====
     const betweenResult = useMemo(() => {
         const start = parseDate(startDate);
         const end = parseDate(endDate);
         if (!start || !end) return null;
-        return countBusinessDays(start, end, includeWorkersDay, customHolidays);
-    }, [startDate, endDate, includeWorkersDay, customHolidays]);
+        return countBusinessDays(start, end, includeWorkersDay, customHolidays, mergedHolidays);
+    }, [startDate, endDate, includeWorkersDay, customHolidays, mergedHolidays]);
 
     // ===== D-DAY MODE RESULT =====
     const ddayResult = useMemo(() => {
@@ -486,8 +561,8 @@ export default function BusinessDayCalculatorClient() {
         today.setHours(0, 0, 0, 0);
         const target = parseDate(ddayTarget);
         if (!target) return null;
-        return countBusinessDays(today, target, includeWorkersDay, customHolidays);
-    }, [ddayTarget, includeWorkersDay, customHolidays]);
+        return countBusinessDays(today, target, includeWorkersDay, customHolidays, mergedHolidays);
+    }, [ddayTarget, includeWorkersDay, customHolidays, mergedHolidays]);
 
     const handleCopy = useCallback((text: string) => {
         navigator.clipboard.writeText(text).then(() => {
@@ -590,9 +665,9 @@ export default function BusinessDayCalculatorClient() {
         today.setHours(0, 0, 0, 0);
         const target = parseDate(deadlineDate);
         if (!target) return 0;
-        const result = countBusinessDays(today, target, includeWorkersDay, customHolidays);
+        const result = countBusinessDays(today, target, includeWorkersDay, customHolidays, mergedHolidays);
         return target >= today ? result.businessDays : -result.businessDays;
-    }, [includeWorkersDay, customHolidays]);
+    }, [includeWorkersDay, customHolidays, mergedHolidays]);
 
     // Styles
     const cardStyle: React.CSSProperties = {
@@ -1405,8 +1480,8 @@ export default function BusinessDayCalculatorClient() {
                         const dayStr = formatDate(day);
                         const isToday = dayStr === todayStr;
                         const isWknd = isWeekend(day);
-                        const isBuiltIn = isBuiltInHoliday(day, includeWorkersDay);
-                        const isCustom = isCustomHolidayDate(day, customHolidays);
+                        const isBuiltIn = isBuiltInHoliday(day, includeWorkersDay, mergedHolidays);
+                        const isCustom = isCustomHolidayDate(day, customHolidays, mergedHolidays);
 
                         let bgColor = "transparent";
                         let textColor = isDark ? "#e2e8f0" : "#334155";
@@ -1437,7 +1512,7 @@ export default function BusinessDayCalculatorClient() {
                                 border: isToday ? "2px solid #3b82f6" : "1px solid transparent",
                                 position: "relative" as const,
                             }}
-                                title={getHolidayName(day, customHolidays)}
+                                title={getHolidayName(day, customHolidays, mergedHolidays)}
                             >
                                 {day.getDate()}
                             </div>
@@ -1568,11 +1643,40 @@ export default function BusinessDayCalculatorClient() {
 
             {/* Upcoming Holidays Reference */}
             <div style={cardStyle}>
-                <h2 style={{ fontSize: "1rem", fontWeight: 700, color: isDark ? "#e2e8f0" : "#1e293b", margin: "0 0 16px 0" }}>
-                    {t('upcomingHolidays')}
-                </h2>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                    <h2 style={{ fontSize: "1rem", fontWeight: 700, color: isDark ? "#e2e8f0" : "#1e293b", margin: 0 }}>
+                        {t('upcomingHolidays')}
+                    </h2>
+                    {/* API 상태 표시 */}
+                    <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        fontSize: "0.75rem",
+                        color: apiStatus === 'ok'
+                            ? "#22c55e"
+                            : apiStatus === 'loading'
+                                ? (isDark ? "#94a3b8" : "#64748b")
+                                : apiStatus === 'error'
+                                    ? "#f97316"
+                                    : (isDark ? "#64748b" : "#94a3b8"),
+                    }}>
+                        <FaSync style={{
+                            animation: apiStatus === 'loading' ? 'spin 1s linear infinite' : 'none',
+                            fontSize: "0.7rem",
+                        }} />
+                        {apiStatus === 'ok'
+                            ? (isKo ? 'API 연동됨' : 'API synced')
+                            : apiStatus === 'loading'
+                                ? (isKo ? 'API 로딩 중...' : 'Loading...')
+                                : apiStatus === 'error'
+                                    ? (isKo ? '기본 데이터 사용 중' : 'Using local data')
+                                    : (isKo ? '기본 데이터' : 'Local data')
+                        }
+                    </div>
+                </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {Object.entries(KOREAN_HOLIDAYS)
+                    {Object.entries(mergedHolidays)
                         .filter(([dateStr]) => {
                             const d = parseDate(dateStr);
                             if (!d) return false;
@@ -1584,15 +1688,31 @@ export default function BusinessDayCalculatorClient() {
                             if (!includeWorkersDay && name === '근로자의 날') return false;
                             return true;
                         })
+                        .sort(([a], [b]) => a.localeCompare(b))
                         .slice(0, 10)
                         .map(([dateStr, name]) => {
                             const d = parseDate(dateStr);
                             const dayName = d ? (isKo ? getDayOfWeekKo(d) : getDayOfWeekEn(d)) : '';
+                            const isFromApi = apiHolidays[dateStr] !== undefined;
                             return (
                                 <div key={dateStr} style={holidayItemStyle}>
-                                    <span style={{ color: isDark ? "#fcd34d" : "#92400e", fontWeight: 600 }}>
-                                        {dateStr} ({dayName})
-                                    </span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                        <span style={{ color: isDark ? "#fcd34d" : "#92400e", fontWeight: 600 }}>
+                                            {dateStr} ({dayName})
+                                        </span>
+                                        {isFromApi && (
+                                            <span style={{
+                                                fontSize: "0.7rem",
+                                                padding: "1px 6px",
+                                                borderRadius: 4,
+                                                background: isDark ? "#1e3a5f" : "#dbeafe",
+                                                color: "#3b82f6",
+                                                fontWeight: 600,
+                                            }}>
+                                                API
+                                            </span>
+                                        )}
+                                    </div>
                                     <span style={{ color: isDark ? "#e2e8f0" : "#334155" }}>
                                         {getHolidayDisplayName(name)}
                                     </span>

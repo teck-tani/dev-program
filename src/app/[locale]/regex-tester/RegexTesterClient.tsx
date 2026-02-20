@@ -195,15 +195,44 @@ function explainPattern(pattern: string, lang: "ko" | "en"): TokenExplanation[] 
     return explanations;
 }
 
-// Backtracking risk detection
-function detectBacktrackRisk(pattern: string): boolean {
+// Backtracking risk detection with solution tips
+interface BacktrackResult {
+    hasRisk: boolean;
+    tips: { ko: string; en: string }[];
+}
+
+function detectBacktrackRisk(pattern: string): BacktrackResult {
+    const tips: { ko: string; en: string }[] = [];
+
     // (a+)+, (a*)+, (a*)*,  (a+)* patterns
-    const dangerousPatterns = [
-        /\(.+[+*]\)\s*[+*]/,       // (group+)+ or (group*)*
-        /\([^)]*\|[^)]*\)\s*[+*]/, // (a|b)+ with potential overlap
-        /(\.\*){2,}/,               // .*.* multiple greedy wildcards
-    ];
-    return dangerousPatterns.some(dp => dp.test(pattern));
+    if (/\(.+[+*]\)\s*[+*]/.test(pattern)) {
+        tips.push({
+            ko: "중첩 수량자 감지: (x+)+ → x+ 또는 비캡처 그룹 (?:x)+ 로 변경하세요",
+            en: "Nested quantifier detected: (x+)+ → use x+ or non-capturing (?:x)+"
+        });
+    }
+    if (/\([^)]*\|[^)]*\)\s*[+*]/.test(pattern)) {
+        tips.push({
+            ko: "OR 그룹 + 수량자 감지: 각 대안이 겹치지 않는지 확인하세요",
+            en: "OR group with quantifier: ensure alternatives don't overlap"
+        });
+    }
+    if (/(\.\*){2,}/.test(pattern)) {
+        tips.push({
+            ko: "연속 .* 감지: 게으른 수량자 .*? 사용을 고려하세요",
+            en: "Multiple .* detected: consider using lazy quantifier .*?"
+        });
+    }
+
+    if (tips.length === 0) return { hasRisk: false, tips: [] };
+
+    // Always add general tip
+    tips.push({
+        ko: "💡 일반 해결법: 문자 클래스 [^x]* 로 범위를 제한하거나, 전방탐색(lookahead)을 활용하세요",
+        en: "💡 General fix: limit scope with [^x]* character class, or use lookahead assertions"
+    });
+
+    return { hasRisk: true, tips };
 }
 
 // Cheatsheet data
@@ -368,7 +397,7 @@ export default function RegexTesterClient() {
     }, [regex, testString, flagsStr]);
 
     // Backtracking risk
-    const backtrackRisk = useMemo(() => detectBacktrackRisk(pattern), [pattern]);
+    const backtrackResult = useMemo(() => detectBacktrackRisk(pattern), [pattern]);
 
     // Pattern explanation
     const patternExplanation = useMemo(() => {
@@ -452,6 +481,13 @@ export default function RegexTesterClient() {
             setTimeout(() => setCopied(null), 2000);
         }
     }, []);
+
+    // Copy all matches
+    const handleCopyMatches = useCallback(async () => {
+        if (matches.length === 0) return;
+        const text = matches.map(m => m.fullMatch).join("\n");
+        await handleCopy(text, "allMatches");
+    }, [matches, handleCopy]);
 
     // URL sharing
     const handleShareUrl = useCallback(() => {
@@ -554,21 +590,46 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                     </div>
                 )}
 
-                {/* Backtracking warning */}
-                {backtrackRisk && pattern && (
+                {/* Backtracking warning with tips */}
+                {backtrackResult.hasRisk && pattern && (
                     <div style={{
                         background: isDark ? "rgba(234,179,8,0.15)" : "#fefce8",
-                        color: isDark ? "#fbbf24" : "#b45309",
-                        padding: "8px 14px",
-                        borderRadius: "6px",
-                        fontSize: "0.85rem",
+                        borderRadius: "8px",
                         marginBottom: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
+                        overflow: "hidden",
+                        border: isDark ? "1px solid rgba(234,179,8,0.3)" : "1px solid #fde68a",
                     }}>
-                        <span style={{ fontSize: "1.1rem" }}>⚠️</span>
-                        {t("warning.backtrack")}
+                        <div style={{
+                            color: isDark ? "#fbbf24" : "#b45309",
+                            padding: "8px 14px",
+                            fontSize: "0.85rem",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            fontWeight: 600,
+                        }}>
+                            <span style={{ fontSize: "1.1rem" }}>⚠️</span>
+                            {t("warning.backtrack")}
+                        </div>
+                        <div style={{
+                            padding: "0 14px 10px",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "4px",
+                        }}>
+                            {backtrackResult.tips.map((tip, i) => (
+                                <div key={i} style={{
+                                    fontSize: "0.8rem",
+                                    color: isDark ? "#d4a017" : "#92400e",
+                                    padding: "4px 8px",
+                                    background: isDark ? "rgba(234,179,8,0.08)" : "rgba(234,179,8,0.1)",
+                                    borderRadius: "4px",
+                                    lineHeight: "1.4",
+                                }}>
+                                    {lang === "ko" ? tip.ko : tip.en}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
 
@@ -821,31 +882,123 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                 </div>
             )}
 
-            {/* Match Count & Details + Execution Time */}
+            {/* Match Statistics Bar */}
+            {testString && pattern && !error && (
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                    gap: "10px",
+                    marginBottom: "16px",
+                }}>
+                    {/* Match count */}
+                    <div style={{
+                        ...cardStyle,
+                        marginBottom: 0,
+                        padding: "14px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "4px",
+                    }}>
+                        <span style={{
+                            fontSize: "1.4rem",
+                            fontWeight: 700,
+                            color: matches.length > 0 ? (isDark ? "#4ade80" : "#059669") : (isDark ? "#fca5a5" : "#dc2626"),
+                        }}>
+                            {matches.length}
+                        </span>
+                        <span style={{ fontSize: "0.75rem", color: isDark ? "#94a3b8" : "#64748b" }}>
+                            {lang === "ko" ? "매칭 수" : "Matches"}
+                        </span>
+                    </div>
+                    {/* Capture groups */}
+                    <div style={{
+                        ...cardStyle,
+                        marginBottom: 0,
+                        padding: "14px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "4px",
+                    }}>
+                        <span style={{
+                            fontSize: "1.4rem",
+                            fontWeight: 700,
+                            color: isDark ? "#c084fc" : "#7c3aed",
+                        }}>
+                            {matches.length > 0 ? matches[0].groups.length : 0}
+                        </span>
+                        <span style={{ fontSize: "0.75rem", color: isDark ? "#94a3b8" : "#64748b" }}>
+                            {lang === "ko" ? "캡처 그룹" : "Groups"}
+                        </span>
+                    </div>
+                    {/* Execution time */}
+                    <div style={{
+                        ...cardStyle,
+                        marginBottom: 0,
+                        padding: "14px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "4px",
+                    }}>
+                        <span style={{
+                            fontSize: "1.4rem",
+                            fontWeight: 700,
+                            fontFamily: "'Consolas', monospace",
+                            color: executionTime > 100 ? (isDark ? "#fca5a5" : "#dc2626") : (isDark ? "#60a5fa" : "#4A90D9"),
+                        }}>
+                            {executionTime.toFixed(1)}<span style={{ fontSize: "0.8rem" }}>ms</span>
+                        </span>
+                        <span style={{ fontSize: "0.75rem", color: isDark ? "#94a3b8" : "#64748b" }}>
+                            {lang === "ko" ? "실행 시간" : "Time"}
+                        </span>
+                    </div>
+                    {/* Copy matches */}
+                    {matches.length > 0 && (
+                        <div
+                            onClick={handleCopyMatches}
+                            style={{
+                                ...cardStyle,
+                                marginBottom: 0,
+                                padding: "14px",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: "4px",
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                                border: copied === "allMatches" ? "2px solid #22c55e" : (isDark ? "1px solid #334155" : "1px solid transparent"),
+                            }}
+                        >
+                            <span style={{ fontSize: "1.4rem" }}>
+                                {copied === "allMatches" ? "✅" : "📋"}
+                            </span>
+                            <span style={{ fontSize: "0.75rem", color: isDark ? "#94a3b8" : "#64748b" }}>
+                                {copied === "allMatches"
+                                    ? (lang === "ko" ? "복사됨!" : "Copied!")
+                                    : (lang === "ko" ? "매칭 복사" : "Copy All")}
+                            </span>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Match Details */}
             {testString && pattern && !error && (
                 <div style={cardStyle}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
                         <label style={{ ...labelStyle, marginBottom: 0 }}>{t("result.matches")}</label>
-                        <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-                            {/* Execution time */}
-                            <span style={{
-                                fontSize: "0.75rem",
-                                color: executionTime > 100 ? (isDark ? "#fca5a5" : "#dc2626") : (isDark ? "#475569" : "#9ca3af"),
-                                fontFamily: "'Consolas', monospace",
-                            }}>
-                                {executionTime > 100 ? "⚠️ " : "⏱ "}{executionTime.toFixed(2)}ms
-                            </span>
-                            <span style={{
-                                background: matches.length > 0 ? (isDark ? "rgba(34,197,94,0.2)" : "#ecfdf5") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"),
-                                color: matches.length > 0 ? (isDark ? "#4ade80" : "#059669") : (isDark ? "#fca5a5" : "#dc2626"),
-                                padding: "4px 12px",
-                                borderRadius: "20px",
-                                fontSize: "0.85rem",
-                                fontWeight: 600,
-                            }}>
-                                {matches.length > 0 ? t("result.matchCount", { count: matches.length }) : t("result.noMatch")}
-                            </span>
-                        </div>
+                        <span style={{
+                            background: matches.length > 0 ? (isDark ? "rgba(34,197,94,0.2)" : "#ecfdf5") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"),
+                            color: matches.length > 0 ? (isDark ? "#4ade80" : "#059669") : (isDark ? "#fca5a5" : "#dc2626"),
+                            padding: "4px 12px",
+                            borderRadius: "20px",
+                            fontSize: "0.85rem",
+                            fontWeight: 600,
+                        }}>
+                            {matches.length > 0 ? t("result.matchCount", { count: matches.length }) : t("result.noMatch")}
+                        </span>
                     </div>
 
                     {matches.length > 0 && (

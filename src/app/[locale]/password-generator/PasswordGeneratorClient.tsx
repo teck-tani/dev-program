@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaCopy, FaRedo, FaTrash, FaCheck, FaLightbulb } from "react-icons/fa";
+import { FaCopy, FaRedo, FaTrash, FaCheck, FaLightbulb, FaShieldAlt, FaExclamationTriangle, FaSpinner } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 
 interface PasswordOptions {
@@ -27,6 +27,36 @@ type GenerationMode = 'random' | 'passphrase';
 type StrengthLevel = 'weak' | 'fair' | 'strong' | 'veryStrong';
 
 const AMBIGUOUS_CHARS = '0O1lI|';
+
+// ===== HIBP helpers =====
+async function sha1Hex(str: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+async function checkHibp(password: string): Promise<'safe' | { count: number }> {
+    const hash = await sha1Hex(password);
+    const prefix = hash.slice(0, 5);
+    const suffix = hash.slice(5);
+
+    const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+        headers: { 'Add-Padding': 'true' },
+    });
+    if (!res.ok) throw new Error('HIBP fetch failed');
+    const text = await res.text();
+
+    for (const line of text.split('\n')) {
+        const [hashSuffix, countStr] = line.trim().split(':');
+        if (hashSuffix === suffix) {
+            const count = parseInt(countStr, 10);
+            if (count > 0) return { count };
+        }
+    }
+    return 'safe';
+}
 
 const CHAR_SETS_BASE = {
     uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -207,6 +237,7 @@ export default function PasswordGeneratorClient() {
 
     const [passwords, setPasswords] = useState<string[]>([]);
     const [history, setHistory] = useState<string[]>([]);
+    const [hibpResults, setHibpResults] = useState<Record<number, 'loading' | 'safe' | { count: number } | 'error'>>({});
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
     const [toast, setToast] = useState(false);
     const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -217,6 +248,16 @@ export default function PasswordGeneratorClient() {
     }, [mode, options, passphraseOptions, passwords.length]);
 
     const strength = passwords.length > 0 ? getStrength(entropy) : null;
+
+    const handleHibpCheck = useCallback(async (pw: string, index: number) => {
+        setHibpResults(prev => ({ ...prev, [index]: 'loading' }));
+        try {
+            const result = await checkHibp(pw);
+            setHibpResults(prev => ({ ...prev, [index]: result }));
+        } catch {
+            setHibpResults(prev => ({ ...prev, [index]: 'error' }));
+        }
+    }, []);
 
     const handleGenerate = useCallback(() => {
         if (mode === 'random') {
@@ -238,6 +279,7 @@ export default function PasswordGeneratorClient() {
             setHistory(prev => [...newPasswords, ...prev].slice(0, 50));
         }
         setCopiedIndex(null);
+        setHibpResults({});
     }, [mode, options, passphraseOptions]);
 
     const handlePreset = useCallback((preset: 'bank' | 'wifi' | 'pin' | 'general') => {
@@ -910,50 +952,129 @@ export default function PasswordGeneratorClient() {
 
                     {/* Password List */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                        {passwords.map((pw, i) => (
-                            <div key={i} style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                                padding: "14px 16px",
-                                background: isDark ? "#0f172a" : "#f9fafb",
-                                borderRadius: "10px",
-                                border: isDark ? "1px solid #334155" : "1px solid #e5e7eb"
-                            }}>
-                                <code style={{
-                                    flex: 1,
-                                    fontFamily: "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
-                                    fontSize: passwords.length === 1 ? "1.15rem" : "0.9rem",
-                                    color: isDark ? "#e2e8f0" : "#1f2937",
-                                    wordBreak: "break-all",
-                                    lineHeight: 1.5,
-                                    letterSpacing: "0.5px"
+                        {passwords.map((pw, i) => {
+                            const hibp = hibpResults[i];
+                            const borderColor = hibp === 'safe'
+                                ? '#22c55e'
+                                : (typeof hibp === 'object' && 'count' in hibp)
+                                    ? '#ef4444'
+                                    : undefined;
+                            return (
+                                <div key={i} style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "8px",
+                                    padding: "14px 16px",
+                                    background: isDark ? "#0f172a" : "#f9fafb",
+                                    borderRadius: "10px",
+                                    border: borderColor
+                                        ? `2px solid ${borderColor}`
+                                        : isDark ? "1px solid #334155" : "1px solid #e5e7eb",
+                                    transition: "border-color 0.3s",
                                 }}>
-                                    {pw}
-                                </code>
-                                <button
-                                    onClick={() => handleCopy(pw, i)}
-                                    style={{
-                                        padding: "8px 12px",
-                                        background: copiedIndex === i ? "#22c55e" : "#2563eb",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: "8px",
-                                        cursor: "pointer",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "4px",
-                                        fontSize: "0.8rem",
-                                        fontWeight: "600",
-                                        flexShrink: 0,
-                                        transition: "background 0.2s"
-                                    }}
-                                    title={t('input.copy')}
-                                >
-                                    {copiedIndex === i ? <FaCheck size={12} /> : <FaCopy size={12} />}
-                                </button>
-                            </div>
-                        ))}
+                                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                        <code style={{
+                                            flex: 1,
+                                            fontFamily: "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
+                                            fontSize: passwords.length === 1 ? "1.15rem" : "0.9rem",
+                                            color: isDark ? "#e2e8f0" : "#1f2937",
+                                            wordBreak: "break-all",
+                                            lineHeight: 1.5,
+                                            letterSpacing: "0.5px",
+                                        }}>
+                                            {pw}
+                                        </code>
+                                        <button
+                                            onClick={() => handleCopy(pw, i)}
+                                            style={{
+                                                padding: "8px 12px",
+                                                background: copiedIndex === i ? "#22c55e" : "#2563eb",
+                                                color: "white",
+                                                border: "none",
+                                                borderRadius: "8px",
+                                                cursor: "pointer",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "4px",
+                                                fontSize: "0.8rem",
+                                                fontWeight: "600",
+                                                flexShrink: 0,
+                                                transition: "background 0.2s",
+                                            }}
+                                            title={t('input.copy')}
+                                        >
+                                            {copiedIndex === i ? <FaCheck size={12} /> : <FaCopy size={12} />}
+                                        </button>
+                                    </div>
+                                    {/* HIBP Check Row */}
+                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                        <button
+                                            onClick={() => handleHibpCheck(pw, i)}
+                                            disabled={hibp === 'loading'}
+                                            style={{
+                                                padding: "5px 10px",
+                                                background: hibp === 'loading'
+                                                    ? (isDark ? "#334155" : "#e5e7eb")
+                                                    : (isDark ? "#0f172a" : "#f1f5f9"),
+                                                color: isDark ? "#94a3b8" : "#475569",
+                                                border: isDark ? "1px solid #475569" : "1px solid #cbd5e1",
+                                                borderRadius: "6px",
+                                                cursor: hibp === 'loading' ? "not-allowed" : "pointer",
+                                                fontSize: "0.75rem",
+                                                fontWeight: "600",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "5px",
+                                                flexShrink: 0,
+                                                transition: "all 0.2s",
+                                            }}
+                                        >
+                                            {hibp === 'loading'
+                                                ? <FaSpinner size={10} style={{ animation: "hibpSpin 1s linear infinite" }} />
+                                                : <FaShieldAlt size={10} />
+                                            }
+                                            {t('hibp.checkBtn')}
+                                        </button>
+                                        {/* HIBP Result Badge */}
+                                        {hibp === 'safe' && (
+                                            <span style={{
+                                                display: "flex", alignItems: "center", gap: "5px",
+                                                padding: "4px 10px", borderRadius: "20px",
+                                                background: isDark ? "#052e16" : "#dcfce7",
+                                                color: isDark ? "#4ade80" : "#166534",
+                                                fontSize: "0.78rem", fontWeight: "700",
+                                            }}>
+                                                <FaShieldAlt size={10} />
+                                                {t('hibp.safe')}
+                                            </span>
+                                        )}
+                                        {typeof hibp === 'object' && 'count' in hibp && (
+                                            <span style={{
+                                                display: "flex", alignItems: "center", gap: "5px",
+                                                padding: "4px 10px", borderRadius: "20px",
+                                                background: isDark ? "#450a0a" : "#fee2e2",
+                                                color: isDark ? "#fca5a5" : "#dc2626",
+                                                fontSize: "0.78rem", fontWeight: "700",
+                                            }}>
+                                                <FaExclamationTriangle size={10} />
+                                                {t('hibp.leaked', { count: hibp.count.toLocaleString() })}
+                                            </span>
+                                        )}
+                                        {hibp === 'error' && (
+                                            <span style={{
+                                                display: "flex", alignItems: "center", gap: "5px",
+                                                padding: "4px 10px", borderRadius: "20px",
+                                                background: isDark ? "#1c1917" : "#fef3c7",
+                                                color: isDark ? "#fbbf24" : "#d97706",
+                                                fontSize: "0.78rem", fontWeight: "600",
+                                            }}>
+                                                {t('hibp.error')}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
 
                     {/* Copy All */}
@@ -1087,6 +1208,10 @@ export default function PasswordGeneratorClient() {
                         opacity: 1;
                         transform: translateX(-50%) translateY(0);
                     }
+                }
+                @keyframes hibpSpin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
                 }
             `}</style>
         </div>

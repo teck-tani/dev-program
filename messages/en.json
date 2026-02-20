@@ -2453,6 +2453,12 @@
     "favorite": "Add to Favorites",
     "unfavorite": "Remove from Favorites",
     "favoritesTitle": "Favorites",
+    "recentTitle": "Recent",
+    "recentClear": "Clear History",
+    "tabAll": "All",
+    "tabEmoji": "Emoji",
+    "tabSpecial": "Special",
+    "searchPlaceholderName": "Search by name or character (e.g. heart, arrow...)",
     "tips": {
       "title": "Emoji Tips",
       "desc": "Emojis effectively express emotions and nuances that text alone cannot. They play a big role in improving readability and friendliness, especially in mobile environments.",
@@ -2828,6 +2834,31 @@
       "a4": "KB (kilobyte) is 1,000 bytes, while KiB (kibibyte) is 1,024 bytes. This tool uses the 1,024-based calculation commonly used in computing."
     },
     "seo": {
+      "description": {
+        "title": "What is a File Size Converter?",
+        "text": "A file size converter is a free online tool that instantly converts digital storage units including Bit, Byte, KB, MB, GB, TB, and PB. Simply enter a number and select a unit to get real-time conversions across all units. It supports both binary (1024-based) and decimal (1000-based) standards, making it easy to compare differences between operating systems and manufacturers."
+      },
+      "features": {
+        "title": "Key Features",
+        "list": {
+          "f1": {
+            "title": "7-Unit Real-Time Conversion",
+            "desc": "Converts Bit, Byte, KB, MB, GB, TB, and PB simultaneously. Click any result card to instantly switch the base unit."
+          },
+          "f2": {
+            "title": "Binary / Decimal Toggle",
+            "desc": "Switch between the computer standard (1024-based) and the hard drive manufacturer standard (1000-based) to compare OS differences."
+          },
+          "f3": {
+            "title": "Transfer Time Calculator",
+            "desc": "Automatically calculates transfer time for 6 connection types: 4G LTE, 5G, WiFi 6, USB 2.0/3.0, and Ethernet."
+          },
+          "f4": {
+            "title": "Storage Capacity Comparison",
+            "desc": "See how many MP3s, photos, FHD movies, 4K movies, or AAA games fit in the given size — at a glance."
+          }
+        }
+      },
       "howto": {
         "title": "How to Use File Size Converter",
         "steps": {
@@ -3230,6 +3261,30 @@
     "tints": "Tints (Lighter)",
     "shades": "Shades (Darker)",
     "currentColor": "Current Color",
+    "hsvNote": "HSV (Hue, Saturation, Value) — the color format used in Photoshop, Figma, and other design tools.",
+    "nearestColorName": "Nearest CSS Color Name",
+    "tailwindTitle": "Nearest Tailwind Color",
+    "tailwindDesc": "Finds the closest Tailwind CSS color class to your selected color.",
+    "tailwindCopy": "Copy class",
+    "tailwindCopied": "Copied!",
+    "eyedropperBtn": "Pick Color from Screen (Eyedropper)",
+    "eyedropperUnsupported": "This browser does not support EyeDropper.",
+    "gradientTitle": "CSS Gradient Generator",
+    "gradientDesc": "Automatically generate CSS gradient code between two colors.",
+    "gradientColor1": "Color 1",
+    "gradientColor2": "Color 2",
+    "gradientLinear": "Linear",
+    "gradientRadial": "Radial",
+    "gradientPreview": "Preview",
+    "gradientCode": "CSS Code",
+    "gradientDirRight": "→ Right",
+    "gradientDirLeft": "← Left",
+    "gradientDirDown": "↓ Down",
+    "gradientDirUp": "↑ Up",
+    "gradientDirBR": "↘ Bottom Right",
+    "gradientDirBL": "↙ Bottom Left",
+    "shareUrlBtn": "Share via URL",
+    "shareUrlCopied": "URL Copied!",
     "info": {
       "title": "Understanding Color Codes",
       "hex": {
@@ -3875,13 +3930,18 @@
         "deselectAll": "Deselect All",
         "rotateCCW": "Rotate Counter-clockwise",
         "rotateCW": "Rotate Clockwise",
-        "deleteHint": "Use the delete button above to remove selected pages"
+        "deleteHint": "Use the delete button above to remove selected pages",
+        "pageNum": "Page {num}",
+        "deleteSelected": "Save with {count} pages removed"
       },
       "options": {
         "title": "Split Options",
         "all": "Split all pages into separate PDFs",
         "range": "Extract specific pages only",
-        "rangePlaceholder": "e.g., 1-3, 5, 7-9"
+        "rangePlaceholder": "e.g., 1-3, 5, 7-9",
+        "output": "Output Format",
+        "outputIndividual": "Save each page as separate PDF (ZIP)",
+        "outputMerged": "Merge selected pages into one PDF"
       },
       "button": "Split PDF",
       "processing": "Processing..."
@@ -4055,6 +4115,7 @@
     "stats": {
       "added": "Added: {count} lines",
       "removed": "Removed: {count} lines",
+      "modified": "Modified: {count} lines",
       "unchanged": "Unchanged: {count} lines"
     },
     "result": {
@@ -4182,11 +4243,15 @@
     "player": "Player",
     "result": "Result",
     "addPlayer": "Add Player",
+    "removePlayer": "Remove Player",
     "generateLadder": "Generate Ladder",
     "startGame": "Start Game",
     "playing": "Playing...",
+    "racing": "Racing...",
     "reset": "Reset",
-    "gameResults": "Game Results"
+    "gameResults": "Game Results",
+    "modeRace": "Race Mode",
+    "modeSequential": "Sequential"
   },
   "OvulationCalculator": {
     "meta": {
@@ -5020,6 +5085,11 @@
       "step2": "<strong>Paste URL</strong>: Paste the URL in the input field above and click 'Extract'.",
       "step3": "<strong>Download</strong>: Click 'Download' on your preferred quality to save the thumbnail image."
     },
+    "history": {
+      "title": "Recent History",
+      "clearAll": "Clear All",
+      "noTitle": "(No title)"
+    },
     "faq": {
       "title": "Frequently Asked Questions",
       "q1": {
@@ -5043,7 +5113,7 @@
       "description": {
         "title": "What is YouTube Thumbnail Download?",
         "p1": "The YouTube Thumbnail Extractor is a free online tool that lets you download video preview images (thumbnails) in various resolutions just by entering a YouTube video URL. No software installation or account registration required.",
-        "p2": "It supports 5 resolutions from Max Quality (1280x720) to Default (120x90), and also displays video metadata like title, view count, and upload date. Batch download all resolutions at once and preview thumbnails in a lightbox."
+        "p2": "It supports 5 resolutions from Max Quality (1280x720) to Default (120x90), and also displays video metadata like title and channel name. Batch download all resolutions at once and preview thumbnails in a lightbox."
       },
       "features": {
         "title": "Key Features",
@@ -5058,7 +5128,7 @@
           },
           "feat3": {
             "title": "Video Metadata Display",
-            "desc": "View video title, view count, upload date and other metadata alongside thumbnails."
+            "desc": "View video title, channel name and other metadata alongside thumbnails."
           },
           "feat4": {
             "title": "Lightbox Preview",
@@ -6515,6 +6585,12 @@
       "crackMillionYears": "~{time} million years",
       "crackBillionYears": "~{time} billion years"
     },
+    "hibp": {
+      "checkBtn": "Check Breach",
+      "safe": "Not Exposed",
+      "leaked": "Exposed {count} times",
+      "error": "Check Failed"
+    },
     "seo": {
       "description": {
         "title": "What is a Password Generator?",
@@ -6751,6 +6827,7 @@
     "uppercase": "Uppercase",
     "hyphens": "Include Hyphens",
     "generate": "Generate UUID",
+    "generating": "Generating...",
     "result": "Results",
     "copy": "Copy",
     "copyAll": "Copy All",
@@ -6764,8 +6841,18 @@
     "version": {
       "label": "UUID Version",
       "v1Desc": "Timestamp",
+      "v3Desc": "MD5 Namespace",
       "v4Desc": "Random",
+      "v5Desc": "SHA-1 Namespace",
       "v7Desc": "Time-ordered"
+    },
+    "namespace": {
+      "label": "Namespace",
+      "custom": "Custom",
+      "customPlaceholder": "Enter custom namespace UUID...",
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter a name to generate UUID from...",
+      "nameHint": "Same namespace+name combination always produces the same UUID"
     },
     "validate": {
       "title": "UUID Validation",
@@ -8346,7 +8433,22 @@
       "dice": "Dice",
       "coin": "Coin",
       "shuffle": "Shuffle",
-      "team": "Teams"
+      "team": "Teams",
+      "weighted": "Weighted"
+    },
+    "weighted": {
+      "itemLabel": "Item",
+      "weightLabel": "Weight",
+      "probLabel": "Prob.",
+      "itemPlaceholder": "Item name",
+      "addItem": "Add Item",
+      "removeItem": "Remove Item",
+      "pick": "Pick",
+      "picking": "Picking...",
+      "probability": "Win probability",
+      "weight": "Weight",
+      "history": "Pick History",
+      "clearHistory": "Clear History"
     },
     "copied": "Copied!",
     "copyAll": "Copy All",
@@ -8984,15 +9086,16 @@
   },
   "ImageConverter": {
     "meta": {
-      "title": "Image Format Converter | PNG, JPG, WebP - Free Online",
-      "description": "Convert images between PNG, JPG, and WebP formats. Quality adjustment, batch conversion support. Processed in your browser without server upload.",
-      "keywords": "image converter,PNG to JPG,JPG to WebP,image format converter,photo format change,free image converter",
-      "ogTitle": "Image Format Converter - PNG, JPG, WebP Free Conversion",
-      "ogDescription": "Convert images between PNG, JPG, and WebP. Quality control, multi-file batch processing."
+      "title": "Image Format Converter | PNG, JPG, WebP, AVIF, HEIC - Free Online",
+      "description": "Convert images between PNG, JPG, WebP, AVIF, and HEIC formats. Auto-converts on upload, quality control, batch ZIP download. Processed instantly in your browser.",
+      "keywords": "image converter,PNG to JPG,JPG to WebP,AVIF converter,HEIC to JPG,image format converter,photo format change,free image converter,iPhone photo converter",
+      "ogTitle": "Image Format Converter - PNG, JPG, WebP, AVIF, HEIC Free Conversion",
+      "ogDescription": "Convert PNG, JPG, WebP, AVIF, HEIC images. Auto-conversion, quality control, ZIP batch download."
     },
     "upload": {
       "title": "Drag & drop or click to upload images",
-      "subtitle": "Supports JPG, PNG, WebP, GIF, BMP and more"
+      "subtitle": "Supports JPG, PNG, WebP, AVIF, GIF, BMP, HEIC (iPhone) and more",
+      "ariaLabel": "Click or drag to upload images"
     },
     "settings": {
       "title": "Conversion Settings",
@@ -9000,6 +9103,7 @@
       "formatJpeg": "JPEG (.jpg)",
       "formatPng": "PNG (.png)",
       "formatWebp": "WebP (.webp)",
+      "formatAvif": "AVIF (.avif)",
       "quality": "Quality",
       "qualityHint": "PNG is lossless, so quality setting does not apply."
     },
@@ -9008,6 +9112,7 @@
       "converting": "Converting...",
       "download": "Download",
       "downloadAll": "Download All",
+      "downloadZip": "Download ZIP",
       "clearAll": "Clear All"
     },
     "summary": {
@@ -9020,10 +9125,12 @@
       "converting": "Converting...",
       "error": "Error",
       "download": "Save",
-      "reduced": "reduced"
+      "reduced": "reduced",
+      "removeAriaLabel": "Remove {name}"
     },
     "warnings": {
-      "transparency": "JPEG format does not support transparency. Transparent areas will be replaced with a white background."
+      "transparency": "JPEG format does not support transparency. Transparent areas will be replaced with a white background.",
+      "exif": "EXIF metadata (date, GPS, camera info, etc.) will be removed during conversion. Your original file is preserved."
     },
     "info": {
       "title": "Image Format Converter Info",
@@ -9061,39 +9168,51 @@
       "q5": {
         "q": "Are images uploaded to any server?",
         "a": "No, all conversions are performed locally using the browser's Canvas API. Images are never transmitted to any external server."
+      },
+      "q6": {
+        "q": "What is AVIF format?",
+        "a": "AVIF is a next-generation image format based on the AV1 codec, offering up to 50% smaller file sizes than JPG at the same quality. Supported in Chrome 85+, Firefox 93+, and other modern browsers. The option appears only when your browser supports it."
+      },
+      "q7": {
+        "q": "Can I convert iPhone HEIC photos?",
+        "a": "Yes! HEIC/HEIF images taken on iPhone or other Apple devices can be converted to JPG, PNG, WebP, and more. Simply drag and drop the file — it's detected and processed automatically."
       }
     },
     "seo": {
       "description": {
         "title": "What is Image Format Converter?",
-        "p1": "Image Format Converter is a free online tool that converts images between PNG, JPG, and WebP formats. All processing happens directly in your browser for speed and security.",
-        "p2": "Convert to WebP for web optimization, JPG for compatibility, or PNG for transparency — whatever your needs require."
+        "p1": "Image Format Converter is a free online tool that converts images between PNG, JPG, WebP, AVIF, and HEIC formats. All processing happens directly in your browser — fast, private, and with no server upload. Conversion starts automatically the moment you upload.",
+        "p2": "Convert to WebP or AVIF for web optimization, JPG for maximum compatibility, or convert iPhone HEIC photos for universal sharing. Batch convert multiple files and download as a single ZIP."
       },
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "Multiple Formats", "desc": "Freely convert between PNG, JPG, and WebP formats." },
-          "feat2": { "title": "Quality Control", "desc": "Fine-tune JPG and WebP output quality from 1% to 100%." },
-          "feat3": { "title": "Batch Conversion", "desc": "Upload and convert multiple images at once with the same settings." },
-          "feat4": { "title": "Transparency Warning", "desc": "Displays a warning when converting transparent images to JPG." }
+          "feat1": { "title": "5 Format Support", "desc": "Convert between PNG, JPG, WebP, AVIF, and HEIC (iPhone) formats with a single click." },
+          "feat2": { "title": "Auto-Convert on Upload", "desc": "Conversion starts instantly when you upload. Changing settings automatically re-converts all images." },
+          "feat3": { "title": "ZIP Batch Download", "desc": "Convert multiple images at once and download them all as a single ZIP file." },
+          "feat4": { "title": "Quality Control + Transparency Warning", "desc": "Fine-tune quality for JPG/WebP/AVIF and get automatic warnings for transparent image conversion." },
+          "feat5": { "title": "AVIF Support (Next-Gen)", "desc": "Convert to AVIF when your browser supports it — up to 50% smaller than JPG at the same quality." },
+          "feat6": { "title": "HEIC Support (iPhone Photos)", "desc": "Drag and drop HEIC/HEIF files from iPhone directly — auto-detected and converted instantly." }
         }
       },
       "howto": {
         "title": "How to Use",
         "steps": {
-          "step1": "<strong>Upload Images</strong> — Drag and drop or click to upload images to convert.",
-          "step2": "<strong>Select Format</strong> — Choose your desired output format: JPG, PNG, or WebP.",
-          "step3": "<strong>Adjust Quality</strong> — For JPG/WebP, use the quality slider to set output quality.",
-          "step4": "<strong>Convert & Download</strong> — Click Convert, then download individually or all at once."
+          "step1": "<strong>Upload Images</strong> — Drag and drop or click to upload JPG, PNG, WebP, HEIC files.",
+          "step2": "<strong>Select Output Format</strong> — Choose from JPG, PNG, WebP, or AVIF (if supported).",
+          "step3": "<strong>Adjust Quality</strong> — Move the quality slider and images re-convert automatically.",
+          "step4": "<strong>Download ZIP</strong> — Save individual files or download all converted images as a ZIP."
         }
       },
       "usecases": {
         "title": "Use Cases",
         "list": {
-          "uc1": { "title": "Website Performance", "desc": "Convert PNG/JPG images to WebP for significantly faster page loading." },
-          "uc2": { "title": "Compatibility", "desc": "Convert WebP images to JPG/PNG for environments that don't support WebP." },
+          "uc1": { "title": "Website Performance", "desc": "Convert PNG/JPG images to WebP or AVIF for significantly faster page loading." },
+          "uc2": { "title": "iPhone Photo Sharing", "desc": "Convert HEIC photos from iPhone to JPG for universal sharing on any platform." },
           "uc3": { "title": "Transparency Needs", "desc": "Convert JPG images to PNG to enable background editing with transparency." },
-          "uc4": { "title": "File Size Reduction", "desc": "Convert PNG to JPG/WebP to dramatically reduce file sizes." }
+          "uc4": { "title": "File Size Reduction", "desc": "Convert PNG to JPG/WebP/AVIF to dramatically reduce file sizes." },
+          "uc5": { "title": "Design Asset Export", "desc": "Batch convert design exports to match delivery requirements in any format." },
+          "uc6": { "title": "Blog & Social Media", "desc": "Optimize photos by converting to WebP and adjusting quality for upload size limits." }
         }
       },
       "privacy": {
@@ -9116,12 +9235,8 @@
     },
     "settings": {
       "title": "Favicon Settings",
-      "sizes": "Sizes to Generate",
       "selectAll": "Select All",
-      "deselectAll": "Deselect All",
-      "format": "Output Format",
-      "formatIco": "ICO (Browser Tab Icon)",
-      "formatPng": "PNG (Web App / Mobile)"
+      "deselectAll": "Deselect All"
     },
     "preview": {
       "title": "Preview",
@@ -9134,7 +9249,9 @@
       "downloadIco": "Download ICO",
       "downloadPng": "Download PNG",
       "downloadAll": "Download All",
-      "clearAll": "Reset"
+      "clearAll": "Reset",
+      "copy": "Copy",
+      "copied": "Copied!"
     },
     "sizes": {
       "s16": "16x16 (Browser Tab)",
@@ -9147,22 +9264,7 @@
     },
     "code": {
       "title": "HTML Code",
-      "hint": "Add the following code to your HTML <head> tag."
-    },
-    "info": {
-      "title": "Favicon Generator Info",
-      "privacy": {
-        "title": "Privacy Protected",
-        "desc": "All processing happens in your browser. Images are never sent to any server."
-      },
-      "quality": {
-        "title": "High-Quality Conversion",
-        "desc": "Uses Canvas API to generate crisp, clear favicons."
-      },
-      "bulk": {
-        "title": "Multiple Sizes",
-        "desc": "Generate favicons from 16x16 to 512x512 — select only the sizes you need."
-      }
+      "hint": "Add the following code to your HTML '<'head'>' tag."
     },
     "faq": {
       "title": "Frequently Asked Questions",

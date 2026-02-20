@@ -4,8 +4,49 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaFilePdf, FaDownload, FaTrash, FaPlus, FaCut, FaLayerGroup, FaArrowUp, FaArrowDown, FaUndo, FaRedo, FaCheckSquare, FaRegSquare, FaTint, FaGripVertical } from "react-icons/fa";
-import { PDFDocument, degrees, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument, degrees } from "pdf-lib";
+import JSZip from "jszip";
 import ShareButton from "@/components/ShareButton";
+
+// Module-level pdfjs singleton loader
+let pdfjsInstance: typeof import('pdfjs-dist') | null = null;
+const getPdfJs = async () => {
+    if (pdfjsInstance) return pdfjsInstance;
+    const lib = await import('pdfjs-dist');
+    lib.GlobalWorkerOptions.workerSrc =
+        `https://unpkg.com/pdfjs-dist@${lib.version}/build/pdf.worker.min.mjs`;
+    pdfjsInstance = lib;
+    return lib;
+};
+
+// Canvas-based watermark PNG — supports Korean and all Unicode via system font
+const createWatermarkPng = (
+    text: string,
+    fontSize: number,
+    opacity: number,
+): Promise<Uint8Array> => {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d')!;
+        const fontStr = `bold ${fontSize}px "Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif`;
+        ctx.font = fontStr;
+        const metrics = ctx.measureText(text);
+        const w = Math.ceil(metrics.width) + fontSize;
+        const h = Math.ceil(fontSize * 1.5);
+        canvas.width = w || 10;
+        canvas.height = h || 10;
+        ctx.clearRect(0, 0, w, h);
+        ctx.font = fontStr;
+        ctx.fillStyle = `rgba(128,128,128,${opacity})`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, w / 2, h / 2);
+        canvas.toBlob(
+            (blob) => blob!.arrayBuffer().then((buf) => resolve(new Uint8Array(buf))),
+            'image/png',
+        );
+    });
+};
 
 interface PDFFile {
     id: string;
@@ -38,6 +79,7 @@ export default function PDFManagerClient() {
     const [splitFile, setSplitFile] = useState<PDFFile | null>(null);
     const [splitMode, setSplitMode] = useState<'all' | 'range'>('all');
     const [splitRange, setSplitRange] = useState('');
+    const [splitOutput, setSplitOutput] = useState<'individual' | 'merged'>('individual');
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const mergeInputRef = useRef<HTMLInputElement>(null);
@@ -119,40 +161,77 @@ export default function PDFManagerClient() {
         };
     };
 
-    // Generate thumbnails for merge file (first page only)
+    // Generate real thumbnail for merge file (first page) using pdfjs, fallback to placeholder
     const generateMergeThumbnail = useCallback(async (pdfFile: PDFFile): Promise<string> => {
         try {
+            const lib = await getPdfJs();
             const arrayBuffer = await pdfFile.file.arrayBuffer();
-            const pdf = await PDFDocument.load(arrayBuffer);
-            const page = pdf.getPage(0);
-            const { width, height } = page.getSize();
-            return generateThumbnail(width, height, 1, 0);
+            const pdfDoc = await lib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+            const page = await pdfDoc.getPage(1);
+            const viewport = page.getViewport({ scale: 1 });
+            const scale = Math.min(50 / viewport.width, 65 / viewport.height);
+            const scaledViewport = page.getViewport({ scale });
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.floor(scaledViewport.width);
+            canvas.height = Math.floor(scaledViewport.height);
+            const ctx = canvas.getContext('2d')!;
+            await page.render({ canvas: canvas, canvasContext: ctx, viewport: scaledViewport }).promise;
+            await pdfDoc.destroy();
+            return canvas.toDataURL('image/jpeg', 0.75);
         } catch {
-            return '';
+            // Fallback: pdf-lib placeholder
+            try {
+                const arrayBuffer = await pdfFile.file.arrayBuffer();
+                const pdf = await PDFDocument.load(arrayBuffer);
+                const page = pdf.getPage(0);
+                const { width, height } = page.getSize();
+                return generateThumbnail(width, height, 1, 0);
+            } catch { return ''; }
         }
     }, [generateThumbnail]);
 
-    // Load split pages info
+    // Load split pages — shows placeholders immediately, upgrades to real thumbnails via pdfjs
     const loadSplitPages = useCallback(async (pdfFile: PDFFile) => {
         try {
             const arrayBuffer = await pdfFile.file.arrayBuffer();
-            const pdf = await PDFDocument.load(arrayBuffer);
-            const pages: PageInfo[] = [];
-            for (let i = 0; i < pdf.getPageCount(); i++) {
-                const page = pdf.getPage(i);
+            const pdfLibDoc = await PDFDocument.load(arrayBuffer);
+            const pageCount = pdfLibDoc.getPageCount();
+
+            // 1. Placeholder thumbnails (instant)
+            const initialPages: PageInfo[] = [];
+            for (let i = 0; i < pageCount; i++) {
+                const page = pdfLibDoc.getPage(i);
                 const { width, height } = page.getSize();
                 const rot = page.getRotation().angle;
-                const thumb = generateThumbnail(width, height, i + 1, rot);
-                pages.push({
-                    index: i,
-                    width,
-                    height,
-                    rotation: rot,
-                    selected: false,
-                    thumbnail: thumb,
+                initialPages.push({
+                    index: i, width, height, rotation: rot, selected: false,
+                    thumbnail: generateThumbnail(width, height, i + 1, rot),
                 });
             }
-            setSplitPages(pages);
+            setSplitPages(initialPages);
+
+            // 2. Real thumbnails via pdfjs (progressive update)
+            try {
+                const lib = await getPdfJs();
+                const pdfDoc = await lib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+                const realThumbs: string[] = [];
+                for (let i = 0; i < pageCount; i++) {
+                    const page = await pdfDoc.getPage(i + 1);
+                    const viewport = page.getViewport({ scale: 1 });
+                    const scale = Math.min(120 / viewport.width, 120 / viewport.height);
+                    const scaledViewport = page.getViewport({ scale });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.floor(scaledViewport.width);
+                    canvas.height = Math.floor(scaledViewport.height);
+                    const ctx = canvas.getContext('2d')!;
+                    await page.render({ canvas: canvas, canvasContext: ctx, viewport: scaledViewport }).promise;
+                    realThumbs.push(canvas.toDataURL('image/jpeg', 0.75));
+                }
+                await pdfDoc.destroy();
+                setSplitPages(prev =>
+                    prev.map((p, i) => ({ ...p, thumbnail: realThumbs[i] || p.thumbnail }))
+                );
+            } catch { /* keep placeholders */ }
         } catch {
             setSplitPages([]);
         }
@@ -442,38 +521,51 @@ export default function PDFManagerClient() {
                 return;
             }
 
-            // Create individual PDFs for each page (with rotation applied)
-            for (const pageIndex of pagesToExtract) {
-                const newPdf = await PDFDocument.create();
-                const [copiedPage] = await newPdf.copyPages(pdf, [pageIndex]);
-                // Apply rotation from splitPages state
-                const pageInfo = splitPages.find(p => p.index === pageIndex);
-                if (pageInfo) {
-                    copiedPage.setRotation(degrees(pageInfo.rotation));
-                }
-                newPdf.addPage(copiedPage);
+            const baseName = splitFile.name.replace(/\.pdf$/i, '');
 
+            if (splitOutput === 'merged') {
+                // Merge selected pages into one PDF
+                const newPdf = await PDFDocument.create();
+                const copiedPages = await newPdf.copyPages(pdf, pagesToExtract);
+                copiedPages.forEach((page, idx) => {
+                    const pageInfo = splitPages.find(p => p.index === pagesToExtract[idx]);
+                    if (pageInfo) page.setRotation(degrees(pageInfo.rotation));
+                    newPdf.addPage(page);
+                });
                 const pdfBytes = await newPdf.save();
                 const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
                 const url = URL.createObjectURL(blob);
-
                 const link = document.createElement('a');
                 link.href = url;
-                const baseName = splitFile.name.replace('.pdf', '');
-                link.download = `${baseName}_page_${pageIndex + 1}.pdf`;
+                link.download = `${baseName}_extracted.pdf`;
                 link.click();
-
                 URL.revokeObjectURL(url);
-
-                // Small delay to prevent browser blocking multiple downloads
-                await new Promise(resolve => setTimeout(resolve, 100));
+            } else {
+                // Individual pages → ZIP
+                const zip = new JSZip();
+                for (const pageIndex of pagesToExtract) {
+                    const newPdf = await PDFDocument.create();
+                    const [copiedPage] = await newPdf.copyPages(pdf, [pageIndex]);
+                    const pageInfo = splitPages.find(p => p.index === pageIndex);
+                    if (pageInfo) copiedPage.setRotation(degrees(pageInfo.rotation));
+                    newPdf.addPage(copiedPage);
+                    const pdfBytes = await newPdf.save();
+                    zip.file(`${baseName}_page_${pageIndex + 1}.pdf`, pdfBytes);
+                }
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                const url = URL.createObjectURL(zipBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${baseName}_pages.zip`;
+                link.click();
+                URL.revokeObjectURL(url);
             }
         } catch {
             setError(t('error.splitFailed'));
         } finally {
             setIsProcessing(false);
         }
-    }, [splitFile, splitMode, splitRange, splitPages, t]);
+    }, [splitFile, splitMode, splitRange, splitPages, splitOutput, t]);
 
     // Watermark handler
     const handleWatermark = useCallback(async () => {
@@ -492,36 +584,33 @@ export default function PDFManagerClient() {
         try {
             const arrayBuffer = await watermarkFile.file.arrayBuffer();
             const pdf = await PDFDocument.load(arrayBuffer);
-            const font = await pdf.embedFont(StandardFonts.Helvetica);
             const pageCount = pdf.getPageCount();
+
+            // Canvas-based PNG: supports Korean & all Unicode via system font
+            const pngBytes = await createWatermarkPng(watermarkText, watermarkFontSize, watermarkOpacity);
+            const pngImage = await pdf.embedPng(pngBytes);
+            const imgW = pngImage.width;
+            const imgH = pngImage.height;
 
             for (let i = 0; i < pageCount; i++) {
                 const page = pdf.getPage(i);
                 const { width, height } = page.getSize();
 
                 if (watermarkPosition === 'diagonal') {
-                    // Diagonal watermark
-                    const textWidth = font.widthOfTextAtSize(watermarkText, watermarkFontSize);
                     const angle = Math.atan2(height, width) * (180 / Math.PI);
-                    page.drawText(watermarkText, {
-                        x: (width - textWidth * Math.cos(angle * Math.PI / 180)) / 2,
-                        y: height / 2 - watermarkFontSize / 2,
-                        size: watermarkFontSize,
-                        font,
-                        color: rgb(0.5, 0.5, 0.5),
-                        opacity: watermarkOpacity,
+                    page.drawImage(pngImage, {
+                        x: (width - imgW) / 2,
+                        y: (height - imgH) / 2,
+                        width: imgW,
+                        height: imgH,
                         rotate: degrees(angle),
                     });
                 } else {
-                    // Center watermark
-                    const textWidth = font.widthOfTextAtSize(watermarkText, watermarkFontSize);
-                    page.drawText(watermarkText, {
-                        x: (width - textWidth) / 2,
-                        y: (height - watermarkFontSize) / 2,
-                        size: watermarkFontSize,
-                        font,
-                        color: rgb(0.5, 0.5, 0.5),
-                        opacity: watermarkOpacity,
+                    page.drawImage(pngImage, {
+                        x: (width - imgW) / 2,
+                        y: (height - imgH) / 2,
+                        width: imgW,
+                        height: imgH,
                     });
                 }
             }
@@ -596,16 +685,7 @@ export default function PDFManagerClient() {
 
     return (
         <div style={{ minHeight: '100vh', background: isDark ? '#0f172a' : 'linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%)' }}>
-            {/* Header */}
-            <section style={{ textAlign: "center", paddingTop: "40px", paddingBottom: "20px" }}>
-                <h1 style={{ fontSize: '2rem', color: '#c0392b', marginBottom: "15px", fontWeight: 700 }}>
-                    {t('title')}
-                </h1>
-                <p style={{ color: isDark ? '#94a3b8' : '#666', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', padding: '0 20px' }}
-                   dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
-            </section>
-
-            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
+            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px 20px 60px' }}>
                 {/* Tabs */}
                 <div style={{
                     display: 'flex',
@@ -1181,6 +1261,35 @@ export default function PDFManagerClient() {
                                                     )}
                                                 </div>
                                             </label>
+                                        </div>
+
+                                        {/* Output Format */}
+                                        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: `1px solid ${isDark ? '#334155' : '#eee'}` }}>
+                                            <div style={{ marginBottom: '10px', fontSize: '0.9rem', fontWeight: 600, color: textSecondary }}>
+                                                {t('split.options.output')}
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                                    <input
+                                                        type="radio"
+                                                        name="splitOutput"
+                                                        checked={splitOutput === 'individual'}
+                                                        onChange={() => setSplitOutput('individual')}
+                                                        style={{ accentColor: '#e74c3c' }}
+                                                    />
+                                                    <span style={{ color: textPrimary, fontSize: '0.9rem' }}>{t('split.options.outputIndividual')}</span>
+                                                </label>
+                                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                                    <input
+                                                        type="radio"
+                                                        name="splitOutput"
+                                                        checked={splitOutput === 'merged'}
+                                                        onChange={() => setSplitOutput('merged')}
+                                                        style={{ accentColor: '#e74c3c' }}
+                                                    />
+                                                    <span style={{ color: textPrimary, fontSize: '0.9rem' }}>{t('split.options.outputMerged')}</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

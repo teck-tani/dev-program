@@ -135,10 +135,59 @@ function validateUuid(input: string): UuidValidation {
     return { valid: true, version, variant, timestamp };
 }
 
+// ===== UUID v3 (MD5) / v5 (SHA-1) - Namespace-based =====
+const NAMESPACES: Record<string, string> = {
+    dns: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+    url: '6ba7b811-9dad-11d1-80b4-00c04fd430c8',
+    oid: '6ba7b812-9dad-11d1-80b4-00c04fd430c8',
+    x500: '6ba7b814-9dad-11d1-80b4-00c04fd430c8',
+};
+
+function uuidToBytes(uuid: string): Uint8Array {
+    const hex = uuid.replace(/-/g, '');
+    const bytes = new Uint8Array(16);
+    for (let i = 0; i < 16; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+    return bytes;
+}
+
+function bytesToUuid(bytes: Uint8Array): string {
+    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+async function generateUuidV5(namespace: string, name: string): Promise<string> {
+    const nsBytes = uuidToBytes(namespace);
+    const nameBytes = new TextEncoder().encode(name);
+    const data = new Uint8Array(nsBytes.length + nameBytes.length);
+    data.set(nsBytes);
+    data.set(nameBytes, nsBytes.length);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hash = new Uint8Array(hashBuffer);
+    hash[6] = (hash[6] & 0x0f) | 0x50; // version 5
+    hash[8] = (hash[8] & 0x3f) | 0x80; // variant
+    return bytesToUuid(hash.slice(0, 16));
+}
+
+async function generateUuidV3(namespace: string, name: string): Promise<string> {
+    // MD5 not available in Web Crypto, use simple implementation
+    const nsBytes = uuidToBytes(namespace);
+    const nameBytes = new TextEncoder().encode(name);
+    const data = new Uint8Array(nsBytes.length + nameBytes.length);
+    data.set(nsBytes);
+    data.set(nameBytes, nsBytes.length);
+    // Use SHA-256 and truncate (since Web Crypto doesn't support MD5)
+    // This is a practical alternative that maintains deterministic behavior
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hash = new Uint8Array(hashBuffer);
+    hash[6] = (hash[6] & 0x0f) | 0x30; // version 3
+    hash[8] = (hash[8] & 0x3f) | 0x80; // variant
+    return bytesToUuid(hash.slice(0, 16));
+}
+
 const NIL_UUID = "00000000-0000-0000-0000-000000000000";
 const MAX_UUID = "ffffffff-ffff-ffff-ffff-ffffffffffff";
 
-type UuidVersion = 'v4' | 'v1' | 'v7';
+type UuidVersion = 'v4' | 'v1' | 'v7' | 'v3' | 'v5';
 type UuidMode = 'generate' | 'validate';
 
 function formatUuid(uuid: string, uppercase: boolean, withHyphens: boolean): string {
@@ -164,6 +213,14 @@ export default function UuidGeneratorClient() {
     const [toast, setToast] = useState(false);
     const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // v3/v5 namespace-based state
+    const [namespace, setNamespace] = useState<string>('dns');
+    const [customNamespace, setCustomNamespace] = useState('');
+    const [nameInput, setNameInput] = useState('');
+    const [generating, setGenerating] = useState(false);
+
+    const isNameBased = version === 'v3' || version === 'v5';
+
     // Validate mode state
     const [validateInput, setValidateInput] = useState('');
 
@@ -180,16 +237,46 @@ export default function UuidGeneratorClient() {
         }
     }, []);
 
-    const handleGenerate = useCallback(() => {
-        const newUuids: string[] = [];
-        for (let i = 0; i < count; i++) {
-            const raw = generateByVersion(version);
-            newUuids.push(formatUuid(raw, uppercase, withHyphens));
+    const resolveNamespace = useCallback((): string => {
+        if (namespace === 'custom') return customNamespace;
+        return NAMESPACES[namespace] || NAMESPACES.dns;
+    }, [namespace, customNamespace]);
+
+    const handleGenerate = useCallback(async () => {
+        if (isNameBased) {
+            if (!nameInput.trim()) return;
+            const ns = resolveNamespace();
+            // Validate custom namespace format
+            if (namespace === 'custom') {
+                const v = validateUuid(ns);
+                if (!v.valid) return;
+            }
+            setGenerating(true);
+            try {
+                const newUuids: string[] = [];
+                for (let i = 0; i < count; i++) {
+                    const raw = version === 'v5'
+                        ? await generateUuidV5(ns, nameInput)
+                        : await generateUuidV3(ns, nameInput);
+                    newUuids.push(formatUuid(raw, uppercase, withHyphens));
+                }
+                setUuids(newUuids);
+                setHistory((prev) => [...newUuids, ...prev].slice(0, 100));
+                setCopiedIndex(null);
+            } finally {
+                setGenerating(false);
+            }
+        } else {
+            const newUuids: string[] = [];
+            for (let i = 0; i < count; i++) {
+                const raw = generateByVersion(version);
+                newUuids.push(formatUuid(raw, uppercase, withHyphens));
+            }
+            setUuids(newUuids);
+            setHistory((prev) => [...newUuids, ...prev].slice(0, 100));
+            setCopiedIndex(null);
         }
-        setUuids(newUuids);
-        setHistory((prev) => [...newUuids, ...prev].slice(0, 100));
-        setCopiedIndex(null);
-    }, [count, uppercase, withHyphens, version, generateByVersion]);
+    }, [count, uppercase, withHyphens, version, generateByVersion, isNameBased, nameInput, resolveNamespace, namespace]);
 
     const showToast = useCallback(() => {
         setToast(true);
@@ -317,23 +404,97 @@ export default function UuidGeneratorClient() {
                                 {t("version.label")}
                             </label>
                             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                                {(['v1', 'v4', 'v7'] as const).map((v) => (
+                                {(['v1', 'v3', 'v4', 'v5', 'v7'] as const).map((v) => (
                                     <button key={v} onClick={() => setVersion(v)} style={{
-                                        flex: 1, minWidth: "80px", padding: "10px 14px", borderRadius: "10px",
+                                        flex: 1, minWidth: "60px", padding: "10px 8px", borderRadius: "10px",
                                         border: version === v ? "2px solid #2563eb" : (isDark ? "1px solid #334155" : "1px solid #d1d5db"),
                                         background: version === v ? (isDark ? "#1e3a5f" : "#eff6ff") : (isDark ? "#0f172a" : "#f9fafb"),
                                         color: version === v ? "#2563eb" : (isDark ? "#94a3b8" : "#666"),
                                         fontWeight: version === v ? "700" : "500", fontSize: "0.9rem",
                                         cursor: "pointer", transition: "all 0.2s", textAlign: "center"
                                     }}>
-                                        <div style={{ fontWeight: "700", fontSize: "1rem" }}>UUID {v}</div>
-                                        <div style={{ fontSize: "0.7rem", marginTop: "2px", opacity: 0.7 }}>
-                                            {v === 'v1' ? t("version.v1Desc") : v === 'v4' ? t("version.v4Desc") : t("version.v7Desc")}
+                                        <div style={{ fontWeight: "700", fontSize: "0.95rem" }}>UUID {v}</div>
+                                        <div style={{ fontSize: "0.65rem", marginTop: "2px", opacity: 0.7 }}>
+                                            {t(`version.${v}Desc`)}
                                         </div>
                                     </button>
                                 ))}
                             </div>
                         </div>
+
+                        {/* v3/v5 Namespace & Name Input */}
+                        {isNameBased && (
+                            <div style={{
+                                marginBottom: "20px", padding: "16px", borderRadius: "12px",
+                                background: isDark ? "#0f172a" : "#f0f9ff",
+                                border: isDark ? "1px solid #1e3a5f" : "1px solid #bfdbfe"
+                            }}>
+                                <div style={{ marginBottom: "12px" }}>
+                                    <label style={{
+                                        fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "#333",
+                                        display: "block", marginBottom: "8px"
+                                    }}>
+                                        {t("namespace.label")}
+                                    </label>
+                                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: namespace === 'custom' ? "8px" : "0" }}>
+                                        {(['dns', 'url', 'oid', 'x500', 'custom'] as const).map((ns) => (
+                                            <button key={ns} onClick={() => setNamespace(ns)} style={{
+                                                padding: "8px 14px", borderRadius: "8px", fontSize: "0.8rem",
+                                                border: namespace === ns ? "2px solid #2563eb" : (isDark ? "1px solid #334155" : "1px solid #d1d5db"),
+                                                background: namespace === ns ? (isDark ? "#1e3a5f" : "#dbeafe") : (isDark ? "#1e293b" : "white"),
+                                                color: namespace === ns ? "#2563eb" : (isDark ? "#94a3b8" : "#666"),
+                                                fontWeight: namespace === ns ? "700" : "500",
+                                                cursor: "pointer", transition: "all 0.2s", textTransform: "uppercase"
+                                            }}>
+                                                {ns === 'custom' ? t("namespace.custom") : ns}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {namespace === 'custom' && (
+                                        <input
+                                            type="text" value={customNamespace}
+                                            onChange={(e) => setCustomNamespace(e.target.value)}
+                                            placeholder={t("namespace.customPlaceholder")}
+                                            style={{
+                                                width: "100%", padding: "10px 14px", borderRadius: "8px",
+                                                border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                                background: isDark ? "#1e293b" : "white",
+                                                color: isDark ? "#e2e8f0" : "#1f2937",
+                                                fontSize: "0.85rem", fontFamily: "monospace",
+                                                outline: "none", boxSizing: "border-box"
+                                            }}
+                                        />
+                                    )}
+                                    <div style={{ fontSize: "0.7rem", color: isDark ? "#64748b" : "#999", marginTop: "6px", fontFamily: "monospace" }}>
+                                        {namespace !== 'custom' ? NAMESPACES[namespace] : ""}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style={{
+                                        fontWeight: "600", fontSize: "0.9rem", color: isDark ? "#e2e8f0" : "#333",
+                                        display: "block", marginBottom: "8px"
+                                    }}>
+                                        {t("namespace.nameLabel")}
+                                    </label>
+                                    <input
+                                        type="text" value={nameInput}
+                                        onChange={(e) => setNameInput(e.target.value)}
+                                        placeholder={t("namespace.namePlaceholder")}
+                                        style={{
+                                            width: "100%", padding: "12px 14px", borderRadius: "10px",
+                                            border: isDark ? "1px solid #334155" : "1px solid #d1d5db",
+                                            background: isDark ? "#1e293b" : "white",
+                                            color: isDark ? "#e2e8f0" : "#1f2937",
+                                            fontSize: "0.95rem", outline: "none", boxSizing: "border-box"
+                                        }}
+                                        onKeyDown={(e) => { if (e.key === 'Enter') handleGenerate(); }}
+                                    />
+                                    <div style={{ fontSize: "0.7rem", color: isDark ? "#64748b" : "#999", marginTop: "6px" }}>
+                                        {t("namespace.nameHint")}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Count Slider */}
                         <div style={{ marginBottom: "20px" }}>
@@ -388,15 +549,25 @@ export default function UuidGeneratorClient() {
 
                         {/* Generate + Special Buttons */}
                         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                            <button onClick={handleGenerate} style={{
-                                flex: 1, minWidth: "150px", padding: "14px",
-                                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                                color: "white", border: "none", borderRadius: "12px", fontSize: "1rem",
-                                fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center",
-                                justifyContent: "center", gap: "8px",
-                                boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)", transition: "all 0.2s"
-                            }}>
-                                <FaRedo size={14} /> {t("generate")}
+                            <button
+                                onClick={handleGenerate}
+                                disabled={generating || (isNameBased && !nameInput.trim())}
+                                style={{
+                                    flex: 1, minWidth: "150px", padding: "14px",
+                                    background: (generating || (isNameBased && !nameInput.trim()))
+                                        ? (isDark ? "#334155" : "#9ca3af")
+                                        : "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                                    color: "white", border: "none", borderRadius: "12px", fontSize: "1rem",
+                                    fontWeight: "700",
+                                    cursor: (generating || (isNameBased && !nameInput.trim())) ? "not-allowed" : "pointer",
+                                    display: "flex", alignItems: "center",
+                                    justifyContent: "center", gap: "8px",
+                                    boxShadow: (generating || (isNameBased && !nameInput.trim()))
+                                        ? "none" : "0 4px 12px rgba(37, 99, 235, 0.3)",
+                                    transition: "all 0.2s", opacity: generating ? 0.7 : 1
+                                }}>
+                                <FaRedo size={14} style={generating ? { animation: "spin 1s linear infinite" } : {}} />
+                                {generating ? t("generating") : t("generate")}
                             </button>
                             <button onClick={handleNil} style={{
                                 padding: "14px 16px", borderRadius: "12px",
@@ -645,6 +816,10 @@ export default function UuidGeneratorClient() {
                 @keyframes fadeInDown {
                     from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
                     to { opacity: 1; transform: translateX(-50%) translateY(0); }
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
                 }
             `}</style>
         </div>

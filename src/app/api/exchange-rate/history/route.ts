@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { API_KEYS, API_URLS } from '@/config';
+import { API_URLS } from '@/config';
+import { SERVER_KEYS } from '@/config/server';
 
-const API_KEY = API_KEYS.KOREA_EXIM;
+const API_KEY = SERVER_KEYS.KOREA_EXIM;
 const API_BASE_URL = API_URLS.KOREA_EXIM;
 
 interface ExchangeRate {

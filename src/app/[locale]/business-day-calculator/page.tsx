@@ -1,4 +1,4 @@
-import BusinessDayCalculatorClient from "./BusinessDayCalculatorClient";
+import BusinessDayCalculatorNoSSR from "./BusinessDayCalculatorNoSSR";
 import { Metadata } from "next";
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
@@ -254,7 +254,7 @@ export default async function BusinessDayCalculatorPage({ params }: { params: Pr
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
-            <BusinessDayCalculatorClient />
+            <BusinessDayCalculatorNoSSR />
 
             <article className="seo-article">
                 {/* 1. Description */}

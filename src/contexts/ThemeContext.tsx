@@ -13,16 +13,14 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('light');
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'light';
+    return (localStorage.getItem('globalTheme') as Theme) || 'light';
+  });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // localStorage에서 테마 로드
-    const savedTheme = localStorage.getItem('globalTheme') as Theme;
-    if (savedTheme) {
-      setThemeState(savedTheme);
-    }
-
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

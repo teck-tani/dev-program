@@ -29,12 +29,12 @@ export default function ShareButton({
     const [hasWebShare, setHasWebShare] = useState(false);
     const [status, setStatus] = useState<"idle" | "copied">("idle");
 
+    useEffect(() => {
+        setHasWebShare(!!navigator.share);
+    }, []);
+
     const defaultLabel = buttonLabel ?? t("share");
     const defaultCopied = copiedLabel ?? t("copied");
-
-    useEffect(() => {
-        setHasWebShare(typeof navigator !== "undefined" && !!navigator.share);
-    }, []);
 
     const handleShare = async () => {
         if (disabled || !shareText) return;

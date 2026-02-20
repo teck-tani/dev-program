@@ -30,7 +30,7 @@ export default function ClockAdsense() {
         const timer = setTimeout(() => {
             if (adRef.current && adRef.current.offsetWidth > 0 && !adLoaded) {
                 try {
-                    // @ts-ignore
+                    // @ts-expect-error adsbygoogle is injected by AdSense script
                     (window.adsbygoogle = window.adsbygoogle || []).push({});
                     setAdLoaded(true);
                 } catch (e) {

@@ -224,13 +224,6 @@ export default async function UnitConverterPage({ params }: { params: Promise<{ 
             />
 
             <div className="container" style={{ maxWidth: '900px', padding: '20px' }}>
-                <section style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <h1 style={{ marginBottom: '20px' }}>{t('title')}</h1>
-                    <p style={{ color: '#666', fontSize: '1.1rem', maxWidth: '700px', margin: '0 auto' }}
-                        dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }}
-                    />
-                </section>
-
                 <UnitConverterClient />
 
                 <article style={{ maxWidth: 700, margin: "60px auto 0", padding: "0 20px 40px" }}>

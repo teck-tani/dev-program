@@ -26,6 +26,22 @@ interface GameResult {
     resultName: string;
 }
 
+type GameMode = 'sequential' | 'race';
+
+// Per-player path colors (hue-based)
+const PATH_COLORS = [
+    '#3b82f6', // blue
+    '#ef4444', // red
+    '#10b981', // emerald
+    '#f59e0b', // amber
+    '#8b5cf6', // violet
+    '#ec4899', // pink
+    '#06b6d4', // cyan
+    '#84cc16', // lime
+    '#f97316', // orange
+    '#6366f1', // indigo
+];
+
 export default function LadderGameClient() {
     const t = useTranslations('LadderGame');
     const { theme } = useTheme();
@@ -46,9 +62,20 @@ export default function LadderGameClient() {
     const [animatingPlayer, setAnimatingPlayer] = useState<number | null>(null);
     const [showResults, setShowResults] = useState(false);
     const [ladderGenerated, setLadderGenerated] = useState(false);
+    const [gameMode, setGameMode] = useState<GameMode>('race');
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const ROWS = 10;
+
+    // Canvas 실제 크기 추적
+    const getCanvasSize = useCallback(() => {
+        const container = containerRef.current;
+        if (!container) return { width: 560, height: 400 };
+        const width = Math.min(container.clientWidth - 40, 560);
+        const height = Math.max(300, Math.round(width * 0.7));
+        return { width, height };
+    }, []);
 
     const addPlayer = () => {
         if (players.length >= 10) return;
@@ -94,15 +121,15 @@ export default function LadderGameClient() {
         setGameResults([]);
     }, [players.length]);
 
-    const tracePath = useCallback((startColumn: number): { path: {column: number, row: number}[], endColumn: number } => {
+    const tracePath = useCallback((startColumn: number, lines: LadderLine[]): { path: {column: number, row: number}[], endColumn: number } => {
         const path: {column: number, row: number}[] = [];
         let column = startColumn;
 
         path.push({ column, row: -1 });
 
         for (let row = 0; row < ROWS; row++) {
-            const lineToRight = ladderLines.find(l => l.fromColumn === column && l.row === row);
-            const lineToLeft = ladderLines.find(l => l.fromColumn === column - 1 && l.row === row);
+            const lineToRight = lines.find(l => l.fromColumn === column && l.row === row);
+            const lineToLeft = lines.find(l => l.fromColumn === column - 1 && l.row === row);
 
             if (lineToRight) {
                 path.push({ column, row });
@@ -120,19 +147,25 @@ export default function LadderGameClient() {
         path.push({ column, row: ROWS });
 
         return { path, endColumn: column };
-    }, [ladderLines]);
+    }, []);
 
-    const drawLadder = useCallback((highlightPath?: {column: number, row: number}[], animationProgress?: number) => {
+    const drawLadder = useCallback((
+        lines: LadderLine[],
+        numPlayers: number,
+        highlightPaths?: { path: {column: number, row: number}[], color: string, progress?: number }[]
+    ) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const width = canvas.width;
-        const height = canvas.height;
-        const padding = 40;
-        const numColumns = players.length;
+        const { width, height } = getCanvasSize();
+        canvas.width = width;
+        canvas.height = height;
+
+        const padding = 30;
+        const numColumns = numPlayers;
         const columnWidth = (width - padding * 2) / (numColumns - 1 || 1);
         const rowHeight = (height - padding * 2) / (ROWS + 1);
 
@@ -140,7 +173,7 @@ export default function LadderGameClient() {
 
         // Draw vertical lines
         ctx.strokeStyle = isDark ? '#334155' : '#ddd';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         for (let col = 0; col < numColumns; col++) {
             const x = padding + col * columnWidth;
             ctx.beginPath();
@@ -151,75 +184,83 @@ export default function LadderGameClient() {
 
         // Draw horizontal lines (ladder rungs)
         ctx.strokeStyle = isDark ? '#64748b' : '#888';
-        ctx.lineWidth = 3;
-        for (const line of ladderLines) {
+        ctx.lineWidth = 2.5;
+        for (const line of lines) {
             const x1 = padding + line.fromColumn * columnWidth;
             const x2 = padding + (line.fromColumn + 1) * columnWidth;
             const y = padding + (line.row + 1) * rowHeight;
-
             ctx.beginPath();
             ctx.moveTo(x1, y);
             ctx.lineTo(x2, y);
             ctx.stroke();
         }
 
-        // Draw highlighted path
-        if (highlightPath && highlightPath.length > 0) {
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 5;
+        if (!highlightPaths || highlightPaths.length === 0) return;
+
+        // Draw highlighted paths
+        for (const { path, color, progress } of highlightPaths) {
+            if (!path || path.length === 0) continue;
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
-            const totalPoints = animationProgress !== undefined
-                ? Math.floor(highlightPath.length * animationProgress)
-                : highlightPath.length;
+            const totalPoints = progress !== undefined
+                ? Math.floor(path.length * progress)
+                : path.length;
+
+            const getXY = (point: { column: number; row: number }) => ({
+                x: padding + point.column * columnWidth,
+                y: point.row === -1
+                    ? padding
+                    : point.row === ROWS
+                        ? height - padding
+                        : padding + (point.row + 1) * rowHeight,
+            });
 
             if (totalPoints > 1) {
                 ctx.beginPath();
                 for (let i = 0; i < totalPoints; i++) {
-                    const point = highlightPath[i];
-                    const x = padding + point.column * columnWidth;
-                    const y = point.row === -1
-                        ? padding
-                        : point.row === ROWS
-                            ? height - padding
-                            : padding + (point.row + 1) * rowHeight;
-
-                    if (i === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
+                    const { x, y } = getXY(path[i]);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
             }
 
-            // Draw current position marker
+            // Current position marker
             if (totalPoints > 0) {
-                const lastPoint = highlightPath[totalPoints - 1];
-                const x = padding + lastPoint.column * columnWidth;
-                const y = lastPoint.row === -1
-                    ? padding
-                    : lastPoint.row === ROWS
-                        ? height - padding
-                        : padding + (lastPoint.row + 1) * rowHeight;
-
-                ctx.fillStyle = '#3b82f6';
+                const { x, y } = getXY(path[totalPoints - 1]);
+                ctx.fillStyle = color;
                 ctx.beginPath();
-                ctx.arc(x, y, 8, 0, Math.PI * 2);
+                ctx.arc(x, y, 7, 0, Math.PI * 2);
+                ctx.fill();
+                // White center
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
-    }, [players.length, ladderLines, isDark]);
+    }, [isDark, getCanvasSize]);
 
+    // Redraw when theme / lines change
     useEffect(() => {
         if (ladderGenerated) {
-            drawLadder(currentPath.length > 0 ? currentPath : undefined);
+            drawLadder(ladderLines, players.length, currentPath.length > 0 ? [{ path: currentPath, color: '#3b82f6' }] : undefined);
         }
-    }, [ladderGenerated, ladderLines, drawLadder, currentPath]);
+    }, [ladderGenerated, ladderLines, drawLadder, currentPath, players.length]);
 
-    const animatePath = useCallback(async (path: {column: number, row: number}[]) => {
-        const duration = 2000;
+    // ===== SEQUENTIAL MODE =====
+    const animatePathSequential = useCallback(async (
+        path: {column: number, row: number}[],
+        color: string,
+        lines: LadderLine[],
+        numPlayers: number,
+        completedPaths: { path: {column: number, row: number}[], color: string }[]
+    ) => {
+        const duration = 1800;
         const startTime = Date.now();
 
         return new Promise<void>((resolve) => {
@@ -227,38 +268,39 @@ export default function LadderGameClient() {
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
 
-                drawLadder(path, progress);
+                drawLadder(lines, numPlayers, [
+                    ...completedPaths,
+                    { path, color, progress },
+                ]);
 
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
-                    setCurrentPath(path);
                     resolve();
                 }
             };
-
             requestAnimationFrame(animate);
         });
     }, [drawLadder]);
 
-    const startGame = async () => {
-        if (!ladderGenerated) {
-            generateLadder();
-            return;
-        }
-
+    const startSequential = useCallback(async (lines: LadderLine[]) => {
         setIsPlaying(true);
         setShowResults(false);
         setGameResults([]);
 
         const allResults: GameResult[] = [];
+        const completedPaths: { path: {column: number, row: number}[], color: string }[] = [];
 
         for (let i = 0; i < players.length; i++) {
             const player = players[i];
+            const color = PATH_COLORS[i % PATH_COLORS.length];
             setAnimatingPlayer(player.id);
 
-            const { path, endColumn } = tracePath(i);
-            await animatePath(path);
+            const { path, endColumn } = tracePath(i, lines);
+            await animatePathSequential(path, color, lines, players.length, completedPaths);
+
+            completedPaths.push({ path, color });
+            drawLadder(lines, players.length, completedPaths);
 
             const resultItem = results[endColumn];
             allResults.push({
@@ -267,7 +309,7 @@ export default function LadderGameClient() {
                 resultName: resultItem?.name || `${t('result')} ${endColumn + 1}`,
             });
 
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 300));
         }
 
         setGameResults(allResults);
@@ -275,13 +317,78 @@ export default function LadderGameClient() {
         setIsPlaying(false);
         setAnimatingPlayer(null);
         setCurrentPath([]);
-        drawLadder();
+    }, [players, results, tracePath, animatePathSequential, drawLadder, t]);
+
+    // ===== RACE MODE =====
+    const startRace = useCallback(async (lines: LadderLine[]) => {
+        setIsPlaying(true);
+        setShowResults(false);
+        setGameResults([]);
+
+        // Pre-compute all paths
+        const allPaths = players.map((_, i) => {
+            const { path, endColumn } = tracePath(i, lines);
+            return { path, endColumn, color: PATH_COLORS[i % PATH_COLORS.length] };
+        });
+
+        const duration = 2500;
+        const startTime = Date.now();
+
+        await new Promise<void>((resolve) => {
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing: ease-in-out
+                const eased = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                drawLadder(lines, players.length,
+                    allPaths.map(({ path, color }) => ({ path, color, progress: eased }))
+                );
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    resolve();
+                }
+            };
+            requestAnimationFrame(animate);
+        });
+
+        // Final draw — fully revealed
+        drawLadder(lines, players.length, allPaths.map(({ path, color }) => ({ path, color })));
+
+        // Build results
+        const allResults: GameResult[] = allPaths.map(({ endColumn }, i) => ({
+            playerId: players[i].id,
+            playerName: players[i].name || `${t('player')} ${i + 1}`,
+            resultName: results[endColumn]?.name || `${t('result')} ${endColumn + 1}`,
+        }));
+
+        setGameResults(allResults);
+        setShowResults(true);
+        setIsPlaying(false);
+        setAnimatingPlayer(null);
+    }, [players, results, tracePath, drawLadder, t]);
+
+    const startGame = async () => {
+        if (!ladderGenerated) {
+            generateLadder();
+            return;
+        }
+        if (gameMode === 'race') {
+            await startRace(ladderLines);
+        } else {
+            await startSequential(ladderLines);
+        }
     };
 
     const getShareText = () => {
         if (!showResults || gameResults.length === 0) return '';
-        const resultLines = gameResults.map(r => `${r.playerName} \u2192 ${r.resultName}`).join('\n');
-        return `\u{1F3AF} ${t('gameResults')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${resultLines}\n\n\u{1F4CD} teck-tani.com/ladder-game`;
+        const resultLines = gameResults.map(r => `${r.playerName} → ${r.resultName}`).join('\n');
+        return `🎯 ${t('gameResults')}\n━━━━━━━━━━━━━━\n${resultLines}\n\n📍 teck-tani.com/ladder-game`;
     };
 
     const reset = () => {
@@ -295,15 +402,33 @@ export default function LadderGameClient() {
         const canvas = canvasRef.current;
         if (canvas) {
             const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
+            if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     };
 
     return (
         <div className="tool-container">
-            <div className="ladder-game-wrapper">
+            <div className="ladder-game-wrapper" ref={containerRef}>
+                {/* Game Mode Toggle */}
+                <div className="ladder-mode-toggle">
+                    <button
+                        onClick={() => setGameMode('race')}
+                        className={`ladder-mode-btn ${gameMode === 'race' ? 'active' : ''}`}
+                        disabled={isPlaying}
+                        aria-pressed={gameMode === 'race'}
+                    >
+                        🏎️ {t('modeRace')}
+                    </button>
+                    <button
+                        onClick={() => setGameMode('sequential')}
+                        className={`ladder-mode-btn ${gameMode === 'sequential' ? 'active' : ''}`}
+                        disabled={isPlaying}
+                        aria-pressed={gameMode === 'sequential'}
+                    >
+                        ▶️ {t('modeSequential')}
+                    </button>
+                </div>
+
                 {/* Players Input Section */}
                 <div className="ladder-input-section">
                     <div className="ladder-input-group">
@@ -311,6 +436,10 @@ export default function LadderGameClient() {
                         <div className="ladder-items">
                             {players.map((player, index) => (
                                 <div key={player.id} className="ladder-item">
+                                    <span
+                                        className="ladder-player-dot"
+                                        style={{ background: PATH_COLORS[index % PATH_COLORS.length] }}
+                                    />
                                     <input
                                         type="text"
                                         value={player.name}
@@ -324,6 +453,7 @@ export default function LadderGameClient() {
                                             onClick={() => removePlayer(player.id)}
                                             className="ladder-remove-btn"
                                             disabled={isPlaying}
+                                            aria-label={t('removePlayer')}
                                         >
                                             ×
                                         </button>
@@ -376,7 +506,9 @@ export default function LadderGameClient() {
                                 className="ladder-start-btn"
                                 disabled={isPlaying}
                             >
-                                {isPlaying ? t('playing') : t('startGame')}
+                                {isPlaying
+                                    ? (gameMode === 'race' ? t('racing') : t('playing'))
+                                    : t('startGame')}
                             </button>
                             <button
                                 onClick={reset}
@@ -398,6 +530,13 @@ export default function LadderGameClient() {
                                 <div
                                     key={player.id}
                                     className={`ladder-label ${animatingPlayer === player.id ? 'active' : ''}`}
+                                    style={{
+                                        borderColor: PATH_COLORS[index % PATH_COLORS.length],
+                                        ...(animatingPlayer === player.id ? {
+                                            background: PATH_COLORS[index % PATH_COLORS.length],
+                                            color: 'white',
+                                        } : {}),
+                                    }}
                                 >
                                     {player.name || `${t('player')} ${index + 1}`}
                                 </div>
@@ -407,8 +546,6 @@ export default function LadderGameClient() {
                         {/* Canvas */}
                         <canvas
                             ref={canvasRef}
-                            width={600}
-                            height={400}
                             className="ladder-canvas"
                         />
 
@@ -418,8 +555,7 @@ export default function LadderGameClient() {
                                 <div key={result.id} className="ladder-label result">
                                     {showResults
                                         ? (result.name || `${t('result')} ${index + 1}`)
-                                        : '?'
-                                    }
+                                        : '?'}
                                 </div>
                             ))}
                         </div>
@@ -433,7 +569,12 @@ export default function LadderGameClient() {
                         <div className="ladder-results-list">
                             {gameResults.map((result, index) => (
                                 <div key={index} className="ladder-result-item">
-                                    <span className="ladder-result-player">{result.playerName}</span>
+                                    <span
+                                        className="ladder-result-player"
+                                        style={{ color: PATH_COLORS[index % PATH_COLORS.length] }}
+                                    >
+                                        {result.playerName}
+                                    </span>
                                     <span className="ladder-result-arrow">→</span>
                                     <span className="ladder-result-value">{result.resultName}</span>
                                 </div>
@@ -451,6 +592,40 @@ export default function LadderGameClient() {
                 .ladder-game-wrapper {
                     max-width: 700px;
                     margin: 0 auto;
+                }
+
+                .ladder-mode-toggle {
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 20px;
+                    background: ${isDark ? '#0f172a' : '#f1f5f9'};
+                    border-radius: 12px;
+                    padding: 6px;
+                }
+
+                .ladder-mode-btn {
+                    flex: 1;
+                    padding: 10px 12px;
+                    border-radius: 8px;
+                    border: none;
+                    background: transparent;
+                    color: ${isDark ? '#94a3b8' : '#64748b'};
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    white-space: nowrap;
+                }
+
+                .ladder-mode-btn.active {
+                    background: ${isDark ? '#2563eb' : '#2563eb'};
+                    color: white;
+                    font-weight: 700;
+                }
+
+                .ladder-mode-btn:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
                 }
 
                 .ladder-input-section {
@@ -491,6 +666,13 @@ export default function LadderGameClient() {
                     align-items: center;
                 }
 
+                .ladder-player-dot {
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    flex-shrink: 0;
+                }
+
                 .ladder-input {
                     flex: 1;
                     padding: 10px 12px;
@@ -527,10 +709,7 @@ export default function LadderGameClient() {
                     transition: background 0.2s;
                 }
 
-                .ladder-remove-btn:hover {
-                    background: #dc2626;
-                }
-
+                .ladder-remove-btn:hover { background: #dc2626; }
                 .ladder-remove-btn:disabled {
                     background: ${isDark ? '#475569' : '#ccc'};
                     cursor: not-allowed;
@@ -603,10 +782,7 @@ export default function LadderGameClient() {
                     transition: background 0.2s;
                 }
 
-                .ladder-reset-btn:hover:not(:disabled) {
-                    background: #4b5563;
-                }
-
+                .ladder-reset-btn:hover:not(:disabled) { background: #4b5563; }
                 .ladder-reset-btn:disabled {
                     opacity: 0.6;
                     cursor: not-allowed;
@@ -623,25 +799,26 @@ export default function LadderGameClient() {
                 .ladder-bottom-labels {
                     display: flex;
                     justify-content: space-around;
-                    padding: 0 40px;
+                    padding: 0 30px;
+                    flex-wrap: nowrap;
+                    gap: 4px;
                 }
 
                 .ladder-label {
-                    background: ${isDark ? '#1e3a5f' : '#e0f2fe'};
-                    color: ${isDark ? '#7dd3fc' : '#0369a1'};
-                    padding: 8px 16px;
+                    background: ${isDark ? '#1e293b' : '#f1f5f9'};
+                    color: ${isDark ? '#94a3b8' : '#475569'};
+                    padding: 6px 10px;
                     border-radius: 20px;
                     font-weight: 500;
-                    font-size: 0.9rem;
+                    font-size: 0.82rem;
                     text-align: center;
-                    min-width: 60px;
+                    min-width: 48px;
+                    max-width: 80px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                     transition: all 0.3s;
-                }
-
-                .ladder-label.active {
-                    background: #3b82f6;
-                    color: white;
-                    transform: scale(1.1);
+                    border: 2px solid transparent;
                 }
 
                 .ladder-label.result {
@@ -651,9 +828,8 @@ export default function LadderGameClient() {
 
                 .ladder-canvas {
                     display: block;
-                    margin: 16px auto;
+                    margin: 12px auto;
                     width: 100%;
-                    max-width: 600px;
                     height: auto;
                 }
 
@@ -675,14 +851,14 @@ export default function LadderGameClient() {
                 .ladder-results-list {
                     display: flex;
                     flex-direction: column;
-                    gap: 12px;
+                    gap: 10px;
                 }
 
                 .ladder-result-item {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 16px;
+                    gap: 14px;
                     padding: 12px;
                     background: ${isDark ? '#1e293b' : 'white'};
                     border-radius: 12px;
@@ -690,20 +866,21 @@ export default function LadderGameClient() {
                 }
 
                 .ladder-result-player {
-                    font-weight: 600;
-                    color: ${isDark ? '#f1f5f9' : '#333'};
+                    font-weight: 700;
                     min-width: 80px;
                     text-align: right;
+                    font-size: 1rem;
                 }
 
                 .ladder-result-arrow {
                     color: #10b981;
                     font-size: 1.2rem;
+                    flex-shrink: 0;
                 }
 
                 .ladder-result-value {
                     font-weight: 600;
-                    color: #059669;
+                    color: ${isDark ? '#4ade80' : '#059669'};
                     min-width: 80px;
                 }
             `}</style>

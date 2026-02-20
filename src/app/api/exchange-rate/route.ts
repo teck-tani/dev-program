@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { API_KEYS, API_URLS } from '@/config';
+import { API_URLS } from '@/config';
+import { SERVER_KEYS } from '@/config/server';
 
 export async function GET() {
-    const apiKey = API_KEYS.KOREA_EXIM;
+    const apiKey = SERVER_KEYS.KOREA_EXIM;
     
     // YYYYMMDD format for today
     const now = new Date();

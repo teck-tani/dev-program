@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Link, usePathname } from "@/navigation";
@@ -16,21 +16,28 @@ export default function SettingsDropdown({ onClose }: SettingsDropdownProps) {
   const pathname = usePathname();
 
   const isClockPage = pathname === '/clock';
-  const [clockMode, setClockMode] = useState<'digital' | 'analog'>('digital');
-  const [timeFormat, setTimeFormat] = useState<'24h' | '12h'>('24h');
-
-  // Load clock settings from localStorage
-  useEffect(() => {
-    if (!isClockPage) return;
+  const [clockMode, setClockMode] = useState<'digital' | 'analog'>(() => {
+    if (typeof window === 'undefined') return 'digital';
     try {
       const saved = localStorage.getItem('worldClockState');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.displayMode === 'analog') setClockMode('analog');
-        if (parsed.timeFormat === '12h') setTimeFormat('12h');
+        if (parsed.displayMode === 'analog') return 'analog';
       }
     } catch { /* ignore */ }
-  }, [isClockPage]);
+    return 'digital';
+  });
+  const [timeFormat, setTimeFormat] = useState<'24h' | '12h'>(() => {
+    if (typeof window === 'undefined') return '24h';
+    try {
+      const saved = localStorage.getItem('worldClockState');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.timeFormat === '12h') return '12h';
+      }
+    } catch { /* ignore */ }
+    return '24h';
+  });
 
   const toggleClockMode = () => {
     const newMode = clockMode === 'digital' ? 'analog' : 'digital';

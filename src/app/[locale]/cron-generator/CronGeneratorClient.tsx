@@ -156,6 +156,7 @@ export default function CronGeneratorClient() {
     const t = useTranslations('CronGenerator');
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+    const lang = t('copyBtn') === '복사' ? 'ko' : 'en';
 
     const [fields, setFields] = useState<Record<string, FieldConfig>>({
         minute: createDefaultField(),
@@ -168,6 +169,49 @@ export default function CronGeneratorClient() {
     const [copied, setCopied] = useState(false);
     const [manualInput, setManualInput] = useState('');
     const [showNextRuns, setShowNextRuns] = useState(true);
+    const [timezone, setTimezone] = useState(() => {
+        try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return 'UTC'; }
+    });
+    const [enableSeconds, setEnableSeconds] = useState(false);
+    const [secondsField, setSecondsField] = useState<FieldConfig>(createDefaultField());
+
+    // Field validation
+    const fieldErrors = useMemo(() => {
+        const errors: Record<string, string> = {};
+        const validate = (name: string, field: FieldConfig) => {
+            const def = FIELD_DEFAULTS[name];
+            if (!def) return;
+            if (field.type === 'specific') {
+                for (const v of field.specific) {
+                    if (v < def.min || v > def.max) {
+                        errors[name] = `${def.min}-${def.max}`;
+                        break;
+                    }
+                }
+            } else if (field.type === 'range') {
+                if (field.rangeStart < def.min || field.rangeEnd > def.max || field.rangeStart > field.rangeEnd) {
+                    errors[name] = `${def.min}-${def.max}`;
+                }
+            } else if (field.type === 'interval') {
+                if (field.intervalStart < def.min || field.intervalStart > def.max || field.intervalStep < 1) {
+                    errors[name] = `${def.min}-${def.max}`;
+                }
+            }
+        };
+        Object.entries(fields).forEach(([name, field]) => validate(name, field));
+        return errors;
+    }, [fields]);
+
+    // Timezone list
+    const timezoneList = useMemo(() => {
+        const popular = ['UTC', 'Asia/Seoul', 'Asia/Tokyo', 'America/New_York', 'Europe/London', 'America/Los_Angeles', 'Europe/Berlin', 'Asia/Shanghai'];
+        try {
+            const all = Intl.supportedValuesOf('timeZone');
+            return [...new Set([...popular, ...all])];
+        } catch {
+            return popular;
+        }
+    }, []);
 
     const cronExpression = useMemo(() => {
         const fieldNames = ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'];
@@ -431,6 +475,57 @@ ${description ? `→ ${description}` : ''}
                         {description}
                     </div>
                 )}
+                {/* Timezone + Seconds toggle */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <select
+                        value={timezone}
+                        onChange={(e) => setTimezone(e.target.value)}
+                        style={{
+                            padding: '6px 10px', borderRadius: '6px', fontSize: '0.8rem',
+                            border: '1px solid #334155', background: '#0f172a', color: '#e2e8f0',
+                            flex: '1 1 200px', minWidth: 0,
+                        }}
+                    >
+                        {timezoneList.map(tz => (
+                            <option key={tz} value={tz}>{tz}</option>
+                        ))}
+                    </select>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#94a3b8', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                        <input
+                            type="checkbox"
+                            checked={enableSeconds}
+                            onChange={(e) => setEnableSeconds(e.target.checked)}
+                            style={{ accentColor: '#4A90D9' }}
+                        />
+                        {lang === 'ko' ? '초 단위 (6-field)' : 'Seconds (6-field)'}
+                    </label>
+                </div>
+
+                {/* Seconds field display */}
+                {enableSeconds && (
+                    <div style={{
+                        background: '#0f172a', borderRadius: '6px', padding: '8px 12px',
+                        marginBottom: '10px', fontSize: '0.8rem', color: '#94a3b8',
+                    }}>
+                        {lang === 'ko' ? '💡 Spring/Quartz: ' : '💡 Spring/Quartz: '}
+                        <code style={{ color: '#fbbf24', fontFamily: "'Consolas', monospace" }}>
+                            {fieldToExpression(secondsField, 'second')} {cronExpression}
+                        </code>
+                    </div>
+                )}
+
+                {/* Validation errors */}
+                {Object.keys(fieldErrors).length > 0 && (
+                    <div style={{
+                        background: 'rgba(239,68,68,0.15)', borderRadius: '6px', padding: '8px 12px',
+                        marginBottom: '10px', fontSize: '0.8rem', color: '#fca5a5',
+                    }}>
+                        {Object.entries(fieldErrors).map(([name, range]) => (
+                            <div key={name}>⚠️ {name}: {lang === 'ko' ? `유효 범위 ${range}` : `valid range: ${range}`}</div>
+                        ))}
+                    </div>
+                )}
+
                 {/* Next execution times */}
                 {showNextRuns && (() => {
                     const nextRuns = getNextExecutions(cronExpression, 5);
@@ -445,7 +540,7 @@ ${description ? `→ ${description}` : ''}
                                 marginBottom: '8px'
                             }}>
                                 <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>
-                                    {t('nextRuns')}
+                                    {t('nextRuns')} ({timezone})
                                 </span>
                                 <button
                                     onClick={() => setShowNextRuns(false)}
@@ -461,7 +556,7 @@ ${description ? `→ ${description}` : ''}
                                     padding: '3px 0',
                                     borderBottom: i < nextRuns.length - 1 ? '1px solid #1e293b' : 'none'
                                 }}>
-                                    {d.toLocaleString()}
+                                    {d.toLocaleString(undefined, { timeZone: timezone })}
                                 </div>
                             ))}
                         </div>

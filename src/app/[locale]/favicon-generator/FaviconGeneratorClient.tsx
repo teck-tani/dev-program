@@ -109,9 +109,9 @@ export default function FaviconGeneratorClient() {
         const file = event.target.files?.[0];
         if (!file || !file.type.startsWith('image/')) return;
         setSourceFile(file);
-        const url = URL.createObjectURL(file);
-        setSourceImage(url);
-        setFavicons([]);
+        const newUrl = URL.createObjectURL(file);
+        setSourceImage(prev => { if (prev) URL.revokeObjectURL(prev); return newUrl; });
+        setFavicons(prev => { prev.forEach(f => URL.revokeObjectURL(f.url)); return []; });
         if (fileInputRef.current) fileInputRef.current.value = '';
     }, []);
 
@@ -119,20 +119,25 @@ export default function FaviconGeneratorClient() {
         if (!sourceImage || selectedSizes.size === 0) return;
         setIsGenerating(true);
 
+        // 이전 Blob URL 해제
+        setFavicons(prev => { prev.forEach(f => URL.revokeObjectURL(f.url)); return []; });
+
         const generated: GeneratedFavicon[] = [];
         const sortedSizes = Array.from(selectedSizes).sort((a, b) => a - b);
 
-        for (const size of sortedSizes) {
-            try {
-                const blob = await generateFavicon(sourceImage, size);
-                generated.push({ size, blob, url: URL.createObjectURL(blob) });
-            } catch {
-                // skip failed sizes
+        try {
+            for (const size of sortedSizes) {
+                try {
+                    const blob = await generateFavicon(sourceImage, size);
+                    generated.push({ size, blob, url: URL.createObjectURL(blob) });
+                } catch {
+                    // skip failed sizes
+                }
             }
+        } finally {
+            setFavicons(generated);
+            setIsGenerating(false);
         }
-
-        setFavicons(generated);
-        setIsGenerating(false);
     }, [sourceImage, selectedSizes, generateFavicon]);
 
     const handleDownloadPng = useCallback((favicon: GeneratedFavicon) => {
@@ -146,10 +151,12 @@ export default function FaviconGeneratorClient() {
         const icoSizes = favicons.filter(f => f.size <= 256);
         if (icoSizes.length === 0) return;
         const icoBlob = await createIcoBlob(icoSizes.map(f => ({ size: f.size, blob: f.blob })));
+        const icoUrl = URL.createObjectURL(icoBlob);
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(icoBlob);
+        link.href = icoUrl;
         link.download = 'favicon.ico';
         link.click();
+        setTimeout(() => URL.revokeObjectURL(icoUrl), 100);
     }, [favicons, createIcoBlob]);
 
     const handleDownloadAll = useCallback(async () => {
@@ -187,7 +194,11 @@ export default function FaviconGeneratorClient() {
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
                 {/* Upload Area */}
                 <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label={t('upload.title')}
                     onClick={() => fileInputRef.current?.click()}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
                     style={{
                         background: isDark ? "#1e293b" : "white",
                         border: '2px dashed #667eea',
@@ -206,14 +217,15 @@ export default function FaviconGeneratorClient() {
                         const file = e.dataTransfer.files[0];
                         if (file?.type.startsWith('image/')) {
                             setSourceFile(file);
-                            setSourceImage(URL.createObjectURL(file));
-                            setFavicons([]);
+                            const newUrl = URL.createObjectURL(file);
+                            setSourceImage(prev => { if (prev) URL.revokeObjectURL(prev); return newUrl; });
+                            setFavicons(prev => { prev.forEach(f => URL.revokeObjectURL(f.url)); return []; });
                         }
                     }}
                 >
                     {sourceImage ? (
                         <div>
-                            <img src={sourceImage} alt="Source" style={{ maxWidth: '120px', maxHeight: '120px', borderRadius: '12px', marginBottom: '10px' }} />
+                            <img src={sourceImage} alt={sourceFile?.name ?? t('preview.original')} style={{ maxWidth: '120px', maxHeight: '120px', borderRadius: '12px', marginBottom: '10px' }} />
                             <p style={{ color: isDark ? "#f1f5f9" : '#333', fontSize: '0.95rem', fontWeight: 600 }}>
                                 {sourceFile?.name}
                             </p>
@@ -265,6 +277,7 @@ export default function FaviconGeneratorClient() {
                             <button
                                 key={size}
                                 onClick={() => toggleSize(size)}
+                                aria-pressed={selectedSizes.has(size)}
                                 style={{
                                     padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
                                     border: `2px solid ${selectedSizes.has(size) ? '#667eea' : (isDark ? '#334155' : '#e2e8f0')}`,
@@ -363,13 +376,15 @@ export default function FaviconGeneratorClient() {
                                         background: isDark ? '#0f172a' : '#f8f9fa',
                                         borderRadius: '8px', padding: '10px',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        minWidth: Math.max(f.size + 20, 60), minHeight: Math.max(f.size + 20, 60),
+                                        width: Math.max(Math.min(f.size + 20, 80), 40),
+                                        height: Math.max(Math.min(f.size + 20, 80), 40),
                                         border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`,
+                                        flexShrink: 0,
                                     }}>
                                         <img
                                             src={f.url}
-                                            alt={`${f.size}x${f.size}`}
-                                            style={{ width: Math.min(f.size, 100), height: Math.min(f.size, 100), imageRendering: f.size <= 32 ? 'pixelated' : 'auto' }}
+                                            alt={`${f.size}x${f.size} favicon`}
+                                            style={{ width: Math.max(Math.min(f.size, 60), 16), height: Math.max(Math.min(f.size, 60), 16), imageRendering: f.size <= 32 ? 'pixelated' : 'auto' }}
                                         />
                                     </div>
                                     <div style={{ fontSize: '0.8rem', color: isDark ? '#94a3b8' : '#666', marginTop: '6px' }}>
@@ -425,32 +440,12 @@ export default function FaviconGeneratorClient() {
                                     background: copied ? '#11998e' : '#667eea', color: 'white', fontSize: '0.75rem',
                                 }}
                             >
-                                {copied ? 'Copied!' : 'Copy'}
+                                {copied ? t('buttons.copied') : t('buttons.copy')}
                             </button>
                         </div>
                     </div>
                 )}
 
-                {/* Info Section */}
-                <article style={{ marginTop: '50px', lineHeight: '1.7' }}>
-                    <section style={{ marginBottom: '40px' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: isDark ? "#f1f5f9" : '#2c3e50', marginBottom: '20px', textAlign: 'center', fontWeight: 600 }}>
-                            {t('info.title')}
-                        </h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                            {(['privacy', 'quality', 'bulk'] as const).map((key) => (
-                                <div key={key} style={{ background: isDark ? "#1e293b" : "white", padding: '20px', borderRadius: '12px', boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)' }}>
-                                    <h3 style={{ fontSize: '1rem', color: '#667eea', marginBottom: '8px', fontWeight: 600 }}>
-                                        {t(`info.${key}.title`)}
-                                    </h3>
-                                    <p style={{ fontSize: '0.9rem', color: isDark ? "#94a3b8" : '#666', margin: 0 }}>
-                                        {t(`info.${key}.desc`)}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                </article>
             </div>
         </div>
     );

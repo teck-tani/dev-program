@@ -73,8 +73,8 @@ export default function TimestampConverterClient() {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
-    const [currentTimestamp, setCurrentTimestamp] = useState<number>(Math.floor(Date.now() / 1000));
-    const [currentTimestampMs, setCurrentTimestampMs] = useState<number>(Date.now());
+    const [currentTimestamp, setCurrentTimestamp] = useState<number>(() => Math.floor(Date.now() / 1000));
+    const [currentTimestampMs, setCurrentTimestampMs] = useState<number>(() => Date.now());
     const [mode, setMode] = useState<ConvertMode>("toDate");
     const [timestampInput, setTimestampInput] = useState("");
     const [timestampUnit, setTimestampUnit] = useState<"auto" | "seconds" | "milliseconds">("auto");
@@ -219,7 +219,7 @@ export default function TimestampConverterClient() {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
         return [
-            { label: isKo ? "지금" : "Now", ts: Math.floor(Date.now() / 1000) },
+            { label: isKo ? "지금" : "Now", ts: Math.floor(now.getTime() / 1000) },
             { label: isKo ? "어제" : "Yesterday", ts: Math.floor(yesterday.getTime() / 1000) },
             { label: isKo ? "내일" : "Tomorrow", ts: Math.floor(tomorrow.getTime() / 1000) },
             { label: isKo ? "지난주" : "Last week", ts: Math.floor(lastWeek.getTime() / 1000) },

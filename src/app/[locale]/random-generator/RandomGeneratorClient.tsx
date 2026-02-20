@@ -21,7 +21,13 @@ const ENGLISH_LAST_NAMES = [
     'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'
 ];
 
-type TabKey = 'number' | 'name' | 'color' | 'dice' | 'coin' | 'shuffle' | 'team';
+type TabKey = 'number' | 'name' | 'color' | 'dice' | 'coin' | 'shuffle' | 'team' | 'weighted';
+
+interface WeightedItem {
+    id: number;
+    label: string;
+    weight: number;
+}
 type DiceSides = 4 | 6 | 8 | 10 | 12 | 20;
 
 // Fisher-Yates shuffle
@@ -194,6 +200,16 @@ export default function RandomGeneratorClient() {
 
     // Number preset: "중복 없이" for presets
     const [numNoDuplicates, setNumNoDuplicates] = useState(false);
+
+    // Weighted random state
+    const [weightedItems, setWeightedItems] = useState<WeightedItem[]>([
+        { id: 1, label: '', weight: 1 },
+        { id: 2, label: '', weight: 1 },
+        { id: 3, label: '', weight: 1 },
+    ]);
+    const [weightedResult, setWeightedResult] = useState<WeightedItem | null>(null);
+    const [weightedHistory, setWeightedHistory] = useState<WeightedItem[]>([]);
+    const [weightedSpinning, setWeightedSpinning] = useState(false);
 
     const showToast = useCallback(() => {
         setToast(true);
@@ -381,6 +397,53 @@ export default function RandomGeneratorClient() {
         }
     }, [paletteMode, baseColor, colorCount]);
 
+    // ===== Weighted Random =====
+    const addWeightedItem = useCallback(() => {
+        if (weightedItems.length >= 20) return;
+        const newId = Math.max(...weightedItems.map(i => i.id)) + 1;
+        setWeightedItems(prev => [...prev, { id: newId, label: '', weight: 1 }]);
+    }, [weightedItems]);
+
+    const removeWeightedItem = useCallback((id: number) => {
+        if (weightedItems.length <= 2) return;
+        setWeightedItems(prev => prev.filter(i => i.id !== id));
+    }, [weightedItems.length]);
+
+    const updateWeightedItem = useCallback((id: number, field: 'label' | 'weight', value: string | number) => {
+        setWeightedItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
+    }, []);
+
+    const getTotalWeight = useCallback(() => weightedItems.reduce((sum, i) => sum + Math.max(0, i.weight), 0), [weightedItems]);
+
+    const pickWeighted = useCallback(() => {
+        const validItems = weightedItems.filter(i => i.label.trim() && i.weight > 0);
+        if (validItems.length === 0) return;
+
+        setWeightedSpinning(true);
+        setWeightedResult(null);
+
+        let spinCount = 0;
+        const spinInterval = setInterval(() => {
+            const randIdx = Math.floor(Math.random() * validItems.length);
+            setWeightedResult(validItems[randIdx]);
+            spinCount++;
+            if (spinCount >= 12) {
+                clearInterval(spinInterval);
+                // Final weighted pick
+                const total = validItems.reduce((s, i) => s + i.weight, 0);
+                let rand = Math.random() * total;
+                let winner = validItems[validItems.length - 1];
+                for (const item of validItems) {
+                    rand -= item.weight;
+                    if (rand <= 0) { winner = item; break; }
+                }
+                setWeightedResult(winner);
+                setWeightedHistory(prev => [winner, ...prev].slice(0, 15));
+                setWeightedSpinning(false);
+            }
+        }, 80);
+    }, [weightedItems]);
+
     // ===== Share =====
     const getShareText = () => {
         if (activeTab === 'number' && numResults.length > 0) {
@@ -407,6 +470,13 @@ export default function RandomGeneratorClient() {
         if (activeTab === 'team' && teams.length > 0) {
             return `\u{1F465} ${t('tabs.team')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${teams.map((team, i) => `${t('team.teamLabel')} ${i + 1}: ${team.join(', ')}`).join('\n')}\n\n\u{1F4CD} teck-tani.com/random-generator`;
         }
+        if (activeTab === 'weighted' && weightedResult) {
+            const total = getTotalWeight();
+            const prob = weightedResult.weight > 0 && total > 0
+                ? Math.round(weightedResult.weight / total * 1000) / 10
+                : 0;
+            return `\u2696\uFE0F ${t('tabs.weighted')}\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${weightedResult.label} (${prob}%)\n\n\u{1F4CD} teck-tani.com/random-generator`;
+        }
         return '';
     };
 
@@ -418,6 +488,7 @@ export default function RandomGeneratorClient() {
         if (activeTab === 'coin') return coinResult !== null;
         if (activeTab === 'shuffle') return shuffleResult.length > 0;
         if (activeTab === 'team') return teams.length > 0;
+        if (activeTab === 'weighted') return weightedResult !== null;
         return false;
     };
 
@@ -496,6 +567,7 @@ export default function RandomGeneratorClient() {
         { key: 'coin', icon: <span style={{ fontSize: "1.1rem" }}>&#x1FA99;</span> },
         { key: 'shuffle', icon: <span style={{ fontSize: "1.1rem" }}>{'\u{1F500}'}</span> },
         { key: 'team', icon: <span style={{ fontSize: "1.1rem" }}>{'\u{1F465}'}</span> },
+        { key: 'weighted', icon: <span style={{ fontSize: "1.1rem" }}>⚖️</span> },
     ];
 
     return (
@@ -1362,6 +1434,247 @@ export default function RandomGeneratorClient() {
                                         </div>
                                     );
                                 })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ===== Weighted Tab ===== */}
+            {activeTab === 'weighted' && (
+                <div style={cardStyle}>
+                    {/* Items List */}
+                    <div style={{ marginBottom: "16px" }}>
+                        <div style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 80px 32px",
+                            gap: "8px",
+                            marginBottom: "8px",
+                        }}>
+                            <span style={{ ...labelStyle, fontSize: "0.8rem", color: isDark ? "#94a3b8" : "#64748b" }}>
+                                {t('weighted.itemLabel')}
+                            </span>
+                            <span style={{ ...labelStyle, fontSize: "0.8rem", color: isDark ? "#94a3b8" : "#64748b", textAlign: "center" }}>
+                                {t('weighted.weightLabel')}
+                            </span>
+                            <span style={{ ...labelStyle, fontSize: "0.8rem", color: isDark ? "#94a3b8" : "#64748b", textAlign: "center" }}>
+                                {t('weighted.probLabel')}
+                            </span>
+                        </div>
+                        {weightedItems.map((item) => {
+                            const total = getTotalWeight();
+                            const prob = item.weight > 0 && total > 0
+                                ? Math.round(item.weight / total * 1000) / 10
+                                : 0;
+                            return (
+                                <div key={item.id} style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr 80px 32px",
+                                    gap: "8px",
+                                    marginBottom: "8px",
+                                    alignItems: "center",
+                                }}>
+                                    <input
+                                        type="text"
+                                        value={item.label}
+                                        onChange={(e) => updateWeightedItem(item.id, 'label', e.target.value)}
+                                        placeholder={t('weighted.itemPlaceholder')}
+                                        style={inputStyle}
+                                    />
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        max={9999}
+                                        value={item.weight}
+                                        onChange={(e) => updateWeightedItem(item.id, 'weight', Math.max(0, Number(e.target.value)))}
+                                        style={{ ...inputStyle, textAlign: "center", padding: "10px 6px" }}
+                                    />
+                                    <div style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        gap: "2px",
+                                    }}>
+                                        <span style={{
+                                            fontSize: "0.75rem",
+                                            fontWeight: "700",
+                                            color: prob > 0 ? "#2563eb" : (isDark ? "#64748b" : "#bbb"),
+                                        }}>
+                                            {prob > 0 ? `${prob}%` : '-'}
+                                        </span>
+                                        {weightedItems.length > 2 && (
+                                            <button
+                                                onClick={() => removeWeightedItem(item.id)}
+                                                style={{
+                                                    width: "20px", height: "20px",
+                                                    border: "none", background: "transparent",
+                                                    color: isDark ? "#64748b" : "#bbb",
+                                                    cursor: "pointer", fontSize: "0.85rem", lineHeight: 1,
+                                                    borderRadius: "4px", padding: 0,
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                }}
+                                                title={t('weighted.removeItem')}
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Probability Bar */}
+                    {weightedItems.some(i => i.label.trim() && i.weight > 0) && (
+                        <div style={{ marginBottom: "16px" }}>
+                            <div style={{
+                                display: "flex",
+                                height: "12px",
+                                borderRadius: "6px",
+                                overflow: "hidden",
+                                gap: "2px",
+                            }}>
+                                {weightedItems.filter(i => i.label.trim() && i.weight > 0).map((item, idx) => {
+                                    const total = getTotalWeight();
+                                    const pct = item.weight / total * 100;
+                                    const hue = (idx * 47) % 360;
+                                    return (
+                                        <div
+                                            key={item.id}
+                                            title={`${item.label}: ${Math.round(pct * 10) / 10}%`}
+                                            style={{
+                                                flex: `${pct} 0 0`,
+                                                background: `hsl(${hue}, 70%, ${isDark ? 50 : 55}%)`,
+                                                minWidth: "4px",
+                                                transition: "flex 0.3s",
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Add Item Button */}
+                    <button
+                        onClick={addWeightedItem}
+                        disabled={weightedItems.length >= 20}
+                        style={{
+                            width: "100%",
+                            marginBottom: "16px",
+                            padding: "8px",
+                            border: `2px dashed ${isDark ? '#334155' : '#d1d5db'}`,
+                            background: "transparent",
+                            borderRadius: "8px",
+                            color: isDark ? "#94a3b8" : "#666",
+                            fontSize: "0.85rem",
+                            cursor: weightedItems.length >= 20 ? "not-allowed" : "pointer",
+                            opacity: weightedItems.length >= 20 ? 0.5 : 1,
+                            transition: "all 0.2s",
+                        }}
+                    >
+                        + {t('weighted.addItem')}
+                    </button>
+
+                    {/* Pick Button */}
+                    <button
+                        onClick={pickWeighted}
+                        disabled={weightedSpinning || !weightedItems.some(i => i.label.trim() && i.weight > 0)}
+                        style={{
+                            ...btnPrimary,
+                            opacity: (weightedSpinning || !weightedItems.some(i => i.label.trim() && i.weight > 0)) ? 0.6 : 1,
+                            cursor: (weightedSpinning || !weightedItems.some(i => i.label.trim() && i.weight > 0)) ? "not-allowed" : "pointer",
+                        }}
+                    >
+                        <span style={{ fontSize: "1.1rem" }}>⚖️</span>
+                        {weightedSpinning ? t('weighted.picking') : t('weighted.pick')}
+                    </button>
+
+                    {/* Result */}
+                    {weightedResult && (
+                        <div style={{
+                            marginTop: "20px",
+                            textAlign: "center",
+                        }}>
+                            <div style={{
+                                padding: "24px",
+                                background: weightedSpinning
+                                    ? (isDark ? "#0f172a" : "#f9fafb")
+                                    : (isDark ? "#0f2918" : "linear-gradient(135deg, #f0fdf4, #ecfdf5)"),
+                                borderRadius: "16px",
+                                border: weightedSpinning
+                                    ? (isDark ? "2px solid #334155" : "2px solid #e5e7eb")
+                                    : "2px solid #10b981",
+                                transition: "all 0.3s",
+                            }}>
+                                <div style={{
+                                    fontSize: "1.8rem",
+                                    fontWeight: "800",
+                                    color: weightedSpinning ? (isDark ? "#94a3b8" : "#64748b") : "#059669",
+                                    marginBottom: "6px",
+                                    animation: weightedSpinning ? "none" : "none",
+                                    transition: "color 0.2s",
+                                }}>
+                                    {weightedResult.label || `Item ${weightedResult.id}`}
+                                </div>
+                                {!weightedSpinning && (() => {
+                                    const total = getTotalWeight();
+                                    const prob = weightedResult.weight > 0 && total > 0
+                                        ? Math.round(weightedResult.weight / total * 1000) / 10
+                                        : 0;
+                                    return (
+                                        <div style={{
+                                            fontSize: "0.85rem",
+                                            color: isDark ? "#4ade80" : "#16a34a",
+                                            fontWeight: "600",
+                                        }}>
+                                            {t('weighted.probability')}: {prob}%
+                                            {' · '}
+                                            {t('weighted.weight')}: {weightedResult.weight}
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* History */}
+                    {weightedHistory.length > 0 && !weightedSpinning && (
+                        <div style={{ marginTop: "16px" }}>
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: "8px",
+                            }}>
+                                <span style={{ fontWeight: "600", fontSize: "0.85rem", color: isDark ? "#94a3b8" : "#64748b" }}>
+                                    {t('weighted.history')}
+                                </span>
+                                <button
+                                    onClick={() => setWeightedHistory([])}
+                                    style={{
+                                        background: "transparent", border: "none",
+                                        color: isDark ? "#64748b" : "#bbb",
+                                        fontSize: "0.75rem", cursor: "pointer",
+                                    }}
+                                >
+                                    {t('weighted.clearHistory')}
+                                </button>
+                            </div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                                {weightedHistory.map((item, i) => (
+                                    <span key={i} style={{
+                                        padding: "4px 10px",
+                                        borderRadius: "20px",
+                                        background: isDark ? "#1e293b" : "#f1f5f9",
+                                        color: isDark ? "#e2e8f0" : "#333",
+                                        fontSize: "0.82rem",
+                                        fontWeight: i === 0 ? "700" : "400",
+                                        border: i === 0 ? "2px solid #10b981" : "2px solid transparent",
+                                    }}>
+                                        {item.label || `Item ${item.id}`}
+                                    </span>
+                                ))}
                             </div>
                         </div>
                     )}

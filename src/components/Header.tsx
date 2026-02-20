@@ -29,7 +29,9 @@ export default function Header() {
   const currentTool = findToolByPathname(pathname);
   const pageTitle = currentTool ? tTools(currentTool.labelKey) : 'Tani DevTool';
 
+  // pathname 변경(라우팅) 시 모바일 메뉴 닫기
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
   }, [pathname]);
 

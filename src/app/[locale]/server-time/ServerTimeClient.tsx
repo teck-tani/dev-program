@@ -136,9 +136,11 @@ export default function ServerTimeClient() {
     const h = parseInt(localStorage.getItem("servertime_h") || "0") || 0;
     const m = parseInt(localStorage.getItem("servertime_m") || "0") || 0;
     const s = parseInt(localStorage.getItem("servertime_s") || "0") || 0;
+    /* eslint-disable react-hooks/set-state-in-effect -- restoring state from external storage */
     setTargetHour(Math.min(23, Math.max(0, h)));
     setTargetMinute(Math.min(59, Math.max(0, m)));
     setTargetSecond(Math.min(59, Math.max(0, s)));
+    /* eslint-enable react-hooks/set-state-in-effect */
     isLoadedRef.current = true;
 
     syncWithServer();
@@ -249,6 +251,7 @@ export default function ServerTimeClient() {
     if (ticketingStatus === "go" && !goAlertFiredRef.current) {
       goAlertFiredRef.current = true;
       playGoAlert();
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- animation trigger synced with timer
       setShowGoFlash(true);
       const timer = setTimeout(() => setShowGoFlash(false), 900);
       return () => clearTimeout(timer);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaTrash, FaExchangeAlt, FaCheckCircle, FaPlus, FaMinus } from "react-icons/fa";
@@ -74,6 +74,9 @@ export default function TextDiffClient() {
 
     const [text1, setText1] = useState("");
     const [text2, setText2] = useState("");
+    // Debounced values for performance with large texts
+    const [debouncedText1, setDebouncedText1] = useState("");
+    const [debouncedText2, setDebouncedText2] = useState("");
     const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
     const [ignoreCase, setIgnoreCase] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -82,6 +85,17 @@ export default function TextDiffClient() {
     const leftPanelRef = useRef<HTMLDivElement>(null);
     const rightPanelRef = useRef<HTMLDivElement>(null);
     const syncingRef = useRef(false);
+
+    // Debounce: 300ms delay before running expensive diff computation
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedText1(text1), 300);
+        return () => clearTimeout(timer);
+    }, [text1]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedText2(text2), 300);
+        return () => clearTimeout(timer);
+    }, [text2]);
 
     const computeDiff = useCallback((a: string, b: string): DiffLine[] => {
         let lines1 = a.split('\n');
@@ -153,33 +167,56 @@ export default function TextDiffClient() {
         return tempResult;
     }, [ignoreWhitespace, ignoreCase]);
 
-    // Post-process: pair remove+add into modify with char-level diff
+    // Post-process: group consecutive remove/add blocks and pair them as modify
+    // LCS outputs removes before adds (e.g. [remove,remove,add,add]),
+    // so we collect each block then pair them in order.
     const processedDiff = useMemo(() => {
-        if (!text1 && !text2) return [];
-        const raw = computeDiff(text1, text2);
+        if (!debouncedText1 && !debouncedText2) return [];
+        const raw = computeDiff(debouncedText1, debouncedText2);
         const result: ProcessedDiffLine[] = [];
 
         let i = 0;
         while (i < raw.length) {
-            if (raw[i].type === 'remove' && i + 1 < raw.length && raw[i + 1].type === 'add') {
-                const { diff1, diff2 } = charLevelDiff(raw[i].content1 || '', raw[i + 1].content2 || '');
-                result.push({
-                    type: 'modify',
-                    lineNum1: raw[i].lineNum1,
-                    lineNum2: raw[i + 1].lineNum2,
-                    content1: raw[i].content1,
-                    content2: raw[i + 1].content2,
-                    charDiff1: diff1,
-                    charDiff2: diff2,
-                });
-                i += 2;
+            if (raw[i].type === 'remove' || raw[i].type === 'add') {
+                // Collect consecutive removes then adds
+                const removes: DiffLine[] = [];
+                while (i < raw.length && raw[i].type === 'remove') {
+                    removes.push(raw[i]);
+                    i++;
+                }
+                const adds: DiffLine[] = [];
+                while (i < raw.length && raw[i].type === 'add') {
+                    adds.push(raw[i]);
+                    i++;
+                }
+                // Pair removes and adds as modify (char-level diff)
+                const pairCount = Math.min(removes.length, adds.length);
+                for (let p = 0; p < pairCount; p++) {
+                    const { diff1, diff2 } = charLevelDiff(removes[p].content1 || '', adds[p].content2 || '');
+                    result.push({
+                        type: 'modify',
+                        lineNum1: removes[p].lineNum1,
+                        lineNum2: adds[p].lineNum2,
+                        content1: removes[p].content1,
+                        content2: adds[p].content2,
+                        charDiff1: diff1,
+                        charDiff2: diff2,
+                    });
+                }
+                // Remaining unpaired removes/adds
+                for (let p = pairCount; p < removes.length; p++) {
+                    result.push(removes[p] as ProcessedDiffLine);
+                }
+                for (let p = pairCount; p < adds.length; p++) {
+                    result.push(adds[p] as ProcessedDiffLine);
+                }
             } else {
                 result.push(raw[i] as ProcessedDiffLine);
                 i++;
             }
         }
         return result;
-    }, [text1, text2, computeDiff]);
+    }, [debouncedText1, debouncedText2, computeDiff]);
 
     const stats = useMemo(() => {
         const added = processedDiff.filter(d => d.type === 'add').length;
@@ -188,6 +225,22 @@ export default function TextDiffClient() {
         const unchanged = processedDiff.filter(d => d.type === 'equal').length;
         return { added, removed, modified, unchanged };
     }, [processedDiff]);
+
+    // isIdentical: apply options before comparing (bug fix)
+    const isIdentical = useMemo(() => {
+        if (!debouncedText1 || debouncedText1.length === 0) return false;
+        let t1 = debouncedText1;
+        let t2 = debouncedText2;
+        if (ignoreWhitespace) {
+            t1 = t1.split('\n').map(l => l.trim()).join('\n');
+            t2 = t2.split('\n').map(l => l.trim()).join('\n');
+        }
+        if (ignoreCase) {
+            t1 = t1.toLowerCase();
+            t2 = t2.toLowerCase();
+        }
+        return t1 === t2;
+    }, [debouncedText1, debouncedText2, ignoreWhitespace, ignoreCase]);
 
     const handleSwap = () => {
         const temp = text1;
@@ -224,22 +277,16 @@ export default function TextDiffClient() {
         requestAnimationFrame(() => { syncingRef.current = false; });
     };
 
-    const isIdentical = text1 === text2 && text1.length > 0;
-
     const getShareText = () => {
-        return `📊 Text Diff
-━━━━━━━━━━━━━━
-+${stats.added} added / -${stats.removed} removed / ~${stats.modified} modified / ${stats.unchanged} unchanged
-
-📍 teck-tani.com/ko/text-diff`;
+        return `📊 Text Diff\n━━━━━━━━━━━━━━\n+${stats.added} added / -${stats.removed} removed / ~${stats.modified} modified / ${stats.unchanged} unchanged\n\n📍 teck-tani.com/ko/text-diff`;
     };
 
     // Render char-level highlighted content
     const renderCharDiff = (chars: { char: string; type: string }[], highlightType: 'delete' | 'insert') => {
-        return chars.map((c, i) => {
+        return chars.map((c, idx) => {
             if (c.type === highlightType) {
                 return (
-                    <span key={i} style={{
+                    <span key={idx} style={{
                         background: highlightType === 'delete'
                             ? (isDark ? 'rgba(239,68,68,0.35)' : 'rgba(239,68,68,0.25)')
                             : (isDark ? 'rgba(34,197,94,0.35)' : 'rgba(34,197,94,0.25)'),
@@ -249,7 +296,7 @@ export default function TextDiffClient() {
                     </span>
                 );
             }
-            return <span key={i}>{c.char}</span>;
+            return <span key={idx}>{c.char}</span>;
         });
     };
 
@@ -282,6 +329,15 @@ export default function TextDiffClient() {
         color: active ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
         transition: 'all 0.2s',
     });
+
+    const lineNumStyle: React.CSSProperties = {
+        padding: "8px",
+        textAlign: "center",
+        color: isDark ? "#64748b" : "#9ca3af",
+        background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+        borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+        userSelect: "none",
+    };
 
     return (
         <div className="container" style={{ maxWidth: "1200px", padding: "20px" }}>
@@ -320,13 +376,7 @@ export default function TextDiffClient() {
             </div>
 
             {/* Input Areas */}
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: "1fr auto 1fr",
-                gap: "10px",
-                marginBottom: "30px",
-                alignItems: "stretch"
-            }}>
+            <div className="text-diff-input-grid">
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <label style={{ marginBottom: "8px", fontWeight: "bold", color: isDark ? "#f1f5f9" : "#374151" }}>
                         {t('input.original')}
@@ -336,7 +386,7 @@ export default function TextDiffClient() {
                         onChange={(e) => setText1(e.target.value)}
                         placeholder={t('input.placeholder1')}
                         style={{
-                            flex: 1, minHeight: "250px", padding: "16px",
+                            flex: 1, minHeight: "200px", padding: "16px",
                             border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`, borderRadius: "12px",
                             fontSize: "14px", fontFamily: "monospace", resize: "vertical", lineHeight: "1.6",
                             color: isDark ? "#e2e8f0" : "#1f2937", background: isDark ? "#0f172a" : "#fff"
@@ -344,7 +394,7 @@ export default function TextDiffClient() {
                     />
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "10px" }}>
+                <div className="text-diff-btn-col">
                     <button onClick={handleSwap} title={t('buttons.swap')} style={{
                         padding: "12px", borderRadius: "8px", border: "none",
                         background: isDark ? "#0f172a" : "#f3f4f6", cursor: "pointer", transition: "all 0.2s"
@@ -368,7 +418,7 @@ export default function TextDiffClient() {
                         onChange={(e) => setText2(e.target.value)}
                         placeholder={t('input.placeholder2')}
                         style={{
-                            flex: 1, minHeight: "250px", padding: "16px",
+                            flex: 1, minHeight: "200px", padding: "16px",
                             border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`, borderRadius: "12px",
                             fontSize: "14px", fontFamily: "monospace", resize: "vertical", lineHeight: "1.6",
                             color: isDark ? "#e2e8f0" : "#1f2937", background: isDark ? "#0f172a" : "#fff"
@@ -378,7 +428,7 @@ export default function TextDiffClient() {
             </div>
 
             {/* Stats & Status */}
-            {(text1 || text2) && (
+            {(debouncedText1 || debouncedText2) && (
                 <div style={{
                     display: "flex", justifyContent: "center", alignItems: "center",
                     gap: "30px", marginBottom: "20px", flexWrap: "wrap"
@@ -403,7 +453,7 @@ export default function TextDiffClient() {
                             </div>
                             {stats.modified > 0 && (
                                 <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#d97706" }}>
-                                    <span>~{stats.modified}</span>
+                                    <span>{t('stats.modified', { count: stats.modified })}</span>
                                 </div>
                             )}
                             <div style={{ display: "flex", alignItems: "center", gap: "6px", color: isDark ? "#94a3b8" : "#6b7280" }}>
@@ -417,7 +467,7 @@ export default function TextDiffClient() {
             {/* Diff Result */}
             {processedDiff.length > 0 && !isIdentical && (
                 <div style={{ marginBottom: "30px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
                         <h2 style={{ fontSize: "1.2rem", color: isDark ? "#f1f5f9" : "#374151" }}>{t('result.title')}</h2>
                         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                             <button
@@ -454,10 +504,8 @@ export default function TextDiffClient() {
                                                 display: "grid", gridTemplateColumns: "50px 50px 1fr",
                                                 background: isDark ? '#7f1d1d' : '#fee2e2',
                                             }}>
-                                                <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
-                                                    {line.lineNum1 || ''}
-                                                </div>
-                                                <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }} />
+                                                <div style={lineNumStyle}>{line.lineNum1 || ''}</div>
+                                                <div style={lineNumStyle} />
                                                 <div style={{ padding: "8px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
                                                     <span style={{ color: '#dc2626', fontWeight: 'bold' }}>
                                                         {'- '}{line.charDiff1 ? renderCharDiff(line.charDiff1, 'delete') : line.content1}
@@ -470,10 +518,8 @@ export default function TextDiffClient() {
                                                 background: isDark ? '#064e3b' : '#dcfce7',
                                                 borderTop: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                             }}>
-                                                <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }} />
-                                                <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
-                                                    {line.lineNum2 || ''}
-                                                </div>
+                                                <div style={lineNumStyle} />
+                                                <div style={lineNumStyle}>{line.lineNum2 || ''}</div>
                                                 <div style={{ padding: "8px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
                                                     <span style={{ color: '#059669', fontWeight: 'bold' }}>
                                                         {'+ '}{line.charDiff2 ? renderCharDiff(line.charDiff2, 'insert') : line.content2}
@@ -487,12 +533,8 @@ export default function TextDiffClient() {
                                             background: line.type === 'add' ? (isDark ? '#064e3b' : '#dcfce7') :
                                                 line.type === 'remove' ? (isDark ? '#7f1d1d' : '#fee2e2') : (isDark ? '#1e293b' : '#fff'),
                                         }}>
-                                            <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
-                                                {line.lineNum1 || ''}
-                                            </div>
-                                            <div style={{ padding: "8px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
-                                                {line.lineNum2 || ''}
-                                            </div>
+                                            <div style={lineNumStyle}>{line.lineNum1 || ''}</div>
+                                            <div style={lineNumStyle}>{line.lineNum2 || ''}</div>
                                             <div style={{ padding: "8px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
                                                 <span style={{
                                                     color: line.type === 'add' ? '#059669' : line.type === 'remove' ? '#dc2626' : (isDark ? '#f1f5f9' : '#374151'),
@@ -511,8 +553,7 @@ export default function TextDiffClient() {
 
                     {/* Side-by-Side View */}
                     {viewMode === 'sideBySide' && (
-                        <div style={{
-                            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0',
+                        <div className="text-diff-side-by-side" style={{
                             border: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`, borderRadius: "12px", overflow: "hidden",
                         }}>
                             {/* Left Panel (Original) */}
@@ -524,6 +565,15 @@ export default function TextDiffClient() {
                                     borderRight: `2px solid ${isDark ? "#334155" : "#e5e7eb"}`,
                                 }}
                             >
+                                <div style={{
+                                    padding: "6px 8px", fontWeight: "bold", fontSize: "0.75rem",
+                                    color: isDark ? "#64748b" : "#9ca3af",
+                                    borderBottom: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                    background: isDark ? "#0f172a" : "#f9fafb",
+                                    position: "sticky", top: 0,
+                                }}>
+                                    {t('input.original')}
+                                </div>
                                 {sideBySideRows.map((row, idx) => {
                                     const line = row.left;
                                     const bgColor = !line ? (isDark ? '#1e293b' : '#f9fafb')
@@ -533,20 +583,18 @@ export default function TextDiffClient() {
 
                                     return (
                                         <div key={idx} style={{
-                                            display: 'grid', gridTemplateColumns: '45px 1fr',
+                                            display: 'grid', gridTemplateColumns: '40px 1fr',
                                             background: bgColor, minHeight: '32px',
                                             borderBottom: idx < sideBySideRows.length - 1 ? `1px solid ${isDark ? "#334155" : "#e5e7eb"}` : "none",
                                         }}>
-                                            <div style={{ padding: "6px 4px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", fontSize: '0.8em', borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
+                                            <div style={{ padding: "6px 4px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", fontSize: '0.8em', borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`, userSelect: "none" }}>
                                                 {line?.lineNum1 || ''}
                                             </div>
                                             <div style={{ padding: "6px 8px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
                                                 {line && line.type === 'modify' && line.charDiff1 ? (
                                                     <span style={{ color: '#dc2626' }}>{renderCharDiff(line.charDiff1, 'delete')}</span>
                                                 ) : line && line.type !== 'add' ? (
-                                                    <span style={{
-                                                        color: line.type === 'remove' ? '#dc2626' : (isDark ? '#f1f5f9' : '#374151'),
-                                                    }}>
+                                                    <span style={{ color: line.type === 'remove' ? '#dc2626' : (isDark ? '#f1f5f9' : '#374151') }}>
                                                         {line.content1}
                                                     </span>
                                                 ) : null}
@@ -564,6 +612,15 @@ export default function TextDiffClient() {
                                     maxHeight: '500px', overflowY: 'auto', fontFamily: "monospace", fontSize: "13px",
                                 }}
                             >
+                                <div style={{
+                                    padding: "6px 8px", fontWeight: "bold", fontSize: "0.75rem",
+                                    color: isDark ? "#64748b" : "#9ca3af",
+                                    borderBottom: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`,
+                                    background: isDark ? "#0f172a" : "#f9fafb",
+                                    position: "sticky", top: 0,
+                                }}>
+                                    {t('input.modified')}
+                                </div>
                                 {sideBySideRows.map((row, idx) => {
                                     const line = row.right;
                                     const bgColor = !line ? (isDark ? '#1e293b' : '#f9fafb')
@@ -573,20 +630,18 @@ export default function TextDiffClient() {
 
                                     return (
                                         <div key={idx} style={{
-                                            display: 'grid', gridTemplateColumns: '45px 1fr',
+                                            display: 'grid', gridTemplateColumns: '40px 1fr',
                                             background: bgColor, minHeight: '32px',
                                             borderBottom: idx < sideBySideRows.length - 1 ? `1px solid ${isDark ? "#334155" : "#e5e7eb"}` : "none",
                                         }}>
-                                            <div style={{ padding: "6px 4px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", fontSize: '0.8em', borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}` }}>
+                                            <div style={{ padding: "6px 4px", textAlign: "center", color: isDark ? "#64748b" : "#9ca3af", fontSize: '0.8em', borderRight: `1px solid ${isDark ? "#334155" : "#e5e7eb"}`, userSelect: "none" }}>
                                                 {line?.lineNum2 || ''}
                                             </div>
                                             <div style={{ padding: "6px 8px", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
                                                 {line && line.type === 'modify' && line.charDiff2 ? (
                                                     <span style={{ color: '#059669' }}>{renderCharDiff(line.charDiff2, 'insert')}</span>
                                                 ) : line && line.type !== 'remove' ? (
-                                                    <span style={{
-                                                        color: line.type === 'add' ? '#059669' : (isDark ? '#f1f5f9' : '#374151'),
-                                                    }}>
+                                                    <span style={{ color: line.type === 'add' ? '#059669' : (isDark ? '#f1f5f9' : '#374151') }}>
                                                         {line.content2 ?? line.content1}
                                                     </span>
                                                 ) : null}
@@ -600,63 +655,35 @@ export default function TextDiffClient() {
                 </div>
             )}
 
-            {/* Features Section */}
-            <section style={{ marginTop: "60px" }}>
-                <h2 style={{ textAlign: "center", marginBottom: "30px" }}>{t('features.title')}</h2>
-                <p style={{ textAlign: "center", color: isDark ? '#94a3b8' : '#666', marginBottom: "40px", maxWidth: "700px", margin: "0 auto 40px" }}
-                    dangerouslySetInnerHTML={{ __html: t.raw('features.desc') }} />
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
-                    {['instant', 'lineByLine', 'options'].map((key) => (
-                        <div key={key} style={{
-                            padding: "24px", background: isDark ? "#1e293b" : "#f9fafb",
-                            borderRadius: "12px", textAlign: "center"
-                        }}>
-                            <h3 style={{ marginBottom: "12px", color: isDark ? "#f1f5f9" : "#374151" }}>{t(`features.list.${key}.title`)}</h3>
-                            <p style={{ color: isDark ? "#94a3b8" : "#6b7280", fontSize: "0.95rem" }}>{t(`features.list.${key}.desc`)}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* How to Use */}
-            <section style={{ marginTop: "60px" }}>
-                <h2 style={{ textAlign: "center", marginBottom: "30px" }}>{t('instruction.title')}</h2>
-                <div style={{ maxWidth: "700px", margin: "0 auto", background: isDark ? "#1e293b" : "#f9fafb", borderRadius: "12px", padding: "30px" }}>
-                    {['step1', 'step2', 'step3', 'step4'].map((step, idx) => (
-                        <div key={step} style={{ display: "flex", gap: "16px", marginBottom: idx < 3 ? "20px" : 0 }}>
-                            <div style={{
-                                width: "32px", height: "32px", borderRadius: "50%", background: "#2563eb", color: "white",
-                                display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", flexShrink: 0
-                            }}>
-                                {idx + 1}
-                            </div>
-                            <p style={{ color: isDark ? "#f1f5f9" : "#374151", lineHeight: "1.6" }}
-                                dangerouslySetInnerHTML={{ __html: t.raw(`instruction.${step}`) }} />
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* FAQ */}
-            <section style={{ marginTop: "60px" }}>
-                <h2 style={{ textAlign: "center", marginBottom: "30px" }}>{t('faq.title')}</h2>
-                <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-                    {['what', 'privacy', 'limits'].map((key) => (
-                        <div key={key} style={{
-                            marginBottom: "20px", padding: "24px",
-                            background: isDark ? "#1e293b" : "#f9fafb", borderRadius: "12px"
-                        }}>
-                            <h3 style={{ marginBottom: "12px", color: isDark ? "#f1f5f9" : "#374151" }}>{t(`faq.${key}.q`)}</h3>
-                            <p style={{ color: isDark ? "#94a3b8" : "#6b7280", lineHeight: "1.6" }}>{t(`faq.${key}.a`)}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
             <style jsx>{`
+                .text-diff-input-grid {
+                    display: grid;
+                    grid-template-columns: 1fr auto 1fr;
+                    gap: 10px;
+                    margin-bottom: 30px;
+                    align-items: stretch;
+                }
+                .text-diff-btn-col {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    gap: 10px;
+                }
+                .text-diff-side-by-side {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 0;
+                }
                 @media (max-width: 768px) {
-                    div[style*="gridTemplateColumns: \"1fr auto 1fr\""] {
-                        grid-template-columns: 1fr !important;
+                    .text-diff-input-grid {
+                        grid-template-columns: 1fr;
+                    }
+                    .text-diff-btn-col {
+                        flex-direction: row;
+                        justify-content: center;
+                    }
+                    .text-diff-side-by-side {
+                        grid-template-columns: 1fr;
                     }
                 }
             `}</style>

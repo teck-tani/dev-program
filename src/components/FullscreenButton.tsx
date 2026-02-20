@@ -30,11 +30,6 @@ export default function FullscreenButton() {
         };
 
         document.addEventListener('fullscreenchange', handleFullscreenChange);
-        
-        // Initial check for server-side rendering safety
-        if (typeof window !== 'undefined') {
-            setIsFullscreen(!!document.fullscreenElement);
-        }
 
         return () => {
             document.removeEventListener('fullscreenchange', handleFullscreenChange);

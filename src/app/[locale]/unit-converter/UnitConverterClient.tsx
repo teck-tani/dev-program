@@ -29,6 +29,7 @@ export default function UnitConverterClient() {
     const [result, setResult] = useState<string>('');
     const [precision, setPrecision] = useState<PrecisionOption>(6);
     const [copied, setCopied] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const categories: { key: CategoryKey; label: string; icon: string }[] = [
         { key: 'length', label: t('categories.length'), icon: '📏' },
@@ -173,6 +174,13 @@ export default function UnitConverterClient() {
         convert();
     }, [convert]);
 
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 640);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
+
     const swapUnits = () => {
         const temp = fromUnit;
         setFromUnit(toUnit);
@@ -204,7 +212,7 @@ export default function UnitConverterClient() {
 
     const getShareText = () => {
         if (!result) return '';
-        return `\uD83D\uDD04 Unit Converter\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n${inputValue} ${currentUnits[fromUnit]?.name} = ${result} ${currentUnits[toUnit]?.name}\n\n\uD83D\uDCCD teck-tani.com/unit-converter`;
+        return `🔄 ${t('title')}\n━━━━━━━━━━━━━━\n${inputValue} ${currentUnits[fromUnit]?.name} = ${result} ${currentUnits[toUnit]?.name}\n\n📍 teck-tani.com/unit-converter`;
     };
 
     return (
@@ -265,7 +273,12 @@ export default function UnitConverterClient() {
             </div>
 
             {/* Conversion area */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '15px', alignItems: 'center' }}>
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr auto 1fr',
+                gap: '15px',
+                alignItems: isMobile ? 'stretch' : 'center',
+            }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <label style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', fontWeight: 500 }}>{t('from')}</label>
                     <input
@@ -295,21 +308,24 @@ export default function UnitConverterClient() {
                     </select>
                 </div>
 
-                <button
-                    onClick={swapUnits}
-                    style={{
-                        width: '50px', height: '50px', borderRadius: '50%', border: 'none',
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: 'white', fontSize: '1.5rem', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transition: 'transform 0.2s', marginTop: '20px',
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'rotate(180deg)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'rotate(0deg)'}
-                    aria-label={t('swap')}
-                >
-                    ⇄
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <button
+                        onClick={swapUnits}
+                        style={{
+                            width: '50px', height: '50px', borderRadius: '50%', border: 'none',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: 'white', fontSize: '1.5rem', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'transform 0.2s',
+                            marginTop: isMobile ? '0' : '20px',
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'rotate(180deg)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'rotate(0deg)'}
+                        aria-label={t('swap')}
+                    >
+                        {isMobile ? '⇅' : '⇄'}
+                    </button>
+                </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <label style={{ fontSize: '0.9rem', color: isDark ? '#94a3b8' : '#666', fontWeight: 500 }}>{t('to')}</label>

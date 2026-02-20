@@ -74,7 +74,14 @@
       "Bash(del \"c:\\\\tani\\\\dev-program\\\\.next\\\\lock\")",
       "Bash(taskkill:*)",
       "Bash(wc:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(tasklist:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(python -c:*)",
+      "Bash(py:*)",
+      "Bash(python:*)",
+      "Bash(\"C:/tani/dev-program/textdiff-debug.js\":*)",
+      "Bash(\"C:/tani/dev-program/textdiff-remain.js\":*)"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"
