@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaImage, FaDownload, FaTrash, FaCog, FaExpand, FaLock, FaUnlock, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaImage, FaDownload, FaTrash, FaCog, FaExpand, FaLock, FaUnlock, FaChevronDown, FaChevronUp, FaPlus } from "react-icons/fa";
 
 type ResizeMode = 'pixel' | 'percent';
 type OutputFormat = 'original' | 'image/jpeg' | 'image/png' | 'image/webp';
@@ -67,12 +67,10 @@ async function findSmartCropRegion(
         sh = Math.round(img.width / targetRatio);
     }
 
-    // 비율이 거의 같으면 중앙 크롭
     if (Math.abs(imgRatio - targetRatio) < 0.02) {
         return { sx: Math.round((img.width - sw) / 2), sy: Math.round((img.height - sh) / 2), sw, sh };
     }
 
-    // 성능을 위해 200px 이하로 샘플링
     const scale = Math.min(1, 200 / Math.max(img.width, img.height));
     const sW = Math.max(2, Math.round(img.width * scale));
     const sH = Math.max(2, Math.round(img.height * scale));
@@ -84,13 +82,11 @@ async function findSmartCropRegion(
     ctx.drawImage(img, 0, 0, sW, sH);
     const { data } = ctx.getImageData(0, 0, sW, sH);
 
-    // 그레이스케일
     const gray = new Float32Array(sW * sH);
     for (let i = 0; i < sW * sH; i++) {
         gray[i] = 0.299 * data[i * 4] + 0.587 * data[i * 4 + 1] + 0.114 * data[i * 4 + 2];
     }
 
-    // 소벨 엣지 강도 계산
     const edge = new Float32Array(sW * sH);
     for (let y = 1; y < sH - 1; y++) {
         for (let x = 1; x < sW - 1; x++) {
@@ -105,7 +101,6 @@ async function findSmartCropRegion(
         }
     }
 
-    // 2D 누적합 (sliding window O(1) 쿼리)
     const prefix = new Float64Array((sW + 1) * (sH + 1));
     for (let y = 1; y <= sH; y++) {
         for (let x = 1; x <= sW; x++) {
@@ -163,8 +158,18 @@ export default function ImageResizeClient() {
     const [isResizing, setIsResizing] = useState(false);
     const [showPresets, setShowPresets] = useState(false);
     const [presetCategory, setPresetCategory] = useState<PresetCategory>('social');
+    const [isDragOver, setIsDragOver] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const ratioRef = useRef(1);
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 640);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
 
     const formatBytes = (bytes: number) => {
         if (bytes === 0) return '0 Bytes';
@@ -203,14 +208,12 @@ export default function ImageResizeClient() {
                 if (!ctx) { reject(new Error('Canvas context not available')); return; }
 
                 const mime = getOutputMime(file);
-                // 배경 채우기 (JPEG는 흰색, 기타는 투명)
                 if (mime === 'image/jpeg' || currentCropMode === 'fit') {
                     ctx.fillStyle = '#ffffff';
                     ctx.fillRect(0, 0, targetW, targetH);
                 }
 
                 if (currentCropMode === 'fit') {
-                    // 비율 유지하며 내부에 맞추기 (레터박스)
                     const ratio = Math.min(targetW / img.width, targetH / img.height);
                     const dw = img.width * ratio;
                     const dh = img.height * ratio;
@@ -218,12 +221,10 @@ export default function ImageResizeClient() {
                     const dy = (targetH - dh) / 2;
                     ctx.drawImage(img, dx, dy, dw, dh);
                 } else if (currentCropMode === 'smart') {
-                    // 스마트 크롭: 소벨 엣지 기반 관심 영역 탐색
                     try {
                         const { sx, sy, sw, sh } = await findSmartCropRegion(img, targetW, targetH);
                         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
                     } catch {
-                        // 실패 시 중앙 크롭
                         const imgRatio = img.width / img.height;
                         const targetRatio = targetW / targetH;
                         let sx = 0, sy = 0, sw = img.width, sh = img.height;
@@ -237,7 +238,6 @@ export default function ImageResizeClient() {
                         ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
                     }
                 } else {
-                    // 늘리기 (기존 동작)
                     ctx.drawImage(img, 0, 0, targetW, targetH);
                 }
 
@@ -252,14 +252,11 @@ export default function ImageResizeClient() {
         });
     }, [outputFormat]);
 
-    const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (!files) return;
+    const processFiles = useCallback(async (files: FileList) => {
         const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
         const newImages: ResizedImage[] = [];
 
         for (const file of imageFiles) {
-            // URL을 한 번만 생성하여 미리보기와 크기 측정에 재사용 (메모리 누수 방지)
             const previewUrl = URL.createObjectURL(file);
             const dims = await new Promise<{ w: number; h: number }>((resolve) => {
                 const img = new Image();
@@ -291,8 +288,14 @@ export default function ImageResizeClient() {
         }
 
         setImages(prev => [...prev, ...newImages]);
-        if (fileInputRef.current) fileInputRef.current.value = '';
     }, [images.length]);
+
+    const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files) return;
+        await processFiles(files);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    }, [processFiles]);
 
     const handleWidthChange = (val: number) => {
         setWidth(val);
@@ -332,14 +335,12 @@ export default function ImageResizeClient() {
                     targetH = height;
                 }
 
-                // 퍼센트 모드는 항상 stretch (비율이 유지되므로 크롭 불필요)
                 const effectiveCropMode = mode === 'percent' ? 'stretch' : cropMode;
                 const { blob, w, h } = await resizeImage(img.originalFile, targetW, targetH, effectiveCropMode);
                 const resizedPreview = URL.createObjectURL(blob);
 
                 setImages(prev => prev.map(item => {
                     if (item.id !== img.id) return item;
-                    // 이전 리사이즈 URL 해제
                     if (item.resizedPreview) URL.revokeObjectURL(item.resizedPreview);
                     return {
                         ...item,
@@ -395,14 +396,14 @@ export default function ImageResizeClient() {
     }, [images]);
 
     const completedCount = images.filter(img => img.status === 'done').length;
+    const thumbSize = isMobile ? 80 : 120;
 
-    // 스타일 헬퍼
     const card = { background: isDark ? "#1e293b" : "white", borderRadius: '16px', padding: '20px', marginBottom: '20px', boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)' };
     const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: '10px', border: `1px solid ${isDark ? '#334155' : '#ddd'}`, background: isDark ? '#0f172a' : '#fff', color: isDark ? '#e2e8f0' : '#333', fontSize: '0.95rem' };
-    const labelStyle = { display: 'block', marginBottom: '6px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.85rem' };
+    const labelStyle = { display: 'block' as const, marginBottom: '6px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.85rem' };
 
     const cropModeBtn = (cm: CropMode) => ({
-        flex: 1, padding: '9px 6px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+        flex: 1, padding: '9px 6px', borderRadius: '10px', border: 'none' as const, cursor: 'pointer' as const,
         background: cropMode === cm ? '#667eea' : (isDark ? '#0f172a' : '#f3f4f6'),
         color: cropMode === cm ? '#fff' : (isDark ? '#94a3b8' : '#666'),
         fontWeight: 600, fontSize: '0.82rem',
@@ -410,170 +411,197 @@ export default function ImageResizeClient() {
 
     const categoryColors: Record<PresetCategory, string> = { social: '#667eea', mobile: '#11998e', web: '#f093fb' };
 
+    const dropHandlers = {
+        onClick: () => fileInputRef.current?.click(),
+        onDragOver: (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(true); },
+        onDragLeave: (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(false); },
+        onDrop: (e: React.DragEvent) => {
+            e.preventDefault();
+            setIsDragOver(false);
+            if (e.dataTransfer.files.length > 0) processFiles(e.dataTransfer.files);
+        },
+    };
+
     return (
         <div style={{ minHeight: '100vh', background: isDark ? "#0f172a" : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
 
-                {/* 업로드 영역 */}
-                <div
-                    onClick={() => fileInputRef.current?.click()}
-                    style={{
-                        background: isDark ? "#1e293b" : "white",
-                        border: '2px dashed #667eea', borderRadius: '16px', padding: '40px 20px',
-                        textAlign: 'center', cursor: 'pointer', marginBottom: '20px', transition: 'all 0.3s ease',
-                    }}
-                    onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#764ba2'; }}
-                    onDragLeave={(e) => { e.currentTarget.style.borderColor = '#667eea'; }}
-                    onDrop={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.style.borderColor = '#667eea';
-                        const files = e.dataTransfer.files;
-                        if (files.length > 0) handleFileSelect({ target: { files } } as React.ChangeEvent<HTMLInputElement>);
-                    }}
-                >
-                    <FaImage style={{ fontSize: '3rem', color: '#667eea', marginBottom: '15px' }} />
-                    <p style={{ color: isDark ? "#f1f5f9" : '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>{t('upload.title')}</p>
-                    <p style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.9rem' }}>{t('upload.subtitle')}</p>
-                    <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} style={{ display: 'none' }} />
-                </div>
+                <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} style={{ display: 'none' }} />
 
-                {/* 설정 패널 */}
-                <div style={card}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
-                        <FaCog style={{ color: '#667eea' }} />
-                        <span style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333' }}>{t('settings.title')}</span>
-                    </div>
-
-                    {/* 빠른 프리셋 토글 버튼 */}
-                    <button
-                        onClick={() => setShowPresets(v => !v)}
+                {/* 업로드 영역 - 조건부 */}
+                {images.length === 0 ? (
+                    <div
+                        {...dropHandlers}
                         style={{
-                            width: '100%', padding: '10px 16px', borderRadius: '10px', border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
-                            background: showPresets ? '#667eea' : (isDark ? '#0f172a' : '#f8f9fa'),
-                            color: showPresets ? '#fff' : (isDark ? '#94a3b8' : '#555'),
-                            fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', marginBottom: '12px',
-                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            background: isDragOver ? (isDark ? '#1e1b4b' : '#eef2ff') : (isDark ? "#1e293b" : "white"),
+                            border: `2px dashed ${isDragOver ? '#764ba2' : '#667eea'}`,
+                            borderRadius: '16px',
+                            padding: isMobile ? '40px 20px' : '60px 20px',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            marginBottom: '20px',
+                            transition: 'all 0.3s ease',
+                            transform: isDragOver ? 'scale(1.01)' : 'scale(1)',
                         }}
                     >
-                        <span>⚡ {t('settings.presets')}</span>
-                        {showPresets ? <FaChevronUp /> : <FaChevronDown />}
-                    </button>
-
-                    {/* 프리셋 패널 */}
-                    {showPresets && (
-                        <div style={{ marginBottom: '16px', background: isDark ? '#0f172a' : '#f8f9fa', borderRadius: '12px', padding: '14px' }}>
-                            {/* 카테고리 탭 */}
-                            <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
-                                {(['social', 'mobile', 'web'] as PresetCategory[]).map(cat => (
-                                    <button
-                                        key={cat}
-                                        onClick={() => setPresetCategory(cat)}
-                                        style={{
-                                            flex: 1, padding: '7px 4px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
-                                            background: presetCategory === cat ? categoryColors[cat] : (isDark ? '#1e293b' : '#e2e8f0'),
-                                            color: presetCategory === cat ? '#fff' : (isDark ? '#94a3b8' : '#555'),
-                                        }}
-                                    >
-                                        {t(`settings.presetCategories.${cat}`)}
-                                    </button>
-                                ))}
-                            </div>
-                            {/* 프리셋 버튼 그리드 */}
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
-                                {PRESETS[presetCategory].map((preset) => (
-                                    <button
-                                        key={preset.name}
-                                        onClick={() => handlePresetSelect(preset)}
-                                        style={{
-                                            padding: '10px 8px', borderRadius: '10px', border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
-                                            background: isDark ? '#1e293b' : '#fff', cursor: 'pointer', textAlign: 'left',
-                                            transition: 'all 0.15s',
-                                        }}
-                                        onMouseEnter={e => (e.currentTarget.style.borderColor = categoryColors[presetCategory])}
-                                        onMouseLeave={e => (e.currentTarget.style.borderColor = isDark ? '#334155' : '#ddd')}
-                                    >
-                                        <div style={{ fontSize: '0.82rem', fontWeight: 600, color: isDark ? '#e2e8f0' : '#333', marginBottom: '3px' }}>{preset.name}</div>
-                                        <div style={{ fontSize: '0.75rem', color: categoryColors[presetCategory] }}>{preset.w} × {preset.h}</div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* 리사이즈 모드 */}
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                        {(['pixel', 'percent'] as ResizeMode[]).map(m => (
-                            <button key={m} onClick={() => setMode(m)} style={{
-                                flex: 1, padding: '10px', borderRadius: '10px', border: 'none', cursor: 'pointer',
-                                background: mode === m ? '#667eea' : (isDark ? '#0f172a' : '#f3f4f6'),
-                                color: mode === m ? '#fff' : (isDark ? '#94a3b8' : '#666'),
-                                fontWeight: 600, fontSize: '0.9rem',
-                            }}>
-                                {m === 'pixel' ? t('settings.modePixel') : t('settings.modePercent')}
-                            </button>
-                        ))}
+                        <FaImage style={{ fontSize: isMobile ? '2.5rem' : '3.5rem', color: isDragOver ? '#764ba2' : '#667eea', marginBottom: '16px', transition: 'color 0.3s ease' }} />
+                        <p style={{ color: isDark ? "#f1f5f9" : '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>{t('upload.title')}</p>
+                        <p style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.9rem' }}>{t('upload.subtitle')}</p>
                     </div>
+                ) : (
+                    <div
+                        {...dropHandlers}
+                        style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                            background: isDragOver ? (isDark ? '#1e1b4b' : '#eef2ff') : (isDark ? "#1e293b" : '#f8f9ff'),
+                            border: `2px dashed ${isDragOver ? '#764ba2' : '#667eea'}`,
+                            borderRadius: '12px', padding: '14px 24px', cursor: 'pointer',
+                            marginBottom: '16px', transition: 'all 0.3s ease',
+                            transform: isDragOver ? 'scale(1.01)' : 'scale(1)',
+                        }}
+                    >
+                        <FaPlus style={{ color: '#667eea', fontSize: '0.9rem' }} />
+                        <span style={{ color: '#667eea', fontWeight: 600, fontSize: '0.95rem' }}>{t('upload.addMore')}</span>
+                        <span style={{ color: isDark ? '#475569' : '#aaa', fontSize: '0.8rem', marginLeft: '4px' }}>{t('upload.addMoreHint')}</span>
+                    </div>
+                )}
 
-                    {/* 크기 입력 */}
-                    {mode === 'pixel' ? (
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '10px', alignItems: 'end' }}>
-                            <div>
-                                <label style={labelStyle}>{t('settings.width')}</label>
-                                <input type="number" min="1" max="10000" value={width} onChange={(e) => handleWidthChange(Number(e.target.value))} style={inputStyle} />
-                            </div>
+                {/* 설정 패널 - 접기/펼치기 */}
+                <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+                    <div
+                        onClick={() => setSettingsOpen(prev => !prev)}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', cursor: 'pointer', userSelect: 'none' }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FaCog style={{ color: '#667eea' }} />
+                            <span style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333' }}>{t('settings.title')}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            {!settingsOpen && (
+                                <span style={{ fontSize: '0.8rem', color: isDark ? '#64748b' : '#999' }}>
+                                    {mode === 'pixel' ? `${width}×${height}` : `${percent}%`} · {cropMode}
+                                </span>
+                            )}
+                            {settingsOpen
+                                ? <FaChevronUp style={{ color: isDark ? '#64748b' : '#999', fontSize: '0.8rem' }} />
+                                : <FaChevronDown style={{ color: isDark ? '#64748b' : '#999', fontSize: '0.8rem' }} />
+                            }
+                        </div>
+                    </div>
+                    <div style={{ maxHeight: settingsOpen ? '800px' : '0', overflow: 'hidden', transition: 'max-height 0.3s ease' }}>
+                        <div style={{ padding: '0 20px 20px' }}>
+                            {/* 빠른 프리셋 */}
                             <button
-                                onClick={() => setLockRatio(!lockRatio)}
+                                onClick={() => setShowPresets(v => !v)}
                                 style={{
-                                    padding: '10px 12px', borderRadius: '10px', border: 'none', cursor: 'pointer',
-                                    background: lockRatio ? '#667eea' : (isDark ? '#0f172a' : '#f3f4f6'),
-                                    color: lockRatio ? '#fff' : (isDark ? '#94a3b8' : '#666'), marginBottom: '1px',
+                                    width: '100%', padding: '10px 16px', borderRadius: '10px', border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
+                                    background: showPresets ? '#667eea' : (isDark ? '#0f172a' : '#f8f9fa'),
+                                    color: showPresets ? '#fff' : (isDark ? '#94a3b8' : '#555'),
+                                    fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', marginBottom: '12px',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                 }}
-                                title={t('settings.lockRatio')}
                             >
-                                {lockRatio ? <FaLock /> : <FaUnlock />}
+                                <span>⚡ {t('settings.presets')}</span>
+                                {showPresets ? <FaChevronUp /> : <FaChevronDown />}
                             </button>
-                            <div>
-                                <label style={labelStyle}>{t('settings.height')}</label>
-                                <input type="number" min="1" max="10000" value={height} onChange={(e) => handleHeightChange(Number(e.target.value))} style={inputStyle} />
-                            </div>
-                        </div>
-                    ) : (
-                        <div>
-                            <label style={labelStyle}>{t('settings.percent')}: {percent}%</label>
-                            <input type="range" min="1" max="400" value={percent} onChange={(e) => setPercent(Number(e.target.value))} style={{ width: '100%', accentColor: '#667eea' }} />
-                        </div>
-                    )}
 
-                    {/* 크롭 방식 (픽셀 모드에서만) */}
-                    {mode === 'pixel' && (
-                        <div style={{ marginTop: '15px' }}>
-                            <label style={labelStyle}>{t('settings.cropMode')}</label>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                {(['stretch', 'fit', 'smart'] as CropMode[]).map(cm => (
-                                    <button key={cm} onClick={() => setCropMode(cm)} style={cropModeBtn(cm)}>
-                                        {cm === 'stretch' ? t('settings.cropStretch')
-                                            : cm === 'fit' ? t('settings.cropFit')
-                                                : t('settings.cropSmart')}
+                            {showPresets && (
+                                <div style={{ marginBottom: '16px', background: isDark ? '#0f172a' : '#f8f9fa', borderRadius: '12px', padding: '14px' }}>
+                                    <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+                                        {(['social', 'mobile', 'web'] as PresetCategory[]).map(cat => (
+                                            <button key={cat} onClick={() => setPresetCategory(cat)} style={{
+                                                flex: 1, padding: '7px 4px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
+                                                background: presetCategory === cat ? categoryColors[cat] : (isDark ? '#1e293b' : '#e2e8f0'),
+                                                color: presetCategory === cat ? '#fff' : (isDark ? '#94a3b8' : '#555'),
+                                            }}>
+                                                {t(`settings.presetCategories.${cat}`)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px' }}>
+                                        {PRESETS[presetCategory].map((preset) => (
+                                            <button key={preset.name} onClick={() => handlePresetSelect(preset)} style={{
+                                                padding: '10px 8px', borderRadius: '10px', border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
+                                                background: isDark ? '#1e293b' : '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+                                            }}
+                                                onMouseEnter={e => (e.currentTarget.style.borderColor = categoryColors[presetCategory])}
+                                                onMouseLeave={e => (e.currentTarget.style.borderColor = isDark ? '#334155' : '#ddd')}
+                                            >
+                                                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: isDark ? '#e2e8f0' : '#333', marginBottom: '3px' }}>{preset.name}</div>
+                                                <div style={{ fontSize: '0.75rem', color: categoryColors[presetCategory] }}>{preset.w} × {preset.h}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 리사이즈 모드 */}
+                            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                                {(['pixel', 'percent'] as ResizeMode[]).map(m => (
+                                    <button key={m} onClick={() => setMode(m)} style={{
+                                        flex: 1, padding: '10px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                                        background: mode === m ? '#667eea' : (isDark ? '#0f172a' : '#f3f4f6'),
+                                        color: mode === m ? '#fff' : (isDark ? '#94a3b8' : '#666'),
+                                        fontWeight: 600, fontSize: '0.9rem',
+                                    }}>
+                                        {m === 'pixel' ? t('settings.modePixel') : t('settings.modePercent')}
                                     </button>
                                 ))}
                             </div>
-                            {cropMode === 'smart' && (
-                                <p style={{ fontSize: '0.78rem', color: isDark ? '#64748b' : '#999', marginTop: '6px', margin: '6px 0 0' }}>
-                                    ✨ {t('settings.cropSmart')} — 소벨 엣지 분석으로 핵심 영역을 자동 선택합니다.
-                                </p>
-                            )}
-                        </div>
-                    )}
 
-                    {/* 출력 형식 */}
-                    <div style={{ marginTop: '15px' }}>
-                        <label style={labelStyle}>{t('settings.format')}</label>
-                        <select value={outputFormat} onChange={(e) => setOutputFormat(e.target.value as OutputFormat)} style={inputStyle}>
-                            <option value="original">{t('settings.formatOriginal')}</option>
-                            <option value="image/jpeg">{t('settings.formatJpeg')}</option>
-                            <option value="image/png">{t('settings.formatPng')}</option>
-                            <option value="image/webp">{t('settings.formatWebp')}</option>
-                        </select>
+                            {mode === 'pixel' ? (
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '10px', alignItems: 'end' }}>
+                                    <div>
+                                        <label style={labelStyle}>{t('settings.width')}</label>
+                                        <input type="number" min="1" max="10000" value={width} onChange={(e) => handleWidthChange(Number(e.target.value))} style={inputStyle} />
+                                    </div>
+                                    <button onClick={() => setLockRatio(!lockRatio)} style={{
+                                        padding: '10px 12px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                                        background: lockRatio ? '#667eea' : (isDark ? '#0f172a' : '#f3f4f6'),
+                                        color: lockRatio ? '#fff' : (isDark ? '#94a3b8' : '#666'), marginBottom: '1px',
+                                    }} title={t('settings.lockRatio')}>
+                                        {lockRatio ? <FaLock /> : <FaUnlock />}
+                                    </button>
+                                    <div>
+                                        <label style={labelStyle}>{t('settings.height')}</label>
+                                        <input type="number" min="1" max="10000" value={height} onChange={(e) => handleHeightChange(Number(e.target.value))} style={inputStyle} />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label style={labelStyle}>{t('settings.percent')}: {percent}%</label>
+                                    <input type="range" min="1" max="400" value={percent} onChange={(e) => setPercent(Number(e.target.value))} style={{ width: '100%', accentColor: '#667eea' }} />
+                                </div>
+                            )}
+
+                            {mode === 'pixel' && (
+                                <div style={{ marginTop: '15px' }}>
+                                    <label style={labelStyle}>{t('settings.cropMode')}</label>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        {(['stretch', 'fit', 'smart'] as CropMode[]).map(cm => (
+                                            <button key={cm} onClick={() => setCropMode(cm)} style={cropModeBtn(cm)}>
+                                                {cm === 'stretch' ? t('settings.cropStretch') : cm === 'fit' ? t('settings.cropFit') : t('settings.cropSmart')}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {cropMode === 'smart' && (
+                                        <p style={{ fontSize: '0.78rem', color: isDark ? '#64748b' : '#999', marginTop: '6px', margin: '6px 0 0' }}>
+                                            ✨ {t('settings.cropSmart')} — 소벨 엣지 분석으로 핵심 영역을 자동 선택합니다.
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
+                            <div style={{ marginTop: '15px' }}>
+                                <label style={labelStyle}>{t('settings.format')}</label>
+                                <select value={outputFormat} onChange={(e) => setOutputFormat(e.target.value as OutputFormat)} style={inputStyle}>
+                                    <option value="original">{t('settings.formatOriginal')}</option>
+                                    <option value="image/jpeg">{t('settings.formatJpeg')}</option>
+                                    <option value="image/png">{t('settings.formatPng')}</option>
+                                    <option value="image/webp">{t('settings.formatWebp')}</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -638,53 +666,87 @@ export default function ImageResizeClient() {
                     </div>
                 )}
 
-                {/* 이미지 목록 */}
+                {/* 이미지 목록 - 리디자인 */}
                 {images.length > 0 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {images.map((img) => (
-                            <div key={img.id} style={{
-                                background: isDark ? "#1e293b" : "white", borderRadius: '12px', padding: '15px',
-                                boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)',
-                                display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap',
-                            }}>
-                                <img src={img.resizedPreview || img.preview} alt={img.originalFile.name}
-                                    style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }} />
-                                <div style={{ flex: 1, minWidth: '150px' }}>
-                                    <div style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333', marginBottom: '4px', wordBreak: 'break-all' }}>
-                                        {img.originalFile.name}
-                                    </div>
-                                    <div style={{ fontSize: '0.85rem', color: isDark ? "#64748b" : '#888' }}>
-                                        {img.originalWidth}×{img.originalHeight} ({formatBytes(img.originalSize)})
-                                        {img.status === 'done' && (
-                                            <span style={{ color: '#11998e', marginLeft: '8px' }}>
-                                                → {img.resizedWidth}×{img.resizedHeight} ({formatBytes(img.resizedSize)})
-                                            </span>
-                                        )}
+                        {images.map((img) => {
+                            const borderLeftColor =
+                                img.status === 'done' ? '#11998e' :
+                                img.status === 'error' ? '#e74c3c' :
+                                img.status === 'resizing' ? '#667eea' :
+                                (isDark ? '#334155' : '#e2e8f0');
+
+                            return (
+                                <div key={img.id} style={{
+                                    background: isDark ? "#1e293b" : "white",
+                                    borderRadius: '14px', padding: isMobile ? '12px' : '16px',
+                                    boxShadow: isDark ? "none" : '0 2px 12px rgba(0,0,0,0.06)',
+                                    borderLeft: `4px solid ${borderLeftColor}`,
+                                    transition: 'border-color 0.3s ease',
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '16px' }}>
+                                        <div style={{ position: 'relative', flexShrink: 0 }}>
+                                            <img
+                                                src={img.resizedPreview || img.preview}
+                                                alt={img.originalFile.name}
+                                                style={{ width: `${thumbSize}px`, height: `${thumbSize}px`, objectFit: 'cover', borderRadius: '10px', display: 'block' }}
+                                            />
+                                            {img.status === 'resizing' && (
+                                                <div style={{
+                                                    position: 'absolute', inset: 0, borderRadius: '10px',
+                                                    background: 'rgba(102,126,234,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    color: 'white', fontSize: '0.7rem', fontWeight: 700,
+                                                }}>{t('list.resizing')}</div>
+                                            )}
+                                            {img.status === 'error' && (
+                                                <div style={{
+                                                    position: 'absolute', inset: 0, borderRadius: '10px',
+                                                    background: 'rgba(231,76,60,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    color: 'white', fontSize: '0.7rem', fontWeight: 700,
+                                                }}>{t('list.error')}</div>
+                                            )}
+                                        </div>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{
+                                                fontWeight: 600, fontSize: '0.95rem', color: isDark ? "#f1f5f9" : '#1e293b',
+                                                marginBottom: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                            }}>{img.originalFile.name}</div>
+                                            <div style={{ fontSize: '0.85rem', color: isDark ? "#64748b" : '#888', marginBottom: img.status === 'done' ? '8px' : '0' }}>
+                                                {img.originalWidth}×{img.originalHeight} ({formatBytes(img.originalSize)})
+                                                {img.status === 'done' && (
+                                                    <>
+                                                        <span style={{ margin: '0 6px', color: '#94a3b8' }}>→</span>
+                                                        <span style={{ color: '#11998e', fontWeight: 600 }}>
+                                                            {img.resizedWidth}×{img.resizedHeight} ({formatBytes(img.resizedSize)})
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+                                            {img.status === 'done' && (
+                                                <button onClick={() => handleDownload(img)} style={{
+                                                    padding: isMobile ? '8px' : '8px 14px',
+                                                    background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                                                    color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.82rem',
+                                                    cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+                                                }}>
+                                                    <FaDownload style={{ fontSize: '0.75rem' }} />
+                                                    {!isMobile && t('list.download')}
+                                                </button>
+                                            )}
+                                            <button onClick={() => handleRemove(img.id)} style={{
+                                                padding: '8px', background: isDark ? "#0f172a" : '#fff0f0',
+                                                color: '#e74c3c', border: `1px solid ${isDark ? '#334155' : '#fecaca'}`,
+                                                borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            }}>
+                                                <FaTrash style={{ fontSize: '0.8rem' }} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                    {img.status === 'resizing' && <span style={{ color: '#667eea', fontSize: '0.85rem' }}>{t('list.resizing')}</span>}
-                                    {img.status === 'error' && <span style={{ color: '#e74c3c', fontSize: '0.85rem' }}>{t('list.error')}</span>}
-                                    {img.status === 'done' && (
-                                        <button onClick={() => handleDownload(img)} style={{
-                                            padding: '8px 16px', background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                                            color: 'white', border: 'none', borderRadius: '20px', fontSize: '0.85rem', cursor: 'pointer',
-                                            display: 'flex', alignItems: 'center', gap: '5px',
-                                        }}>
-                                            <FaDownload />
-                                            {t('list.download')}
-                                        </button>
-                                    )}
-                                    <button onClick={() => handleRemove(img.id)} style={{
-                                        padding: '8px', background: isDark ? "#1e293b" : '#f8f9fa',
-                                        color: isDark ? "#94a3b8" : '#666', border: `1px solid ${isDark ? "#334155" : '#ddd'}`,
-                                        borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    }}>
-                                        <FaTrash />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
 

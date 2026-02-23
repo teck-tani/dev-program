@@ -961,7 +961,7 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
             </div>
 
             {/* Editor Area */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px', alignItems: 'start' }}>
                 {/* Input */}
                 <div
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -980,11 +980,11 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
                             📂 Drop .json file here
                         </div>
                     )}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>{t('input.label')}</label>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                            <button onClick={loadSample} style={smallButtonStyle(isDark)}>{t('btn.sample')}</button>
-                            <button onClick={clearAll} style={smallButtonStyle(isDark)}>{t('btn.clear')}</button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+                        <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333', whiteSpace: 'nowrap' }}>{t('input.label')}</label>
+                        <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                            <button onClick={loadSample} style={{ ...smallButtonStyle(isDark), whiteSpace: 'nowrap' }}>{t('btn.sample')}</button>
+                            <button onClick={clearAll} style={{ ...smallButtonStyle(isDark), whiteSpace: 'nowrap' }}>{t('btn.clear')}</button>
                         </div>
                     </div>
                     <textarea
@@ -1048,9 +1048,9 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
 
                 {/* Output */}
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333' }}>{t('output.label')}</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: isDark ? '#f1f5f9' : '#333', whiteSpace: 'nowrap' }}>{t('output.label')}</label>
                             {/* View Mode Tabs */}
                             {(hasValidOutput || parsedData !== null) && (
                                 <div style={{
@@ -1076,13 +1076,13 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
                                 </div>
                             )}
                         </div>
-                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
                             {hasValidOutput && viewMode === 'tree' && (
                                 <>
-                                    <button onClick={() => setExpandAll(true)} style={{ ...smallButtonStyle(isDark), fontSize: '0.7rem', padding: '4px 8px' }}>
+                                    <button onClick={() => setExpandAll(true)} style={{ ...smallButtonStyle(isDark), fontSize: '0.7rem', padding: '4px 8px', whiteSpace: 'nowrap' }}>
                                         {t('tree.expandAll')}
                                     </button>
-                                    <button onClick={() => setExpandAll(false)} style={{ ...smallButtonStyle(isDark), fontSize: '0.7rem', padding: '4px 8px' }}>
+                                    <button onClick={() => setExpandAll(false)} style={{ ...smallButtonStyle(isDark), fontSize: '0.7rem', padding: '4px 8px', whiteSpace: 'nowrap' }}>
                                         {t('tree.collapseAll')}
                                     </button>
                                 </>
@@ -1095,6 +1095,7 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
                                     background: copied ? '#10b981' : (isDark ? '#0f172a' : '#f3f4f6'),
                                     color: copied ? 'white' : (isDark ? '#f1f5f9' : '#374151'),
                                     opacity: hasViewContent ? 1 : 0.4,
+                                    whiteSpace: 'nowrap',
                                 }}
                             >
                                 {copied ? t('btn.copied') : t('btn.copy')}

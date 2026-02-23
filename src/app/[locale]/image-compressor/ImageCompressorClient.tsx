@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FaImage, FaDownload, FaTrash, FaCog, FaCompress, FaFileArchive } from "react-icons/fa";
+import { FaImage, FaDownload, FaTrash, FaCog, FaCompress, FaFileArchive, FaChevronDown, FaChevronUp, FaPlus } from "react-icons/fa";
 import JSZip from "jszip";
 
 type OutputFormat = 'image/jpeg' | 'image/webp' | 'image/png' | 'image/avif';
@@ -33,6 +33,9 @@ export default function ImageCompressorClient() {
     const [compareId, setCompareId] = useState<string | null>(null);
     const [sliderPositions, setSliderPositions] = useState<Record<string, number>>({});
     const [avifSupported, setAvifSupported] = useState(false);
+    const [isDragOver, setIsDragOver] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const compareRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -45,6 +48,15 @@ export default function ImageCompressorClient() {
             setAvifSupported(blob !== null && blob.type === 'image/avif');
         }, 'image/avif');
     }, []);
+
+    // 모바일 감지
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 640);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
+
 
     const formatBytes = (bytes: number) => {
         if (bytes === 0) return '0 Bytes';
@@ -133,10 +145,8 @@ export default function ImageCompressorClient() {
         });
     }, []);
 
-    const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (!files) return;
-
+    // 파일 처리 공통 함수 (drop과 input 모두에서 사용)
+    const processFiles = useCallback(async (files: FileList) => {
         const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
         const newImages: CompressedImage[] = [];
 
@@ -156,10 +166,16 @@ export default function ImageCompressorClient() {
         }
 
         setImages(prev => [...prev, ...newImages]);
+    }, [checkTransparency]);
+
+    const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files) return;
+        await processFiles(files);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
-    }, [checkTransparency]);
+    }, [processFiles]);
 
     const handleCompress = useCallback(async () => {
         if (images.length === 0) return;
@@ -168,7 +184,6 @@ export default function ImageCompressorClient() {
 
         for (let i = 0; i < images.length; i++) {
             const img = images[i];
-            // 기존 압축 결과 URL 해제 후 재압축
             if (img.compressedPreview) {
                 URL.revokeObjectURL(img.compressedPreview);
             }
@@ -222,13 +237,11 @@ export default function ImageCompressorClient() {
         const doneImages = images.filter(img => img.status === 'done' && img.compressedBlob);
         if (doneImages.length === 0) return;
 
-        // 1개면 그냥 개별 다운로드
         if (doneImages.length === 1) {
             handleDownload(doneImages[0]);
             return;
         }
 
-        // 2개 이상이면 ZIP으로 묶어서 다운로드
         const zip = new JSZip();
         const usedNames = new Map<string, number>();
         doneImages.forEach(img => {
@@ -285,129 +298,231 @@ export default function ImageCompressorClient() {
     const completedCount = images.filter(img => img.status === 'done').length;
     const isPngMode = outputFormat === 'image/png';
 
+    const thumbSize = isMobile ? 80 : 120;
+
+    // 드롭 이벤트 공통 핸들러
+    const dropHandlers = {
+        onClick: () => fileInputRef.current?.click(),
+        onDragOver: (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(true); },
+        onDragLeave: (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(false); },
+        onDrop: (e: React.DragEvent) => {
+            e.preventDefault();
+            setIsDragOver(false);
+            const files = e.dataTransfer.files;
+            if (files.length > 0) processFiles(files);
+        },
+    };
+
+    // 포맷 라벨
+    const formatLabel = outputFormat.split('/')[1]?.toUpperCase() || 'JPEG';
+
     return (
         <div style={{ minHeight: '100vh', background: isDark ? "#0f172a" : 'linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%)' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 60px' }}>
 
-                {/* Upload Area */}
-                <div
-                    onClick={() => fileInputRef.current?.click()}
-                    style={{
-                        background: isDark ? "#1e293b" : "white",
-                        border: '2px dashed #667eea',
-                        borderRadius: '16px',
-                        padding: '40px 20px',
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        marginBottom: '20px',
-                        transition: 'all 0.3s ease',
-                    }}
-                    onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#764ba2'; }}
-                    onDragLeave={(e) => { e.currentTarget.style.borderColor = '#667eea'; }}
-                    onDrop={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.style.borderColor = '#667eea';
-                        const files = e.dataTransfer.files;
-                        if (files.length > 0) {
-                            const event = { target: { files } } as React.ChangeEvent<HTMLInputElement>;
-                            handleFileSelect(event);
-                        }
-                    }}
-                >
-                    <FaImage style={{ fontSize: '3rem', color: '#667eea', marginBottom: '15px' }} />
-                    <p style={{ color: isDark ? "#f1f5f9" : '#333', fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px' }}>
-                        {t('upload.title')}
-                    </p>
-                    <p style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.9rem' }}>
-                        {t('upload.subtitle')}
-                    </p>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleFileSelect}
-                        style={{ display: 'none' }}
-                    />
-                </div>
+                {/* Hidden File Input */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileSelect}
+                    style={{ display: 'none' }}
+                />
 
-                {/* Settings */}
+                {/* Upload Area - 조건부 렌더링 */}
+                {images.length === 0 ? (
+                    /* 큰 드롭존 (이미지 없을 때) */
+                    <div
+                        {...dropHandlers}
+                        style={{
+                            background: isDragOver
+                                ? (isDark ? '#1e1b4b' : '#eef2ff')
+                                : (isDark ? "#1e293b" : "white"),
+                            border: `2px dashed ${isDragOver ? '#764ba2' : '#667eea'}`,
+                            borderRadius: '16px',
+                            padding: isMobile ? '40px 20px' : '60px 20px',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            marginBottom: '20px',
+                            transition: 'all 0.3s ease',
+                            transform: isDragOver ? 'scale(1.01)' : 'scale(1)',
+                        }}
+                    >
+                        <FaImage style={{
+                            fontSize: isMobile ? '2.5rem' : '3.5rem',
+                            color: isDragOver ? '#764ba2' : '#667eea',
+                            marginBottom: '16px',
+                            transition: 'color 0.3s ease',
+                        }} />
+                        <p style={{
+                            color: isDark ? "#f1f5f9" : '#333',
+                            fontSize: '1.1rem',
+                            fontWeight: 600,
+                            marginBottom: '8px',
+                        }}>
+                            {t('upload.title')}
+                        </p>
+                        <p style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.9rem' }}>
+                            {t('upload.subtitle')}
+                        </p>
+                    </div>
+                ) : (
+                    /* 컴팩트 "추가" 바 (이미지 있을 때) */
+                    <div
+                        {...dropHandlers}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            background: isDragOver
+                                ? (isDark ? '#1e1b4b' : '#eef2ff')
+                                : (isDark ? "#1e293b" : '#f8f9ff'),
+                            border: `2px dashed ${isDragOver ? '#764ba2' : '#667eea'}`,
+                            borderRadius: '12px',
+                            padding: '14px 24px',
+                            cursor: 'pointer',
+                            marginBottom: '16px',
+                            transition: 'all 0.3s ease',
+                            transform: isDragOver ? 'scale(1.01)' : 'scale(1)',
+                        }}
+                    >
+                        <FaPlus style={{ color: '#667eea', fontSize: '0.9rem' }} />
+                        <span style={{
+                            color: '#667eea',
+                            fontWeight: 600,
+                            fontSize: '0.95rem',
+                        }}>
+                            {t('upload.addMore')}
+                        </span>
+                        <span style={{
+                            color: isDark ? '#475569' : '#aaa',
+                            fontSize: '0.8rem',
+                            marginLeft: '4px',
+                        }}>
+                            {t('upload.addMoreHint')}
+                        </span>
+                    </div>
+                )}
+
+                {/* Settings - 접기/펼치기 */}
                 <div style={{
                     background: isDark ? "#1e293b" : "white",
                     borderRadius: '16px',
-                    padding: '20px',
                     marginBottom: '20px',
-                    boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)'
+                    boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)',
+                    overflow: 'hidden',
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px' }}>
-                        <FaCog style={{ color: '#667eea' }} />
-                        <span style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333' }}>{t('settings.title')}</span>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
-                                {t('settings.quality')}: {isPngMode ? 'N/A' : `${quality}%`}
-                            </label>
-                            <input
-                                type="range"
-                                min="10"
-                                max="100"
-                                value={quality}
-                                onChange={(e) => setQuality(Number(e.target.value))}
-                                disabled={isPngMode}
-                                style={{ width: '100%', accentColor: '#667eea', opacity: isPngMode ? 0.4 : 1 }}
-                            />
+                    {/* 설정 헤더 (항상 보임) */}
+                    <div
+                        onClick={() => setSettingsOpen(prev => !prev)}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '16px 20px',
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FaCog style={{ color: '#667eea' }} />
+                            <span style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333' }}>
+                                {t('settings.title')}
+                            </span>
                         </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
-                                {t('settings.maxWidth')}: {maxWidth}px
-                            </label>
-                            <input
-                                type="range"
-                                min="320"
-                                max="3840"
-                                step="160"
-                                value={maxWidth}
-                                onChange={(e) => setMaxWidth(Number(e.target.value))}
-                                style={{ width: '100%', accentColor: '#667eea' }}
-                            />
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
-                                {t('settings.format')}
-                            </label>
-                            <select
-                                value={outputFormat}
-                                onChange={(e) => setOutputFormat(e.target.value as OutputFormat)}
-                                style={{
-                                    width: '100%', padding: '10px 12px', borderRadius: '10px',
-                                    border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
-                                    background: isDark ? '#0f172a' : '#fff',
-                                    color: isDark ? '#e2e8f0' : '#333', fontSize: '0.9rem',
-                                }}
-                            >
-                                <option value="image/jpeg">{t('settings.formatJpeg')}</option>
-                                <option value="image/webp">{t('settings.formatWebp')}</option>
-                                <option value="image/png">{t('settings.formatPng')}</option>
-                                <option value="image/avif" disabled={!avifSupported}>
-                                    {t('settings.formatAvif')}{!avifSupported ? ` (${t('settings.avifUnsupported')})` : ''}
-                                </option>
-                            </select>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            {/* 접힌 상태에서 설정 요약 표시 */}
+                            {!settingsOpen && (
+                                <span style={{
+                                    fontSize: '0.8rem',
+                                    color: isDark ? '#64748b' : '#999',
+                                }}>
+                                    {isPngMode ? 'PNG' : `Q${quality}%`} · {formatLabel} · {maxWidth}px
+                                </span>
+                            )}
+                            {settingsOpen
+                                ? <FaChevronUp style={{ color: isDark ? '#64748b' : '#999', fontSize: '0.8rem' }} />
+                                : <FaChevronDown style={{ color: isDark ? '#64748b' : '#999', fontSize: '0.8rem' }} />
+                            }
                         </div>
                     </div>
 
-                    {/* Transparency Warning */}
-                    {outputFormat === 'image/jpeg' && images.some(img => img.hasAlpha) && (
-                        <div style={{
-                            marginTop: '15px', padding: '12px 16px',
-                            background: isDark ? '#422006' : '#fef3c7',
-                            border: `1px solid ${isDark ? '#92400e' : '#f59e0b'}`,
-                            borderRadius: '10px', color: isDark ? '#fbbf24' : '#92400e',
-                            fontSize: '0.85rem', lineHeight: 1.5,
-                        }}>
-                            {t('warnings.transparency')}
+                    {/* 설정 본문 (접기/펼치기 애니메이션) */}
+                    <div style={{
+                        maxHeight: settingsOpen ? '300px' : '0',
+                        overflow: 'hidden',
+                        transition: 'max-height 0.3s ease',
+                    }}>
+                        <div style={{ padding: '0 20px 20px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
+                                        {t('settings.quality')}: {isPngMode ? 'N/A' : `${quality}%`}
+                                    </label>
+                                    <input
+                                        type="range"
+                                        min="10"
+                                        max="100"
+                                        value={quality}
+                                        onChange={(e) => setQuality(Number(e.target.value))}
+                                        disabled={isPngMode}
+                                        style={{ width: '100%', accentColor: '#667eea', opacity: isPngMode ? 0.4 : 1 }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
+                                        {t('settings.maxWidth')}: {maxWidth}px
+                                    </label>
+                                    <input
+                                        type="range"
+                                        min="320"
+                                        max="3840"
+                                        step="160"
+                                        value={maxWidth}
+                                        onChange={(e) => setMaxWidth(Number(e.target.value))}
+                                        style={{ width: '100%', accentColor: '#667eea' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '8px', color: isDark ? "#94a3b8" : '#555', fontSize: '0.9rem' }}>
+                                        {t('settings.format')}
+                                    </label>
+                                    <select
+                                        value={outputFormat}
+                                        onChange={(e) => setOutputFormat(e.target.value as OutputFormat)}
+                                        style={{
+                                            width: '100%', padding: '10px 12px', borderRadius: '10px',
+                                            border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
+                                            background: isDark ? '#0f172a' : '#fff',
+                                            color: isDark ? '#e2e8f0' : '#333', fontSize: '0.9rem',
+                                        }}
+                                    >
+                                        <option value="image/jpeg">{t('settings.formatJpeg')}</option>
+                                        <option value="image/webp">{t('settings.formatWebp')}</option>
+                                        <option value="image/png">{t('settings.formatPng')}</option>
+                                        <option value="image/avif" disabled={!avifSupported}>
+                                            {t('settings.formatAvif')}{!avifSupported ? ` (${t('settings.avifUnsupported')})` : ''}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Transparency Warning */}
+                            {outputFormat === 'image/jpeg' && images.some(img => img.hasAlpha) && (
+                                <div style={{
+                                    marginTop: '15px', padding: '12px 16px',
+                                    background: isDark ? '#422006' : '#fef3c7',
+                                    border: `1px solid ${isDark ? '#92400e' : '#f59e0b'}`,
+                                    borderRadius: '10px', color: isDark ? '#fbbf24' : '#92400e',
+                                    fontSize: '0.85rem', lineHeight: 1.5,
+                                }}>
+                                    {t('warnings.transparency')}
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -506,7 +621,7 @@ export default function ImageCompressorClient() {
                         </div>
                         <div>
                             <div style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.85rem' }}>{t('summary.compressed')}</div>
-                            <div style={{ color: '#11998e', fontSize: '1.3rem', fontWeight: 700 }}>{formatBytes(totalCompressedSize)}</div>
+                            <div style={{ color: '#11998e', fontSize: '1.3rem', fontWeight: 700 }}>{totalCompressedSize > 0 ? formatBytes(totalCompressedSize) : '-'}</div>
                         </div>
                         <div>
                             <div style={{ color: isDark ? "#64748b" : '#888', fontSize: '0.85rem' }}>{t('summary.saved')}</div>
@@ -517,62 +632,158 @@ export default function ImageCompressorClient() {
                     </div>
                 )}
 
-                {/* Image List */}
+                {/* Image List - 리디자인 */}
                 {images.length > 0 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {images.map((img) => {
                             const sliderPos = sliderPositions[img.id] ?? 50;
                             const isCompareOpen = compareId === img.id;
+                            const reduction = calculateReduction(img.originalSize, img.compressedSize);
+
+                            // 상태별 좌측 보더 색상
+                            const borderLeftColor =
+                                img.status === 'done' ? '#11998e' :
+                                img.status === 'error' ? '#e74c3c' :
+                                img.status === 'compressing' ? '#667eea' :
+                                (isDark ? '#334155' : '#e2e8f0');
 
                             return (
                                 <div
                                     key={img.id}
                                     style={{
                                         background: isDark ? "#1e293b" : "white",
-                                        borderRadius: '12px',
-                                        padding: '15px',
-                                        boxShadow: isDark ? "none" : '0 2px 10px rgba(0,0,0,0.05)',
+                                        borderRadius: '14px',
+                                        padding: isMobile ? '12px' : '16px',
+                                        boxShadow: isDark ? "none" : '0 2px 12px rgba(0,0,0,0.06)',
+                                        borderLeft: `4px solid ${borderLeftColor}`,
+                                        transition: 'border-color 0.3s ease',
                                     }}
                                 >
                                     {/* 카드 행 */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-                                        <img
-                                            src={img.compressedPreview || img.preview}
-                                            alt={img.originalFile.name}
-                                            style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }}
-                                        />
-                                        <div style={{ flex: 1, minWidth: '150px' }}>
-                                            <div style={{ fontWeight: 600, color: isDark ? "#f1f5f9" : '#333', marginBottom: '4px', wordBreak: 'break-all' }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: isMobile ? '12px' : '16px',
+                                    }}>
+                                        {/* 썸네일 */}
+                                        <div style={{ position: 'relative', flexShrink: 0 }}>
+                                            <img
+                                                src={img.compressedPreview || img.preview}
+                                                alt={img.originalFile.name}
+                                                style={{
+                                                    width: `${thumbSize}px`,
+                                                    height: `${thumbSize}px`,
+                                                    objectFit: 'cover',
+                                                    borderRadius: '10px',
+                                                    display: 'block',
+                                                }}
+                                            />
+                                            {/* 압축 중 오버레이 */}
+                                            {img.status === 'compressing' && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    inset: 0,
+                                                    borderRadius: '10px',
+                                                    background: 'rgba(102,126,234,0.6)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: 'white',
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 700,
+                                                }}>
+                                                    {t('list.compressing')}
+                                                </div>
+                                            )}
+                                            {/* 에러 오버레이 */}
+                                            {img.status === 'error' && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    inset: 0,
+                                                    borderRadius: '10px',
+                                                    background: 'rgba(231,76,60,0.5)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: 'white',
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 700,
+                                                }}>
+                                                    {t('list.error')}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* 파일 정보 */}
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{
+                                                fontWeight: 600,
+                                                fontSize: '0.95rem',
+                                                color: isDark ? "#f1f5f9" : '#1e293b',
+                                                marginBottom: '6px',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                            }}>
                                                 {img.originalFile.name}
                                             </div>
-                                            <div style={{ fontSize: '0.85rem', color: isDark ? "#64748b" : '#888' }}>
+
+                                            {/* 사이즈 정보 */}
+                                            <div style={{
+                                                fontSize: '0.85rem',
+                                                color: isDark ? "#64748b" : '#888',
+                                                marginBottom: img.status === 'done' ? '8px' : '0',
+                                            }}>
                                                 {formatBytes(img.originalSize)}
                                                 {img.status === 'done' && (
-                                                    <span style={{ color: '#11998e', marginLeft: '8px' }}>
-                                                        → {formatBytes(img.compressedSize)} ({calculateReduction(img.originalSize, img.compressedSize)}% {t('list.reduced')})
-                                                    </span>
+                                                    <>
+                                                        <span style={{ margin: '0 6px', color: '#94a3b8' }}>→</span>
+                                                        <span style={{ color: '#11998e', fontWeight: 600 }}>
+                                                            {formatBytes(img.compressedSize)}
+                                                        </span>
+                                                    </>
                                                 )}
                                             </div>
+
+                                            {/* 절감률 뱃지 */}
+                                            {img.status === 'done' && reduction > 0 && (
+                                                <div style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px',
+                                                    background: isDark ? '#14532d' : '#dcfce7',
+                                                    color: isDark ? '#4ade80' : '#16a34a',
+                                                    borderRadius: '20px',
+                                                    padding: '3px 10px',
+                                                    fontSize: '0.78rem',
+                                                    fontWeight: 700,
+                                                }}>
+                                                    -{reduction}% {t('list.reduced')}
+                                                </div>
+                                            )}
                                         </div>
-                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                            {img.status === 'compressing' && (
-                                                <span style={{ color: '#667eea', fontSize: '0.85rem' }}>{t('list.compressing')}</span>
-                                            )}
-                                            {img.status === 'error' && (
-                                                <span style={{ color: '#e74c3c', fontSize: '0.85rem' }}>{t('list.error')}</span>
-                                            )}
+
+                                        {/* 액션 버튼 */}
+                                        <div style={{
+                                            display: 'flex',
+                                            flexDirection: isMobile ? 'column' : 'row',
+                                            gap: '8px',
+                                            alignItems: 'center',
+                                            flexShrink: 0,
+                                        }}>
                                             {img.status === 'done' && (
                                                 <>
                                                     <button
                                                         onClick={() => setCompareId(isCompareOpen ? null : img.id)}
                                                         style={{
-                                                            padding: '8px 16px',
+                                                            padding: isMobile ? '8px' : '8px 14px',
                                                             background: isCompareOpen ? '#667eea' : (isDark ? '#0f172a' : '#f3f4f6'),
                                                             color: isCompareOpen ? '#fff' : (isDark ? '#94a3b8' : '#666'),
                                                             border: `1px solid ${isDark ? '#334155' : '#ddd'}`,
-                                                            borderRadius: '20px',
-                                                            fontSize: '0.85rem',
+                                                            borderRadius: '8px',
+                                                            fontSize: '0.82rem',
                                                             cursor: 'pointer',
+                                                            fontWeight: 500,
                                                         }}
                                                     >
                                                         {t('buttons.compare')}
@@ -580,20 +791,22 @@ export default function ImageCompressorClient() {
                                                     <button
                                                         onClick={() => handleDownload(img)}
                                                         style={{
-                                                            padding: '8px 16px',
+                                                            padding: isMobile ? '8px' : '8px 14px',
                                                             background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
                                                             color: 'white',
                                                             border: 'none',
-                                                            borderRadius: '20px',
-                                                            fontSize: '0.85rem',
+                                                            borderRadius: '8px',
+                                                            fontSize: '0.82rem',
                                                             cursor: 'pointer',
+                                                            fontWeight: 500,
                                                             display: 'flex',
                                                             alignItems: 'center',
+                                                            justifyContent: 'center',
                                                             gap: '5px',
                                                         }}
                                                     >
-                                                        <FaDownload />
-                                                        {t('list.download')}
+                                                        <FaDownload style={{ fontSize: '0.75rem' }} />
+                                                        {!isMobile && t('list.download')}
                                                     </button>
                                                 </>
                                             )}
@@ -601,17 +814,17 @@ export default function ImageCompressorClient() {
                                                 onClick={() => handleRemove(img.id)}
                                                 style={{
                                                     padding: '8px',
-                                                    background: isDark ? "#0f172a" : '#f8f9fa',
-                                                    color: isDark ? "#94a3b8" : '#666',
-                                                    border: `1px solid ${isDark ? "#334155" : '#ddd'}`,
-                                                    borderRadius: '50%',
+                                                    background: isDark ? "#0f172a" : '#fff0f0',
+                                                    color: '#e74c3c',
+                                                    border: `1px solid ${isDark ? '#334155' : '#fecaca'}`,
+                                                    borderRadius: '8px',
                                                     cursor: 'pointer',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                 }}
                                             >
-                                                <FaTrash />
+                                                <FaTrash style={{ fontSize: '0.8rem' }} />
                                             </button>
                                         </div>
                                     </div>

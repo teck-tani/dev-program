@@ -991,19 +991,6 @@
         "ocean": "Ocean",
         "forest": "Forest"
       },
-      "chain": {
-        "title": "Chain Timer",
-        "add": "Add Step",
-        "queue": "Queue",
-        "next": "Next",
-        "step": "Step",
-        "running": "Running",
-        "label": "Label",
-        "empty": "Add steps to begin",
-        "hour": "h",
-        "min": "m",
-        "sec": "s"
-      },
       "seo": {
         "title": "Online Timer & Pomodoro - Workout & Cooking Alarm",
         "desc": "Use the Pomodoro technique with 25-min focus / 5-min break cycles, or set Tabata workout and kitchen timers. Features 5 alarm sounds (Classic/Digital/Chime/Bird/School Bell) and vibration alerts.",
@@ -1015,14 +1002,14 @@
         "timer": {
           "description": {
             "title": "Countdown Timer",
-            "p1": "A countdown timer that alerts you when time is up. Use quick preset buttons (1m, 3m, 5m, etc.) for one-click start, or save your own custom presets for frequently used times. The chain timer feature lets you line up multiple steps that run automatically in sequence — perfect for managing complex routines."
+            "p1": "A countdown timer that alerts you when time is up. Use quick preset buttons (1m, 3m, 5m, etc.) for one-click start, or save your own custom presets for frequently used times. Extend time on the fly with +1m/+5m buttons for flexible time management."
           },
           "features": {
             "title": "Timer Features",
             "list": {
               "f1": { "title": "⏱️ Quick Presets", "desc": "One-click start with 1m, 3m, 5m, 10m, 15m, 30m, and 1h preset buttons. No manual input needed." },
               "f2": { "title": "💾 Save Custom Presets", "desc": "Name and save your frequently used times (up to 10). Load them instantly with a single click next time." },
-              "f3": { "title": "⛓️ Chain Timer", "desc": "Add multiple steps that run in sequence automatically. Example: 'Warm-up 30s → Exercise 3m → Cool-down 1m' in one setup." },
+              "f3": { "title": "🔗 URL Sharing", "desc": "Copy your timer settings as a URL to share with others. Recipients can open the link and the same time is instantly set." },
               "f4": { "title": "⏳ +1m / +5m Extend", "desc": "Need more time? Extend the running timer instantly with +1 minute or +5 minute buttons." }
             }
           },
@@ -1041,7 +1028,7 @@
               "u1": { "title": "🍜 Cooking Noodles", "desc": "Set 3 minutes for ramen, 4 minutes for cup noodles, or 2 minutes for instant rice." },
               "u2": { "title": "🍳 Cooking & Baking", "desc": "Track oven preheating, dough rising, pasta boiling, and other cooking steps." },
               "u3": { "title": "📚 Study & Focus", "desc": "Set a goal like '30 minutes of study' to boost your concentration." },
-              "u4": { "title": "⛓️ Multi-Step Routines", "desc": "Use chain timer for 'Stretch 5m → Workout 20m → Cool-down 5m' routines in one go." }
+              "u4": { "title": "☕ Brewing Tea & Coffee", "desc": "Green tea 2m, black tea 3m, pour-over coffee 4m — time your beverages precisely." }
             }
           },
           "faq": {
@@ -1135,48 +1122,6 @@
               "q2": { "q": "What's the difference between HIIT and Tabata?", "a": "Tabata is a specific type of HIIT. HIIT is the general term for high-intensity interval training with flexible work/rest times and rounds. Tabata is a fixed protocol of 20s/10s/8 rounds." },
               "q3": { "q": "Can I change the number of rounds?", "a": "Yes, use the ± buttons to set anywhere from 1 to 20 rounds. Adjust based on your fitness level." },
               "q4": { "q": "Can I pause during a workout?", "a": "Yes, press the Stop button or Space bar to pause. Resume to continue from where you left off." }
-            }
-          }
-        },
-        "chain": {
-          "description": {
-            "title": "Chain Timer",
-            "p1": "A chain timer that automatically runs multiple steps in sequence. Set a name and duration for each step, press start, and each step begins automatically when the previous one ends. Perfect for cooking, workouts, study sessions, presentations, and any multi-phase routine you want to manage with a single setup."
-          },
-          "features": {
-            "title": "Chain Timer Features",
-            "list": {
-              "f1": { "title": "⛓️ Auto Sequential Execution", "desc": "Steps run in order automatically. When one step ends, the next begins immediately without any alarm interruption." },
-              "f2": { "title": "🏷️ Named Steps", "desc": "Label each step like 'Warm-up', 'Main Workout', 'Cool-down' so you always know which phase you're in." },
-              "f3": { "title": "✅ Progress Tracking", "desc": "Completed steps are dimmed, the current step is highlighted — see your routine's progress in real time." },
-              "f4": { "title": "⏱️ Flexible Time Settings", "desc": "Set hours, minutes, and seconds independently for each step — from 30 seconds to several hours." }
-            }
-          },
-          "howto": {
-            "title": "How to Use Chain Timer",
-            "steps": {
-              "step1": "<strong>Step 1 - Add Steps:</strong> In the 'Chain Timer' card below the Timer tab, enter a name and time, then press + to add a step.",
-              "step2": "<strong>Step 2 - Review Order:</strong> Added steps appear in the list in order. Remove unwanted steps with the ✕ button.",
-              "step3": "<strong>Step 3 - Start:</strong> Press ▶ Start and the countdown begins from the first step.",
-              "step4": "<strong>Step 4 - Auto Progress:</strong> Each step transitions to the next automatically. The alarm sounds only when the final step completes."
-            }
-          },
-          "usecases": {
-            "title": "Use Cases",
-            "list": {
-              "u1": { "title": "🍳 Step-by-Step Cooking", "desc": "Sauté onions 3m → Grill meat 5m → Simmer sauce 10m — set up sequential cooking steps in one go." },
-              "u2": { "title": "🏃 Workout Routine", "desc": "Warm-up 5m → Main exercise 20m → Cool-down 5m → Stretching 10m — automate your full workout routine." },
-              "u3": { "title": "📚 Study Routine", "desc": "Vocabulary 15m → Grammar 20m → Listening 15m — manage subject-by-subject study time systematically." },
-              "u4": { "title": "🎤 Presentations", "desc": "Intro 2m → Main body 10m → Conclusion 3m → Q&A 5m — manage presentation sections with timed segments." }
-            }
-          },
-          "faq": {
-            "title": "FAQ",
-            "list": {
-              "q1": { "q": "How many steps can I add?", "a": "There's no limit on the number of steps. Add as many as you need for your routine." },
-              "q2": { "q": "Can I skip a specific step in the middle?", "a": "Currently only sequential execution is supported. Remove unwanted steps with the ✕ button before starting." },
-              "q3": { "q": "Can I add steps while the chain is running?", "a": "Steps cannot be modified during execution. Reset, edit your steps, and start again." },
-              "q4": { "q": "Does an alarm sound between steps?", "a": "No, intermediate steps transition silently to the next. The alarm only sounds when the very last step completes." }
             }
           }
         },
@@ -3071,7 +3016,9 @@
     "subtitle": "Reduce image file size! Compressed safely in your browser without server upload.",
     "upload": {
       "title": "Drag or click to upload images",
-      "subtitle": "Supports JPG, PNG, WebP and more"
+      "subtitle": "Supports JPG, PNG, WebP and more",
+      "addMore": "+ Add Images",
+      "addMoreHint": "Drag or click to add"
     },
     "settings": {
       "title": "Compression Settings",
@@ -9032,7 +8979,9 @@
     },
     "upload": {
       "title": "Drag & drop or click to upload images",
-      "subtitle": "Supports JPG, PNG, WebP, GIF"
+      "subtitle": "Supports JPG, PNG, WebP, GIF",
+      "addMore": "+ Add Images",
+      "addMoreHint": "Drag or click to add"
     },
     "settings": {
       "title": "Resize Settings",
@@ -9169,7 +9118,9 @@
     "upload": {
       "title": "Drag & drop or click to upload images",
       "subtitle": "Supports JPG, PNG, WebP, AVIF, GIF, BMP, HEIC (iPhone) and more",
-      "ariaLabel": "Click or drag to upload images"
+      "ariaLabel": "Click or drag to upload images",
+      "addMore": "+ Add Images",
+      "addMoreHint": "Drag or click to add"
     },
     "settings": {
       "title": "Conversion Settings",
@@ -9305,7 +9256,8 @@
     },
     "upload": {
       "title": "Drag & drop or click to upload an image",
-      "subtitle": "Square images recommended (JPG, PNG, WebP, SVG)"
+      "subtitle": "Square images recommended (JPG, PNG, WebP, SVG)",
+      "changeImage": "Choose another image (click or drag)"
     },
     "settings": {
       "title": "Favicon Settings",

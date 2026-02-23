@@ -80,8 +80,17 @@ const PRESETS_KEY = 'timer_user_presets';
 const ALARM_AUTO_STOP_SEC = 30;
 
 interface UserPreset { name: string; seconds: number; }
-interface ChainStep { id: string; label: string; hours: number; minutes: number; seconds: number; done: boolean; }
 interface MultiTimer { id: string; label: string; duration: number; timeLeft: number; isRunning: boolean; endTime: number; }
+
+// 각 탭별 독립 타이머 상태
+interface ModeTimerState {
+    duration: number;
+    timeLeft: number;
+    isRunning: boolean;
+    isSetting: boolean;
+    endTime: number;
+}
+const DEFAULT_MT: ModeTimerState = { duration: 0, timeLeft: 0, isRunning: false, isSetting: true, endTime: 0 };
 
 function formatTime(seconds: number) {
     const h = Math.floor(seconds / 3600);
@@ -100,17 +109,18 @@ export default function TimerView() {
     // Mode
     const [mode, setMode] = useState<TimerMode>("timer");
 
-    // Common timer state
-    const [duration, setDuration] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(0);
-    const [isRunning, setIsRunning] = useState(false);
-    // 탭별 독립 isSetting (각 탭이 setup/countdown 상태를 개별 유지)
-    const [modeIsSetting, setModeIsSetting] = useState<Record<TimerMode, boolean>>({
-        timer: true, pomodoro: true, interval: true, multi: true,
+    // 탭별 완전 독립 타이머 상태
+    const [modeTimers, setModeTimers] = useState<Record<TimerMode, ModeTimerState>>({
+        timer: { ...DEFAULT_MT }, pomodoro: { ...DEFAULT_MT }, interval: { ...DEFAULT_MT }, multi: { ...DEFAULT_MT },
     });
-    const isSetting = modeIsSetting[mode]; // 현재 탭의 setup 상태
-    // 실행 중인 탭 추적 (타이머가 어느 탭에서 시작됐는지)
-    const [runningMode, setRunningMode] = useState<TimerMode | null>(null);
+    // 현재 탭의 타이머 상태 파생
+    const { duration, timeLeft, isRunning, isSetting } = modeTimers[mode];
+    const updateMode = useCallback((m: TimerMode, updates: Partial<ModeTimerState>) => {
+        setModeTimers(prev => ({ ...prev, [m]: { ...prev[m], ...updates } }));
+    }, []);
+
+    // 알람 모달
+    const [alarmSource, setAlarmSource] = useState<TimerMode | null>(null);
     const [showAlarmModal, setShowAlarmModal] = useState(false);
     const [inputValues, setInputValues] = useState({ h: 0, m: 0, s: 0 });
 
@@ -144,22 +154,12 @@ export default function TimerView() {
     // Multi-timer
     const [multiTimers, setMultiTimers] = useState<MultiTimer[]>([]);
 
-    // Chain
-    const [chainSteps, setChainSteps] = useState<ChainStep[]>([]);
-    const [chainCurrentIdx, setChainCurrentIdx] = useState(-1);
-    const [chainNewLabel, setChainNewLabel] = useState("");
-    const [chainNewHour, setChainNewHour] = useState(0);
-    const [chainNewMin, setChainNewMin] = useState(0);
-    const [chainNewSec, setChainNewSec] = useState(0);
-
     // Presets
     const [userPresets, setUserPresets] = useState<UserPreset[]>([]);
     const [presetName, setPresetName] = useState("");
 
-    // Timer precision refs
-    const endTimeRef = useRef<number>(0);
+    // rAF
     const rafRef = useRef<number>(0);
-    const lastSecRef = useRef<number>(-1);
 
     // Alarm auto-stop
     const alarmAutoStopRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -180,37 +180,44 @@ export default function TimerView() {
                 if (s.selectedSound) setSelectedSound(s.selectedSound);
                 if (s.vibrationOn !== undefined) setVibrationOn(s.vibrationOn);
                 if (s.volume !== undefined) setVolume(s.volume);
-                // voiceCountdown는 항상 OFF 시작 (기본값 유지)
                 if (s.pomoWork) setPomoWork(s.pomoWork);
                 if (s.pomoBreak) setPomoBreak(s.pomoBreak);
                 if (s.pomoLongBreak) setPomoLongBreak(s.pomoLongBreak);
                 if (s.pomoAutoStart !== undefined) setPomoAutoStart(s.pomoAutoStart);
-                // 탭별 isSetting 로드
-                if (s.modeIsSetting) {
-                    setModeIsSetting(s.modeIsSetting);
-                } else if (s.isSetting === false) {
-                    // 이전 포맷 하위호환: 단일 isSetting → 해당 모드 적용
+                if (s.pomoPhase) setPomoPhase(s.pomoPhase);
+                if (s.pomoSession) setPomoSession(s.pomoSession);
+                if (s.inputValues) setInputValues(s.inputValues);
+
+                // 새 포맷: modeTimers 전체 복원
+                if (s.modeTimers) {
+                    const now = Date.now();
+                    const loaded = { ...s.modeTimers } as Record<TimerMode, ModeTimerState>;
+                    for (const m of ['timer', 'pomodoro', 'interval'] as TimerMode[]) {
+                        if (loaded[m]?.isRunning && loaded[m]?.endTime) {
+                            const remaining = Math.max(0, Math.ceil((loaded[m].endTime - now) / 1000));
+                            if (remaining > 0) {
+                                loaded[m] = { ...loaded[m], timeLeft: remaining };
+                            } else {
+                                loaded[m] = { ...loaded[m], timeLeft: 0, isRunning: false };
+                            }
+                        }
+                    }
+                    setModeTimers(prev => ({ ...prev, ...loaded }));
+                } else if (s.isSetting === false && s.duration) {
+                    // 이전 포맷 하위호환
                     const m: TimerMode = s.mode ?? 'timer';
-                    setModeIsSetting(prev => ({ ...prev, [m]: false }));
-                }
-                // runningMode 복원
-                if (s.runningMode) setRunningMode(s.runningMode);
-                else if (!s.modeIsSetting && s.isSetting === false && s.duration) {
-                    setRunningMode(s.mode ?? 'timer');
-                }
-                // 타이머 상태 복원
-                const hadTimer = s.runningMode != null || (s.isSetting === false && s.duration);
-                if (hadTimer && s.duration) {
-                    setDuration(s.duration);
-                    if (s.pomoPhase) setPomoPhase(s.pomoPhase);
-                    if (s.pomoSession) setPomoSession(s.pomoSession);
+                    let tl = s.timeLeft ?? 0;
+                    let running = false;
                     if (s.isRunning && s.endTime) {
                         const remaining = Math.max(0, Math.ceil((s.endTime - Date.now()) / 1000));
-                        if (remaining > 0) { setTimeLeft(remaining); setIsRunning(true); }
-                        else { setTimeLeft(0); setShowAlarmModal(true); }
-                    } else if (s.timeLeft !== undefined) { setTimeLeft(s.timeLeft); }
+                        if (remaining > 0) { tl = remaining; running = true; }
+                        else { tl = 0; }
+                    }
+                    setModeTimers(prev => ({
+                        ...prev,
+                        [m]: { duration: s.duration, timeLeft: tl, isRunning: running, isSetting: false, endTime: running ? s.endTime : 0 },
+                    }));
                 }
-                if (s.inputValues) setInputValues(s.inputValues);
             }
             const presets = localStorage.getItem(PRESETS_KEY);
             if (presets) setUserPresets(JSON.parse(presets));
@@ -225,12 +232,16 @@ export default function TimerView() {
     // ===== Save on change =====
     useEffect(() => {
         try {
+            // endTime은 실행 중인 모드만 저장
+            const saveable: Record<string, ModeTimerState> = {};
+            for (const m of ['timer', 'pomodoro', 'interval', 'multi'] as TimerMode[]) {
+                const mt = modeTimers[m];
+                saveable[m] = { ...mt, timeLeft: mt.isRunning ? mt.timeLeft : mt.timeLeft };
+            }
             localStorage.setItem(STORAGE_KEY, JSON.stringify({
                 mode, selectedSound, vibrationOn, volume, voiceCountdown,
                 pomoWork, pomoBreak, pomoLongBreak, pomoAutoStart,
-                duration, modeIsSetting, pomoPhase, pomoSession, inputValues, runningMode,
-                timeLeft: isRunning ? undefined : timeLeft,
-                isRunning, endTime: isRunning ? endTimeRef.current : undefined,
+                pomoPhase, pomoSession, inputValues, modeTimers: saveable,
             }));
         } catch (e) {
             if (e instanceof DOMException && e.name === 'QuotaExceededError') {
@@ -238,7 +249,7 @@ export default function TimerView() {
             }
         }
     }, [mode, selectedSound, vibrationOn, volume, voiceCountdown, pomoWork, pomoBreak, pomoLongBreak,
-        pomoAutoStart, duration, timeLeft, isRunning, modeIsSetting, pomoPhase, pomoSession, inputValues, runningMode]);
+        pomoAutoStart, modeTimers, pomoPhase, pomoSession, inputValues]);
 
     // ===== Sound =====
     const stopSound = useCallback(() => {
@@ -261,8 +272,6 @@ export default function TimerView() {
             const players: Record<Exclude<SoundType, "classic">, (c: AudioContext, d: number) => OscillatorNode> = {
                 digital: playDigitalBeep, gentle: playGentleChime, bird: playBirdSound, school: playSchoolBell,
             };
-            const osc = ctx.createOscillator();
-            // Re-create with gain routing
             const origOsc = players[selectedSound](ctx, 3);
             oscRef.current = origOsc;
         }
@@ -276,11 +285,11 @@ export default function TimerView() {
             setAlarmCountdown(prev => prev <= 1 ? 0 : prev - 1);
         }, 1000);
         alarmAutoStopRef.current = setTimeout(() => {
-            setShowAlarmModal(false); stopSound();
+            setShowAlarmModal(false); setAlarmSource(null); stopSound();
         }, ALARM_AUTO_STOP_SEC * 1000);
     }, [playSound, stopSound]);
 
-    // ===== Voice countdown (T3-17) =====
+    // ===== Voice countdown =====
     const voiceRef = useRef<boolean>(false);
     useEffect(() => { voiceRef.current = voiceCountdown; }, [voiceCountdown]);
 
@@ -296,82 +305,96 @@ export default function TimerView() {
         }
     }, [timeLeft, isRunning]);
 
-    // ===== Precision countdown with rAF =====
-    const tick = useCallback(() => {
-        const remaining = Math.max(0, Math.ceil((endTimeRef.current - Date.now()) / 1000));
-        if (remaining !== lastSecRef.current) { lastSecRef.current = remaining; setTimeLeft(remaining); }
-        if (remaining > 0) rafRef.current = requestAnimationFrame(tick);
-    }, []);
-
+    // ===== Unified rAF for ALL modes =====
     useEffect(() => {
-        if (isRunning && timeLeft > 0) {
-            if (endTimeRef.current === 0 || lastSecRef.current === -1) {
-                endTimeRef.current = Date.now() + timeLeft * 1000;
-            }
-            lastSecRef.current = timeLeft;
-            rafRef.current = requestAnimationFrame(tick);
-        } else { if (rafRef.current) cancelAnimationFrame(rafRef.current); }
-        return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-    }, [isRunning, tick]);
-
-    // Alarm trigger — isSetting 대신 runningMode로 판단 (탭 전환과 무관하게 동작)
-    useEffect(() => {
-        if (timeLeft === 0 && isRunning && runningMode !== null) {
-            setIsRunning(false);
-
-            if (runningMode === "interval") {
-                handleIntervalNext();
-                return;
-            }
-
-            // Record pomo stats
-            if (runningMode === "pomodoro" && pomoPhase === "work") {
-                recordPomoSession(pomoWork);
-                if (activeTaskId) incrementTaskPomo(activeTaskId);
-            }
-
-            // Chain mode: advance to next step
-            if (runningMode === "timer" && chainCurrentIdx >= 0 && chainCurrentIdx < chainSteps.length) {
-                const steps = [...chainSteps];
-                steps[chainCurrentIdx].done = true;
-                setChainSteps(steps);
-                const nextIdx = chainCurrentIdx + 1;
-                if (nextIdx < steps.length) {
-                    setChainCurrentIdx(nextIdx);
-                    const nextStep = steps[nextIdx];
-                    const nextDur = nextStep.hours * 3600 + nextStep.minutes * 60 + nextStep.seconds;
-                    setDuration(nextDur); setTimeLeft(nextDur);
-                    endTimeRef.current = Date.now() + nextDur * 1000;
-                    lastSecRef.current = nextDur;
-                    setIsRunning(true);
-                    return;
-                } else {
-                    setChainCurrentIdx(-1);
+        const anyRunning = modeTimers.timer.isRunning || modeTimers.pomodoro.isRunning || modeTimers.interval.isRunning;
+        if (!anyRunning) {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            return;
+        }
+        const tick = () => {
+            const now = Date.now();
+            setModeTimers(prev => {
+                let changed = false;
+                const next = { ...prev };
+                for (const m of ['timer', 'pomodoro', 'interval'] as TimerMode[]) {
+                    if (prev[m].isRunning && prev[m].endTime > 0) {
+                        const remaining = Math.max(0, Math.ceil((prev[m].endTime - now) / 1000));
+                        if (remaining !== prev[m].timeLeft) {
+                            next[m] = { ...prev[m], timeLeft: remaining };
+                            changed = true;
+                        }
+                    }
                 }
-            }
+                return changed ? next : prev;
+            });
+            rafRef.current = requestAnimationFrame(tick);
+        };
+        rafRef.current = requestAnimationFrame(tick);
+        return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    }, [modeTimers.timer.isRunning, modeTimers.pomodoro.isRunning, modeTimers.interval.isRunning]);
 
-            setShowAlarmModal(true);
-            startAlarmLoop();
-            if (vibrationOn && navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
-            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                const body = runningMode === 'pomodoro'
-                    ? (pomoPhase === 'work' ? t('pomodoro.workDone') : t('pomodoro.breakDone'))
-                    : t('controls.confirm');
-                new Notification(t('modal.title'), { body, icon: '/icon.svg' });
+    // ===== Alarm trigger for ALL modes =====
+    useEffect(() => {
+        for (const m of ['timer', 'pomodoro', 'interval'] as TimerMode[]) {
+            const mt = modeTimers[m];
+            if (mt.timeLeft === 0 && mt.isRunning) {
+                updateMode(m, { isRunning: false });
+
+                if (m === 'interval') {
+                    // Interval auto-next (work↔rest)
+                    if (intervalPhase === 'work') {
+                        setIntervalPhase('rest');
+                        updateMode('interval', { duration: intervalRest, timeLeft: intervalRest, isRunning: true, isSetting: false, endTime: Date.now() + intervalRest * 1000 });
+                    } else {
+                        if (intervalCurrentRound >= intervalRounds) {
+                            setAlarmSource('interval');
+                            setShowAlarmModal(true);
+                            startAlarmLoop();
+                            if (vibrationOn && navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
+                        } else {
+                            setIntervalPhase('work');
+                            setIntervalCurrentRound(prev => prev + 1);
+                            updateMode('interval', { duration: intervalWork, timeLeft: intervalWork, isRunning: true, isSetting: false, endTime: Date.now() + intervalWork * 1000 });
+                        }
+                    }
+                    continue;
+                }
+
+                if (m === 'pomodoro' && pomoPhase === 'work') {
+                    recordPomoSession(pomoWork);
+                    if (activeTaskId) incrementTaskPomo(activeTaskId);
+                }
+
+                setAlarmSource(m);
+                setShowAlarmModal(true);
+                startAlarmLoop();
+                if (vibrationOn && navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
+                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    const body = m === 'pomodoro'
+                        ? (pomoPhase === 'work' ? t('pomodoro.workDone') : t('pomodoro.breakDone'))
+                        : t('controls.confirm');
+                    new Notification(t('modal.title'), { body, icon: '/icon.svg' });
+                }
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [timeLeft, isRunning, runningMode]);
+    }, [modeTimers.timer.timeLeft, modeTimers.timer.isRunning,
+        modeTimers.pomodoro.timeLeft, modeTimers.pomodoro.isRunning,
+        modeTimers.interval.timeLeft, modeTimers.interval.isRunning]);
 
-    // Tab title — runningMode 기준으로 탭에 보이는 모드와 무관하게 올바른 이모지 표시
+    // Tab title — 실행 중인 모드 중 현재 탭 우선 표시
     useEffect(() => {
-        if (isRunning || (runningMode !== null && timeLeft > 0)) {
-            const prefix = runningMode === 'pomodoro' ? (pomoPhase === 'work' ? '🔴 ' : '🟢 ')
-                : runningMode === 'interval' ? (intervalPhase === 'work' ? '💪 ' : '😮‍💨 ') : '';
-            document.title = `${prefix}${formatTime(timeLeft)} - Timer`;
+        const running = (['timer', 'pomodoro', 'interval'] as TimerMode[]).filter(m => modeTimers[m].isRunning || (!modeTimers[m].isSetting && modeTimers[m].timeLeft > 0));
+        if (running.length > 0) {
+            const dm = running.includes(mode) ? mode : running[0];
+            const mt = modeTimers[dm];
+            const prefix = dm === 'pomodoro' ? (pomoPhase === 'work' ? '🔴 ' : '🟢 ')
+                : dm === 'interval' ? (intervalPhase === 'work' ? '💪 ' : '😮‍💨 ') : '';
+            document.title = `${prefix}${formatTime(mt.timeLeft)} - Timer`;
         } else { document.title = 'Timer'; }
         return () => { document.title = 'Timer'; };
-    }, [timeLeft, isRunning, runningMode, pomoPhase, intervalPhase]);
+    }, [modeTimers, mode, pomoPhase, intervalPhase]);
 
     // Notification permission
     useEffect(() => {
@@ -409,6 +432,7 @@ export default function TimerView() {
                 }
                 if (remaining === 0 && timer.timeLeft > 0) {
                     startAlarmLoop();
+                    setAlarmSource('multi');
                     setShowAlarmModal(true);
                     if (vibrationOn && navigator.vibrate) navigator.vibrate([300, 100, 300]);
                     return { ...timer, timeLeft: 0, isRunning: false };
@@ -419,19 +443,19 @@ export default function TimerView() {
         };
         multiRafRef.current = requestAnimationFrame(tickMulti);
         return () => { if (multiRafRef.current) cancelAnimationFrame(multiRafRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [multiTimers.map(t => t.isRunning).join(',')]);
 
     // ===== Handlers =====
-    const handleStopAlarm = useCallback(() => { setShowAlarmModal(false); stopSound(); }, [stopSound]);
+    const handleStopAlarm = useCallback(() => { setShowAlarmModal(false); setAlarmSource(null); stopSound(); }, [stopSound]);
 
-    const startTimer = (seconds: number, timerMode?: TimerMode) => {
+    const startTimer = useCallback((seconds: number, timerMode?: TimerMode) => {
         const m = timerMode ?? mode;
-        setDuration(seconds); setTimeLeft(seconds);
-        setModeIsSetting(prev => ({ ...prev, [m]: false }));
-        setRunningMode(m);
-        endTimeRef.current = Date.now() + seconds * 1000; lastSecRef.current = seconds;
-        setIsRunning(true);
-    };
+        updateMode(m, {
+            duration: seconds, timeLeft: seconds, isSetting: false, isRunning: true,
+            endTime: Date.now() + seconds * 1000,
+        });
+    }, [mode, updateMode]);
 
     const handlePreset = (seconds: number) => {
         const h = Math.floor(seconds / 3600); const m = Math.floor((seconds % 3600) / 60); const s = seconds % 60;
@@ -450,61 +474,40 @@ export default function TimerView() {
             if (totalSeconds === 0) return;
             startTimer(totalSeconds);
         } else {
-            endTimeRef.current = Date.now() + timeLeft * 1000; lastSecRef.current = timeLeft;
-            setIsRunning(true);
+            // Resume
+            updateMode(mode, { isRunning: true, endTime: Date.now() + timeLeft * 1000 });
         }
     };
 
     const handleReset = useCallback(() => {
-        setIsRunning(false);
-        setModeIsSetting(prev => ({ ...prev, [mode]: true }));
-        setTimeLeft(0);
-        setInputValues({ h: 0, m: 0, s: 0 }); setShowAlarmModal(false);
-        setPomoPhase('work'); setPomoSession(1);
-        setIntervalPhase('work'); setIntervalCurrentRound(1);
-        setChainCurrentIdx(-1);
-        setChainSteps(prev => prev.map(s => ({ ...s, done: false })));
-        endTimeRef.current = 0; lastSecRef.current = -1;
-        stopSound();
-        if (runningMode === mode) setRunningMode(null);
-    }, [stopSound, mode, runningMode]);
+        updateMode(mode, { ...DEFAULT_MT });
+        setInputValues({ h: 0, m: 0, s: 0 });
+        if (showAlarmModal && alarmSource === mode) { setShowAlarmModal(false); setAlarmSource(null); stopSound(); }
+        if (mode === 'pomodoro') { setPomoPhase('work'); setPomoSession(1); }
+        if (mode === 'interval') { setIntervalPhase('work'); setIntervalCurrentRound(1); }
+    }, [stopSound, mode, updateMode, showAlarmModal, alarmSource]);
 
     // Extend (+1m, +5m)
     const handleExtend = (extraSec: number) => {
-        const newTimeLeft = timeLeft + extraSec;
-        const newDuration = duration + extraSec;
-        setTimeLeft(newTimeLeft); setDuration(newDuration);
-        if (isRunning) { endTimeRef.current += extraSec * 1000; lastSecRef.current = newTimeLeft; }
+        const mt = modeTimers[mode];
+        updateMode(mode, {
+            timeLeft: mt.timeLeft + extraSec,
+            duration: mt.duration + extraSec,
+            endTime: mt.isRunning ? mt.endTime + extraSec * 1000 : mt.endTime,
+        });
     };
 
     // Pomodoro next phase
     const handlePomoNext = useCallback(() => {
-        stopSound(); setShowAlarmModal(false);
+        stopSound(); setShowAlarmModal(false); setAlarmSource(null);
         let nextDuration: number;
         if (pomoPhase === 'work') {
             if (pomoSession % POMO_DEFAULTS.sessionsBeforeLong === 0) { setPomoPhase('longBreak'); nextDuration = pomoLongBreak * 60; }
             else { setPomoPhase('break'); nextDuration = pomoBreak * 60; }
         } else { setPomoSession(prev => prev + 1); setPomoPhase('work'); nextDuration = pomoWork * 60; }
         startTimer(nextDuration, 'pomodoro');
-        if (!pomoAutoStart) setIsRunning(false);
-    }, [pomoPhase, pomoSession, pomoWork, pomoBreak, pomoLongBreak, pomoAutoStart, stopSound]);
-
-    // Interval next phase
-    const handleIntervalNext = useCallback(() => {
-        if (intervalPhase === 'work') {
-            setIntervalPhase('rest');
-            startTimer(intervalRest, 'interval');
-        } else {
-            if (intervalCurrentRound >= intervalRounds) {
-                setIsRunning(false); setShowAlarmModal(true);
-                startAlarmLoop();
-                return;
-            }
-            setIntervalPhase('work');
-            setIntervalCurrentRound(prev => prev + 1);
-            startTimer(intervalWork, 'interval');
-        }
-    }, [intervalPhase, intervalCurrentRound, intervalRounds, intervalWork, intervalRest, startAlarmLoop]);
+        if (!pomoAutoStart) updateMode('pomodoro', { isRunning: false });
+    }, [pomoPhase, pomoSession, pomoWork, pomoBreak, pomoLongBreak, pomoAutoStart, stopSound, startTimer, updateMode]);
 
     // Interval presets
     const applyIntervalPreset = (type: "tabata" | "hiit" | "custom") => {
@@ -578,23 +581,6 @@ export default function TimerView() {
     const resetMultiTimer = (id: string) => setMultiTimers(prev => prev.map(timer => timer.id === id ? { ...timer, timeLeft: timer.duration, isRunning: false } : timer));
     const setMultiDuration = (id: string, dur: number) => setMultiTimers(prev => prev.map(timer => timer.id === id && !timer.isRunning ? { ...timer, duration: dur, timeLeft: dur } : timer));
 
-    // Chain handlers
-    const addChainStep = () => {
-        const dur = chainNewHour * 3600 + chainNewMin * 60 + chainNewSec;
-        if (dur === 0) return;
-        setChainSteps(prev => [...prev, { id: Date.now().toString(36), label: chainNewLabel || `${t('chain.step')} ${prev.length + 1}`, hours: chainNewHour, minutes: chainNewMin, seconds: chainNewSec, done: false }]);
-        setChainNewLabel("");
-    };
-    const removeChainStep = (id: string) => setChainSteps(prev => prev.filter(s => s.id !== id));
-    const startChain = () => {
-        if (chainSteps.length === 0) return;
-        setChainSteps(prev => prev.map(s => ({ ...s, done: false })));
-        setChainCurrentIdx(0);
-        const first = chainSteps[0];
-        const dur = first.hours * 3600 + first.minutes * 60 + first.seconds;
-        startTimer(dur, 'timer');
-    };
-
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -602,7 +588,8 @@ export default function TimerView() {
             if (mode === 'multi') return;
             switch (e.code) {
                 case 'Space': e.preventDefault(); if (showAlarmModal) return;
-                    if (isSetting) handleStart(); else { if (isRunning) setIsRunning(false); else { endTimeRef.current = Date.now() + timeLeft * 1000; lastSecRef.current = timeLeft; setIsRunning(true); } }
+                    if (isSetting) handleStart();
+                    else { if (isRunning) updateMode(mode, { isRunning: false }); else updateMode(mode, { isRunning: true, endTime: Date.now() + timeLeft * 1000 }); }
                     break;
                 case 'KeyR': e.preventDefault(); handleReset(); break;
                 case 'Escape': if (showAlarmModal) { e.preventDefault(); handleStopAlarm(); } break;
@@ -610,15 +597,15 @@ export default function TimerView() {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isRunning, isSetting, timeLeft, showAlarmModal, mode, handleReset, handleStopAlarm]);
+    }, [isRunning, isSetting, timeLeft, showAlarmModal, mode, handleReset, handleStopAlarm, updateMode]);
 
     // ===== Derived =====
     const progress = duration > 0 ? ((duration - timeLeft) / duration) : 0;
     const phaseColor = pomoPhase === 'work' ? '#ef4444' : pomoPhase === 'break' ? '#22c55e' : '#3b82f6';
     const phaseColorDark = pomoPhase === 'work' ? '#dc2626' : pomoPhase === 'break' ? '#16a34a' : '#2563eb';
     const ringColor = mode === 'pomodoro' ? phaseColor : mode === 'interval' ? (intervalPhase === 'work' ? '#f59e0b' : '#22c55e') : '#667eea';
-    // 현재 탭이 실행 중인 탭인 경우에만 카운트다운 표시
-    const isCountingDown = runningMode === mode && (isRunning || timeLeft > 0);
+    const isCountingDown = !isSetting && (isRunning || timeLeft > 0);
+    const alarmMode = alarmSource ?? mode;
 
     // ===== RENDER =====
     return (
@@ -630,31 +617,31 @@ export default function TimerView() {
                 <div className={styles.alarmOverlay} role="alertdialog" aria-modal="true" aria-label={t('modal.title')} ref={alarmModalRef}>
                     <div className={styles.alarmModal}>
                         <div className={styles.alarmHeader} style={{
-                            background: (runningMode ?? mode) === 'pomodoro' ? `linear-gradient(135deg, ${phaseColor}, ${phaseColorDark})`
-                                : (runningMode ?? mode) === 'interval' ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+                            background: alarmMode === 'pomodoro' ? `linear-gradient(135deg, ${phaseColor}, ${phaseColorDark})`
+                                : alarmMode === 'interval' ? 'linear-gradient(135deg, #f59e0b, #d97706)'
                                 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         }}>
                             <span className={styles.alarmTitle}>
-                                {(runningMode ?? mode) === 'pomodoro' ? (pomoPhase === 'work' ? t('pomodoro.workDone') : t('pomodoro.breakDone'))
-                                    : (runningMode ?? mode) === 'interval' ? t('interval.completed') : t('modal.title')}
+                                {alarmMode === 'pomodoro' ? (pomoPhase === 'work' ? t('pomodoro.workDone') : t('pomodoro.breakDone'))
+                                    : alarmMode === 'interval' ? t('interval.completed') : t('modal.title')}
                             </span>
                             <button className={styles.alarmClose} onClick={handleStopAlarm} aria-label="close">&times;</button>
                         </div>
                         <div className={styles.alarmBody}>
                             <div className={styles.alarmIcon} style={{
-                                background: (runningMode ?? mode) === 'pomodoro' ? `linear-gradient(135deg, ${phaseColor}, ${phaseColorDark})`
+                                background: alarmMode === 'pomodoro' ? `linear-gradient(135deg, ${phaseColor}, ${phaseColorDark})`
                                     : 'linear-gradient(135deg, #ff6b6b, #ee5a5a)',
                                 boxShadow: `0 4px 15px rgba(238,90,90,0.4)`,
                             }}>
-                                {pomoPhase !== 'work' && (runningMode ?? mode) === 'pomodoro'
+                                {pomoPhase !== 'work' && alarmMode === 'pomodoro'
                                     ? <FaCoffee style={{ fontSize: '30px', color: 'white' }} />
                                     : <FaHourglassStart style={{ fontSize: '30px', color: 'white' }} />}
                             </div>
-                            {(runningMode ?? mode) === 'pomodoro' && <div className={styles.alarmSessionText}>{t('pomodoro.session')} {pomoSession} / {POMO_DEFAULTS.sessionsBeforeLong}</div>}
+                            {alarmMode === 'pomodoro' && <div className={styles.alarmSessionText}>{t('pomodoro.session')} {pomoSession} / {POMO_DEFAULTS.sessionsBeforeLong}</div>}
                             <div className={styles.autoStopText}>{alarmCountdown > 0 ? `${alarmCountdown}s` : ''}</div>
                         </div>
                         <div className={styles.alarmFooter}>
-                            {(runningMode ?? mode) === 'pomodoro' && (
+                            {alarmMode === 'pomodoro' && (
                                 <button onClick={handlePomoNext} className={styles.alarmNextBtn} style={{
                                     background: `linear-gradient(135deg, ${phaseColor}, ${pomoPhase === 'work' ? '#16a34a' : '#ef4444'})`,
                                 }}>
@@ -662,8 +649,8 @@ export default function TimerView() {
                                 </button>
                             )}
                             <button onClick={handleStopAlarm} className={styles.alarmConfirmBtn} style={{
-                                background: (runningMode ?? mode) === 'pomodoro' ? undefined : 'linear-gradient(135deg, #667eea, #764ba2)',
-                                color: (runningMode ?? mode) === 'pomodoro' ? undefined : 'white',
+                                background: alarmMode === 'pomodoro' ? undefined : 'linear-gradient(135deg, #667eea, #764ba2)',
+                                color: alarmMode === 'pomodoro' ? undefined : 'white',
                             }}>{t('controls.confirm')}</button>
                         </div>
                     </div>
@@ -679,9 +666,9 @@ export default function TimerView() {
                             className={`${styles.modeBtn} ${mode === m ? styles.active : ''} ${mode === m ? (m === 'pomodoro' ? styles.pomoActive : m === 'interval' ? styles.timerActive : styles.timerActive) : ''}`}
                             style={mode === m && m === 'interval' ? { background: 'linear-gradient(135deg, #f59e0b, #d97706)' } : undefined}>
                             {m === 'timer' ? t('mode.timer') : m === 'pomodoro' ? t('mode.pomodoro') : m === 'interval' ? t('interval.title') : t('multi.title')}
-                            {/* 다른 탭에서 타이머 실행 중일 때 표시 */}
-                            {runningMode === m && m !== mode && isRunning && (
-                                <span style={{ fontSize: '10px', marginLeft: '3px', opacity: 0.9 }}>({formatTime(timeLeft)})</span>
+                            {/* 다른 탭에서 타이머 실행 중일 때 남은 시간 표시 */}
+                            {m !== mode && modeTimers[m].isRunning && (
+                                <span style={{ fontSize: '10px', marginLeft: '3px', opacity: 0.9 }}>({formatTime(modeTimers[m].timeLeft)})</span>
                             )}
                         </button>
                     ))}
@@ -915,7 +902,7 @@ export default function TimerView() {
                                     {isSetting ? t('controls.start') : t('controls.continue')}
                                 </button>
                             )}
-                            {isRunning && <button onClick={() => setIsRunning(false)} className={styles.stopBtn}>{t('controls.stop')}</button>}
+                            {isRunning && <button onClick={() => updateMode(mode, { isRunning: false })} className={styles.stopBtn}>{t('controls.stop')}</button>}
                             <button onClick={handleReset} className={styles.resetBtn}>{t('controls.reset')}</button>
                         </div>
                     </div>
@@ -950,42 +937,6 @@ export default function TimerView() {
                     </div>
                 )}
 
-                {/* Chain Timer */}
-                {mode === 'timer' && (
-                    <div className={styles.chainCard}>
-                        <div className={styles.chainTitle}>⛓️ {t('chain.title')}</div>
-                        {chainSteps.length > 0 ? (
-                            <div className={styles.chainList}>
-                                {chainSteps.map((step, i) => (
-                                    <div key={step.id} className={`${styles.chainItem} ${i === chainCurrentIdx ? styles.chainItemActive : ''} ${step.done ? styles.chainItemDone : ''}`}>
-                                        <span className={styles.chainStepNum}>{i + 1}</span>
-                                        <span className={styles.chainItemLabel}>{step.label}</span>
-                                        <span className={styles.chainItemTime}>{formatTime(step.hours * 3600 + step.minutes * 60 + step.seconds)}</span>
-                                        <button onClick={() => removeChainStep(step.id)} className={styles.chainItemRemove}>✕</button>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className={styles.chainEmpty}>{t('chain.empty')}</div>
-                        )}
-                        <div className={styles.chainAddRow}>
-                            <input type="text" value={chainNewLabel} onChange={e => setChainNewLabel(e.target.value)}
-                                placeholder={t('chain.label')} className={styles.chainLabelInput} />
-                            <div className={styles.chainTimeRow}>
-                                <ChainTimeInput value={chainNewHour} onChange={setChainNewHour} label={t('chain.hour')} max={99} />
-                                <ChainTimeInput value={chainNewMin} onChange={setChainNewMin} label={t('chain.min')} />
-                                <ChainTimeInput value={chainNewSec} onChange={setChainNewSec} label={t('chain.sec')} />
-                                <button onClick={addChainStep} className={styles.chainAddBtn}>+</button>
-                            </div>
-                        </div>
-                        {chainSteps.length > 0 && chainCurrentIdx < 0 && (
-                            <button onClick={startChain} className={styles.startBtn} style={{ marginTop: '10px', padding: '10px 24px', fontSize: '0.9rem' }}>
-                                <FaPlay style={{ fontSize: '0.7rem' }} /> {t('controls.start')}
-                            </button>
-                        )}
-                    </div>
-                )}
-
                 {/* Ambient Player */}
                 <AmbientPlayer mode={mode} />
 
@@ -999,7 +950,7 @@ export default function TimerView() {
             </div>
 
             {/* SEO Content Section - mode별 다른 콘텐츠 */}
-            <TimerSeoSection mode={mode} isChainActive={chainSteps.length > 0} />
+            <TimerSeoSection mode={mode} />
         </div>
     );
 }
@@ -1010,9 +961,9 @@ const howToStepKeys = ['step1', 'step2', 'step3', 'step4'] as const;
 const useCaseKeys = ['u1', 'u2', 'u3', 'u4'] as const;
 const faqKeys = ['q1', 'q2', 'q3', 'q4'] as const;
 
-function TimerSeoSection({ mode, isChainActive }: { mode: string; isChainActive: boolean }) {
+function TimerSeoSection({ mode }: { mode: string }) {
     const t = useTranslations('Clock.Timer');
-    const seoMode = mode === 'timer' && isChainActive ? 'chain' : mode === 'multi-timer' ? 'multi' : mode;
+    const seoMode = mode === 'multi-timer' ? 'multi' : mode;
 
     return (
         <div className={styles.seoWrapper}>
@@ -1098,15 +1049,3 @@ function TimeInput({ value, onChange, label, max }: { value: number; onChange: (
     );
 }
 
-function ChainTimeInput({ value, onChange, label, max = 59 }: { value: number; onChange: (v: number) => void; label: string; max?: number }) {
-    const [isFocused, setIsFocused] = useState(false);
-    return (
-        <div className={styles.chainTimeGroup}>
-            <input type="number" value={isFocused && value === 0 ? '' : value}
-                onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}
-                onChange={e => { if (e.target.value === '') { onChange(0); return; } let val = parseInt(e.target.value); if (isNaN(val)) val = 0; if (val < 0) val = 0; if (val > max) val = max; onChange(val); }}
-                className={styles.chainTimeInput} min={0} max={max} />
-            <span className={styles.chainTimeLabel}>{label}</span>
-        </div>
-    );
-}

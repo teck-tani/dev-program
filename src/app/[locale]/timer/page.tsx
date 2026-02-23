@@ -89,11 +89,6 @@ function generateFaqSchema(locale: string) {
             question: "HIIT와 타바타의 차이점은 무엇인가요?",
             answer: "타바타는 HIIT의 한 종류입니다. HIIT는 고강도 인터벌 트레이닝의 총칭으로, 운동/휴식 시간과 라운드를 자유롭게 설정합니다. 타바타는 20초/10초/8라운드로 고정된 특정 프로토콜입니다."
         },
-        // 연속 타이머
-        {
-            question: "연속 타이머(Chain Timer)란 무엇인가요?",
-            answer: "여러 단계를 이름과 시간을 정해 추가하면, 시작 버튼 한 번으로 순서대로 자동 실행됩니다. 한 단계가 끝나면 다음 단계가 자동으로 시작되어 요리, 운동, 학습 등 복잡한 루틴도 한 번에 관리할 수 있습니다."
-        },
         // 멀티 타이머
         {
             question: "멀티 타이머는 최대 몇 개까지 동시에 실행할 수 있나요?",
@@ -127,11 +122,6 @@ function generateFaqSchema(locale: string) {
             question: "What's the difference between HIIT and Tabata?",
             answer: "Tabata is a specific type of HIIT. HIIT is the general term for high-intensity interval training with flexible work/rest times and rounds. Tabata is a fixed protocol of 20s/10s/8 rounds."
         },
-        // Chain Timer
-        {
-            question: "What is the Chain Timer?",
-            answer: "The chain timer lets you add multiple steps with custom names and durations. Press Start once and they run in sequence automatically — when one step ends, the next begins. Great for managing cooking, workout, study, and presentation routines."
-        },
         // Multi Timer
         {
             question: "How many timers can I run simultaneously with Multi Timer?",
@@ -153,7 +143,7 @@ function generateFaqSchema(locale: string) {
     };
 }
 
-// HowTo 구조화 데이터 생성 (5가지 모드 포함)
+// HowTo 구조화 데이터 생성 (4가지 모드 포함)
 function generateHowToSchema(locale: string) {
     const isKo = locale === 'ko';
 
@@ -162,13 +152,13 @@ function generateHowToSchema(locale: string) {
         "@type": "HowTo",
         "name": isKo ? "온라인 타이머 & 포모도로 사용하는 방법" : "How to Use Online Timer & Pomodoro",
         "description": isKo
-            ? "타이머, 포모도로, 인터벌, 연속 타이머, 멀티 타이머 5가지 모드를 활용하는 방법"
-            : "How to use 5 timer modes: Timer, Pomodoro, Interval, Chain Timer, and Multi Timer",
+            ? "타이머, 포모도로, 인터벌, 멀티 타이머 4가지 모드를 활용하는 방법"
+            : "How to use 4 timer modes: Timer, Pomodoro, Interval, and Multi Timer",
         "step": isKo ? [
             {
                 "@type": "HowToStep",
                 "name": "모드 선택",
-                "text": "상단 탭에서 타이머, 포모도로, 인터벌, 멀티 중 원하는 모드를 선택합니다. 연속 타이머는 타이머 모드 하단에서 사용할 수 있습니다."
+                "text": "상단 탭에서 타이머, 포모도로, 인터벌, 멀티 중 원하는 모드를 선택합니다."
             },
             {
                 "@type": "HowToStep",
@@ -194,7 +184,7 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "Choose Mode",
-                "text": "Select Timer, Pomodoro, Interval, or Multi from the tabs at the top. Chain Timer is available under the Timer mode."
+                "text": "Select Timer, Pomodoro, Interval, or Multi from the tabs at the top."
             },
             {
                 "@type": "HowToStep",
@@ -240,8 +230,8 @@ function generateWebAppSchema(locale: string) {
             "priceCurrency": "KRW"
         },
         "featureList": isKo
-            ? ["5가지 모드 (타이머/포모도로/인터벌/연속/멀티)", "5종 알람음 + 진동 알림 + 음성 카운트다운", "타바타·HIIT 인터벌 프리셋", "연속 타이머 (단계별 자동 실행)", "멀티 타이머 (최대 4개 동시)", "6가지 배경음 (빗소리/카페/백색소음/모닥불/파도/숲)", "포모도로 통계 + 작업 목록", "프리셋 저장 + URL 공유", "화면 꺼짐 방지 + 키보드 단축키"]
-            : ["5 modes (Timer/Pomodoro/Interval/Chain/Multi)", "5 alarm sounds + vibration + voice countdown", "Tabata & HIIT interval presets", "Chain timer (auto sequential execution)", "Multi timer (up to 4 simultaneous)", "6 ambient sounds (Rain/Cafe/White Noise/Fire/Ocean/Forest)", "Pomodoro statistics + task list", "Custom presets + URL sharing", "Screen wake lock + keyboard shortcuts"],
+            ? ["4가지 모드 (타이머/포모도로/인터벌/멀티)", "5종 알람음 + 진동 알림 + 음성 카운트다운", "타바타·HIIT 인터벌 프리셋", "멀티 타이머 (최대 4개 동시)", "6가지 배경음 (빗소리/카페/백색소음/모닥불/파도/숲)", "포모도로 통계 + 작업 목록", "프리셋 저장 + URL 공유", "화면 꺼짐 방지 + 키보드 단축키"]
+            : ["4 modes (Timer/Pomodoro/Interval/Multi)", "5 alarm sounds + vibration + voice countdown", "Tabata & HIIT interval presets", "Multi timer (up to 4 simultaneous)", "6 ambient sounds (Rain/Cafe/White Noise/Fire/Ocean/Forest)", "Pomodoro statistics + task list", "Custom presets + URL sharing", "Screen wake lock + keyboard shortcuts"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"
     };
