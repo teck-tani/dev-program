@@ -1100,7 +1100,19 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
                             >
                                 {copied ? t('btn.copied') : t('btn.copy')}
                             </button>
-                            <ShareButton shareText={getShareText()} disabled={!hasValidOutput} />
+                            <ShareButton
+                                shareText={getShareText()}
+                                disabled={!hasValidOutput}
+                                style={{
+                                    padding: '6px 12px', borderRadius: '6px', border: 'none',
+                                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                    color: 'white', fontSize: '0.8rem', fontWeight: 600,
+                                    cursor: 'pointer', display: 'inline-flex',
+                                    alignItems: 'center', gap: '4px', whiteSpace: 'nowrap',
+                                    margin: 0, width: 'auto',
+                                }}
+                                iconSize={14}
+                            />
                         </div>
                     </div>
 
