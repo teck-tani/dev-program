@@ -104,7 +104,13 @@ export default function TimerView() {
     const [duration, setDuration] = useState(0);
     const [timeLeft, setTimeLeft] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
-    const [isSetting, setIsSetting] = useState(true);
+    // 탭별 독립 isSetting (각 탭이 setup/countdown 상태를 개별 유지)
+    const [modeIsSetting, setModeIsSetting] = useState<Record<TimerMode, boolean>>({
+        timer: true, pomodoro: true, interval: true, multi: true,
+    });
+    const isSetting = modeIsSetting[mode]; // 현재 탭의 setup 상태
+    // 실행 중인 탭 추적 (타이머가 어느 탭에서 시작됐는지)
+    const [runningMode, setRunningMode] = useState<TimerMode | null>(null);
     const [showAlarmModal, setShowAlarmModal] = useState(false);
     const [inputValues, setInputValues] = useState({ h: 0, m: 0, s: 0 });
 
@@ -179,8 +185,23 @@ export default function TimerView() {
                 if (s.pomoBreak) setPomoBreak(s.pomoBreak);
                 if (s.pomoLongBreak) setPomoLongBreak(s.pomoLongBreak);
                 if (s.pomoAutoStart !== undefined) setPomoAutoStart(s.pomoAutoStart);
-                if (s.isSetting === false && s.duration) {
-                    setDuration(s.duration); setIsSetting(false);
+                // 탭별 isSetting 로드
+                if (s.modeIsSetting) {
+                    setModeIsSetting(s.modeIsSetting);
+                } else if (s.isSetting === false) {
+                    // 이전 포맷 하위호환: 단일 isSetting → 해당 모드 적용
+                    const m: TimerMode = s.mode ?? 'timer';
+                    setModeIsSetting(prev => ({ ...prev, [m]: false }));
+                }
+                // runningMode 복원
+                if (s.runningMode) setRunningMode(s.runningMode);
+                else if (!s.modeIsSetting && s.isSetting === false && s.duration) {
+                    setRunningMode(s.mode ?? 'timer');
+                }
+                // 타이머 상태 복원
+                const hadTimer = s.runningMode != null || (s.isSetting === false && s.duration);
+                if (hadTimer && s.duration) {
+                    setDuration(s.duration);
                     if (s.pomoPhase) setPomoPhase(s.pomoPhase);
                     if (s.pomoSession) setPomoSession(s.pomoSession);
                     if (s.isRunning && s.endTime) {
@@ -207,7 +228,7 @@ export default function TimerView() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify({
                 mode, selectedSound, vibrationOn, volume, voiceCountdown,
                 pomoWork, pomoBreak, pomoLongBreak, pomoAutoStart,
-                duration, isSetting, pomoPhase, pomoSession, inputValues,
+                duration, modeIsSetting, pomoPhase, pomoSession, inputValues, runningMode,
                 timeLeft: isRunning ? undefined : timeLeft,
                 isRunning, endTime: isRunning ? endTimeRef.current : undefined,
             }));
@@ -217,7 +238,7 @@ export default function TimerView() {
             }
         }
     }, [mode, selectedSound, vibrationOn, volume, voiceCountdown, pomoWork, pomoBreak, pomoLongBreak,
-        pomoAutoStart, duration, timeLeft, isRunning, isSetting, pomoPhase, pomoSession, inputValues]);
+        pomoAutoStart, duration, timeLeft, isRunning, modeIsSetting, pomoPhase, pomoSession, inputValues, runningMode]);
 
     // ===== Sound =====
     const stopSound = useCallback(() => {
@@ -293,24 +314,24 @@ export default function TimerView() {
         return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
     }, [isRunning, tick]);
 
-    // Alarm trigger
+    // Alarm trigger — isSetting 대신 runningMode로 판단 (탭 전환과 무관하게 동작)
     useEffect(() => {
-        if (timeLeft === 0 && isRunning && !isSetting) {
+        if (timeLeft === 0 && isRunning && runningMode !== null) {
             setIsRunning(false);
 
-            if (mode === "interval") {
+            if (runningMode === "interval") {
                 handleIntervalNext();
                 return;
             }
 
             // Record pomo stats
-            if (mode === "pomodoro" && pomoPhase === "work") {
+            if (runningMode === "pomodoro" && pomoPhase === "work") {
                 recordPomoSession(pomoWork);
                 if (activeTaskId) incrementTaskPomo(activeTaskId);
             }
 
             // Chain mode: advance to next step
-            if (chainCurrentIdx >= 0 && chainCurrentIdx < chainSteps.length) {
+            if (runningMode === "timer" && chainCurrentIdx >= 0 && chainCurrentIdx < chainSteps.length) {
                 const steps = [...chainSteps];
                 steps[chainCurrentIdx].done = true;
                 setChainSteps(steps);
@@ -333,24 +354,24 @@ export default function TimerView() {
             startAlarmLoop();
             if (vibrationOn && navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
             if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                const body = mode === 'pomodoro'
+                const body = runningMode === 'pomodoro'
                     ? (pomoPhase === 'work' ? t('pomodoro.workDone') : t('pomodoro.breakDone'))
                     : t('controls.confirm');
                 new Notification(t('modal.title'), { body, icon: '/icon.svg' });
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [timeLeft, isRunning, isSetting]);
+    }, [timeLeft, isRunning, runningMode]);
 
-    // Tab title
+    // Tab title — runningMode 기준으로 탭에 보이는 모드와 무관하게 올바른 이모지 표시
     useEffect(() => {
-        if (isRunning || (!isSetting && timeLeft > 0)) {
-            const prefix = mode === 'pomodoro' ? (pomoPhase === 'work' ? '🔴 ' : '🟢 ')
-                : mode === 'interval' ? (intervalPhase === 'work' ? '💪 ' : '😮‍💨 ') : '';
+        if (isRunning || (runningMode !== null && timeLeft > 0)) {
+            const prefix = runningMode === 'pomodoro' ? (pomoPhase === 'work' ? '🔴 ' : '🟢 ')
+                : runningMode === 'interval' ? (intervalPhase === 'work' ? '💪 ' : '😮‍💨 ') : '';
             document.title = `${prefix}${formatTime(timeLeft)} - Timer`;
         } else { document.title = 'Timer'; }
         return () => { document.title = 'Timer'; };
-    }, [timeLeft, isRunning, isSetting, mode, pomoPhase, intervalPhase]);
+    }, [timeLeft, isRunning, runningMode, pomoPhase, intervalPhase]);
 
     // Notification permission
     useEffect(() => {
@@ -403,8 +424,11 @@ export default function TimerView() {
     // ===== Handlers =====
     const handleStopAlarm = useCallback(() => { setShowAlarmModal(false); stopSound(); }, [stopSound]);
 
-    const startTimer = (seconds: number) => {
-        setDuration(seconds); setTimeLeft(seconds); setIsSetting(false);
+    const startTimer = (seconds: number, timerMode?: TimerMode) => {
+        const m = timerMode ?? mode;
+        setDuration(seconds); setTimeLeft(seconds);
+        setModeIsSetting(prev => ({ ...prev, [m]: false }));
+        setRunningMode(m);
         endTimeRef.current = Date.now() + seconds * 1000; lastSecRef.current = seconds;
         setIsRunning(true);
     };
@@ -432,7 +456,9 @@ export default function TimerView() {
     };
 
     const handleReset = useCallback(() => {
-        setIsRunning(false); setIsSetting(true); setTimeLeft(0);
+        setIsRunning(false);
+        setModeIsSetting(prev => ({ ...prev, [mode]: true }));
+        setTimeLeft(0);
         setInputValues({ h: 0, m: 0, s: 0 }); setShowAlarmModal(false);
         setPomoPhase('work'); setPomoSession(1);
         setIntervalPhase('work'); setIntervalCurrentRound(1);
@@ -440,7 +466,8 @@ export default function TimerView() {
         setChainSteps(prev => prev.map(s => ({ ...s, done: false })));
         endTimeRef.current = 0; lastSecRef.current = -1;
         stopSound();
-    }, [stopSound]);
+        if (runningMode === mode) setRunningMode(null);
+    }, [stopSound, mode, runningMode]);
 
     // Extend (+1m, +5m)
     const handleExtend = (extraSec: number) => {
@@ -458,7 +485,7 @@ export default function TimerView() {
             if (pomoSession % POMO_DEFAULTS.sessionsBeforeLong === 0) { setPomoPhase('longBreak'); nextDuration = pomoLongBreak * 60; }
             else { setPomoPhase('break'); nextDuration = pomoBreak * 60; }
         } else { setPomoSession(prev => prev + 1); setPomoPhase('work'); nextDuration = pomoWork * 60; }
-        startTimer(nextDuration);
+        startTimer(nextDuration, 'pomodoro');
         if (!pomoAutoStart) setIsRunning(false);
     }, [pomoPhase, pomoSession, pomoWork, pomoBreak, pomoLongBreak, pomoAutoStart, stopSound]);
 
@@ -466,7 +493,7 @@ export default function TimerView() {
     const handleIntervalNext = useCallback(() => {
         if (intervalPhase === 'work') {
             setIntervalPhase('rest');
-            startTimer(intervalRest);
+            startTimer(intervalRest, 'interval');
         } else {
             if (intervalCurrentRound >= intervalRounds) {
                 setIsRunning(false); setShowAlarmModal(true);
@@ -475,7 +502,7 @@ export default function TimerView() {
             }
             setIntervalPhase('work');
             setIntervalCurrentRound(prev => prev + 1);
-            startTimer(intervalWork);
+            startTimer(intervalWork, 'interval');
         }
     }, [intervalPhase, intervalCurrentRound, intervalRounds, intervalWork, intervalRest, startAlarmLoop]);
 
@@ -565,7 +592,7 @@ export default function TimerView() {
         setChainCurrentIdx(0);
         const first = chainSteps[0];
         const dur = first.hours * 3600 + first.minutes * 60 + first.seconds;
-        startTimer(dur);
+        startTimer(dur, 'timer');
     };
 
     // Keyboard shortcuts
@@ -590,7 +617,8 @@ export default function TimerView() {
     const phaseColor = pomoPhase === 'work' ? '#ef4444' : pomoPhase === 'break' ? '#22c55e' : '#3b82f6';
     const phaseColorDark = pomoPhase === 'work' ? '#dc2626' : pomoPhase === 'break' ? '#16a34a' : '#2563eb';
     const ringColor = mode === 'pomodoro' ? phaseColor : mode === 'interval' ? (intervalPhase === 'work' ? '#f59e0b' : '#22c55e') : '#667eea';
-    const isCountingDown = !isSetting && (isRunning || timeLeft > 0);
+    // 현재 탭이 실행 중인 탭인 경우에만 카운트다운 표시
+    const isCountingDown = runningMode === mode && (isRunning || timeLeft > 0);
 
     // ===== RENDER =====
     return (
@@ -602,31 +630,31 @@ export default function TimerView() {
                 <div className={styles.alarmOverlay} role="alertdialog" aria-modal="true" aria-label={t('modal.title')} ref={alarmModalRef}>
                     <div className={styles.alarmModal}>
                         <div className={styles.alarmHeader} style={{
-                            background: mode === 'pomodoro' ? `linear-gradient(135deg, ${phaseColor}, ${phaseColorDark})`
-                                : mode === 'interval' ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+                            background: (runningMode ?? mode) === 'pomodoro' ? `linear-gradient(135deg, ${phaseColor}, ${phaseColorDark})`
+                                : (runningMode ?? mode) === 'interval' ? 'linear-gradient(135deg, #f59e0b, #d97706)'
                                 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         }}>
                             <span className={styles.alarmTitle}>
-                                {mode === 'pomodoro' ? (pomoPhase === 'work' ? t('pomodoro.workDone') : t('pomodoro.breakDone'))
-                                    : mode === 'interval' ? t('interval.completed') : t('modal.title')}
+                                {(runningMode ?? mode) === 'pomodoro' ? (pomoPhase === 'work' ? t('pomodoro.workDone') : t('pomodoro.breakDone'))
+                                    : (runningMode ?? mode) === 'interval' ? t('interval.completed') : t('modal.title')}
                             </span>
                             <button className={styles.alarmClose} onClick={handleStopAlarm} aria-label="close">&times;</button>
                         </div>
                         <div className={styles.alarmBody}>
                             <div className={styles.alarmIcon} style={{
-                                background: mode === 'pomodoro' ? `linear-gradient(135deg, ${phaseColor}, ${phaseColorDark})`
+                                background: (runningMode ?? mode) === 'pomodoro' ? `linear-gradient(135deg, ${phaseColor}, ${phaseColorDark})`
                                     : 'linear-gradient(135deg, #ff6b6b, #ee5a5a)',
                                 boxShadow: `0 4px 15px rgba(238,90,90,0.4)`,
                             }}>
-                                {pomoPhase !== 'work' && mode === 'pomodoro'
+                                {pomoPhase !== 'work' && (runningMode ?? mode) === 'pomodoro'
                                     ? <FaCoffee style={{ fontSize: '30px', color: 'white' }} />
                                     : <FaHourglassStart style={{ fontSize: '30px', color: 'white' }} />}
                             </div>
-                            {mode === 'pomodoro' && <div className={styles.alarmSessionText}>{t('pomodoro.session')} {pomoSession} / {POMO_DEFAULTS.sessionsBeforeLong}</div>}
+                            {(runningMode ?? mode) === 'pomodoro' && <div className={styles.alarmSessionText}>{t('pomodoro.session')} {pomoSession} / {POMO_DEFAULTS.sessionsBeforeLong}</div>}
                             <div className={styles.autoStopText}>{alarmCountdown > 0 ? `${alarmCountdown}s` : ''}</div>
                         </div>
                         <div className={styles.alarmFooter}>
-                            {mode === 'pomodoro' && (
+                            {(runningMode ?? mode) === 'pomodoro' && (
                                 <button onClick={handlePomoNext} className={styles.alarmNextBtn} style={{
                                     background: `linear-gradient(135deg, ${phaseColor}, ${pomoPhase === 'work' ? '#16a34a' : '#ef4444'})`,
                                 }}>
@@ -634,8 +662,8 @@ export default function TimerView() {
                                 </button>
                             )}
                             <button onClick={handleStopAlarm} className={styles.alarmConfirmBtn} style={{
-                                background: mode === 'pomodoro' ? undefined : 'linear-gradient(135deg, #667eea, #764ba2)',
-                                color: mode === 'pomodoro' ? undefined : 'white',
+                                background: (runningMode ?? mode) === 'pomodoro' ? undefined : 'linear-gradient(135deg, #667eea, #764ba2)',
+                                color: (runningMode ?? mode) === 'pomodoro' ? undefined : 'white',
                             }}>{t('controls.confirm')}</button>
                         </div>
                     </div>
@@ -647,10 +675,14 @@ export default function TimerView() {
                 <div className={styles.modeToggle} role="tablist">
                     {(['timer', 'pomodoro', 'interval', 'multi'] as TimerMode[]).map(m => (
                         <button key={m} role="tab" aria-selected={mode === m}
-                            onClick={() => { if (!isRunning || mode === 'multi') { setMode(m); if (m !== 'multi') handleReset(); } }}
-                            className={`${styles.modeBtn} ${mode === m ? styles.active : ''} ${mode === m ? (m === 'pomodoro' ? styles.pomoActive : m === 'interval' ? styles.timerActive : styles.timerActive) : ''} ${isRunning && mode !== m && m !== 'multi' ? styles.disabled : ''}`}
+                            onClick={() => setMode(m)}
+                            className={`${styles.modeBtn} ${mode === m ? styles.active : ''} ${mode === m ? (m === 'pomodoro' ? styles.pomoActive : m === 'interval' ? styles.timerActive : styles.timerActive) : ''}`}
                             style={mode === m && m === 'interval' ? { background: 'linear-gradient(135deg, #f59e0b, #d97706)' } : undefined}>
                             {m === 'timer' ? t('mode.timer') : m === 'pomodoro' ? t('mode.pomodoro') : m === 'interval' ? t('interval.title') : t('multi.title')}
+                            {/* 다른 탭에서 타이머 실행 중일 때 표시 */}
+                            {runningMode === m && m !== mode && isRunning && (
+                                <span style={{ fontSize: '10px', marginLeft: '3px', opacity: 0.9 }}>({formatTime(timeLeft)})</span>
+                            )}
                         </button>
                     ))}
                 </div>
