@@ -345,11 +345,57 @@ export default function CssMinifierClient() {
         return lintCSS(input, isKo);
     }, [input, isKo]);
 
-    // Diff
-    const diffLines = useMemo(() => {
+    // Diff - split into left/right pairs for side-by-side view
+    const splitDiffRows = useMemo(() => {
         if (!input.trim() || !output) return [];
-        return computeDiff(input, output);
+        const lines = computeDiff(input, output);
+        const rows: { left: string | null; right: string | null; leftType: "same" | "removed"; rightType: "same" | "added" }[] = [];
+        let i = 0;
+        while (i < lines.length) {
+            const line = lines[i];
+            if (line.type === "same") {
+                rows.push({ left: line.text, right: line.text, leftType: "same", rightType: "same" });
+                i++;
+            } else if (line.type === "removed") {
+                // Pair consecutive removed+added lines
+                if (i + 1 < lines.length && lines[i + 1].type === "added") {
+                    rows.push({ left: line.text, right: lines[i + 1].text, leftType: "removed", rightType: "added" });
+                    i += 2;
+                } else {
+                    rows.push({ left: line.text, right: null, leftType: "removed", rightType: "same" });
+                    i++;
+                }
+            } else {
+                rows.push({ left: null, right: line.text, leftType: "same", rightType: "added" });
+                i++;
+            }
+        }
+        return rows;
     }, [input, output]);
+
+    // Responsive: detect mobile for diff layout
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth <= 768);
+        check();
+        window.addEventListener("resize", check);
+        return () => window.removeEventListener("resize", check);
+    }, []);
+
+    // Scroll sync for split diff
+    const leftPanelRef = useRef<HTMLDivElement>(null);
+    const rightPanelRef = useRef<HTMLDivElement>(null);
+    const syncing = useRef(false);
+    const handleSyncScroll = useCallback((source: "left" | "right") => {
+        if (syncing.current) return;
+        syncing.current = true;
+        const from = source === "left" ? leftPanelRef.current : rightPanelRef.current;
+        const to = source === "left" ? rightPanelRef.current : leftPanelRef.current;
+        if (from && to) {
+            to.scrollTop = from.scrollTop;
+        }
+        requestAnimationFrame(() => { syncing.current = false; });
+    }, []);
 
     // Gzip size estimation
     useEffect(() => {
@@ -620,7 +666,11 @@ export default function CssMinifierClient() {
                             {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
                             {copied ? t("copied") : t("copy")}
                         </button>
-                        <ShareButton shareText={getShareText()} disabled={!output} />
+                        <ShareButton shareText={getShareText()} disabled={!output} iconSize={12} style={{
+                            padding: "6px 14px", border: "none", borderRadius: 6,
+                            background: accentColor, color: "#fff", fontSize: 13, fontWeight: 600,
+                            cursor: !output ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 6,
+                        }} />
                     </div>
                 </div>
                 <textarea ref={outputRef} value={output} readOnly placeholder={t("outputPlaceholder")} spellCheck={false}
@@ -633,7 +683,7 @@ export default function CssMinifierClient() {
                 />
             </div>
 
-            {/* Diff View */}
+            {/* Diff View - Split (side-by-side) */}
             {input.trim() && output && (
                 <div style={{ background: cardBg, borderRadius: 12, padding: 16, border: `1px solid ${borderColor}` }}>
                     <button onClick={() => setShowDiff(!showDiff)} style={{
@@ -646,25 +696,68 @@ export default function CssMinifierClient() {
                     </button>
                     {showDiff && (
                         <div style={{
-                            marginTop: 12, maxHeight: 400, overflowY: "auto",
-                            borderRadius: 8, border: `1px solid ${borderColor}`,
-                            fontFamily: "'Fira Code', Consolas, monospace", fontSize: 12, lineHeight: 1.5,
+                            marginTop: 12,
+                            display: "grid",
+                            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                            gap: isMobile ? 8 : 0,
+                            borderRadius: 8, border: `1px solid ${borderColor}`, overflow: "hidden",
                         }}>
-                            {diffLines.map((line, i) => (
-                                <div key={i} style={{
-                                    padding: "2px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all",
-                                    background: line.type === "removed" ? (isDark ? "rgba(239,68,68,0.1)" : "#fef2f2")
-                                        : line.type === "added" ? (isDark ? "rgba(34,197,94,0.1)" : "#f0fdf4")
-                                        : "transparent",
-                                    color: line.type === "removed" ? (isDark ? "#f87171" : "#dc2626")
-                                        : line.type === "added" ? (isDark ? "#4ade80" : "#16a34a")
-                                        : (isDark ? "#888" : "#999"),
-                                    borderLeft: line.type === "removed" ? "3px solid #ef4444"
-                                        : line.type === "added" ? "3px solid #22c55e" : "3px solid transparent",
+                            {/* Left Panel - Before */}
+                            <div style={{ borderRight: isMobile ? "none" : `1px solid ${borderColor}` }}>
+                                <div style={{
+                                    position: "sticky", top: 0, padding: "6px 12px",
+                                    background: isDark ? "rgba(239,68,68,0.1)" : "#fef2f2",
+                                    borderBottom: `1px solid ${borderColor}`,
+                                    fontSize: 12, fontWeight: 700, color: isDark ? "#f87171" : "#dc2626",
+                                }}>Before</div>
+                                <div ref={leftPanelRef} onScroll={() => handleSyncScroll("left")} style={{
+                                    maxHeight: 400, overflowY: "auto",
+                                    fontFamily: "'Fira Code', Consolas, monospace", fontSize: 12, lineHeight: 1.5,
                                 }}>
-                                    {line.type === "removed" ? "- " : line.type === "added" ? "+ " : "  "}{line.text}
+                                    {splitDiffRows.map((row, i) => (
+                                        <div key={i} style={{
+                                            padding: "2px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all",
+                                            minHeight: 21,
+                                            background: row.left === null ? (isDark ? "#1a1a2e" : "#f5f5f5")
+                                                : row.leftType === "removed" ? (isDark ? "rgba(239,68,68,0.1)" : "#fef2f2")
+                                                : "transparent",
+                                            color: row.left === null ? "transparent"
+                                                : row.leftType === "removed" ? (isDark ? "#f87171" : "#dc2626")
+                                                : (isDark ? "#888" : "#999"),
+                                        }}>
+                                            {row.left !== null ? row.left : "\u00A0"}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
+                            {/* Right Panel - After */}
+                            <div>
+                                <div style={{
+                                    position: "sticky", top: 0, padding: "6px 12px",
+                                    background: isDark ? "rgba(34,197,94,0.1)" : "#f0fdf4",
+                                    borderBottom: `1px solid ${borderColor}`,
+                                    fontSize: 12, fontWeight: 700, color: isDark ? "#4ade80" : "#16a34a",
+                                }}>After</div>
+                                <div ref={rightPanelRef} onScroll={() => handleSyncScroll("right")} style={{
+                                    maxHeight: 400, overflowY: "auto",
+                                    fontFamily: "'Fira Code', Consolas, monospace", fontSize: 12, lineHeight: 1.5,
+                                }}>
+                                    {splitDiffRows.map((row, i) => (
+                                        <div key={i} style={{
+                                            padding: "2px 12px", whiteSpace: "pre-wrap", wordBreak: "break-all",
+                                            minHeight: 21,
+                                            background: row.right === null ? (isDark ? "#1a1a2e" : "#f5f5f5")
+                                                : row.rightType === "added" ? (isDark ? "rgba(34,197,94,0.1)" : "#f0fdf4")
+                                                : "transparent",
+                                            color: row.right === null ? "transparent"
+                                                : row.rightType === "added" ? (isDark ? "#4ade80" : "#16a34a")
+                                                : (isDark ? "#888" : "#999"),
+                                        }}>
+                                            {row.right !== null ? row.right : "\u00A0"}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

@@ -81,7 +81,8 @@
       "Bash(py:*)",
       "Bash(python:*)",
       "Bash(\"C:/tani/dev-program/textdiff-debug.js\":*)",
-      "Bash(\"C:/tani/dev-program/textdiff-remain.js\":*)"
+      "Bash(\"C:/tani/dev-program/textdiff-remain.js\":*)",
+      "Bash(cat:*)"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

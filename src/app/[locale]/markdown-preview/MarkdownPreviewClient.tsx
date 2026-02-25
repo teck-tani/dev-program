@@ -603,9 +603,19 @@ export default function MarkdownPreviewClient() {
     const [toast, setToast] = useState<string | null>(null);
     const [copiedBtn, setCopiedBtn] = useState<string | null>(null);
     const [showToc, setShowToc] = useState(false);
+    const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
+    const [isMobile, setIsMobile] = useState(false);
     const editorRef = useRef<HTMLTextAreaElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Detect mobile viewport
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const isKoLocale = t("action.copyMd") === "MD 복사";
 
@@ -1021,8 +1031,154 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
                 style={{ display: "none" }}
             />
 
+            {/* Mobile Tab Switcher */}
+            {isMobile && (
+                <div style={{
+                    display: 'flex',
+                    gap: '2px',
+                    background: isDark ? '#0f172a' : '#f3f4f6',
+                    borderRadius: '8px',
+                    padding: '3px',
+                    marginBottom: '12px',
+                }}>
+                    <button
+                        onClick={() => setMobileTab('editor')}
+                        style={{
+                            flex: 1,
+                            padding: '8px 14px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            background: mobileTab === 'editor' ? '#2563eb' : 'transparent',
+                            color: mobileTab === 'editor' ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                        }}
+                    >
+                        <FaCode size={13} />
+                        {t("editor.label")}
+                    </button>
+                    <button
+                        onClick={() => setMobileTab('preview')}
+                        style={{
+                            flex: 1,
+                            padding: '8px 14px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            background: mobileTab === 'preview' ? '#2563eb' : 'transparent',
+                            color: mobileTab === 'preview' ? '#fff' : (isDark ? '#94a3b8' : '#6b7280'),
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                        }}
+                    >
+                        <FaEye size={13} />
+                        {t("preview.label")}
+                    </button>
+                </div>
+            )}
+
+            {/* Split View (Desktop) / Tab View (Mobile) */}
+            <div style={isMobile ? { minHeight: '400px' } : splitContainerStyle}>
+                {/* Editor Panel */}
+                {(!isMobile || mobileTab === 'editor') && (
+                    <div style={panelOuterStyle}>
+                        {!isMobile && (
+                            <div style={panelHeaderStyle}>
+                                <FaCode size={14} />
+                                {t("editor.label")}
+                                {markdown.length > 0 && (
+                                    <span style={{
+                                        marginLeft: 'auto', fontSize: '0.75rem', fontWeight: 400,
+                                        color: isDark ? '#64748b' : '#9ca3af',
+                                        display: 'flex', gap: '10px',
+                                    }}>
+                                        <span>{wordStats.words} {t("stats.words")}</span>
+                                        <span>{wordStats.chars} {t("stats.chars")}</span>
+                                        <span>{wordStats.lines} {t("stats.lines")}</span>
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                        {isMobile && markdown.length > 0 && (
+                            <div style={{
+                                display: 'flex', gap: '10px', padding: '8px 14px',
+                                fontSize: '0.75rem', fontWeight: 400,
+                                color: isDark ? '#64748b' : '#9ca3af',
+                                background: isDark ? '#1e293b' : '#f1f5f9',
+                                borderRadius: '10px 10px 0 0',
+                                borderBottom: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
+                            }}>
+                                <span>{wordStats.words} {t("stats.words")}</span>
+                                <span>{wordStats.chars} {t("stats.chars")}</span>
+                                <span>{wordStats.lines} {t("stats.lines")}</span>
+                            </div>
+                        )}
+                        <textarea
+                            ref={editorRef}
+                            value={markdown}
+                            onChange={(e) => setMarkdown(e.target.value)}
+                            onScroll={handleEditorScroll}
+                            placeholder={t("editor.placeholder")}
+                            style={{
+                                ...editorStyle,
+                                ...(isMobile ? {
+                                    minHeight: '350px',
+                                    borderRadius: isMobile && markdown.length > 0 ? '0 0 10px 10px' : '10px',
+                                } : {}),
+                            }}
+                            spellCheck={false}
+                        />
+                    </div>
+                )}
+
+                {/* Preview Panel */}
+                {(!isMobile || mobileTab === 'preview') && (
+                    <div style={panelOuterStyle}>
+                        {!isMobile && (
+                            <div style={panelHeaderStyle}>
+                                <FaEye size={14} />
+                                {t("preview.label")}
+                            </div>
+                        )}
+                        <div
+                            ref={previewRef}
+                            style={{
+                                ...previewContainerStyle,
+                                ...(isMobile ? { minHeight: '350px', borderRadius: '10px' } : {}),
+                            }}
+                        >
+                            {htmlOutput ? (
+                                <>
+                                    <style dangerouslySetInnerHTML={{ __html: previewStyles }} />
+                                    <div
+                                        className="md-preview"
+                                        dangerouslySetInnerHTML={{ __html: htmlOutput }}
+                                    />
+                                </>
+                            ) : (
+                                <div style={emptyPreviewStyle}>
+                                    {t("preview.empty")}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+
             {/* Toolbar */}
-            <div style={toolbarStyle}>
+            <div style={{ ...toolbarStyle, marginTop: '16px' }}>
+                <ShareButton shareText={getShareText()} disabled={!markdown.trim()} />
                 <button onClick={handleCopyMd} style={btnStyle(copiedBtn === "md")}>
                     {copiedBtn === "md" ? <FaCheck size={12} /> : <FaCopy size={12} />}
                     {copiedBtn === "md" ? t("action.copied") : t("action.copyMd")}
@@ -1061,7 +1217,6 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
                         {t("action.toc")}
                     </button>
                 )}
-                <ShareButton shareText={getShareText()} disabled={!markdown.trim()} />
             </div>
 
             {/* TOC */}
@@ -1071,7 +1226,7 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
                     borderRadius: "10px",
                     boxShadow: isDark ? "none" : "0 2px 15px rgba(0,0,0,0.08)",
                     padding: "16px 20px",
-                    marginBottom: "16px",
+                    marginTop: "12px",
                     border: isDark ? "1px solid #334155" : "1px solid #e2e8f0",
                 }}>
                     <div style={{
@@ -1098,7 +1253,6 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
                                 }}
                                 style={{
                                     display: "block",
-                                    paddingLeft: `${(item.level - 1) * 16}px`,
                                     padding: `3px 0 3px ${(item.level - 1) * 16}px`,
                                     fontSize: item.level <= 2 ? "0.9rem" : "0.82rem",
                                     fontWeight: item.level <= 2 ? 600 : 400,
@@ -1113,63 +1267,6 @@ ${lines} lines / ${words} words / ${chars.toLocaleString()} chars
                     </nav>
                 </div>
             )}
-
-            {/* Split View */}
-            <div style={splitContainerStyle}>
-                {/* Editor Panel */}
-                <div style={panelOuterStyle}>
-                    <div style={panelHeaderStyle}>
-                        <FaCode size={14} />
-                        {t("editor.label")}
-                        {markdown.length > 0 && (
-                            <span style={{
-                                marginLeft: 'auto', fontSize: '0.75rem', fontWeight: 400,
-                                color: isDark ? '#64748b' : '#9ca3af',
-                                display: 'flex', gap: '10px',
-                            }}>
-                                <span>{wordStats.words} {t("stats.words")}</span>
-                                <span>{wordStats.chars} {t("stats.chars")}</span>
-                                <span>{wordStats.lines} {t("stats.lines")}</span>
-                            </span>
-                        )}
-                    </div>
-                    <textarea
-                        ref={editorRef}
-                        value={markdown}
-                        onChange={(e) => setMarkdown(e.target.value)}
-                        onScroll={handleEditorScroll}
-                        placeholder={t("editor.placeholder")}
-                        style={editorStyle}
-                        spellCheck={false}
-                    />
-                </div>
-
-                {/* Preview Panel */}
-                <div style={panelOuterStyle}>
-                    <div style={panelHeaderStyle}>
-                        <FaEye size={14} />
-                        {t("preview.label")}
-                    </div>
-                    <div
-                        ref={previewRef}
-                        style={previewContainerStyle}
-                    >
-                        {htmlOutput ? (
-                            <>
-                                <style dangerouslySetInnerHTML={{ __html: previewStyles }} />
-                                <div
-                                    className="md-preview"
-                                    dangerouslySetInnerHTML={{ __html: htmlOutput }}
-                                />
-                            </>
-                        ) : (
-                            <div style={emptyPreviewStyle}>
-                                {t("preview.empty")}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
 
             {/* Toast */}
             {toast && (

@@ -41,22 +41,23 @@
 | 30 | 영업일 계산기 | /business-day-calculator | 2026-02-20 | 완료 |
 
 | 31 | 파비콘 생성기 | /favicon-generator | 2026-02-20 | 완료 |
+| 32 | 유튜브 썸네일 추출기 | /youtube-thumbnail | 2026-02-20 | 완료 |
+| 33 | 색상 코드 변환기 | /color-converter | 2026-02-20 | 완료 |
+| 34 | 사다리 타기 | /ladder-game | 2026-02-20 | 완료 |
+| 35 | 랜덤 생성기 | /random-generator | 2026-02-20 | 완료 |
+| 36 | 비밀번호 생성기 | /password-generator | 2026-02-20 | 완료 |
+| 37 | 환율 계산기 | /money-converter | 2026-02-21 | 완료 |
+| 38 | 스톱워치 | /stopwatch | 2026-02-21 | 완료 |
+| 39 | 타이머 | /timer | 2026-02-21 | 완료 |
+| 40 | 알람 | /alarm | 2026-02-21 | 완료 |
 
-| 32 | 유튜브 썸네일 추출기 | /youtube-thumbnail | 2026-02-20 | 색인 미등록 |
-| 33 | 색상 코드 변환기 | /color-converter | 2026-02-20 | 색인 미등록 |
-| 34 | 사다리 타기 | /ladder-game | 2026-02-20 | 색인 미등록 |
-| 35 | 랜덤 생성기 | /random-generator | 2026-02-20 | 색인 미등록 |
-| 36 | 비밀번호 생성기 | /password-generator | 2026-02-20 | 색인 미등록 |
-| 37 | 환율 계산기 | /exchange-rate | 2026-02-21 | 색인 미등록 |
-| 38 | 스톱워치 | /stopwatch | 2026-02-21 | 색인 미등록 |
-| 39 | 타이머 | /timer | 2026-02-21 | 색인 미등록 |
-| 40 | 알람 | /alarm | 2026-02-21 | 색인 미등록 |
+| 41 | 서버 시간 | /server-time | 2026-02-21 | 완료 |
+| 42 | D-Day 계산기 | /dday-counter | 2026-02-21 | 완료 |
+| 43 | 궁합 테스트 | /compatibility-checker | 2026-02-21 | 완료 |
 
-| 41 | 서버 시간 | /server-time | 2026-02-21 | 색인 미등록 |
-| 42 | D-Day 계산기 | /dday-counter | 2026-02-21 | 색인 미등록 |
-| 43 | 궁합 계산기 | /compatibility | 2026-02-21 | 색인 미등록 |
-| 44 | IP 주소 조회 | /ip-address | 2026-02-21 | 색인 미등록 |
-| 45 | JSON 포맷터 | /json-formatter | 2026-02-21 | 색인 미등록 |
+| 44 | IP 주소 조회 | /ip-address | 2026-02-21 | 기능수정해야됨 |
+| 45 | JSON 포맷터 | /json-formatter | 2026-02-21 | 완료 |
+
 | 46 | URL 인코더 | /url-encoder | 2026-02-21 | 색인 미등록 |
 | 47 | SQL 포맷터 | /sql-formatter | 2026-02-21 | 색인 미등록 |
 | 48 | Cron 표현식 생성기 | /cron-generator | 2026-02-21 | 색인 미등록 |
@@ -69,6 +70,53 @@
 | 54 | HTML 엔티티 변환기 | /html-entity | 2026-02-21 | 색인 미등록 |
 | 55 | 마크다운 미리보기 | /markdown-preview | 2026-02-21 | 색인 미등록 |
 | 56 | CSS 압축기 | /css-minifier | 2026-02-21 | 색인 미등록 |
+
+---
+
+## 메뉴 & 코드베이스 전체 검토 결과 (2026-02-23)
+
+### 결론: 메뉴 버그 없음 (PASS)
+
+전체 56개 도구에 대해 아래 항목을 코드베이스 레벨에서 검증 완료.
+
+### 검증 항목별 결과
+
+| 검증 항목 | 결과 | 상세 |
+|-----------|------|------|
+| `config/tools.ts` 등록 | ✅ 56/56 | 모든 도구가 단일 소스(ALL_TOOLS)에 등록 |
+| 파일시스템 디렉토리 | ✅ 56/56 | `src/app/[locale]/*/` 56개 디렉토리 모두 존재 |
+| page.tsx 존재 | ✅ 56/56 | 모든 도구 디렉토리에 page.tsx 존재 |
+| SSG 설정 (generateStaticParams) | ✅ 56/56 | 모든 tool page.tsx에 `generateStaticParams` + `force-static` + `revalidate=false` |
+| 번역 키 (Index.tools.*) | ✅ 56/56 | ko.json, en.json 모두 56개 labelKey 매칭 |
+| 헤더 카테고리 번역 | ✅ 6/6 | calculators, time, image, text, life, devtools 모두 존재 |
+| 사이드바 메뉴 | ✅ PASS | `getCategoriesWithTools()` → ALL_TOOLS 기반 자동 생성 |
+| 홈페이지 도구 카드 | ✅ PASS | `HomeToolsClient` → 동일 ALL_TOOLS 사용 |
+| 사이트맵 | ✅ PASS | `getAllToolHrefs()` → ALL_TOOLS 기반 자동 생성 |
+
+### 수정한 문서 오류 (2건)
+
+| 항목 | 기존 (잘못) | 수정 후 (정확) |
+|------|------------|---------------|
+| #37 환율 계산기 경로 | `/exchange-rate` | `/money-converter` |
+| #43 궁합 계산기 경로 | `/compatibility` | `/compatibility-checker` |
+
+### 확인된 문서 불일치 (참고)
+
+| 항목 | 상세 |
+|------|------|
+| FINALIZED_TOOLS.md 개수 | 헤더에 "총 51개"로 표기 → 실제 56개 리스트 |
+| sitemap.ts 날짜 | `LAST_CONTENT_UPDATE = '2026-02-19'` → 2/21 이후 추가된 도구 미반영 |
+
+### 코드 스타일 차이 (버그 아님, 참고용)
+
+5개 도구는 `*Client.tsx` 대신 다른 이름의 클라이언트 컴포넌트 사용:
+- `calculator` → `CalculatorWrapper` (from `@/components/`)
+- `barcode` → `BarcodeTool.tsx`
+- `clock` → `ClockView.tsx`
+- `stopwatch` → `StopwatchView.tsx`
+- `timer` → `TimerView.tsx`
+
+→ 기능상 문제 없음. 네이밍 통일은 선택사항.
 
 ---
 

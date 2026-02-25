@@ -249,7 +249,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
     };
 
     return (
-        <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
+        <div className="container" style={{ maxWidth: "1100px", padding: "20px" }}>
             {/* Encode Type Toggle (URL vs HTML vs Base64 URL-safe) */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
                 <div style={{
@@ -387,7 +387,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                     <textarea value={input} onChange={(e) => handleInputChange(e.target.value)}
                         placeholder={mode === 'encode' ? t('placeholder.encode') : t('placeholder.decode')}
                         style={{
-                            flex: 1, minHeight: "200px", padding: "15px",
+                            flex: 1, minHeight: "300px", padding: "15px",
                             border: `1px solid ${isDark ? "#334155" : "#e0e0e0"}`, borderRadius: "8px",
                             fontSize: "0.95rem", fontFamily: "monospace", resize: "vertical", outline: "none",
                             color: isDark ? "#e2e8f0" : "#1f2937", background: isDark ? "#0f172a" : "#fff"
@@ -424,27 +424,37 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                         <label style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333" }}>
                             {mode === 'encode' ? t('encodedText') : t('originalText')}
                         </label>
-                        <button onClick={handleCopy} disabled={!output} style={{
-                            display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px",
-                            background: copied ? "#22c55e" : (isDark ? "#334155" : "#f0f0f0"),
-                            color: copied ? "white" : (isDark ? "#f1f5f9" : "#333"),
-                            border: "none", borderRadius: "6px", cursor: output ? "pointer" : "not-allowed",
-                            fontSize: "0.85rem", opacity: output ? 1 : 0.5
-                        }}>
-                            <FaCopy size={12} />
-                            {copied ? t('copied') : t('copy')}
-                        </button>
-                        <ShareButton shareText={getShareText()} disabled={!output} />
                     </div>
                     <textarea value={output} readOnly placeholder={t('placeholder.result')}
                         style={{
-                            flex: 1, minHeight: "200px", padding: "15px",
+                            flex: 1, minHeight: "300px", padding: "15px",
                             border: `1px solid ${isDark ? "#334155" : "#e0e0e0"}`, borderRadius: "8px",
                             fontSize: "0.95rem", fontFamily: "monospace", resize: "vertical", outline: "none",
                             background: isDark ? "#0f172a" : "#fafafa", color: isDark ? "#e2e8f0" : "#1f2937"
                         }} />
-                    <div style={{ marginTop: "10px", fontSize: "0.85rem", color: isDark ? "#64748b" : "#888" }}>
-                        {t('characters')}: {output.length}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
+                        <span style={{ fontSize: "0.85rem", color: isDark ? "#64748b" : "#888" }}>
+                            {t('characters')}: {output.length}
+                        </span>
+                        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                            <button onClick={handleCopy} disabled={!output} style={{
+                                display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px",
+                                background: copied ? "#22c55e" : (isDark ? "#334155" : "#f0f0f0"),
+                                color: copied ? "white" : (isDark ? "#f1f5f9" : "#333"),
+                                border: "none", borderRadius: "6px", cursor: output ? "pointer" : "not-allowed",
+                                fontSize: "0.8rem", fontWeight: 600, opacity: output ? 1 : 0.5, transition: "all 0.2s",
+                                whiteSpace: "nowrap",
+                            }}>
+                                <FaCopy size={11} />
+                                {copied ? t('copied') : t('copy')}
+                            </button>
+                            <ShareButton shareText={getShareText()} disabled={!output} style={{
+                                display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px",
+                                background: isDark ? "#1e3a5f" : "#e0e7ff", color: isDark ? "#93c5fd" : "#3730a3",
+                                border: "none", borderRadius: "6px", fontSize: "0.8rem", fontWeight: 600,
+                                cursor: output ? "pointer" : "not-allowed", whiteSpace: "nowrap",
+                            }} iconSize={12} />
+                        </div>
                     </div>
                 </div>
             </div>
