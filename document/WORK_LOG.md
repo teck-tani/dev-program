@@ -73,72 +73,79 @@
 
 ---
 
-## 비밀번호 생성기 강화 (2026-02-25)
+## 추가 후보 도구 (46개) — 검색 수요 순
 
-### 변경 내용
-| 항목 | 이전 | 이후 |
-|------|------|------|
-| 한국어 단어 목록 | 89개 | 300개 (14개 카테고리) |
-| 영어 단어 목록 | 101개 | 300개 (11개 카테고리) |
-| 패스프레이즈 엔트로피 (4단어) | 26비트 (약함) | 32.9비트 (보통) |
-| 패스프레이즈 엔트로피 (8단어) | 51.8비트 (강함) | 65.8비트 (매우 강함) |
-| SEO 기능 항목 | 4개 | 6개 (HIBP + 한국어 패스프레이즈 추가) |
-| SEO HowTo 단계 | 4단계 | 5단계 (유출 확인 추가) |
-| SEO FAQ | 5개 | 8개 (HIBP/패스프레이즈/은행PIN 추가) |
-| meta 키워드 | 기본 | HIBP, 패스프레이즈, wifi, 은행 비밀번호 추가 |
-| JSON-LD WebApp 기능 | 6개 | 10개 |
+> 구글/네이버 검색 트렌드 + 해외 유틸사이트(calculator.net, omnicalculator, rapidtables) 인기 도구 분석 기반
+> 기존 56개와 중복 없음. 클라이언트 사이드(브라우저)에서 구현 가능한 것만 선별.
 
-### 주요 키워드 전략
-- **1차 타겟**: 비밀번호 생성기, 안전한 비밀번호 만들기
-- **차별화 롱테일**: 비밀번호 유출 확인, 패스프레이즈 생성기, 기억하기 쉬운 비밀번호
-- **HIBP k-anonymity 설명** → FAQ + SEO 섹션 모두 포함
+### Tier 1 — 일반인 대상, 검색량 최상 (우선 개발)
 
----
+| # | 도구명 | 경로 | 주요 키워드 | 비고 |
+|---|--------|------|------------|------|
+| 57 | 퍼센트 계산기 | /percentage-calculator | 퍼센트계산, 비율계산 | 범용 최상위 |
+| 58 | 평수 계산기 | /pyeong-calculator | 평수계산, 제곱미터→평 | 부동산 한국 특화 |
+| 59 | 음력 양력 변환기 | /lunar-converter | 음력변환, 양력음력 | korean-lunar-calendar 보유 |
+| 60 | 학점 계산기 | /gpa-calculator | 학점계산기, GPA | 대학생 필수 |
+| 61 | 칼로리 계산기 | /calorie-calculator | 칼로리계산기, 기초대사량, TDEE | 다이어트 상시 수요 |
+| 62 | 연봉 실수령액 | /annual-salary | 연봉실수령액, 세후연봉 | 연봉 테이블 (월급계산기와 차별화) |
+| 63 | 전기요금 계산기 | /electricity-calculator | 전기요금계산, 전기세 | KEPCO 누진제 적용 |
+| 64 | 주휴수당 계산기 | /weekly-holiday-pay | 주휴수당계산기 | 알바생/사업주 필수 |
+| 65 | 타자 연습 | /typing-practice | 타자연습, 타자속도측정 | 재방문율 높음, 한/영 |
+| 66 | 텍스트 변환기 | /text-converter | 대소문자변환, 카멜케이스 | 개발자+일반인 |
 
-## 메뉴 & 코드베이스 전체 검토 결과 (2026-02-23)
+### Tier 2 — 생활/금융 (검색량 상위)
 
-### 결론: 메뉴 버그 없음 (PASS)
+| # | 도구명 | 경로 | 주요 키워드 | 비고 |
+|---|--------|------|------------|------|
+| 67 | 연차 계산기 | /annual-leave | 연차계산기, 연차일수 | 직장인 필수 |
+| 68 | 자동차세 계산기 | /car-tax | 자동차세계산 | 배기량/전기차 |
+| 69 | 복리 계산기 | /compound-interest | 복리계산기, 복리이자 | 재테크 |
+| 70 | 적금 이자 계산기 | /savings-calculator | 적금이자계산 | 단리/복리 비교 |
+| 71 | 실업급여 계산기 | /unemployment-benefit | 실업급여계산기 | 퇴사자 필수 |
+| 72 | 음주 측정기 | /alcohol-calculator | 혈중알코올농도 | 위드마크 공식 |
+| 73 | 속도 계산기 | /speed-calculator | 속도계산, 거리시간속도 | 물리/일상 |
+| 74 | 세계시간 변환기 | /world-clock | 세계시간, 시차계산 | 해외 연락/출장 |
+| 75 | 종합소득세 계산기 | /income-tax | 종합소득세계산 | 5월 신고시즌 급등 |
+| 76 | 양도소득세 계산기 | /capital-gains-tax | 양도소득세계산 | 부동산/주식 매도 |
 
-전체 56개 도구에 대해 아래 항목을 코드베이스 레벨에서 검증 완료.
+### Tier 3 — 이미지/파일 도구 (실용성 높음)
 
-### 검증 항목별 결과
+| # | 도구명 | 경로 | 주요 키워드 | 비고 |
+|---|--------|------|------------|------|
+| 77 | 이미지 자르기 | /image-crop | 이미지자르기, 사진크롭 | Canvas API |
+| 78 | 이미지 워터마크 | /watermark | 워터마크넣기 | 블로거/쇼핑몰 |
+| 79 | GIF 만들기 | /gif-maker | GIF만들기, 움짤 | 소셜미디어 |
+| 80 | 사진 EXIF 뷰어 | /exif-viewer | EXIF정보, 사진정보 | 촬영정보/위치 |
+| 81 | 이미지 배경 제거 | /background-remover | 배경제거, 누끼따기 | onnxruntime-web |
+| 82 | PDF → 이미지 | /pdf-to-image | PDF이미지변환, PDF→JPG | pdf.js 활용 |
+| 83 | 이미지 → PDF | /image-to-pdf | 이미지PDF변환 | jsPDF |
+| 84 | OCR 텍스트 추출 | /ocr | 이미지텍스트추출, OCR | tesseract.js 이미 설치됨 |
 
-| 검증 항목 | 결과 | 상세 |
-|-----------|------|------|
-| `config/tools.ts` 등록 | ✅ 56/56 | 모든 도구가 단일 소스(ALL_TOOLS)에 등록 |
-| 파일시스템 디렉토리 | ✅ 56/56 | `src/app/[locale]/*/` 56개 디렉토리 모두 존재 |
-| page.tsx 존재 | ✅ 56/56 | 모든 도구 디렉토리에 page.tsx 존재 |
-| SSG 설정 (generateStaticParams) | ✅ 56/56 | 모든 tool page.tsx에 `generateStaticParams` + `force-static` + `revalidate=false` |
-| 번역 키 (Index.tools.*) | ✅ 56/56 | ko.json, en.json 모두 56개 labelKey 매칭 |
-| 헤더 카테고리 번역 | ✅ 6/6 | calculators, time, image, text, life, devtools 모두 존재 |
-| 사이드바 메뉴 | ✅ PASS | `getCategoriesWithTools()` → ALL_TOOLS 기반 자동 생성 |
-| 홈페이지 도구 카드 | ✅ PASS | `HomeToolsClient` → 동일 ALL_TOOLS 사용 |
-| 사이트맵 | ✅ PASS | `getAllToolHrefs()` → ALL_TOOLS 기반 자동 생성 |
+### Tier 4 — 개발자 도구 (충성도 높음)
 
-### 수정한 문서 오류 (2건)
+| # | 도구명 | 경로 | 주요 키워드 | 비고 |
+|---|--------|------|------------|------|
+| 85 | XML 포맷터 | /xml-formatter | XML정렬, XML뷰어 | |
+| 86 | YAML 포맷터 | /yaml-formatter | YAML포맷터, YAML검증 | |
+| 87 | JS 압축기 | /js-minifier | 자바스크립트압축, JS Minify | |
+| 88 | 색상 팔레트 생성기 | /color-palette | 색상조합, 컬러팔레트 | 디자이너 |
+| 89 | Lorem Ipsum 생성기 | /lorem-ipsum | 더미텍스트, 로렘입숨 | |
+| 90 | HTML 테이블 생성기 | /html-table-generator | HTML테이블 | GUI→코드 |
+| 91 | Meta 태그 생성기 | /meta-generator | 메타태그생성, SEO | |
+| 92 | robots.txt 생성기 | /robots-generator | robots.txt생성 | SEO |
+| 93 | 진수 변환기 | /number-base | 진법변환, 2진수, 16진수 | 학생/개발자 |
+| 94 | ASCII 코드표 | /ascii-table | 아스키코드표 | |
 
-| 항목 | 기존 (잘못) | 수정 후 (정확) |
-|------|------------|---------------|
-| #37 환율 계산기 경로 | `/exchange-rate` | `/money-converter` |
-| #43 궁합 계산기 경로 | `/compatibility` | `/compatibility-checker` |
+### Tier 5 — 한국 특화 + 틈새 (차별화)
 
-### 확인된 문서 불일치 (참고)
-
-| 항목 | 상세 |
-|------|------|
-| FINALIZED_TOOLS.md 개수 | 헤더에 "총 51개"로 표기 → 실제 56개 리스트 |
-| sitemap.ts 날짜 | `LAST_CONTENT_UPDATE = '2026-02-19'` → 2/21 이후 추가된 도구 미반영 |
-
-### 코드 스타일 차이 (버그 아님, 참고용)
-
-5개 도구는 `*Client.tsx` 대신 다른 이름의 클라이언트 컴포넌트 사용:
-- `calculator` → `CalculatorWrapper` (from `@/components/`)
-- `barcode` → `BarcodeTool.tsx`
-- `clock` → `ClockView.tsx`
-- `stopwatch` → `StopwatchView.tsx`
-- `timer` → `TimerView.tsx`
-
-→ 기능상 문제 없음. 네이밍 통일은 선택사항.
-
----
+| # | 도구명 | 경로 | 주요 키워드 | 비고 |
+|---|--------|------|------------|------|
+| 95 | 한자 변환기 | /hanja-converter | 한자변환, 한자찾기 | 한국어 특화 |
+| 96 | 로마숫자 변환기 | /roman-numeral | 로마숫자변환 | |
+| 97 | 띠/별자리 계산기 | /zodiac | 띠계산, 별자리찾기 | 재미 요소 |
+| 98 | 온라인 메모장 | /notepad | 온라인메모장, 웹메모장 | localStorage, 재방문 |
+| 99 | 전세자금대출 계산기 | /jeonse-loan | 전세자금대출, 전세대출이자 | 한국 특화 |
+| 100 | 상속세/증여세 계산기 | /inheritance-tax | 상속세계산, 증여세계산 | |
+| 101 | QR코드 스캐너 | /qr-scanner | QR코드스캔, QR리더 | 카메라 API |
+| 102 | 코드 스크린샷 | /code-screenshot | 코드캡처, Carbon대안 | 개발자 공유용 |
 
