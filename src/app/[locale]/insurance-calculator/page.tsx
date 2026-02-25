@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import InsuranceCalculatorClient from "./InsuranceCalculatorClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -220,6 +221,8 @@ function generateWebAppSchema(locale: string) {
 export default async function InsuranceCalculatorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { InsuranceCalculator: (allMessages as Record<string, unknown>).InsuranceCalculator, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'InsuranceCalculator' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -255,7 +258,9 @@ export default async function InsuranceCalculatorPage({ params }: { params: Prom
                         }
                     }
                 `}</style>
-                <InsuranceCalculatorClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <InsuranceCalculatorClient />
+            </NextIntlClientProvider>
             </div>
 
             <article className="seo-article">

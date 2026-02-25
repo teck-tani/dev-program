@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import KoreanAgeCalculatorClient from "./KoreanAgeCalculatorClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -201,6 +202,8 @@ function generateHowToSchema(locale: string) {
 export default async function KoreanAgeCalculatorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { KoreanAgeCalculator: (allMessages as Record<string, unknown>).KoreanAgeCalculator, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'KoreanAgeCalculator' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -228,7 +231,9 @@ export default async function KoreanAgeCalculatorPage({ params }: { params: Prom
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <KoreanAgeCalculatorClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

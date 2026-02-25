@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import DiscountCalculatorClient from "./DiscountCalculatorClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -209,6 +210,8 @@ function generateWebAppSchema(locale: string) {
 export default async function DiscountCalculatorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { DiscountCalculator: (allMessages as Record<string, unknown>).DiscountCalculator, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'DiscountCalculator' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -244,7 +247,9 @@ export default async function DiscountCalculatorPage({ params }: { params: Promi
                         }
                     }
                 `}</style>
-                <DiscountCalculatorClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <DiscountCalculatorClient />
+            </NextIntlClientProvider>
             </div>
 
             <article className="seo-article">

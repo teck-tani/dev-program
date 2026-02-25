@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import CharacterCounterClient from "./CharacterCounterClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -194,6 +195,8 @@ function generateHowToSchema(locale: string) {
 export default async function CharacterCounterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { CharacterCounter: (allMessages as Record<string, unknown>).CharacterCounter, Common: (allMessages as Record<string, unknown>).Common };
     const isKo = locale === 'ko';
     const url = `${baseUrl}/${locale}/character-counter`;
     const t = await getTranslations({ locale, namespace: 'CharacterCounter' });
@@ -226,7 +229,9 @@ export default async function CharacterCounterPage({ params }: { params: Promise
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <CharacterCounterClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

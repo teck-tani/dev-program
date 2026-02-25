@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import HtmlEntityClient from "./HtmlEntityClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -215,6 +216,8 @@ function generateWebAppSchema(locale: string) {
 export default async function HtmlEntityPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { HtmlEntity: (allMessages as Record<string, unknown>).HtmlEntity, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'HtmlEntity' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -241,7 +244,9 @@ export default async function HtmlEntityPage(props: { params: Promise<{ locale: 
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <HtmlEntityClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

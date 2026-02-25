@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import MarkdownPreviewClient from "./MarkdownPreviewClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -214,6 +215,8 @@ function generateWebAppSchema(locale: string) {
 export default async function MarkdownPreviewPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { MarkdownPreview: (allMessages as Record<string, unknown>).MarkdownPreview, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'MarkdownPreview' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -240,7 +243,9 @@ export default async function MarkdownPreviewPage(props: { params: Promise<{ loc
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <MarkdownPreviewClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

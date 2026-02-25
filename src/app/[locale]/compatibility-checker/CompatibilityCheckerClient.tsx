@@ -6,7 +6,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { FaHeart, FaStar, FaBrain, FaRedoAlt, FaCamera } from "react-icons/fa";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import ShareButton from "@/components/ShareButton";
-import html2canvas from "html2canvas";
+// html2canvas: 캡처 시에만 동적 로드 (초기 번들 크기 절감)
 
 declare global {
     interface Window {
@@ -620,6 +620,7 @@ export default function CompatibilityCheckerClient() {
     const handleSaveImage = useCallback(async () => {
         if (!resultRef.current) return;
         try {
+            const { default: html2canvas } = await import('html2canvas');
             const canvas = await html2canvas(resultRef.current, {
                 scale: 2,
                 backgroundColor: isDark ? "#1e293b" : "#ffffff",

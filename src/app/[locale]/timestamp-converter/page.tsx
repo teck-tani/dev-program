@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import TimestampConverterClient from "./TimestampConverterClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -216,6 +217,8 @@ function generateWebAppSchema(locale: string) {
 export default async function TimestampConverterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { TimestampConverter: (allMessages as Record<string, unknown>).TimestampConverter, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'TimestampConverter' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -242,7 +245,9 @@ export default async function TimestampConverterPage({ params }: { params: Promi
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <TimestampConverterClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

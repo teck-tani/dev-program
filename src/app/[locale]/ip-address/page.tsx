@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import IpAddressClient from "./IpAddressClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -213,6 +214,8 @@ function generateHowToSchema(locale: string) {
 export default async function IpAddressPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { IpAddress: (allMessages as Record<string, unknown>).IpAddress, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations('IpAddress');
 
     const faqSchema = generateFaqSchema(locale);
@@ -234,7 +237,9 @@ export default async function IpAddressPage({ params }: { params: Promise<{ loca
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <IpAddressClient />
+            </NextIntlClientProvider>
 
             {/* SEO Article */}
             <article className="seo-article">

@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import UrlEncoderClient from "./UrlEncoderClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -246,6 +247,8 @@ function generateWebAppSchema(locale: string) {
 export default async function UrlEncoderPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { UrlEncoder: (allMessages as Record<string, unknown>).UrlEncoder, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'UrlEncoder' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -273,7 +276,9 @@ export default async function UrlEncoderPage(props: { params: Promise<{ locale: 
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <UrlEncoderClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

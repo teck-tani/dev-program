@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import ClockView from "./ClockView";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 import styles from './ClockView.module.css';
 
@@ -252,6 +253,8 @@ const cityRegionKeys = ['asia', 'europe', 'americas', 'africa'] as const;
 export default async function ClockPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { Clock: (allMessages as Record<string, unknown>).Clock, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'Clock.Main' });
 
     const breadcrumbSchema = generateBreadcrumbSchema(locale);
@@ -279,7 +282,9 @@ export default async function ClockPage(props: { params: Promise<{ locale: strin
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <ClockView />
+            </NextIntlClientProvider>
 
             {/* SEO Content Section (SSR) */}
             <section className={styles.seoSection} aria-label={t('seo.ariaLabel')}>

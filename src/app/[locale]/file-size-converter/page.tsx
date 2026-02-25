@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import FileSizeConverterClient from "./FileSizeConverterClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -162,6 +163,8 @@ function generateWebAppSchema(locale: string) {
 export default async function FileSizeConverterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { FileSizeConverter: (allMessages as Record<string, unknown>).FileSizeConverter, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'FileSizeConverter' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -188,7 +191,9 @@ export default async function FileSizeConverterPage({ params }: { params: Promis
             />
 
             <div className="container" style={{ maxWidth: '900px', padding: '20px' }}>
-                <FileSizeConverterClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <FileSizeConverterClient />
+            </NextIntlClientProvider>
 
                 <article style={{ maxWidth: 700, margin: '60px auto 0', padding: '0 20px' }}>
                     {/* 1. Description */}

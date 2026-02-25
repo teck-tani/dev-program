@@ -1,7 +1,8 @@
+import { NextIntlClientProvider } from 'next-intl';
 import StopwatchWrapper from "./StopwatchWrapper";
 import "./stopwatch.css";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -200,6 +201,8 @@ function generateWebAppSchema(locale: string) {
 export default async function StopwatchPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { Clock: (allMessages as Record<string, unknown>).Clock, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'Clock.Stopwatch' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -230,7 +233,9 @@ export default async function StopwatchPage({ params }: { params: Promise<{ loca
             <div className="container sw-page">
                 {/* 스톱워치 컴포넌트 */}
                 <div className="sw-widget">
-                    <StopwatchWrapper />
+                    <NextIntlClientProvider messages={toolMessages}>
+            <StopwatchWrapper />
+            </NextIntlClientProvider>
                 </div>
 
                 {/* 설명 텍스트 - UI 아래로 이동 */}

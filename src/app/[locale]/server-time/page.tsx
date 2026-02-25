@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import ServerTimeClient from "./ServerTimeClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from "@/navigation";
 
 export function generateStaticParams() {
@@ -148,6 +149,8 @@ function generateWebAppSchema(locale: string) {
 export default async function ServerTimePage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { ServerTime: (allMessages as Record<string, unknown>).ServerTime, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: "ServerTime" });
 
     const faqSchema = generateFaqSchema(locale);
@@ -165,7 +168,9 @@ export default async function ServerTimePage(props: { params: Promise<{ locale: 
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }} />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <ServerTimeClient />
+            </NextIntlClientProvider>
 
             {/* SEO Content */}
             <article className="seo-article">

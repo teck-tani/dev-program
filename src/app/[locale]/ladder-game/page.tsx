@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import LadderGameClient from "./LadderGameClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -373,6 +374,8 @@ const seoContent = {
 export default async function LadderGamePage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { LadderGame: (allMessages as Record<string, unknown>).LadderGame, Common: (allMessages as Record<string, unknown>).Common };
 
     const seo = seoContent[locale as 'ko' | 'en'] || seoContent.ko;
     const faqSchema = generateFaqSchema(locale);
@@ -394,7 +397,9 @@ export default async function LadderGamePage(props: { params: Promise<{ locale: 
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <LadderGameClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article" aria-label={seo.ariaLabel}>
                 {/* 1. 도구 설명 */}

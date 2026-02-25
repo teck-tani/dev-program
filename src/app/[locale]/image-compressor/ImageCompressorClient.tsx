@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaImage, FaDownload, FaTrash, FaCog, FaCompress, FaFileArchive, FaChevronDown, FaChevronUp, FaPlus } from "react-icons/fa";
-import JSZip from "jszip";
+// jszip: 사용 시에만 동적 로드 (초기 번들 크기 절감)
 
 type OutputFormat = 'image/jpeg' | 'image/webp' | 'image/png' | 'image/avif';
 
@@ -242,6 +242,7 @@ export default function ImageCompressorClient() {
             return;
         }
 
+        const { default: JSZip } = await import('jszip');
         const zip = new JSZip();
         const usedNames = new Map<string, number>();
         doneImages.forEach(img => {

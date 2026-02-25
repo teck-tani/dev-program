@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import ImageResizeClient from "./ImageResizeClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -61,6 +62,8 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
 export default async function ImageResizePage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { ImageResize: (allMessages as Record<string, unknown>).ImageResize, Common: (allMessages as Record<string, unknown>).Common };
     const isKo = locale === 'ko';
     const url = `${baseUrl}/${locale}/image-resize`;
     const t = await getTranslations({ locale, namespace: 'ImageResize' });
@@ -127,7 +130,9 @@ export default async function ImageResizePage({ params }: { params: Promise<{ lo
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
+            <NextIntlClientProvider messages={toolMessages}>
             <ImageResizeClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 <section className="seo-section">

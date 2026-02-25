@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import CssMinifierClient from "./CssMinifierClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -212,6 +213,8 @@ function generateWebAppSchema(locale: string) {
 export default async function CssMinifierPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { CssMinifier: (allMessages as Record<string, unknown>).CssMinifier, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'CssMinifier' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -238,7 +241,9 @@ export default async function CssMinifierPage(props: { params: Promise<{ locale:
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <CssMinifierClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

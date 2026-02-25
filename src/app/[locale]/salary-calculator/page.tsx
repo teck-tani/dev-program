@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import PayCalClient from "./PayCalClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -260,6 +261,8 @@ const faqKeys = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6'] as const;
 export default async function SalaryCalculatorPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { PayCal: (allMessages as Record<string, unknown>).PayCal, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'PayCal' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -287,7 +290,9 @@ export default async function SalaryCalculatorPage(props: { params: Promise<{ lo
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(salaryTableSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <PayCalClient />
+            </NextIntlClientProvider>
 
             {/* SEO Content Section (SSR) */}
             <article className="seo-article">

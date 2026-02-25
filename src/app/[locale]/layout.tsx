@@ -42,7 +42,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function LocaleLayout({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }>; }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const messages = await getMessages({ locale });
+  const allMessages = await getMessages({ locale });
+  // [성능 최적화] 레이아웃에는 공통 namespace만 전달 (575KB → ~6KB)
+  // 도구별 namespace는 각 page.tsx에서 nested provider로 전달
+  const msgs = allMessages as Record<string, unknown>;
+  const commonMessages = {
+    Common: msgs.Common,
+    Index: msgs.Index,
+    Header: msgs.Header,
+    Footer: msgs.Footer,
+  };
 
   return (
     <html lang={locale}>
@@ -58,7 +67,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <link rel="apple-touch-icon" href="/favicon.ico" />
       </head>
       <body style={{ fontFamily: systemFontStack }}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={commonMessages}>
           <ThemeProvider>
               <div id="top-container"><Header /></div>
               <main>{children}</main>

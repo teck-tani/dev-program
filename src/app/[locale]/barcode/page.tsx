@@ -1,4 +1,5 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 import BarcodeTool from "./BarcodeTool";
 import styles from "./barcode.module.css";
@@ -208,6 +209,8 @@ function generateWebAppSchema(locale: string) {
 export default async function BarcodePage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { Barcode: (allMessages as Record<string, unknown>).Barcode, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations('Barcode');
 
     const faqSchema = generateFaqSchema(locale);
@@ -235,7 +238,9 @@ export default async function BarcodePage({ params }: { params: Promise<{ locale
                 <h1 className="sr-only">{t('title')}</h1>
 
                 {/* 클라이언트 컴포넌트 호출 */}
-                <BarcodeTool />
+                <NextIntlClientProvider messages={toolMessages}>
+            <BarcodeTool />
+            </NextIntlClientProvider>
 
                 {/* 하단 설명글 섹션 */}
                 <article className={styles.articleSection} style={{ maxWidth: 700, margin: '60px auto 0', padding: '20px' }}>

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaFilePdf, FaDownload, FaTrash, FaPlus, FaCut, FaLayerGroup, FaArrowUp, FaArrowDown, FaUndo, FaRedo, FaCheckSquare, FaRegSquare, FaTint, FaGripVertical } from "react-icons/fa";
 import { PDFDocument, degrees } from "pdf-lib";
-import JSZip from "jszip";
+// jszip: 사용 시에만 동적 로드 (초기 번들 크기 절감)
 import ShareButton from "@/components/ShareButton";
 
 // Module-level pdfjs singleton loader
@@ -542,6 +542,7 @@ export default function PDFManagerClient() {
                 URL.revokeObjectURL(url);
             } else {
                 // Individual pages → ZIP
+                const { default: JSZip } = await import('jszip');
                 const zip = new JSZip();
                 for (const pageIndex of pagesToExtract) {
                     const newPdf = await PDFDocument.create();

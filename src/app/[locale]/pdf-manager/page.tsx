@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import PDFManagerClient from "./PDFManagerClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -178,6 +179,8 @@ function generateHowToSchema(locale: string) {
 export default async function PDFManagerPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { PDFManager: (allMessages as Record<string, unknown>).PDFManager, Common: (allMessages as Record<string, unknown>).Common };
     const isKo = locale === 'ko';
     const url = `${baseUrl}/${locale}/pdf-manager`;
     const t = await getTranslations({ locale, namespace: 'PDFManager' });
@@ -210,7 +213,9 @@ export default async function PDFManagerPage({ params }: { params: Promise<{ loc
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <PDFManagerClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

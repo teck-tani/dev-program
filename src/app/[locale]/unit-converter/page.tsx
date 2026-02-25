@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import UnitConverterClient from "./UnitConverterClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -201,6 +202,8 @@ function generateWebAppSchema(locale: string) {
 export default async function UnitConverterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { UnitConverter: (allMessages as Record<string, unknown>).UnitConverter, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'UnitConverter' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -224,7 +227,9 @@ export default async function UnitConverterPage({ params }: { params: Promise<{ 
             />
 
             <div className="container" style={{ maxWidth: '900px', padding: '20px' }}>
-                <UnitConverterClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <UnitConverterClient />
+            </NextIntlClientProvider>
 
                 <article style={{ maxWidth: 700, margin: "60px auto 0", padding: "0 20px 40px" }}>
                     {/* 1. Description */}

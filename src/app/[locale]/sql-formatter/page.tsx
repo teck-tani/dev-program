@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import SqlFormatterClient from "./SqlFormatterClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -213,6 +214,8 @@ function generateHowToSchema(locale: string) {
 export default async function SqlFormatterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { SqlFormatter: (allMessages as Record<string, unknown>).SqlFormatter, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'SqlFormatter' });
     const tFaq = await getTranslations('SqlFormatter.faq');
 
@@ -235,7 +238,9 @@ export default async function SqlFormatterPage({ params }: { params: Promise<{ l
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <SqlFormatterClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

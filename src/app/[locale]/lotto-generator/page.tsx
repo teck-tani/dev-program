@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import LottoClient from "./LottoClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -144,6 +145,8 @@ function generateWebAppSchema(locale: string) {
 export default async function LottoGeneratorPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { Lotto: (allMessages as Record<string, unknown>).Lotto, Common: (allMessages as Record<string, unknown>).Common };
 
     const t = await getTranslations({ locale, namespace: 'Lotto' });
     const faqSchema = generateFaqSchema(locale);
@@ -161,7 +164,9 @@ export default async function LottoGeneratorPage(props: { params: Promise<{ loca
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }} />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <LottoClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

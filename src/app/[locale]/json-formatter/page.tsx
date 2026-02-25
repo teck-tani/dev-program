@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import JsonFormatterClient from "./JsonFormatterClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -193,6 +194,8 @@ function generateWebAppSchema(locale: string) {
 export default async function JsonFormatterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { JsonFormatter: (allMessages as Record<string, unknown>).JsonFormatter, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'JsonFormatter' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -209,7 +212,9 @@ export default async function JsonFormatterPage({ params }: { params: Promise<{ 
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }} />
 
             <div className="container" style={{ maxWidth: '1100px', padding: '20px' }}>
-                <JsonFormatterClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <JsonFormatterClient />
+            </NextIntlClientProvider>
 
                 <article className="seo-article">
                     {/* 1. Description */}

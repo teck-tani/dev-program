@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import CronGeneratorClient from "./CronGeneratorClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -213,6 +214,8 @@ function generateHowToSchema(locale: string) {
 export default async function CronGeneratorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { CronGenerator: (allMessages as Record<string, unknown>).CronGenerator, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'CronGenerator' });
     const tFaq = await getTranslations('CronGenerator.faq');
 
@@ -235,7 +238,9 @@ export default async function CronGeneratorPage({ params }: { params: Promise<{ 
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <CronGeneratorClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

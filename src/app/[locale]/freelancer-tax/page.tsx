@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import FreelancerTaxClient from "./FreelancerTaxClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -220,6 +221,8 @@ function generateWebAppSchema(locale: string) {
 export default async function FreelancerTaxPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { FreelancerTax: (allMessages as Record<string, unknown>).FreelancerTax, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'FreelancerTax' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -248,7 +251,9 @@ export default async function FreelancerTaxPage({ params }: { params: Promise<{ 
             />
 
             <div style={{ maxWidth: "900px", margin: "0 auto", padding: "0 16px" }}>
-                <FreelancerTaxClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <FreelancerTaxClient />
+            </NextIntlClientProvider>
             </div>
 
             <article className="seo-article">

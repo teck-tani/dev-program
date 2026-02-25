@@ -1,4 +1,5 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 import QRGeneratorClient from "./QRGeneratorClient";
 import styles from "./qr-generator.module.css";
@@ -207,6 +208,8 @@ function generateWebAppSchema(locale: string) {
 export default async function QRGeneratorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { QRGenerator: (allMessages as Record<string, unknown>).QRGenerator, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations('QRGenerator');
 
     const faqSchema = generateFaqSchema(locale);
@@ -231,7 +234,9 @@ export default async function QRGeneratorPage({ params }: { params: Promise<{ lo
 
             <div className="container">
                 {/* 클라이언트 컴포넌트 호출 */}
-                <QRGeneratorClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <QRGeneratorClient />
+            </NextIntlClientProvider>
 
                 {/* 하단 설명글 섹션 */}
                 <article className={`${styles.articleSection} seo-article`}>

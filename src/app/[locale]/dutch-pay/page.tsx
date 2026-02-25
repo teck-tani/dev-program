@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import DutchPayClient from "./DutchPayClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -197,6 +198,8 @@ function generateHowToSchema(locale: string) {
 export default async function DutchPayPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { DutchPay: (allMessages as Record<string, unknown>).DutchPay, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'DutchPay' });
     const tFaq = await getTranslations('DutchPay.faq');
 
@@ -219,7 +222,9 @@ export default async function DutchPayPage({ params }: { params: Promise<{ local
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <DutchPayClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

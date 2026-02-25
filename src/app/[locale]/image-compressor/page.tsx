@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import ImageCompressorClient from "./ImageCompressorClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -61,6 +62,8 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
 export default async function ImageCompressorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { ImageCompressor: (allMessages as Record<string, unknown>).ImageCompressor, Common: (allMessages as Record<string, unknown>).Common };
     const isKo = locale === 'ko';
     const url = `${baseUrl}/${locale}/image-compressor`;
     const t = await getTranslations({ locale, namespace: 'ImageCompressor' });
@@ -127,7 +130,9 @@ export default async function ImageCompressorPage({ params }: { params: Promise<
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
+            <NextIntlClientProvider messages={toolMessages}>
             <ImageCompressorClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}

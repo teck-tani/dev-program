@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
   },
   // 무거운 라이브러리의 배럴 파일 임포트 최적화
   experimental: {
-    optimizePackageImports: ['react-icons', 'mathjs', 'recharts'],
+    optimizePackageImports: ['react-icons', 'mathjs', 'recharts', 'pdf-lib', 'jszip', 'html2canvas', 'sql-formatter', 'korean-lunar-calendar'],
   },
   poweredByHeader: false,
   compress: true,
@@ -63,7 +63,7 @@ const nextConfig: NextConfig = {
   ],
   headers: async () => [
     {
-      source: '/:all*(svg|jpg|png)',
+      source: '/:all*(svg|jpg|png|webp|gif|ico|woff|woff2)',
       headers: [
         {
           key: 'Cache-Control',

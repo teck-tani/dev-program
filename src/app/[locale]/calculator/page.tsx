@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import type { Metadata } from "next";
 import CalculatorWrapper from "@/components/CalculatorWrapper";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -253,6 +254,8 @@ function generateWebAppSchema(locale: string) {
 export default async function CalculatorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { Calculator: (allMessages as Record<string, unknown>).Calculator, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations('Calculator');
 
     const faqSchema = generateFaqSchema(locale);
@@ -277,7 +280,9 @@ export default async function CalculatorPage({ params }: { params: Promise<{ loc
 
             <div className="container">
                 <div className="flex justify-center w-full">
-                    <CalculatorWrapper />
+                    <NextIntlClientProvider messages={toolMessages}>
+            <CalculatorWrapper />
+            </NextIntlClientProvider>
                 </div>
 
                 <article className="calc-article">

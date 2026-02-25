@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import VatCalculatorClient from "./VatCalculatorClient";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -209,6 +210,8 @@ function generateWebAppSchema(locale: string) {
 export default async function VatCalculatorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { VatCalculator: (allMessages as Record<string, unknown>).VatCalculator, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'VatCalculator' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -244,7 +247,9 @@ export default async function VatCalculatorPage({ params }: { params: Promise<{ 
                         }
                     }
                 `}</style>
-                <VatCalculatorClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <VatCalculatorClient />
+            </NextIntlClientProvider>
             </div>
 
             <article className="seo-article">

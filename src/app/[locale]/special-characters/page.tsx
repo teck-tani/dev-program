@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import SpecialCharactersClient from "./SpecialCharactersClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -223,6 +224,8 @@ function generateItemListSchema(locale: string) {
 export default async function SpecialCharactersPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { SpecialCharacters: (allMessages as Record<string, unknown>).SpecialCharacters, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations('SpecialCharacters');
 
     const faqSchema = generateFaqSchema(locale);
@@ -250,7 +253,9 @@ export default async function SpecialCharactersPage({ params }: { params: Promis
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <SpecialCharactersClient />
+            </NextIntlClientProvider>
 
             {/* SEO Article */}
             <article className="seo-article">

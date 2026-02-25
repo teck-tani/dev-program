@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import ExchangeRateClient from "./ExchangeRateClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -215,6 +216,8 @@ function generateHowToSchema(locale: string) {
 export default async function MoneyConverterPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { MoneyConverter: (allMessages as Record<string, unknown>).MoneyConverter, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations('MoneyConverter');
 
     const faqSchema = generateFaqSchema(locale);
@@ -253,7 +256,9 @@ export default async function MoneyConverterPage({ params }: { params: Promise<{
                         }
                     }
                 `}</style>
-                <ExchangeRateClient />
+                <NextIntlClientProvider messages={toolMessages}>
+            <ExchangeRateClient />
+            </NextIntlClientProvider>
 
                 <article className="mc-article">
                     {/* 1. 정의 섹션 */}

@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import InterestCalculatorClient from "./InterestCalculatorClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -217,6 +218,8 @@ function generateHowToSchema(locale: string) {
 export default async function InterestCalculatorPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { InterestCalculator: (allMessages as Record<string, unknown>).InterestCalculator, Common: (allMessages as Record<string, unknown>).Common };
 
     const faqSchema = generateFaqSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
@@ -238,7 +241,9 @@ export default async function InterestCalculatorPage({ params }: { params: Promi
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <InterestCalculatorClient />
+            </NextIntlClientProvider>
         </>
     );
 }

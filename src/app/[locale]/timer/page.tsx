@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import TimerView from "./TimerView";
 import { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 // 정적 생성을 위한 params
@@ -240,6 +241,8 @@ function generateWebAppSchema(locale: string) {
 export default async function TimerPage(props: { params: Promise<{ locale: string }> }) {
     const { locale } = await props.params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { Clock: (allMessages as Record<string, unknown>).Clock, Common: (allMessages as Record<string, unknown>).Common };
 
     const faqSchema = generateFaqSchema(locale);
     const howToSchema = generateHowToSchema(locale);
@@ -261,7 +264,9 @@ export default async function TimerPage(props: { params: Promise<{ locale: strin
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <TimerView />
+            </NextIntlClientProvider>
         </>
     );
 }

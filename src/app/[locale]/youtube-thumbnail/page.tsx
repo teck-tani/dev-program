@@ -1,6 +1,7 @@
+import { NextIntlClientProvider } from 'next-intl';
 import YoutubeThumbnailClient from "./YoutubeThumbnailClient";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales } from '@/navigation';
 
 export function generateStaticParams() {
@@ -187,6 +188,8 @@ function generateHowToSchema(locale: string) {
 export default async function YoutubeThumbnailPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     setRequestLocale(locale);
+    const allMessages = await getMessages({ locale });
+    const toolMessages = { YoutubeThumbnail: (allMessages as Record<string, unknown>).YoutubeThumbnail, Common: (allMessages as Record<string, unknown>).Common };
     const t = await getTranslations({ locale, namespace: 'YoutubeThumbnail' });
 
     const faqSchema = generateFaqSchema(locale);
@@ -213,7 +216,9 @@ export default async function YoutubeThumbnailPage({ params }: { params: Promise
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
 
+            <NextIntlClientProvider messages={toolMessages}>
             <YoutubeThumbnailClient />
+            </NextIntlClientProvider>
 
             <article className="seo-article">
                 {/* 1. Description */}
