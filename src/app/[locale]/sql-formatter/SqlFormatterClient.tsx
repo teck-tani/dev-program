@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import ShareButton from "@/components/ShareButton";
+import { IoCopyOutline, IoCheckmark } from "react-icons/io5";
 
 // SQL dialect options mapped to sql-formatter library language values
 type SqlDialect = "sql" | "mysql" | "postgresql" | "tsql" | "plsql" | "sqlite";
@@ -298,13 +299,13 @@ export default function SqlFormatterClient() {
         setIsFormatting(true);
         try {
             const mod = await loadSqlFormatter();
-            const result = mod.format(input, {
+            const raw = mod.format(input, {
                 language: dialect,
                 tabWidth: indentSize,
                 useTabs: false,
                 keywordCase: uppercaseKeywords ? 'upper' : 'preserve',
             });
-            setOutput(result);
+            setOutput(raw);
         } catch {
             // Fallback: if sql-formatter fails, show raw input with basic cleanup
             setOutput(input);
@@ -513,9 +514,28 @@ ${inputLines} lines → ${outputLines} lines (${dialect.toUpperCase()})
                         justifyContent: "space-between", alignItems: "center"
                     }}>
                         <span style={{ fontWeight: 600, fontSize: "0.95rem", color: isDark ? "#f1f5f9" : undefined }}>{t('outputLabel')}</span>
-                        <span style={{ color: isDark ? "#64748b" : "#999", fontSize: "0.85rem" }}>
-                            {output ? `${outputLines} ${t('lines')}` : ''}
-                        </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <span style={{ color: isDark ? "#64748b" : "#999", fontSize: "0.85rem" }}>
+                                {output ? `${outputLines} ${t('lines')}` : ''}
+                            </span>
+                            <button
+                                onClick={handleCopy}
+                                disabled={!output}
+                                title={t('copyBtn')}
+                                style={{
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    width: "30px", height: "30px", padding: 0,
+                                    background: copied ? "#27ae60" : (output ? (isDark ? "#334155" : "#e2e8f0") : "transparent"),
+                                    color: copied ? "white" : (output ? (isDark ? "#94a3b8" : "#555") : (isDark ? "#334155" : "#ccc")),
+                                    border: "none", borderRadius: "6px",
+                                    cursor: output ? "pointer" : "default",
+                                    transition: "background 0.2s",
+                                    flexShrink: 0,
+                                }}
+                            >
+                                {copied ? <IoCheckmark size={15} /> : <IoCopyOutline size={15} />}
+                            </button>
+                        </div>
                     </div>
                     {output ? (
                         <pre style={{
@@ -595,7 +615,22 @@ ${inputLines} lines → ${outputLines} lines (${dialect.toUpperCase()})
                 >
                     {copied ? t('copied') : t('copyBtn')}
                 </button>
-                <ShareButton shareText={getShareText()} disabled={!output} />
+                <ShareButton
+                    shareText={getShareText()}
+                    disabled={!output}
+                    style={{
+                        flex: 1, padding: "14px",
+                        background: !output
+                            ? (isDark ? "#334155" : "#eee")
+                            : "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                        color: !output ? "#999" : "white",
+                        border: "none", borderRadius: "8px", fontSize: "1rem",
+                        fontWeight: 500, cursor: !output ? "default" : "pointer",
+                        minWidth: "100px", display: "flex", alignItems: "center",
+                        justifyContent: "center", gap: "8px",
+                        boxSizing: "border-box",
+                    }}
+                />
                 <button
                     onClick={handleSwap}
                     disabled={!output}

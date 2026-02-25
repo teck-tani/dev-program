@@ -666,11 +666,7 @@ export default function CssMinifierClient() {
                             {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
                             {copied ? t("copied") : t("copy")}
                         </button>
-                        <ShareButton shareText={getShareText()} disabled={!output} iconSize={12} style={{
-                            padding: "6px 14px", border: "none", borderRadius: 6,
-                            background: accentColor, color: "#fff", fontSize: 13, fontWeight: 600,
-                            cursor: !output ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 6,
-                        }} />
+                        <ShareButton shareText={getShareText()} disabled={!output} />
                     </div>
                 </div>
                 <textarea ref={outputRef} value={output} readOnly placeholder={t("outputPlaceholder")} spellCheck={false}

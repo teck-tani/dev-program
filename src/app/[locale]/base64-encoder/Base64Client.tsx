@@ -90,7 +90,7 @@ export default function Base64Client() {
                     base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
                     while (base64.length % 4) base64 += '=';
                 }
-                result = decodeURIComponent(escape(atob(base64)));
+                result = new TextDecoder().decode(Uint8Array.from(atob(base64), c => c.charCodeAt(0)));
             }
             setOutput(result);
             return result;

@@ -1008,7 +1008,7 @@ export default function DutchPayClient() {
                             }}>
                                 📸 {exporting ? t('exportingImage') : t('exportImage')}
                             </button>
-                            <ShareButton shareText={getShareText()} shareTitle={t('resultTitle')} className="" disabled={!calculated} />
+                            <ShareButton shareText={getShareText()} shareTitle={t('resultTitle')} disabled={!calculated} />
                         </div>
                     </div>
 

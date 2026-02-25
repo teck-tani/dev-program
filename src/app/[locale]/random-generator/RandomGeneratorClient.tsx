@@ -1,14 +1,27 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaDice, FaSync, FaPalette } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 
 // ===== Data =====
-const KOREAN_SURNAMES = ['김', '이', '박', '최', '정', '강', '조', '윤', '장', '임', '한', '오', '서', '신', '권', '황', '안', '송', '류', '전'];
-const KOREAN_SYLLABLES = ['민', '서', '지', '현', '수', '영', '진', '은', '준', '하', '윤', '예', '도', '연', '아', '우', '호', '채', '성', '유'];
+const KOREAN_SURNAMES = [
+    '김', '이', '박', '최', '정', '강', '조', '윤', '장', '임',
+    '한', '오', '서', '신', '권', '황', '안', '송', '류', '전',
+    '홍', '고', '문', '손', '양', '배', '백', '허', '유', '남',
+    '심', '노', '하', '곽', '성', '차', '주', '우', '구', '민',
+    '나', '진', '엄', '채', '원', '천', '방', '공', '현', '탁',
+];
+const KOREAN_SYLLABLES = [
+    '민', '서', '지', '현', '수', '영', '진', '은', '준', '하',
+    '윤', '예', '도', '연', '아', '우', '호', '채', '성', '유',
+    '율', '선', '나', '태', '경', '희', '정', '미', '주', '린',
+    '원', '혁', '철', '인', '기', '찬', '승', '훈', '범', '건',
+    '석', '환', '규', '형', '재', '별', '솔', '한', '다', '빈',
+    '세', '강', '동', '무', '보', '시', '안', '전', '종', '화',
+];
 
 const ENGLISH_FIRST_NAMES = [
     'James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda',
@@ -151,6 +164,17 @@ export default function RandomGeneratorClient() {
     const [activeTab, setActiveTab] = useState<TabKey>('number');
     const [toast, setToast] = useState(false);
     const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const rollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const coinIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const weightedIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
+            if (coinIntervalRef.current) clearInterval(coinIntervalRef.current);
+            if (weightedIntervalRef.current) clearInterval(weightedIntervalRef.current);
+        };
+    }, []);
 
     // Number state
     const [numMin, setNumMin] = useState(1);
@@ -254,21 +278,11 @@ export default function RandomGeneratorClient() {
         setNameResults(results);
     }, [nameType, nameCount]);
 
-    const generateColors = useCallback(() => {
-        const results: ColorResult[] = [];
-        for (let i = 0; i < colorCount; i++) {
-            const hex = randomHexColor();
-            const rgb = hexToRgb(hex);
-            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-            results.push({ hex, rgb, hsl });
-        }
-        setColorResults(results);
-    }, [colorCount]);
 
     const rollDice = useCallback(() => {
         setDiceRolling(true);
-        // Animate for 500ms
-        const animationInterval = setInterval(() => {
+        if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
+        rollIntervalRef.current = setInterval(() => {
             const tempResults: number[] = [];
             for (let i = 0; i < diceCount; i++) {
                 tempResults.push(randomInt(1, diceSides));
@@ -277,7 +291,8 @@ export default function RandomGeneratorClient() {
         }, 50);
 
         setTimeout(() => {
-            clearInterval(animationInterval);
+            if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
+            rollIntervalRef.current = null;
             const finalResults: number[] = [];
             for (let i = 0; i < diceCount; i++) {
                 finalResults.push(randomInt(1, diceSides));
@@ -292,11 +307,13 @@ export default function RandomGeneratorClient() {
         setCoinResult(null);
 
         let flipCount = 0;
-        const flipInterval = setInterval(() => {
+        if (coinIntervalRef.current) clearInterval(coinIntervalRef.current);
+        coinIntervalRef.current = setInterval(() => {
             setCoinResult(Math.random() > 0.5 ? 'heads' : 'tails');
             flipCount++;
             if (flipCount >= 10) {
-                clearInterval(flipInterval);
+                if (coinIntervalRef.current) clearInterval(coinIntervalRef.current);
+                coinIntervalRef.current = null;
                 const finalResult: 'heads' | 'tails' = Math.random() > 0.5 ? 'heads' : 'tails';
                 setCoinResult(finalResult);
                 setCoinHistory(prev => [finalResult, ...prev].slice(0, 20));
@@ -423,12 +440,14 @@ export default function RandomGeneratorClient() {
         setWeightedResult(null);
 
         let spinCount = 0;
-        const spinInterval = setInterval(() => {
+        if (weightedIntervalRef.current) clearInterval(weightedIntervalRef.current);
+        weightedIntervalRef.current = setInterval(() => {
             const randIdx = Math.floor(Math.random() * validItems.length);
             setWeightedResult(validItems[randIdx]);
             spinCount++;
             if (spinCount >= 12) {
-                clearInterval(spinInterval);
+                if (weightedIntervalRef.current) clearInterval(weightedIntervalRef.current);
+                weightedIntervalRef.current = null;
                 // Final weighted pick
                 const total = validItems.reduce((s, i) => s + i.weight, 0);
                 let rand = Math.random() * total;
@@ -726,7 +745,7 @@ export default function RandomGeneratorClient() {
                             <select
                                 value={numCount}
                                 onChange={(e) => setNumCount(Number(e.target.value))}
-                                style={{ ...selectStyle, width: "auto", minWidth: "100px" }}
+                                style={selectStyle}
                             >
                                 {[1, 2, 3, 5, 10, 20, 50].map((n) => (
                                     <option key={n} value={n}>{n}</option>

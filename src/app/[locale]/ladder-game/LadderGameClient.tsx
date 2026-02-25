@@ -28,7 +28,7 @@ interface GameResult {
 
 type GameMode = 'sequential' | 'race';
 
-// Per-player path colors (hue-based)
+// Per-player path colors (20 colors for up to 20 players)
 const PATH_COLORS = [
     '#3b82f6', // blue
     '#ef4444', // red
@@ -40,6 +40,16 @@ const PATH_COLORS = [
     '#84cc16', // lime
     '#f97316', // orange
     '#6366f1', // indigo
+    '#14b8a6', // teal
+    '#e11d48', // rose
+    '#0ea5e9', // sky
+    '#a855f7', // purple
+    '#22c55e', // green
+    '#eab308', // yellow
+    '#f43f5e', // red-rose
+    '#0891b2', // cyan-dark
+    '#7c3aed', // violet-dark
+    '#65a30d', // lime-dark
 ];
 
 export default function LadderGameClient() {
@@ -66,19 +76,31 @@ export default function LadderGameClient() {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const ROWS = 10;
+    const ROWS = 12;
 
     // Canvas 실제 크기 추적
     const getCanvasSize = useCallback(() => {
         const container = containerRef.current;
-        if (!container) return { width: 560, height: 400 };
-        const width = Math.min(container.clientWidth - 40, 560);
-        const height = Math.max(300, Math.round(width * 0.7));
+        if (!container) return { width: 600, height: 420 };
+        const width = Math.min(container.clientWidth - 40, 700);
+        const height = Math.max(320, Math.round(width * 0.65));
         return { width, height };
     }, []);
 
+    // Canvas resize handler
+    useEffect(() => {
+        const handleResize = () => {
+            if (ladderGenerated) {
+                drawLadder(ladderLines, players.length);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ladderGenerated, ladderLines, players.length]);
+
     const addPlayer = () => {
-        if (players.length >= 10) return;
+        if (players.length >= 20) return;
         const newId = Math.max(...players.map(p => p.id)) + 1;
         setPlayers([...players, { id: newId, name: '' }]);
         setResults([...results, { id: newId, name: '' }]);
@@ -406,6 +428,25 @@ export default function LadderGameClient() {
         }
     };
 
+    // Preset templates
+    const presets = [
+        { key: 'presetLunch', emoji: '🍽️', results: t('presetLunchItems').split(',') },
+        { key: 'presetPenalty', emoji: '🎲', results: t('presetPenaltyItems').split(',') },
+        { key: 'presetCoffee', emoji: '☕', results: t('presetCoffeeItems').split(',') },
+        { key: 'presetOrder', emoji: '🔢', results: t('presetOrderItems').split(',') },
+    ];
+
+    const applyPreset = (presetResults: string[]) => {
+        if (isPlaying) return;
+        const newPlayers = presetResults.map((_, i) => ({ id: i + 1, name: '' }));
+        const newResults = presetResults.map((name, i) => ({ id: i + 1, name: name.trim() }));
+        setPlayers(newPlayers);
+        setResults(newResults);
+        setLadderGenerated(false);
+        setShowResults(false);
+        setGameResults([]);
+    };
+
     return (
         <div className="tool-container">
             <div className="ladder-game-wrapper" ref={containerRef}>
@@ -427,6 +468,23 @@ export default function LadderGameClient() {
                     >
                         ▶️ {t('modeSequential')}
                     </button>
+                </div>
+
+                {/* Preset Templates */}
+                <div className="ladder-presets">
+                    <span className="ladder-presets-label">{t('presetLabel')}</span>
+                    <div className="ladder-presets-list">
+                        {presets.map((preset) => (
+                            <button
+                                key={preset.key}
+                                onClick={() => applyPreset(preset.results)}
+                                className="ladder-preset-btn"
+                                disabled={isPlaying}
+                            >
+                                {preset.emoji} {t(preset.key)}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Players Input Section */}
@@ -464,9 +522,9 @@ export default function LadderGameClient() {
                         <button
                             onClick={addPlayer}
                             className="ladder-add-btn"
-                            disabled={players.length >= 10 || isPlaying}
+                            disabled={players.length >= 20 || isPlaying}
                         >
-                            + {t('addPlayer')}
+                            + {t('addPlayer')} ({players.length}/20)
                         </button>
                     </div>
 
@@ -628,6 +686,47 @@ export default function LadderGameClient() {
                     cursor: not-allowed;
                 }
 
+                .ladder-presets {
+                    margin-bottom: 16px;
+                }
+
+                .ladder-presets-label {
+                    display: block;
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                    color: ${isDark ? '#94a3b8' : '#64748b'};
+                    margin-bottom: 8px;
+                }
+
+                .ladder-presets-list {
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                }
+
+                .ladder-preset-btn {
+                    padding: 8px 14px;
+                    border: 1px solid ${isDark ? '#334155' : '#e2e8f0'};
+                    background: ${isDark ? '#1e293b' : '#fff'};
+                    color: ${isDark ? '#e2e8f0' : '#374151'};
+                    border-radius: 20px;
+                    font-size: 0.85rem;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    white-space: nowrap;
+                }
+
+                .ladder-preset-btn:hover:not(:disabled) {
+                    border-color: #3b82f6;
+                    color: #3b82f6;
+                    background: ${isDark ? '#1e3a5f' : '#eff6ff'};
+                }
+
+                .ladder-preset-btn:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
                 .ladder-input-section {
                     display: grid;
                     grid-template-columns: 1fr 1fr;
@@ -658,6 +757,8 @@ export default function LadderGameClient() {
                     display: flex;
                     flex-direction: column;
                     gap: 8px;
+                    max-height: 320px;
+                    overflow-y: auto;
                 }
 
                 .ladder-item {
@@ -807,13 +908,13 @@ export default function LadderGameClient() {
                 .ladder-label {
                     background: ${isDark ? '#1e293b' : '#f1f5f9'};
                     color: ${isDark ? '#94a3b8' : '#475569'};
-                    padding: 6px 10px;
+                    padding: ${players.length > 10 ? '4px 6px' : '6px 10px'};
                     border-radius: 20px;
                     font-weight: 500;
-                    font-size: 0.82rem;
+                    font-size: ${players.length > 10 ? '0.7rem' : '0.82rem'};
                     text-align: center;
-                    min-width: 48px;
-                    max-width: 80px;
+                    min-width: ${players.length > 10 ? '32px' : '48px'};
+                    max-width: ${players.length > 10 ? '56px' : '80px'};
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;

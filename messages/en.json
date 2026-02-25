@@ -1,6 +1,6 @@
 {
   "Common": {
-    "share": "Share Result",
+    "share": "Share",
     "copied": "✓ Copied!"
   },
   "Meta": {
@@ -834,31 +834,86 @@
         "howto": {
           "title": "How to Use the Stopwatch",
           "steps": {
-            "step1": { "num": "1", "title": "Getting Started", "desc": "Click the green 'Start' button to begin. Time is displayed in minutes:seconds.milliseconds format." },
-            "step2": { "num": "2", "title": "Recording Laps", "desc": "Press 'Lap' while running to record split times. Useful for comparing different segments." },
-            "step3": { "num": "3", "title": "Pause & Resume", "desc": "Use 'Pause' to stop and 'Resume' to continue measuring from where you left off." },
-            "step4": { "num": "4", "title": "Managing Records", "desc": "Lap records are auto-saved. Export to Excel or delete individual entries." }
+            "step1": {
+              "num": "1",
+              "title": "Getting Started",
+              "desc": "Click the green 'Start' button to begin. Time is displayed in minutes:seconds.milliseconds format."
+            },
+            "step2": {
+              "num": "2",
+              "title": "Recording Laps",
+              "desc": "Press 'Lap' while running to record split times. Useful for comparing different segments."
+            },
+            "step3": {
+              "num": "3",
+              "title": "Pause & Resume",
+              "desc": "Use 'Pause' to stop and 'Resume' to continue measuring from where you left off."
+            },
+            "step4": {
+              "num": "4",
+              "title": "Managing Records",
+              "desc": "Lap records are auto-saved. Export to Excel or delete individual entries."
+            }
           }
         },
         "usecases": {
           "title": "Stopwatch Use Cases",
           "list": {
-            "study": { "icon": "📚", "title": "Study & Focus", "desc": "Track study time with Pomodoro technique (25 min work + 5 min break) or measure total daily study hours." },
-            "fitness": { "icon": "🏃", "title": "Sports & Fitness", "desc": "Record workout times and lap splits for running, swimming, cycling. Perfect for interval training." },
-            "gaming": { "icon": "🎮", "title": "Game Speedruns", "desc": "Measure game completion times and compare segment records. Challenge your personal best." },
-            "cooking": { "icon": "🍳", "title": "Cooking Timing", "desc": "Perfect for precise cooking times - boiling pasta, grilling steaks, and more." },
-            "work": { "icon": "💼", "title": "Work Productivity", "desc": "Measure time spent on tasks to analyze and improve work efficiency." },
-            "exam": { "icon": "🎯", "title": "Test & Competition Prep", "desc": "Practice solving problems within time limits or rehearse presentations." }
+            "study": {
+              "icon": "📚",
+              "title": "Study & Focus",
+              "desc": "Track study time with Pomodoro technique (25 min work + 5 min break) or measure total daily study hours."
+            },
+            "fitness": {
+              "icon": "🏃",
+              "title": "Sports & Fitness",
+              "desc": "Record workout times and lap splits for running, swimming, cycling. Perfect for interval training."
+            },
+            "gaming": {
+              "icon": "🎮",
+              "title": "Game Speedruns",
+              "desc": "Measure game completion times and compare segment records. Challenge your personal best."
+            },
+            "cooking": {
+              "icon": "🍳",
+              "title": "Cooking Timing",
+              "desc": "Perfect for precise cooking times - boiling pasta, grilling steaks, and more."
+            },
+            "work": {
+              "icon": "💼",
+              "title": "Work Productivity",
+              "desc": "Measure time spent on tasks to analyze and improve work efficiency."
+            },
+            "exam": {
+              "icon": "🎯",
+              "title": "Test & Competition Prep",
+              "desc": "Practice solving problems within time limits or rehearse presentations."
+            }
           }
         },
         "faq": {
           "title": "Frequently Asked Questions",
           "list": {
-            "diff": { "q": "What's the difference between a stopwatch and a timer?", "a": "A stopwatch starts from zero and measures elapsed time indefinitely, while a timer counts down from a set time to zero. Use a stopwatch for 'how long did it take' and a timer for 'how much time is left'." },
-            "save": { "q": "Will my records be saved if I close the browser?", "a": "Lap records are automatically saved in your browser's local storage. You can access previous records when returning with the same browser. However, clearing browser data will also delete records." },
-            "mobile": { "q": "Can I use it on mobile devices?", "a": "Yes, with responsive design it works optimally on smartphones, tablets, and PCs." },
-            "maxTime": { "q": "What's the maximum measurement time?", "a": "There's no time limit - measure indefinitely. Times over 1 hour are displayed in hours:minutes:seconds.milliseconds format." },
-            "export": { "q": "Can I save lap records?", "a": "Yes, click 'Export Excel' to download all lap records as a CSV file. Open it in Excel or Google Sheets." }
+            "diff": {
+              "q": "What's the difference between a stopwatch and a timer?",
+              "a": "A stopwatch starts from zero and measures elapsed time indefinitely, while a timer counts down from a set time to zero. Use a stopwatch for 'how long did it take' and a timer for 'how much time is left'."
+            },
+            "save": {
+              "q": "Will my records be saved if I close the browser?",
+              "a": "Lap records are automatically saved in your browser's local storage. You can access previous records when returning with the same browser. However, clearing browser data will also delete records."
+            },
+            "mobile": {
+              "q": "Can I use it on mobile devices?",
+              "a": "Yes, with responsive design it works optimally on smartphones, tablets, and PCs."
+            },
+            "maxTime": {
+              "q": "What's the maximum measurement time?",
+              "a": "There's no time limit - measure indefinitely. Times over 1 hour are displayed in hours:minutes:seconds.milliseconds format."
+            },
+            "export": {
+              "q": "Can I save lap records?",
+              "a": "Yes, click 'Export Excel' to download all lap records as a CSV file. Open it in Excel or Google Sheets."
+            }
           }
         },
         "privacy": {
@@ -1007,10 +1062,22 @@
           "features": {
             "title": "Timer Features",
             "list": {
-              "f1": { "title": "⏱️ Quick Presets", "desc": "One-click start with 1m, 3m, 5m, 10m, 15m, 30m, and 1h preset buttons. No manual input needed." },
-              "f2": { "title": "💾 Save Custom Presets", "desc": "Name and save your frequently used times (up to 10). Load them instantly with a single click next time." },
-              "f3": { "title": "🔗 URL Sharing", "desc": "Copy your timer settings as a URL to share with others. Recipients can open the link and the same time is instantly set." },
-              "f4": { "title": "⏳ +1m / +5m Extend", "desc": "Need more time? Extend the running timer instantly with +1 minute or +5 minute buttons." }
+              "f1": {
+                "title": "⏱️ Quick Presets",
+                "desc": "One-click start with 1m, 3m, 5m, 10m, 15m, 30m, and 1h preset buttons. No manual input needed."
+              },
+              "f2": {
+                "title": "💾 Save Custom Presets",
+                "desc": "Name and save your frequently used times (up to 10). Load them instantly with a single click next time."
+              },
+              "f3": {
+                "title": "🔗 URL Sharing",
+                "desc": "Copy your timer settings as a URL to share with others. Recipients can open the link and the same time is instantly set."
+              },
+              "f4": {
+                "title": "⏳ +1m / +5m Extend",
+                "desc": "Need more time? Extend the running timer instantly with +1 minute or +5 minute buttons."
+              }
             }
           },
           "howto": {
@@ -1025,19 +1092,43 @@
           "usecases": {
             "title": "Use Cases",
             "list": {
-              "u1": { "title": "🍜 Cooking Noodles", "desc": "Set 3 minutes for ramen, 4 minutes for cup noodles, or 2 minutes for instant rice." },
-              "u2": { "title": "🍳 Cooking & Baking", "desc": "Track oven preheating, dough rising, pasta boiling, and other cooking steps." },
-              "u3": { "title": "📚 Study & Focus", "desc": "Set a goal like '30 minutes of study' to boost your concentration." },
-              "u4": { "title": "☕ Brewing Tea & Coffee", "desc": "Green tea 2m, black tea 3m, pour-over coffee 4m — time your beverages precisely." }
+              "u1": {
+                "title": "🍜 Cooking Noodles",
+                "desc": "Set 3 minutes for ramen, 4 minutes for cup noodles, or 2 minutes for instant rice."
+              },
+              "u2": {
+                "title": "🍳 Cooking & Baking",
+                "desc": "Track oven preheating, dough rising, pasta boiling, and other cooking steps."
+              },
+              "u3": {
+                "title": "📚 Study & Focus",
+                "desc": "Set a goal like '30 minutes of study' to boost your concentration."
+              },
+              "u4": {
+                "title": "☕ Brewing Tea & Coffee",
+                "desc": "Green tea 2m, black tea 3m, pour-over coffee 4m — time your beverages precisely."
+              }
             }
           },
           "faq": {
             "title": "FAQ",
             "list": {
-              "q1": { "q": "How do I save a custom preset?", "a": "Enter your desired time in the hour/min/sec fields, type a name in the input below, and click 'Save'. Your saved preset will appear in the preset list and can be loaded with one click." },
-              "q2": { "q": "What is the chain timer?", "a": "The chain timer lets you add multiple steps with custom names and durations. Press Start once and they run in sequence automatically — when one step ends, the next begins. Great for complex routines." },
-              "q3": { "q": "Can I extend time while the timer is running?", "a": "Yes! During countdown, +1 minute and +5 minute buttons appear. Click them to instantly add time to the remaining countdown." },
-              "q4": { "q": "I can't hear the alarm sound", "a": "Check your browser's volume settings. Some browsers restrict audio before user interaction. The alarm will work normally after you click the Start button." }
+              "q1": {
+                "q": "How do I save a custom preset?",
+                "a": "Enter your desired time in the hour/min/sec fields, type a name in the input below, and click 'Save'. Your saved preset will appear in the preset list and can be loaded with one click."
+              },
+              "q2": {
+                "q": "What is the chain timer?",
+                "a": "The chain timer lets you add multiple steps with custom names and durations. Press Start once and they run in sequence automatically — when one step ends, the next begins. Great for complex routines."
+              },
+              "q3": {
+                "q": "Can I extend time while the timer is running?",
+                "a": "Yes! During countdown, +1 minute and +5 minute buttons appear. Click them to instantly add time to the remaining countdown."
+              },
+              "q4": {
+                "q": "I can't hear the alarm sound",
+                "a": "Check your browser's volume settings. Some browsers restrict audio before user interaction. The alarm will work normally after you click the Start button."
+              }
             }
           }
         },
@@ -1049,10 +1140,22 @@
           "features": {
             "title": "Pomodoro Features",
             "list": {
-              "f1": { "title": "🔴 Auto Phase Switching", "desc": "Automatically transitions from focus to break. Every 4 sessions, a long break (15 min) is applied." },
-              "f2": { "title": "⏰ Adjustable Durations", "desc": "Customize focus (1-90 min), short break (1-90 min), and long break (1-90 min) in ±5 minute increments." },
-              "f3": { "title": "📊 Session Statistics", "desc": "Track today's focus sessions, weekly graph, total focus time, and consecutive day streaks at a glance." },
-              "f4": { "title": "📝 Task Management", "desc": "Add tasks, set estimated pomodoros for each, and track progress with 🍅 badges." }
+              "f1": {
+                "title": "🔴 Auto Phase Switching",
+                "desc": "Automatically transitions from focus to break. Every 4 sessions, a long break (15 min) is applied."
+              },
+              "f2": {
+                "title": "⏰ Adjustable Durations",
+                "desc": "Customize focus (1-90 min), short break (1-90 min), and long break (1-90 min) in ±5 minute increments."
+              },
+              "f3": {
+                "title": "📊 Session Statistics",
+                "desc": "Track today's focus sessions, weekly graph, total focus time, and consecutive day streaks at a glance."
+              },
+              "f4": {
+                "title": "📝 Task Management",
+                "desc": "Add tasks, set estimated pomodoros for each, and track progress with 🍅 badges."
+              }
             }
           },
           "howto": {
@@ -1067,19 +1170,43 @@
           "usecases": {
             "title": "Use Cases",
             "list": {
-              "u1": { "title": "📖 Exam Study", "desc": "Maintain focus during long study sessions by alternating 25 min focus with 5 min breaks." },
-              "u2": { "title": "💻 Coding & Development", "desc": "Set a goal of implementing one feature per pomodoro for systematic development." },
-              "u3": { "title": "✍️ Writing & Reports", "desc": "Focus 25 minutes on drafting, then refine after a break for efficient writing." },
-              "u4": { "title": "🎯 Remote Work", "desc": "Register today's tasks in the task list and manage your time in pomodoro units." }
+              "u1": {
+                "title": "📖 Exam Study",
+                "desc": "Maintain focus during long study sessions by alternating 25 min focus with 5 min breaks."
+              },
+              "u2": {
+                "title": "💻 Coding & Development",
+                "desc": "Set a goal of implementing one feature per pomodoro for systematic development."
+              },
+              "u3": {
+                "title": "✍️ Writing & Reports",
+                "desc": "Focus 25 minutes on drafting, then refine after a break for efficient writing."
+              },
+              "u4": {
+                "title": "🎯 Remote Work",
+                "desc": "Register today's tasks in the task list and manage your time in pomodoro units."
+              }
             }
           },
           "faq": {
             "title": "FAQ",
             "list": {
-              "q1": { "q": "What is the Pomodoro Technique?", "a": "Developed by Francesco Cirillo in the 1980s. One 'pomodoro' is 25 min focus + 5 min break. After 4 pomodoros, take a 15-30 min long break. Short focus periods with regular breaks maintain high productivity without fatigue." },
-              "q2": { "q": "Can I change the focus time from 25 minutes?", "a": "Yes, use the ± buttons next to the focus time to adjust from 1 to 90 minutes in 5-minute increments. Break times are adjustable too." },
-              "q3": { "q": "Where are statistics saved?", "a": "All statistics are stored in your browser's local storage. Records are kept for the last 90 days and can be viewed anytime in the same browser." },
-              "q4": { "q": "What is the auto-start feature?", "a": "When the 'Auto Start' checkbox is enabled, break starts automatically after focus ends, and the next focus starts automatically after break ends. No need to press buttons — your flow stays uninterrupted." }
+              "q1": {
+                "q": "What is the Pomodoro Technique?",
+                "a": "Developed by Francesco Cirillo in the 1980s. One 'pomodoro' is 25 min focus + 5 min break. After 4 pomodoros, take a 15-30 min long break. Short focus periods with regular breaks maintain high productivity without fatigue."
+              },
+              "q2": {
+                "q": "Can I change the focus time from 25 minutes?",
+                "a": "Yes, use the ± buttons next to the focus time to adjust from 1 to 90 minutes in 5-minute increments. Break times are adjustable too."
+              },
+              "q3": {
+                "q": "Where are statistics saved?",
+                "a": "All statistics are stored in your browser's local storage. Records are kept for the last 90 days and can be viewed anytime in the same browser."
+              },
+              "q4": {
+                "q": "What is the auto-start feature?",
+                "a": "When the 'Auto Start' checkbox is enabled, break starts automatically after focus ends, and the next focus starts automatically after break ends. No need to press buttons — your flow stays uninterrupted."
+              }
             }
           }
         },
@@ -1091,10 +1218,22 @@
           "features": {
             "title": "Interval Features",
             "list": {
-              "f1": { "title": "🏃 Tabata Preset", "desc": "20s work + 10s rest × 8 rounds. One click applies the globally proven Tabata protocol." },
-              "f2": { "title": "💪 HIIT Preset", "desc": "40s work + 20s rest × 6 rounds. Optimized settings for high-intensity interval training." },
-              "f3": { "title": "🔧 Custom Settings", "desc": "Freely adjust work time (5-300s), rest time (5-120s), and rounds (1-20) to your needs." },
-              "f4": { "title": "🔄 Auto Transition", "desc": "Work → Rest → Next round transitions happen automatically. Just focus on your exercise!" }
+              "f1": {
+                "title": "🏃 Tabata Preset",
+                "desc": "20s work + 10s rest × 8 rounds. One click applies the globally proven Tabata protocol."
+              },
+              "f2": {
+                "title": "💪 HIIT Preset",
+                "desc": "40s work + 20s rest × 6 rounds. Optimized settings for high-intensity interval training."
+              },
+              "f3": {
+                "title": "🔧 Custom Settings",
+                "desc": "Freely adjust work time (5-300s), rest time (5-120s), and rounds (1-20) to your needs."
+              },
+              "f4": {
+                "title": "🔄 Auto Transition",
+                "desc": "Work → Rest → Next round transitions happen automatically. Just focus on your exercise!"
+              }
             }
           },
           "howto": {
@@ -1109,19 +1248,43 @@
           "usecases": {
             "title": "Use Cases",
             "list": {
-              "u1": { "title": "🏋️ Tabata Workout", "desc": "Do burpees, squats, mountain climbers — 20s all-out + 10s rest for 8 rounds." },
-              "u2": { "title": "🏃 HIIT Training", "desc": "Alternate high/low intensity for running, jump rope, cycling, and more." },
-              "u3": { "title": "🧘 Stretching & Yoga", "desc": "Set custom 30s hold + 10s transition for stretching routines." },
-              "u4": { "title": "🏠 Home Workout", "desc": "Bodyweight exercises with interval timing for an effective home training session." }
+              "u1": {
+                "title": "🏋️ Tabata Workout",
+                "desc": "Do burpees, squats, mountain climbers — 20s all-out + 10s rest for 8 rounds."
+              },
+              "u2": {
+                "title": "🏃 HIIT Training",
+                "desc": "Alternate high/low intensity for running, jump rope, cycling, and more."
+              },
+              "u3": {
+                "title": "🧘 Stretching & Yoga",
+                "desc": "Set custom 30s hold + 10s transition for stretching routines."
+              },
+              "u4": {
+                "title": "🏠 Home Workout",
+                "desc": "Bodyweight exercises with interval timing for an effective home training session."
+              }
             }
           },
           "faq": {
             "title": "FAQ",
             "list": {
-              "q1": { "q": "What is Tabata training?", "a": "Developed by Dr. Izumi Tabata in Japan. It's a high-intensity interval training of 20s all-out exercise + 10s rest for 8 sets (4 minutes total). It improves both aerobic and anaerobic capacity in a short time." },
-              "q2": { "q": "What's the difference between HIIT and Tabata?", "a": "Tabata is a specific type of HIIT. HIIT is the general term for high-intensity interval training with flexible work/rest times and rounds. Tabata is a fixed protocol of 20s/10s/8 rounds." },
-              "q3": { "q": "Can I change the number of rounds?", "a": "Yes, use the ± buttons to set anywhere from 1 to 20 rounds. Adjust based on your fitness level." },
-              "q4": { "q": "Can I pause during a workout?", "a": "Yes, press the Stop button or Space bar to pause. Resume to continue from where you left off." }
+              "q1": {
+                "q": "What is Tabata training?",
+                "a": "Developed by Dr. Izumi Tabata in Japan. It's a high-intensity interval training of 20s all-out exercise + 10s rest for 8 sets (4 minutes total). It improves both aerobic and anaerobic capacity in a short time."
+              },
+              "q2": {
+                "q": "What's the difference between HIIT and Tabata?",
+                "a": "Tabata is a specific type of HIIT. HIIT is the general term for high-intensity interval training with flexible work/rest times and rounds. Tabata is a fixed protocol of 20s/10s/8 rounds."
+              },
+              "q3": {
+                "q": "Can I change the number of rounds?",
+                "a": "Yes, use the ± buttons to set anywhere from 1 to 20 rounds. Adjust based on your fitness level."
+              },
+              "q4": {
+                "q": "Can I pause during a workout?",
+                "a": "Yes, press the Stop button or Space bar to pause. Resume to continue from where you left off."
+              }
             }
           }
         },
@@ -1133,10 +1296,22 @@
           "features": {
             "title": "Multi Timer Features",
             "list": {
-              "f1": { "title": "🔢 Up to 4 Simultaneous Timers", "desc": "Add up to 4 independent timers and start/stop each one separately." },
-              "f2": { "title": "🏷️ Custom Names", "desc": "Label each timer so you can tell at a glance which timer is for what." },
-              "f3": { "title": "🎨 Status Colors", "desc": "Idle (purple), running (green), completed (red) — each timer's status is color-coded." },
-              "f4": { "title": "🎯 Individual Controls", "desc": "Each timer has its own start, stop, and reset buttons — completely independent of each other." }
+              "f1": {
+                "title": "🔢 Up to 4 Simultaneous Timers",
+                "desc": "Add up to 4 independent timers and start/stop each one separately."
+              },
+              "f2": {
+                "title": "🏷️ Custom Names",
+                "desc": "Label each timer so you can tell at a glance which timer is for what."
+              },
+              "f3": {
+                "title": "🎨 Status Colors",
+                "desc": "Idle (purple), running (green), completed (red) — each timer's status is color-coded."
+              },
+              "f4": {
+                "title": "🎯 Individual Controls",
+                "desc": "Each timer has its own start, stop, and reset buttons — completely independent of each other."
+              }
             }
           },
           "howto": {
@@ -1151,19 +1326,43 @@
           "usecases": {
             "title": "Use Cases",
             "list": {
-              "u1": { "title": "🍳 Complex Cooking", "desc": "Time pasta 8 min + sauce 15 min + garnish prep 3 min — all cooking steps simultaneously." },
-              "u2": { "title": "🧪 Lab Experiments", "desc": "When multiple experiment stages run at once, manage each stage with its own timer." },
-              "u3": { "title": "📋 Task Time Management", "desc": "Track deadlines for 'Check email 10m', 'Write report 30m', 'Meeting prep 15m' all at once." },
-              "u4": { "title": "🎲 Board Games & Quizzes", "desc": "Countdown time limits for multiple teams or participants simultaneously." }
+              "u1": {
+                "title": "🍳 Complex Cooking",
+                "desc": "Time pasta 8 min + sauce 15 min + garnish prep 3 min — all cooking steps simultaneously."
+              },
+              "u2": {
+                "title": "🧪 Lab Experiments",
+                "desc": "When multiple experiment stages run at once, manage each stage with its own timer."
+              },
+              "u3": {
+                "title": "📋 Task Time Management",
+                "desc": "Track deadlines for 'Check email 10m', 'Write report 30m', 'Meeting prep 15m' all at once."
+              },
+              "u4": {
+                "title": "🎲 Board Games & Quizzes",
+                "desc": "Countdown time limits for multiple teams or participants simultaneously."
+              }
             }
           },
           "faq": {
             "title": "FAQ",
             "list": {
-              "q1": { "q": "How many timers can I add?", "a": "You can add up to 4 timers. A message will appear if you try to add more than 4." },
-              "q2": { "q": "What happens when multiple timers finish at the same time?", "a": "Each timer triggers its own alarm when complete and turns red. If they finish simultaneously, alarms sound in succession." },
-              "q3": { "q": "Can I pause just one timer?", "a": "Yes, each timer has its own stop button. Pause any timer while the others keep running." },
-              "q4": { "q": "Can I switch tabs while using multi timer?", "a": "You cannot switch to other tabs (Timer/Pomodoro/Interval) while multi timers are running. Stop or remove all timers first to switch." }
+              "q1": {
+                "q": "How many timers can I add?",
+                "a": "You can add up to 4 timers. A message will appear if you try to add more than 4."
+              },
+              "q2": {
+                "q": "What happens when multiple timers finish at the same time?",
+                "a": "Each timer triggers its own alarm when complete and turns red. If they finish simultaneously, alarms sound in succession."
+              },
+              "q3": {
+                "q": "Can I pause just one timer?",
+                "a": "Yes, each timer has its own stop button. Pause any timer while the others keep running."
+              },
+              "q4": {
+                "q": "Can I switch tabs while using multi timer?",
+                "a": "You cannot switch to other tabs (Timer/Pomodoro/Interval) while multi timers are running. Stop or remove all timers first to switch."
+              }
             }
           }
         }
@@ -1238,12 +1437,30 @@
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "Random Generation", "desc": "Generate 6 random lotto numbers with a single click. Choose realistic drum animation or instant quick draw mode." },
-          "feat2": { "title": "Fixed & Excluded", "desc": "Fix specific numbers (up to 5) to always include, or exclude numbers you want to avoid in your combination." },
-          "feat3": { "title": "Multi-Set Generation", "desc": "Generate 1-5 sets at once. Check multiple games simultaneously, just like a real lotto ticket." },
-          "feat4": { "title": "Winning Checker", "desc": "Enter your numbers and instantly check how they match against all historical draws." },
-          "feat5": { "title": "Statistics", "desc": "View frequency analysis for each number across all draws, with hot/cold number indicators." },
-          "feat6": { "title": "Auto Update", "desc": "Latest winning numbers are automatically updated after each Saturday draw." }
+          "feat1": {
+            "title": "Random Generation",
+            "desc": "Generate 6 random lotto numbers with a single click. Choose realistic drum animation or instant quick draw mode."
+          },
+          "feat2": {
+            "title": "Fixed & Excluded",
+            "desc": "Fix specific numbers (up to 5) to always include, or exclude numbers you want to avoid in your combination."
+          },
+          "feat3": {
+            "title": "Multi-Set Generation",
+            "desc": "Generate 1-5 sets at once. Check multiple games simultaneously, just like a real lotto ticket."
+          },
+          "feat4": {
+            "title": "Winning Checker",
+            "desc": "Enter your numbers and instantly check how they match against all historical draws."
+          },
+          "feat5": {
+            "title": "Statistics",
+            "desc": "View frequency analysis for each number across all draws, with hot/cold number indicators."
+          },
+          "feat6": {
+            "title": "Auto Update",
+            "desc": "Latest winning numbers are automatically updated after each Saturday draw."
+          }
         }
       },
       "howto": {
@@ -1259,10 +1476,22 @@
       "usecases": {
         "title": "Use Cases",
         "list": {
-          "uc1": { "title": "Weekly Lotto Purchase", "desc": "Instead of agonizing over numbers, set your fixed/excluded numbers and quickly generate 5 sets." },
-          "uc2": { "title": "Group Purchase", "desc": "Generate multiple sets at once and share them instantly to your group chat." },
-          "uc3": { "title": "Statistical Analysis", "desc": "Reference hot/cold numbers and historical frequency to develop your own number strategy." },
-          "uc4": { "title": "Historical Lookup", "desc": "View all historical winning numbers, prize amounts, and winner counts at a glance." }
+          "uc1": {
+            "title": "Weekly Lotto Purchase",
+            "desc": "Instead of agonizing over numbers, set your fixed/excluded numbers and quickly generate 5 sets."
+          },
+          "uc2": {
+            "title": "Group Purchase",
+            "desc": "Generate multiple sets at once and share them instantly to your group chat."
+          },
+          "uc3": {
+            "title": "Statistical Analysis",
+            "desc": "Reference hot/cold numbers and historical frequency to develop your own number strategy."
+          },
+          "uc4": {
+            "title": "Historical Lookup",
+            "desc": "View all historical winning numbers, prize amounts, and winner counts at a glance."
+          }
         }
       },
       "probability": {
@@ -1276,14 +1505,38 @@
     },
     "faq": {
       "title": "Frequently Asked Questions",
-      "q1": { "q": "How does the lotto number generator work?", "a": "It randomly selects 6 numbers from 1 to 45. Fixed numbers are always included, and excluded numbers are never selected." },
-      "q2": { "q": "What are fixed and excluded numbers?", "a": "Fixed numbers (up to 5) are always included in results. Excluded numbers are never selected. You can use both simultaneously." },
-      "q3": { "q": "How do I generate multiple sets?", "a": "Select the number of sets (1-5) using the set count buttons, then press START to generate all sets at once." },
-      "q4": { "q": "How do I check my winning numbers?", "a": "Enter your 6 numbers in the Winning Checker section and press Check. It will show all historical draws where 3+ numbers matched." },
-      "q5": { "q": "What is Quick Draw mode?", "a": "Quick Draw skips the drum animation and shows results instantly. Useful when generating numbers quickly and repeatedly." },
-      "q6": { "q": "What are hot/cold numbers?", "a": "Hot numbers (🔥) are the top 10% most frequently drawn. Cold numbers (❄️) are the bottom 10% least drawn. These are for reference only." },
-      "q7": { "q": "What are the odds of winning the jackpot?", "a": "The odds of winning Lotto 6/45 jackpot are approximately 1 in 8,145,060. You need to match 6 numbers out of 45, regardless of order." },
-      "q8": { "q": "Are generated numbers saved?", "a": "Yes, the last 20 generation records are automatically saved in your browser's localStorage. Nothing is sent to external servers." }
+      "q1": {
+        "q": "How does the lotto number generator work?",
+        "a": "It randomly selects 6 numbers from 1 to 45. Fixed numbers are always included, and excluded numbers are never selected."
+      },
+      "q2": {
+        "q": "What are fixed and excluded numbers?",
+        "a": "Fixed numbers (up to 5) are always included in results. Excluded numbers are never selected. You can use both simultaneously."
+      },
+      "q3": {
+        "q": "How do I generate multiple sets?",
+        "a": "Select the number of sets (1-5) using the set count buttons, then press START to generate all sets at once."
+      },
+      "q4": {
+        "q": "How do I check my winning numbers?",
+        "a": "Enter your 6 numbers in the Winning Checker section and press Check. It will show all historical draws where 3+ numbers matched."
+      },
+      "q5": {
+        "q": "What is Quick Draw mode?",
+        "a": "Quick Draw skips the drum animation and shows results instantly. Useful when generating numbers quickly and repeatedly."
+      },
+      "q6": {
+        "q": "What are hot/cold numbers?",
+        "a": "Hot numbers (🔥) are the top 10% most frequently drawn. Cold numbers (❄️) are the bottom 10% least drawn. These are for reference only."
+      },
+      "q7": {
+        "q": "What are the odds of winning the jackpot?",
+        "a": "The odds of winning Lotto 6/45 jackpot are approximately 1 in 8,145,060. You need to match 6 numbers out of 45, regardless of order."
+      },
+      "q8": {
+        "q": "Are generated numbers saved?",
+        "a": "Yes, the last 20 generation records are automatically saved in your browser's localStorage. Nothing is sent to external servers."
+      }
     }
   },
   "MoneyConverter": {
@@ -1633,16 +1886,46 @@
         "colAnnual": "Annual Salary",
         "colMonthly": "Monthly Net",
         "rows": {
-          "r1": { "annual": "24M KRW", "monthly": "~1.85M KRW" },
-          "r2": { "annual": "30M KRW", "monthly": "~2.20M KRW" },
-          "r3": { "annual": "36M KRW", "monthly": "~2.60M KRW" },
-          "r4": { "annual": "40M KRW", "monthly": "~2.85M KRW" },
-          "r5": { "annual": "45M KRW", "monthly": "~3.15M KRW" },
-          "r6": { "annual": "50M KRW", "monthly": "~3.45M KRW" },
-          "r7": { "annual": "60M KRW", "monthly": "~4.00M KRW" },
-          "r8": { "annual": "70M KRW", "monthly": "~4.55M KRW" },
-          "r9": { "annual": "80M KRW", "monthly": "~5.10M KRW" },
-          "r10": { "annual": "100M KRW", "monthly": "~6.20M KRW" }
+          "r1": {
+            "annual": "24M KRW",
+            "monthly": "~1.85M KRW"
+          },
+          "r2": {
+            "annual": "30M KRW",
+            "monthly": "~2.20M KRW"
+          },
+          "r3": {
+            "annual": "36M KRW",
+            "monthly": "~2.60M KRW"
+          },
+          "r4": {
+            "annual": "40M KRW",
+            "monthly": "~2.85M KRW"
+          },
+          "r5": {
+            "annual": "45M KRW",
+            "monthly": "~3.15M KRW"
+          },
+          "r6": {
+            "annual": "50M KRW",
+            "monthly": "~3.45M KRW"
+          },
+          "r7": {
+            "annual": "60M KRW",
+            "monthly": "~4.00M KRW"
+          },
+          "r8": {
+            "annual": "70M KRW",
+            "monthly": "~4.55M KRW"
+          },
+          "r9": {
+            "annual": "80M KRW",
+            "monthly": "~5.10M KRW"
+          },
+          "r10": {
+            "annual": "100M KRW",
+            "monthly": "~6.20M KRW"
+          }
         }
       },
       "faq": {
@@ -1841,11 +2124,26 @@
     "guide": {
       "title": "How to Use the Interest Calculator",
       "steps": {
-        "1": { "label": "STEP 1. Select Calculation Type", "desc": "Choose between Deposit (lump sum placed at once) and Savings (monthly installment deposits)." },
-        "2": { "label": "STEP 2. Select Interest Type", "desc": "Choose between Simple Interest (interest on principal only) and Compound Interest (interest on principal + accumulated interest, monthly compounding)." },
-        "3": { "label": "STEP 3. Enter Amount", "desc": "For deposits, enter the lump sum principal. For savings, enter the monthly installment amount." },
-        "4": { "label": "STEP 4. Enter Period and Rate", "desc": "Enter the savings period (in months) and annual interest rate (%). Check the product details for the exact rate." },
-        "5": { "label": "STEP 5. View Results", "desc": "Click 'Calculate Interest' to see total principal, pre-tax interest, interest income tax (15.4%), and final after-tax payout at a glance." }
+        "1": {
+          "label": "STEP 1. Select Calculation Type",
+          "desc": "Choose between Deposit (lump sum placed at once) and Savings (monthly installment deposits)."
+        },
+        "2": {
+          "label": "STEP 2. Select Interest Type",
+          "desc": "Choose between Simple Interest (interest on principal only) and Compound Interest (interest on principal + accumulated interest, monthly compounding)."
+        },
+        "3": {
+          "label": "STEP 3. Enter Amount",
+          "desc": "For deposits, enter the lump sum principal. For savings, enter the monthly installment amount."
+        },
+        "4": {
+          "label": "STEP 4. Enter Period and Rate",
+          "desc": "Enter the savings period (in months) and annual interest rate (%). Check the product details for the exact rate."
+        },
+        "5": {
+          "label": "STEP 5. View Results",
+          "desc": "Click 'Calculate Interest' to see total principal, pre-tax interest, interest income tax (15.4%), and final after-tax payout at a glance."
+        }
       }
     },
     "useCases": {
@@ -1924,10 +2222,22 @@
       "sectionDesc": "Retirement income tax is levied on severance pay. Longer service periods receive greater deduction benefits. Below is the 2026 tax calculation process.",
       "deductionTitle": "Service Years Deduction",
       "brackets": {
-        "1": { "range": "Up to 5 years", "amount": "1M KRW/year" },
-        "2": { "range": "5-10 years", "amount": "2M KRW/year" },
-        "3": { "range": "10-20 years", "amount": "2.5M KRW/year" },
-        "4": { "range": "Over 20 years", "amount": "3M KRW/year" }
+        "1": {
+          "range": "Up to 5 years",
+          "amount": "1M KRW/year"
+        },
+        "2": {
+          "range": "5-10 years",
+          "amount": "2M KRW/year"
+        },
+        "3": {
+          "range": "10-20 years",
+          "amount": "2.5M KRW/year"
+        },
+        "4": {
+          "range": "Over 20 years",
+          "amount": "3M KRW/year"
+        }
       },
       "processTitle": "Tax Calculation Process",
       "processStep1": "① Apply service years deduction (Severance - Service Deduction)",
@@ -1981,9 +2291,18 @@
         "3": "<strong>Employee Status</strong>: Contract workers and part-timers are eligible if they meet the above conditions."
       },
       "requirements": {
-        "1": { "title": "1+ Year Continuous Service", "desc": "Period from join date to leave date must be at least 1 full year." },
-        "2": { "title": "15+ Hours/Week", "desc": "Average weekly working hours must be 15 hours or more over a 4-week period." },
-        "3": { "title": "All Employment Types", "desc": "Full-time, contract, and part-time workers are all eligible if conditions are met." }
+        "1": {
+          "title": "1+ Year Continuous Service",
+          "desc": "Period from join date to leave date must be at least 1 full year."
+        },
+        "2": {
+          "title": "15+ Hours/Week",
+          "desc": "Average weekly working hours must be 15 hours or more over a 4-week period."
+        },
+        "3": {
+          "title": "All Employment Types",
+          "desc": "Full-time, contract, and part-time workers are all eligible if conditions are met."
+        }
       },
       "faq": {
         "title": "Frequently Asked Questions (FAQ)",
@@ -2014,12 +2333,30 @@
     "guide": {
       "title": "How to Use the Severance Pay Calculator",
       "steps": {
-        "1": { "label": "STEP 1. Select Join Date", "desc": "In the 'Work Period' section at the top, click the left date field and select the date you first joined the company. Use the start date on your employment contract as the reference." },
-        "2": { "label": "STEP 2. Select Resignation Date", "desc": "Click the right date field and select your planned resignation date. The resignation date means the day after your last working day. For example, if you worked until December 31st, enter January 1st." },
-        "3": { "label": "STEP 3. Enter 3-Month Total Salary", "desc": "In the 'Salary Information' section, enter your total pre-tax salary for the last 3 months in the main input field. This is the sum of your base salary plus fixed allowances (meal, transport, etc.) for 3 months. Example: If your monthly salary is 3 million KRW, enter 9,000,000." },
-        "4": { "label": "STEP 4. Enter Bonus & Leave Allowance (Optional)", "desc": "If you received bonuses or annual leave allowance, enter them in the two smaller fields below. For bonus, enter the total annual amount (e.g., combined holiday bonuses). For leave allowance, enter compensation for unused annual leave days. You can leave these blank if not applicable." },
-        "5": { "label": "STEP 5. Click 'Calculate Severance Pay'", "desc": "After entering all information, click the 'Calculate Severance Pay' button at the bottom. Join date, resignation date, and 3-month salary are required fields. If your service period is less than 1 year, a notification will appear that you are not eligible for severance pay." },
-        "6": { "label": "STEP 6. View Results", "desc": "Once calculated, the estimated severance pay amount and total service period (XX years XX months) will be displayed in the result card. This is a pre-tax estimate; your actual amount may differ after retirement income tax deductions." }
+        "1": {
+          "label": "STEP 1. Select Join Date",
+          "desc": "In the 'Work Period' section at the top, click the left date field and select the date you first joined the company. Use the start date on your employment contract as the reference."
+        },
+        "2": {
+          "label": "STEP 2. Select Resignation Date",
+          "desc": "Click the right date field and select your planned resignation date. The resignation date means the day after your last working day. For example, if you worked until December 31st, enter January 1st."
+        },
+        "3": {
+          "label": "STEP 3. Enter 3-Month Total Salary",
+          "desc": "In the 'Salary Information' section, enter your total pre-tax salary for the last 3 months in the main input field. This is the sum of your base salary plus fixed allowances (meal, transport, etc.) for 3 months. Example: If your monthly salary is 3 million KRW, enter 9,000,000."
+        },
+        "4": {
+          "label": "STEP 4. Enter Bonus & Leave Allowance (Optional)",
+          "desc": "If you received bonuses or annual leave allowance, enter them in the two smaller fields below. For bonus, enter the total annual amount (e.g., combined holiday bonuses). For leave allowance, enter compensation for unused annual leave days. You can leave these blank if not applicable."
+        },
+        "5": {
+          "label": "STEP 5. Click 'Calculate Severance Pay'",
+          "desc": "After entering all information, click the 'Calculate Severance Pay' button at the bottom. Join date, resignation date, and 3-month salary are required fields. If your service period is less than 1 year, a notification will appear that you are not eligible for severance pay."
+        },
+        "6": {
+          "label": "STEP 6. View Results",
+          "desc": "Once calculated, the estimated severance pay amount and total service period (XX years XX months) will be displayed in the result card. This is a pre-tax estimate; your actual amount may differ after retirement income tax deductions."
+        }
       }
     },
     "useCases": {
@@ -2845,11 +3182,11 @@
   },
   "Base64": {
     "meta": {
-      "title": "Base64 Encoder/Decoder | Text Converter - Free Online Developer Tool",
-      "description": "Free online tool to encode or decode text and files to/from Base64. Supports URL-Safe option, UTF-8, and file upload. Essential developer tool!",
-      "keywords": "Base64 encoder, Base64 decoder, Base64 converter, text encoding, developer tool, URL-Safe Base64, online encoding",
-      "ogTitle": "Base64 Encoder/Decoder | Free Developer Tool",
-      "ogDescription": "Easily convert text and files to Base64. Full support for URL-Safe option and UTF-8."
+      "title": "Base64 Encoder Decoder Online | URL-Safe, Image & File Converter Free",
+      "description": "Free online Base64 encoder decoder & converter. Encode/decode text, images, files with URL-Safe mode, UTF-8 support, drag & drop. No ads, 100% browser-based & private!",
+      "keywords": "Base64 encoder, Base64 decoder, Base64 converter, online Base64, URL-Safe Base64, image to Base64, Base64 file converter, Base64 UTF-8, free Base64 tool, Base64 decode online, JWT Base64 decoder, Base64 encode online, developer tool, Data URI converter",
+      "ogTitle": "Base64 Encoder Decoder Online | URL-Safe, Image & File Converter Free",
+      "ogDescription": "Encode/decode text, images & files to Base64 instantly. URL-Safe, drag & drop, history support. No ads, completely free!"
     },
     "title": "Base64 Encoder/Decoder",
     "subtitle": "Easily encode or decode text and files to/from Base64.<br />Perfect for API development, data transfer, image embedding, and more.",
@@ -2895,29 +3232,6 @@
       "encode": "Error during encoding. Please check your input.",
       "decode": "Error during decoding. Please verify the Base64 string is valid."
     },
-    "info": {
-      "title": "What is Base64?",
-      "desc": "Base64 is an encoding scheme that converts binary data into ASCII string format. It uses 64 characters (A-Z, a-z, 0-9, +, /) to represent data and is widely used for safely transmitting binary data in email attachments, web APIs, and data transfer."
-    },
-    "useCases": {
-      "title": "Use Cases",
-      "api": {
-        "title": "API Authentication",
-        "desc": "HTTP Basic Auth encodes username:password in Base64 for transmission."
-      },
-      "image": {
-        "title": "Image Embedding",
-        "desc": "Used to embed images directly in HTML/CSS as Data URIs."
-      },
-      "email": {
-        "title": "Email Attachments",
-        "desc": "MIME format converts binary attachments to text."
-      },
-      "jwt": {
-        "title": "JWT Tokens",
-        "desc": "JSON Web Token headers and payloads are Base64 encoded."
-      }
-    },
     "faq": {
       "title": "FAQ",
       "q1": {
@@ -2940,8 +3254,8 @@
     "seo": {
       "description": {
         "title": "What is Base64 Encoding?",
-        "p1": "Base64 encoding converts binary data into 64 printable ASCII characters (A-Z, a-z, 0-9, +, /). It was developed to safely transmit binary data in text-only environments such as email, web API communication, and image embedding. It is defined by the RFC 4648 standard.",
-        "p2": "This tool is a free online Base64 encoder/decoder that converts text and files in real-time. It supports URL-Safe mode, file upload, image preview, and drag-and-drop. All processing happens in your browser, so no data is sent externally."
+        "p1": "Base64 is an encoding scheme that converts binary data into 64 printable ASCII characters (A-Z, a-z, 0-9, +, /). It was developed to safely transmit binary data in text-only environments such as email attachments, web API communication, image-to-Base64 conversion (Data URIs), and JWT token payloads. It is defined by the RFC 4648 standard.",
+        "p2": "This free online Base64 converter encodes or decodes text, images, and files in real-time. It supports URL-Safe Base64, file upload, image preview, drag-and-drop, and conversion history (up to 10 entries). Full UTF-8 and Unicode support with all processing happening locally in your browser — your data never leaves your device."
       },
       "features": {
         "title": "Key Features",
@@ -3351,11 +3665,11 @@
   },
   "UrlEncoder": {
     "meta": {
-      "title": "URL Encoder/Decoder | Percent Encoding Tool - Free Online",
-      "description": "Free online tool to safely encode or decode URLs with special characters. Supports encodeURIComponent and encodeURI methods. Essential for developers and marketers!",
-      "keywords": "URL encoder, URL decoder, URL converter, percent encoding, encodeURIComponent, encodeURI, URL encoding, URL decoding",
-      "ogTitle": "URL Encoder/Decoder | Online URL Conversion Tool",
-      "ogDescription": "Easily encode or decode URLs with special characters. Free online tool!"
+      "title": "URL Encoder/Decoder | Percent Encoding & Decoding - Free Online Tool",
+      "description": "Free online URL encoder/decoder with percent encoding support. Encode or decode Korean, special characters & query parameters instantly. Supports encodeURIComponent, encodeURI, HTML entities, URL parser, double encoding detection & batch mode.",
+      "keywords": "URL encoder, URL decoder, URL encoding, URL decoding, percent encoding, URL encode decode, encodeURIComponent, encodeURI, URL escape, query string encoding, URL parameter encoding, HTML entity encoding, URL parser, double encoding, batch URL encoder, online URL encoder",
+      "ogTitle": "URL Encoder/Decoder | Percent Encoding Tool - Free Online",
+      "ogDescription": "Instantly encode or decode URLs with Korean & special characters. URL parser, HTML entities, batch mode & double encoding detection. 100% free!"
     },
     "title": "URL Encoder/Decoder",
     "subtitle": "Safely encode or decode URLs with special characters and non-ASCII text.<br />Perfect for web development, API testing, and marketing link creation.",
@@ -3455,13 +3769,17 @@
       "q5": {
         "q": "Q. What is double encoding?",
         "a": "Double encoding occurs when an already encoded string is encoded again. For example, %20 (space) becomes %2520. If the server decodes only once, it gets the encoded string instead of the original value. This tool automatically detects double encoding and warns you."
+      },
+      "q6": {
+        "q": "Q. Why does a URL with Korean characters look like %ED%95%9C%EA%B8%80?",
+        "a": "Korean characters (and other non-ASCII text) in URLs are percent-encoded per RFC 3986. For example, '한글' becomes %ED%95%9C%EA%B8%80. Modern browsers decode these back to readable text in the address bar, but the actual request is sent in encoded form. Paste any %XX-encoded URL into this tool to instantly decode it back to the original text."
       }
     },
     "seo": {
       "description": {
         "title": "What is URL Encoding?",
-        "p1": "URL encoding (percent encoding) is a standard method for converting characters that cannot be used in URLs into safe ASCII format using %XX notation. It is essential for including non-ASCII characters, spaces, and special characters in URLs, ensuring browsers and servers can exchange data accurately.",
-        "p2": "This tool performs real-time URL encoding/decoding for free online. It supports both encodeURIComponent and encodeURI methods, plus advanced features for developers including HTML entity encoding, URL structure parser, query parameter editor, and double encoding detection."
+        "p1": "URL encoding (percent encoding) is a standard method for converting characters that cannot be used in URLs into safe ASCII format using %XX notation. It is essential when passing non-ASCII characters, spaces, and special characters in links or query parameters — ensuring browsers and servers exchange data accurately. When you see Korean text like '한글' appear as %ED%95%9C%EA%B8%80 in a URL, that is percent encoding in action.",
+        "p2": "This free online URL encoder/decoder instantly handles percent encoding and decoding. Beyond encodeURIComponent and encodeURI, it also provides HTML entity conversion, a URL parser (splits protocol, domain, path, and query parameters), double encoding detection, and multi-line batch processing — everything a developer needs in one place. Handle URL escape, query string encoding, and URL parameter encoding all at once."
       },
       "features": {
         "title": "Key Features",
@@ -3714,11 +4032,11 @@
   },
   "JsonFormatter": {
     "meta": {
-      "title": "JSON Formatter | Online Validator & Beautifier - Free Tool",
-      "description": "Free online JSON formatter and validator. Beautify, minify, and validate JSON data in real-time. Essential tool for developers and API testing.",
-      "keywords": "JSON formatter, JSON validator, JSON beautifier, JSON minifier, JSON auto-repair, JSON to YAML, JSON to CSV, JSON to TypeScript, JSON escape, JSONPath, online JSON tool, developer tool",
-      "ogTitle": "JSON Formatter | Beautify & Validate JSON Online",
-      "ogDescription": "Format, validate, and minify JSON data in real-time. Free online tool for developers!"
+      "title": "JSON Formatter - Auto-Format, Validate, Auto-Repair & Convert to YAML/TypeScript | Free Online",
+      "description": "Paste JSON and it auto-formats instantly! Format, validate, minify, auto-repair JSON errors. Convert to YAML, CSV, TypeScript interfaces. Free online JSON tool with no ads. Tree view, JSONPath, error location supported.",
+      "keywords": "JSON formatter, JSON beautifier, JSON validator, JSON pretty print, JSON minify, JSON auto-repair, JSON to YAML, JSON to CSV, JSON to TypeScript, JSON error fix, JSON tree view, JSONPath, JSON escape, online JSON editor, JSON parser, API response formatter, free JSON tool, developer tools",
+      "ogTitle": "JSON Formatter | Auto-Repair, YAML & TypeScript Conversion - Free",
+      "ogDescription": "Paste JSON and it auto-formats instantly! Auto-repair errors, convert to YAML/CSV/TypeScript, tree view, JSONPath. Free, no ads."
     },
     "title": "JSON Formatter",
     "subtitle": "Format, validate, and minify JSON data in real-time.<br />Essential tool for API development and debugging!",
@@ -3747,7 +4065,8 @@
     "indent": "Indent",
     "input": {
       "label": "Input JSON",
-      "placeholder": "Paste your JSON here..."
+      "placeholder": "Paste your JSON here...",
+      "dropHere": "Drop .json file here"
     },
     "output": {
       "label": "Output",
@@ -3760,7 +4079,8 @@
       "empty": "Please enter JSON data.",
       "invalid": "Invalid JSON",
       "line": "Line",
-      "column": "Column"
+      "column": "Column",
+      "fileType": "Only .json files are supported."
     },
     "repair": {
       "success": "Repair complete",
@@ -3784,7 +4104,7 @@
     },
     "info": {
       "title": "What is JSON?",
-      "desc": "JSON (JavaScript Object Notation) is a lightweight data interchange format. It's easy for humans to read and write, and easy for machines to parse and generate. Widely used in web APIs and configuration files.",
+      "desc": "JSON (JavaScript Object Notation) is a lightweight data interchange format widely used in web APIs, config files, and data exchange. This free online JSON formatter auto-formats your JSON on paste, and supports auto-repair, YAML/CSV/TypeScript conversion, tree view, and JSONPath queries — all in your browser with no ads.",
       "format": {
         "title": "Format",
         "desc": "Beautify compressed JSON with proper indentation for better readability."
@@ -3825,14 +4145,18 @@
       "q6": "Q. What errors can JSON auto-repair fix?",
       "a6": "Auto-repair can fix trailing commas, single quotes, JavaScript comments (// and /* */), and unquoted keys - the most common JSON syntax errors.",
       "q7": "Q. Can I convert JSON to TypeScript interfaces?",
-      "a7": "Yes, the TypeScript view automatically generates interfaces from your JSON data, including support for nested objects, arrays, optional fields, and union types."
+      "a7": "Yes, the TypeScript view automatically generates interfaces from your JSON data, including support for nested objects, arrays, optional fields, and union types.",
+      "q8": "Q. Does JSON auto-format when I paste it?",
+      "a8": "Yes! If you paste valid JSON, it automatically formats it for you — no need to click any button. The formatted result appears instantly in the output panel.",
+      "q9": "Q. How do I make JSON look pretty / readable?",
+      "a9": "Paste your JSON into the input field and it will auto-format instantly. You can also click the 'Format' button to apply indentation. Switch to Tree view for a visual, collapsible hierarchy of your data."
     },
     "seo": {
       "howto": {
         "title": "How to Use JSON Formatter",
         "steps": {
-          "s1": "<strong>Paste JSON</strong> — Paste the JSON data you want to format into the input field.",
-          "s2": "<strong>Click Format</strong> — Press the button to convert it to cleanly indented JSON.",
+          "s1": "<strong>Paste JSON (Auto-Formats!)</strong> — Paste valid JSON and it auto-formats instantly — no button needed!",
+          "s2": "<strong>Auto-Repair or Format</strong> — Use 'Auto-Repair' to fix broken JSON errors, or click 'Format (Beautify)' to apply indentation manually.",
           "s3": "<strong>View as Tree</strong> — Switch between text/tree view modes to visually explore the data structure.",
           "s4": "<strong>Switch View Modes</strong> — Explore results in YAML, CSV, or TypeScript view modes.",
           "s5": "<strong>Copy or Download</strong> — Copy or download the result in your preferred format."
@@ -4225,11 +4549,11 @@
   },
   "LadderGame": {
     "meta": {
-      "title": "Ladder Game | Free Online Random Decision Maker",
-      "description": "Make fair decisions with the online ladder game! Perfect for selecting winners, assigning roles, and penalty games. Support up to 10 players.",
-      "keywords": "ladder game, ghost leg, random picker, winner selection, draw lots, random decision, online ladder, amidakuji",
-      "ogTitle": "Ladder Game | Fair Random Decision Maker",
-      "ogDescription": "Make fair decisions with the online ladder game! Perfect for selecting winners, assigning roles, and penalty games."
+      "title": "Ghost Leg Game - Free Online Ladder Lottery (Amidakuji) | 2~20 Players",
+      "description": "Free online Ghost Leg ladder game! Fair random decisions for 2~20 players. Perfect for penalties, turn order, lunch picks. Works on mobile & PC. Tamper-proof random algorithm.",
+      "keywords": "ghost leg game, ladder game, amidakuji, ghost leg online, ladder lottery, random picker, random decision maker, draw lots online, fair random game, ghost leg game online, korean ladder game, ladder game 20 players",
+      "ogTitle": "Ghost Leg Game - Free Online Ladder Lottery | Fair Decisions",
+      "ogDescription": "Free online Ghost Leg game! Fair random decisions for 2~20 players. Perfect for penalties, turn order, and lunch picks."
     },
     "title": "Ladder Game",
     "description": "Enter player names and results, then climb the ladder to make fair decisions!",
@@ -4246,7 +4570,16 @@
     "reset": "Reset",
     "gameResults": "Game Results",
     "modeRace": "Race Mode",
-    "modeSequential": "Sequential"
+    "modeSequential": "Sequential",
+    "presetLabel": "Popular Templates",
+    "presetLunch": "Lunch Pick",
+    "presetLunchItems": "Chicken,Pizza,Chinese,Burger,Sushi",
+    "presetPenalty": "Penalty Game",
+    "presetPenaltyItems": "Buy Coffee,Sing a Song,Dance,Do Aegyo,3 Compliments",
+    "presetCoffee": "Coffee Bet",
+    "presetCoffeeItems": "Americano,Latte,Cappuccino,Winner!,Loser",
+    "presetOrder": "Turn Order",
+    "presetOrderItems": "1st,2nd,3rd,4th,5th"
   },
   "OvulationCalculator": {
     "meta": {
@@ -4710,11 +5043,11 @@
   },
   "SqlFormatter": {
     "meta": {
-      "title": "SQL Formatter | Query Beautifier & Prettifier - Free Online",
-      "description": "Free online SQL formatter to beautify messy SQL queries from logs. Uppercase keywords, custom indentation, and minify options. All processing in browser - no data sent to server.",
-      "keywords": "SQL formatter, SQL beautifier, SQL prettifier, query formatter, SQL format online, SQL indent, developer tool, SQL query beautify",
-      "ogTitle": "SQL Formatter | Beautify Messy SQL Queries",
-      "ogDescription": "Transform messy single-line SQL queries into beautifully formatted, readable SQL with proper indentation and keyword highlighting."
+      "title": "SQL Formatter Online | Auto Indent & Beautify SQL - Free",
+      "description": "Free online SQL formatter. Auto-indent and beautify messy single-line SQL queries instantly. Supports MySQL, PostgreSQL, Oracle, SQL Server, SQLite dialects. Keyword uppercase & minify included. Browser-only, no data sent.",
+      "keywords": "SQL formatter, SQL beautifier, SQL prettifier, query formatter, SQL format online, SQL indent, developer tool, SQL query beautify, free SQL formatter, MySQL formatter, PostgreSQL formatter, SQL indentation tool, online SQL formatter, format SQL online, SQL query formatter",
+      "ogTitle": "SQL Formatter Online | Auto-Indent & Beautify SQL",
+      "ogDescription": "Instantly format messy SQL queries with auto-indentation. MySQL, PostgreSQL, Oracle, SQL Server dialects supported. Free, browser-only."
     },
     "title": "SQL Formatter",
     "subtitle": "Beautify messy SQL queries from logs into clean, readable format.<br />Syntax highlighting, Dialect support, and keyword uppercasing in one click.",
@@ -4776,14 +5109,22 @@
         "uppercase": {
           "q": "What does uppercase keywords mean?",
           "a": "It automatically converts SQL keywords (SELECT, FROM, WHERE, etc.) to uppercase. This is a common convention to improve SQL readability."
+        },
+        "dialect": {
+          "q": "Can I use it as a MySQL or PostgreSQL formatter?",
+          "a": "Yes, it supports 6 SQL dialects: MySQL formatter, PostgreSQL formatter, Oracle, SQL Server (T-SQL), SQLite, and Standard SQL. Select your desired engine from the SQL Dialect dropdown to apply dialect-specific formatting."
+        },
+        "mobile": {
+          "q": "Does it work on mobile devices?",
+          "a": "Yes, it is fully responsive and works on smartphones and tablets. On mobile, the input and output panels stack vertically for comfortable touch-based SQL formatting."
         }
       }
     },
     "seo": {
       "description": {
         "title": "What is a SQL Formatter?",
-        "p1": "The SQL Formatter is a free online tool that beautifies messy, single-line SQL queries into clean, readable format. It applies keyword line breaks, auto-indentation, and syntax highlighting so you can understand even complex queries at a glance.",
-        "p2": "It supports 6 SQL dialects including MySQL, PostgreSQL, Oracle (PL/SQL), SQL Server (T-SQL), SQLite, and Standard SQL. Features include keyword case conversion, adjustable indentation, SQL minification, and .sql file upload/download."
+        "p1": "The SQL Formatter is a free online tool that auto-indents and beautifies messy single-line SQL queries into clean, readable format. It applies keyword line breaks, auto-indentation, and syntax highlighting so you can understand even complex queries at a glance.",
+        "p2": "It supports 6 SQL dialects including MySQL formatter, PostgreSQL formatter, Oracle (PL/SQL), SQL Server (T-SQL), SQLite, and Standard SQL. Features include keyword case conversion, adjustable indentation, SQL minification, and .sql file upload/download."
       },
       "features": {
         "title": "Key Features",
@@ -4844,11 +5185,11 @@
   },
   "CronGenerator": {
     "meta": {
-      "title": "Cron Expression Generator | Crontab Schedule Builder - Free Online",
-      "description": "Easily generate Cron expressions with a visual UI. Configure minute/hour/day/month/weekday, use presets, and preview in real-time. Works with Linux crontab, Jenkins, GitHub Actions and more.",
-      "keywords": "cron expression, cron generator, crontab builder, cron schedule, cron job, linux cron, cron maker, server scheduling, task scheduler",
-      "ogTitle": "Cron Expression Generator | Visual Crontab Builder",
-      "ogDescription": "Stop guessing * * * * * syntax! Build Cron expressions visually with clicks. Free online tool for developers and sysadmins."
+      "title": "Cron Expression Generator | Build & Validate Crontab - Free Online",
+      "description": "Free cron expression generator — build and instantly validate cron expressions with visual UI. Includes presets, real-time next-run preview, and expression validator. Supports Linux crontab, Spring @Scheduled, Quartz (6-field), GitHub Actions cron, AWS CloudWatch, Kubernetes CronJob.",
+      "keywords": "cron expression generator, crontab builder, cron expression validator, crontab maker, crontab examples, crontab syntax, cron schedule maker, linux cron, spring quartz cron, github actions cron schedule, kubernetes cronjob, aws cloudwatch cron, batch job scheduler, task automation",
+      "ogTitle": "Cron Expression Generator | Build & Validate Crontab Free",
+      "ogDescription": "No crontab syntax knowledge needed! Build * * * * * visually, validate instantly. Spring/Quartz/GitHub Actions supported."
     },
     "title": "Cron Expression Generator",
     "subtitle": "Stop guessing <code>* * * * *</code> syntax!<br />Click to configure minute/hour/day/month/weekday and generate Cron expressions automatically.",
@@ -4858,6 +5199,8 @@
     "resetBtn": "Reset",
     "manualInput": "Manual Input",
     "applyBtn": "Apply",
+    "invalidExpr": "Invalid Cron expression. Format: min hour day month weekday (e.g. */5 * * * *)",
+    "validExpr": "✓ Valid Cron expression. Press Enter or click Apply.",
     "presetsTitle": "Common Presets",
     "presets": {
       "everyMinute": "Every minute",
@@ -4974,6 +5317,14 @@
           "q": "Where can I use the generated Cron expression?",
           "a": "You can use it in Linux crontab, Proxmox scheduler, Jenkins, GitHub Actions, AWS CloudWatch, Kubernetes CronJob, and most scheduling systems."
         },
+        "spring": {
+          "q": "How do I use cron expressions in Spring Boot / Quartz Scheduler?",
+          "a": "Spring @Scheduled and Quartz Scheduler use a 6-field cron expression that includes a seconds field (second minute hour day month weekday). Example: @Scheduled(cron = \"0 0 9 * * MON-FRI\") runs every weekday at 9 AM. Enable the '6-field (Seconds)' toggle in this tool to see the Spring/Quartz-compatible expression."
+        },
+        "github": {
+          "q": "How do I set up a cron schedule in GitHub Actions?",
+          "a": "In GitHub Actions, add a schedule trigger using on.schedule.cron with a standard 5-field cron expression. Important: GitHub Actions runs on UTC. To run at 9 AM KST (UTC+9), set the cron to '0 0 * * *' (UTC midnight). Use this tool's timezone selector to verify your next execution times."
+        },
         "privacy": {
           "q": "Is my data sent to any server?",
           "a": "No. All processing happens in your browser. No data is transmitted to any server."
@@ -4983,8 +5334,8 @@
     "seo": {
       "description": {
         "title": "What is a Cron Expression?",
-        "p1": "A Cron expression is a time-based scheduling format used in Linux/Unix systems to automate recurring tasks. It consists of 5 fields (minute, hour, day of month, month, day of week) that use numbers and special characters (*, /, -, ,) to precisely define execution timing.",
-        "p2": "This Cron Expression Generator lets you create schedules with simple UI clicks, without memorizing complex syntax. With commonly used presets, real-time execution time preview, and human-readable descriptions, even beginners can generate accurate Cron expressions."
+        "p1": "Crontab is a time-based job scheduler in Linux/Unix systems that runs tasks automatically. A cron expression consists of 5 fields (minute, hour, day of month, month, day of week) using numbers and special characters (*, /, -, ,) — for example, */5 * * * * (every 5 minutes) or 0 9 * * 1-5 (weekdays at 9 AM).",
+        "p2": "This free cron expression generator lets you build schedules with simple UI clicks and instantly validates expressions you type manually. Supports Linux crontab, Spring @Scheduled, Quartz Scheduler (6-field), GitHub Actions cron schedule, AWS CloudWatch Events, and Kubernetes CronJob expressions."
       },
       "features": {
         "title": "Key Features",
@@ -4998,12 +5349,12 @@
             "desc": "Apply 10 commonly used presets with one click: every minute, every 5 minutes, hourly, daily at midnight, weekdays at 9 AM, and more."
           },
           "key3": {
-            "title": "Execution Time Preview",
-            "desc": "View upcoming execution times in real-time to verify your schedule is configured correctly before deploying."
+            "title": "Instant Expression Validator",
+            "desc": "Validate any cron expression in real-time as you type. Green border means valid, red means invalid — with a helpful error message showing the correct format."
           },
           "key4": {
-            "title": "Human-readable Description & Copy",
-            "desc": "Translates Cron expressions into easy-to-understand descriptions and provides one-click copy to clipboard."
+            "title": "Spring/Quartz 6-field Support",
+            "desc": "Beyond the standard Linux 5-field format, toggle the seconds field to get Spring @Scheduled and Quartz Scheduler compatible 6-field cron expressions. Human-readable description and one-click copy included."
           }
         }
       },
@@ -5028,12 +5379,12 @@
             "desc": "Configure execution cycles for periodic batch tasks like hourly log cleanup or monthly report generation."
           },
           "case3": {
-            "title": "CI/CD Pipelines",
-            "desc": "Generate accurate Cron expressions for build/deploy schedules in GitHub Actions, Jenkins, and other CI/CD tools."
+            "title": "GitHub Actions / Jenkins CI",
+            "desc": "Generate accurate cron expressions for GitHub Actions schedule triggers and Jenkins Build Triggers. Note: GitHub Actions runs on UTC — subtract your timezone offset accordingly."
           },
           "case4": {
-            "title": "Monitoring & Alerts",
-            "desc": "Set up periodic monitoring schedules for server health checks, disk usage, and certificate expiration."
+            "title": "Spring Boot / Kubernetes",
+            "desc": "Create cron expressions for Spring @Scheduled(cron), Quartz JobDetail, and Kubernetes CronJob specs. Enable the 6-field toggle to get Spring/Quartz-compatible expressions with a seconds field."
           }
         }
       },
@@ -5180,11 +5531,11 @@
   },
   "IpAddress": {
     "meta": {
-      "title": "My IP Address Checker | Geolocation & ISP Info - Free Online",
-      "description": "Instantly check your public IP address with geolocation (country/city), ISP info, and map view. Auto-detected on page load. Free online IP lookup tool.",
-      "keywords": "my IP address, IP address checker, what is my IP, IP geolocation, public IP lookup, ISP info, IP location, find my IP, IP tracker",
-      "ogTitle": "My IP Address Checker | Location & ISP Info",
-      "ogDescription": "Instantly check your public IP address and approximate location. Auto-detected on page load!"
+      "title": "What Is My IP Address? | Free IP Lookup — Location & ISP",
+      "description": "Instantly check your public IP address on PC or smartphone — geolocation (country/city), ISP, VPN/proxy detection, and map view. Free online IP lookup, no install required.",
+      "keywords": "what is my IP address, what is my IP, my IP address, find my IP, IP address checker, public IP lookup, IP geolocation, ISP info, VPN IP check, smartphone IP address, wifi IP address, IP address lookup",
+      "ogTitle": "What Is My IP Address? | Free IP Lookup",
+      "ogDescription": "Instantly check your public IP on PC or smartphone — location, ISP, VPN detection. Auto-detected, no install required!"
     },
     "title": "My IP Address Checker",
     "subtitle": "Instantly check your public IP address and approximate location just by visiting this page.",
@@ -5359,6 +5710,14 @@
           "q4": {
             "q": "What is the difference between IPv4 and IPv6?",
             "a": "IPv4 uses 32-bit addresses (e.g., 192.168.0.1) providing about 4.3 billion addresses. IPv6 uses 128-bit addresses (e.g., 2001:0db8::1) providing virtually unlimited addresses."
+          },
+          "q5": {
+            "q": "Can I check my IP address on a smartphone?",
+            "a": "Yes! Just open this page in your mobile browser. On Wi-Fi, your router's public IP is displayed. On LTE/5G, the public IP assigned by your carrier is shown."
+          },
+          "q6": {
+            "q": "What is the difference between a public IP and a private IP?",
+            "a": "A public IP is your internet-facing address assigned by your ISP, visible globally — this is what this tool shows. A private IP (e.g., 192.168.x.x) is used only within your local network and is not visible on the internet."
           }
         }
       },
@@ -5694,9 +6053,17 @@
       "copied": "Copied!",
       "copy": "Copy",
       "deleteConfirm": "Are you sure you want to delete this event?",
-
-      "tabs": { "events": "D-Day", "milestones": "Milestones", "couple": "Couple", "dateCalc": "Date Calc" },
-      "unit": { "years": "y ", "months": "mo ", "weeks": "w " },
+      "tabs": {
+        "events": "D-Day",
+        "milestones": "Milestones",
+        "couple": "Couple",
+        "dateCalc": "Date Calc"
+      },
+      "unit": {
+        "years": "y ",
+        "months": "mo ",
+        "weeks": "w "
+      },
       "startDate": "Start Date (for progress)",
       "repeat": "Repeat",
       "repeatNone": "None",
@@ -5707,7 +6074,6 @@
       "lunarDate": "Lunar Date",
       "shareUrl": "Share URL",
       "exportIcal": "Calendar(.ics)",
-
       "presets": {
         "title": "Quick Add",
         "suneung": "CSAT (Korea)",
@@ -5717,7 +6083,6 @@
         "chuseok": "Chuseok",
         "childrenDay": "Children's Day"
       },
-
       "milestone": {
         "title": "Anniversary Milestones",
         "baseDate": "Base Date",
@@ -5726,7 +6091,6 @@
         "daysAfter": " days",
         "anniversary": " Anniversary"
       },
-
       "couple": {
         "title": "Couple Anniversary",
         "startDate": "Start Date",
@@ -5748,7 +6112,6 @@
           "12": "Hug Day (12/14)"
         }
       },
-
       "dateCalc": {
         "title": "Date Calculator",
         "addSubtract": "Add / Subtract Days",
@@ -5762,8 +6125,15 @@
         "fromDate": "From",
         "toDate": "To"
       },
-
-      "cal": { "sun": "Sun", "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat" }
+      "cal": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      }
     },
     "seo": {
       "description": {
@@ -5859,11 +6229,11 @@
   },
   "RegexTester": {
     "meta": {
-      "title": "Regex Tester - Real-time Pattern Matching & Replace | Tani DevTool",
-      "description": "Test regular expressions in real-time and see matching results instantly. Supports flags, capture groups, replace functionality, and common regex presets for free.",
-      "keywords": "regex tester, regular expression, regex online, regex matcher, regex replace, pattern matching, regex validator, developer tools",
-      "ogTitle": "Regex Tester - Real-time Pattern Matching & Replace",
-      "ogDescription": "Test regular expressions in real-time and see matching results instantly. Supports flags, capture groups, and replace functionality."
+      "title": "Regex Tester - JavaScript Regular Expression Online Tester | Teck-Tani",
+      "description": "Test JavaScript regular expressions online in real-time. Instantly verify email regex, phone regex, and Korean (Hangul) regex patterns. Supports flags, capture groups, replace, and free regex presets.",
+      "keywords": "regex tester, regular expression tester, javascript regex, email regex, phone regex, korean regex, regex examples, regex flags, capture group, regex online, regex matcher, regex replace, pattern matching, developer tools",
+      "ogTitle": "Regex Tester - JavaScript Regular Expression Online Tester | Teck-Tani",
+      "ogDescription": "Test JavaScript regular expressions online in real-time. Instantly verify email, phone, and Korean (Hangul) regex patterns. Free — no install needed."
     },
     "input": {
       "pattern": "Regex Pattern",
@@ -5932,9 +6302,9 @@
     },
     "seo": {
       "description": {
-        "title": "What is a Regex Tester?",
-        "p1": "A regular expression (regex) is a powerful pattern matching language used to find, validate, extract, or replace specific patterns in strings. It is essential in programming, data analysis, text processing, and many other fields.",
-        "p2": "This online regex tester allows you to enter a regular expression and instantly see matching results in real-time. It supports capture group analysis, string replacement, and various flag settings. Test your patterns directly in your web browser without any complex development environment."
+        "title": "What is a JavaScript Regex Tester?",
+        "p1": "A regular expression (regex) is a powerful pattern language for finding, validating, extracting, or replacing specific patterns in strings. JavaScript regex is widely used for email validation, phone number formatting, Korean (Hangul) text processing, URL parsing, and many other real-world tasks.",
+        "p2": "This free online regex tester lets you instantly verify JavaScript regular expressions in your browser. Simply type your pattern, set flags (g, i, m, s, u), and see real-time match highlights, capture groups, and replace results — no install or login required. Handy presets for email, phone, Korean characters, and more are included."
       },
       "features": {
         "title": "Key Features",
@@ -5970,20 +6340,20 @@
         "title": "Use Cases",
         "list": {
           "uc1": {
-            "title": "Input Validation",
-            "desc": "Validate email, phone number, and password formats in registration forms using regex."
+            "title": "Email & Phone Regex Validation",
+            "desc": "Test email regex patterns like [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,} or phone patterns against real input to build reliable form validators."
           },
           "uc2": {
-            "title": "Log Analysis",
-            "desc": "Extract specific patterns like IP addresses, error codes, and timestamps from server logs."
+            "title": "Korean (Hangul) Regex Processing",
+            "desc": "Use [가-힣]+ to match Korean characters exclusively, or combine with \\s and punctuation for full Korean text validation — useful for localized apps."
           },
           "uc3": {
-            "title": "Data Cleaning",
-            "desc": "Remove unwanted characters or convert formats in CSV and text data."
+            "title": "JavaScript Regex Debugging",
+            "desc": "Copy a regex from your JS/TS code, paste it here, and instantly see why it matches or fails — no need to run your app each time."
           },
           "uc4": {
-            "title": "Code Refactoring",
-            "desc": "Use regex in your IDE's find/replace to batch-modify code patterns."
+            "title": "Log & Data Cleaning",
+            "desc": "Extract timestamps, IP addresses, or error codes from server logs, or strip unwanted characters from CSV data using find-and-replace with capture groups."
           }
         }
       },
@@ -6006,8 +6376,8 @@
           "a": "Yes, it is completely free with no registration or installation required. Your input data is never sent to any server."
         },
         "q5": {
-          "q": "What regex syntax is supported?",
-          "a": "This tool uses JavaScript's (ECMAScript) regex engine. It supports most standard regex syntax including character classes, quantifiers, anchors, lookahead/lookbehind, and more."
+          "q": "Does this tool support Korean (Hangul) regex patterns?",
+          "a": "Yes, full Unicode and Korean regex is supported. Use [가-힣] to match Korean characters, [ㄱ-ㅎ] for consonants, or [ㅏ-ㅣ] for vowels. Enable the u (unicode) flag when working with emoji or supplementary characters. A 'Korean Characters' preset is built in for quick access."
         }
       },
       "privacy": {
@@ -6523,10 +6893,10 @@
   "PasswordGenerator": {
     "meta": {
       "title": "Password Generator - Create Strong Random Passwords | Tani DevTool",
-      "description": "Generate strong, secure random passwords instantly. Customize length, uppercase, lowercase, numbers, symbols. Password strength indicator, generate up to 10 at once. Free online password generator.",
-      "keywords": "password generator, random password, strong password, secure password, password maker, password creator, online password generator, password tool",
-      "ogTitle": "Password Generator - Secure Random Passwords | Tani DevTool",
-      "ogDescription": "Generate strong, secure random passwords instantly. Customize length and character options, strength indicator, generate up to 10 at once."
+      "description": "Generate strong random passwords instantly. Check if your password was leaked (HIBP), create Korean/English passphrases, measure strength, generate up to 10 at once. 100% browser-based, nothing sent to servers.",
+      "keywords": "password generator, random password, strong password, secure password, password maker, hibp password check, passphrase generator, memorable password, password strength checker, wifi password generator, bank password, leaked password checker, online password generator",
+      "ogTitle": "Password Generator - Breach Check + Passphrase | Tani DevTool",
+      "ogDescription": "Random passwords + HIBP breach check + Korean/English passphrases. 100% browser-based — your passwords never leave your device."
     },
     "input": {
       "length": "Password Length",
@@ -6601,8 +6971,8 @@
     "seo": {
       "description": {
         "title": "What is a Password Generator?",
-        "p1": "A password generator is a tool that creates unpredictable random passwords using cryptographically secure random numbers. When creating passwords manually, unconscious patterns tend to emerge, but this tool generates hack-resistant passwords through completely random combinations.",
-        "p2": "It uses the browser's Web Crypto API to generate passwords securely on your local device without going through any server. You can freely customize combinations of uppercase, lowercase, numbers, and special characters along with length, and check password strength in real-time."
+        "p1": "A password generator is a tool that creates unpredictable random passwords using cryptographically secure random numbers. When creating passwords manually, unconscious patterns tend to emerge, but this tool generates hack-resistant passwords through completely random combinations. Beyond random characters, you can also create easy-to-remember passphrases like 'spring-cat-rainbow-ocean'.",
+        "p2": "It uses the browser's Web Crypto API to generate passwords securely on your local device without going through any server. After generating, you can instantly verify if the password has been exposed in known data breaches using the HIBP (Have I Been Pwned) database — your password is never transmitted thanks to the k-anonymity protocol."
       },
       "features": {
         "title": "Key Features",
@@ -6622,6 +6992,14 @@
           "feat4": {
             "title": "Bulk Generation & History",
             "desc": "Generate up to 10 passwords at once and review your generation history within the current session."
+          },
+          "feat5": {
+            "title": "Breach Check (HIBP)",
+            "desc": "Instantly verify if your generated password has appeared in known data breaches via Have I Been Pwned. The k-anonymity protocol ensures your password is never transmitted."
+          },
+          "feat6": {
+            "title": "Korean & English Passphrases",
+            "desc": "Generate easy-to-remember passphrases like 'spring-cat-rainbow-ocean' in Korean or English. Customize word count and separator freely."
           }
         }
       },
@@ -6629,9 +7007,10 @@
         "title": "How to Use",
         "steps": {
           "step1": "<strong>Set Length</strong> — Use the slider to set password length between 8 and 128 characters. 16 or more is recommended.",
-          "step2": "<strong>Select Character Options</strong> — Toggle which character types to include: uppercase, lowercase, numbers, and symbols.",
+          "step2": "<strong>Select Options</strong> — Toggle character types (uppercase, lowercase, numbers, symbols). For a passphrase, switch the mode to 'Passphrase'.",
           "step3": "<strong>Click Generate</strong> — Press the 'Generate Password' button to instantly create a password matching your settings.",
-          "step4": "<strong>Copy and Use</strong> — Click the copy button next to the password to copy it to your clipboard. Paste it into the service you need."
+          "step4": "<strong>Copy and Use</strong> — Click the copy button next to the password to copy it to your clipboard. Paste it into the service you need.",
+          "step5": "<strong>Check for Breaches (Optional)</strong> — Click 'Check Breach' to search the HIBP database and confirm your password hasn't been exposed in known data leaks."
         }
       },
       "usecases": {
@@ -6676,6 +7055,18 @@
         "q5": {
           "q": "Can I generate multiple passwords at once?",
           "a": "Yes, you can generate up to 10 passwords at once. Set the desired count and click the generate button to create multiple passwords with the same options (length, character types) simultaneously."
+        },
+        "q6": {
+          "q": "How do I check if my password has been exposed in a data breach?",
+          "a": "After generating a password, click the 'Check Breach' button to cross-reference it against the HIBP (Have I Been Pwned) database, which contains billions of exposed accounts. Using the k-anonymity technique, only the first 5 characters of the SHA-1 hash are sent — your actual password is never transmitted, making the check completely safe."
+        },
+        "q7": {
+          "q": "What is a passphrase and is it more secure than a regular password?",
+          "a": "A passphrase is a password made of multiple words, like 'summer-cat-ocean-happy'. It's easy to remember while being long enough to resist brute-force attacks. Setting 6 or more words produces stronger security than a typical 12-character random password. Both Korean and English passphrases are supported."
+        },
+        "q8": {
+          "q": "Can I generate a safe numeric PIN for banking or credit cards?",
+          "a": "Yes, select the 'PIN' preset to quickly generate a number-only password. However, a 4-digit PIN has only 10,000 possible combinations and is very weak. For bank app passwords that support letters and numbers, we recommend the 'Banking' preset (12 characters, uppercase + lowercase + numbers). Always use different passwords for each service and store them in a password manager."
         }
       },
       "privacy": {
@@ -6824,11 +7215,11 @@
   },
   "UuidGenerator": {
     "meta": {
-      "title": "UUID Generator - Free Online UUID v4 Generator | Tani DevTool",
-      "description": "Free online tool to quickly generate UUID v4 identifiers. Supports bulk generation (up to 100), case conversion, and hyphen options. Generated securely in your browser.",
-      "keywords": "UUID generator, UUID v4, GUID generator, unique identifier, online UUID, bulk UUID generation, free UUID tool",
-      "ogTitle": "UUID Generator - Free Online UUID v4 Generator",
-      "ogDescription": "Free online tool to quickly generate UUID v4. Supports bulk generation, case conversion, and hyphen options."
+      "title": "UUID Generator - v1·v4·v7 Free Online GUID Generator | Tani DevTool",
+      "description": "Free online tool to generate UUID v1, v3, v4, v5, v7 identifiers. Bulk generation up to 1,000 UUIDs, UUID validator, GUID generator, case and hyphen options. 100% browser-based.",
+      "keywords": "UUID generator, GUID generator, UUID v4, UUID v7, UUID v1, generate UUID, unique identifier generator, online UUID, bulk UUID generation, UUID validator, UUID validation, free UUID tool, UUID online",
+      "ogTitle": "UUID Generator - v1·v4·v7 Free Online GUID Generator",
+      "ogDescription": "All UUID versions (v1·v3·v4·v5·v7) supported. Bulk generation up to 1,000 + UUID validator. Free, no ads."
     },
     "count": "Count",
     "uppercase": "Uppercase",
@@ -6851,7 +7242,8 @@
       "v3Desc": "MD5 Namespace",
       "v4Desc": "Random",
       "v5Desc": "SHA-1 Namespace",
-      "v7Desc": "Time-ordered"
+      "v7Desc": "Time-ordered",
+      "v3Notice": "⚠️ MD5 is not supported in browsers, so SHA-256 is used instead. Values may differ from other standard UUID v3 tools."
     },
     "namespace": {
       "label": "Namespace",
@@ -6886,7 +7278,7 @@
           },
           "feat2": {
             "title": "Bulk Generation",
-            "desc": "Generate up to 100 UUIDs at once with a single click."
+            "desc": "Generate up to 1,000 UUIDs at once with a single click."
           },
           "feat3": {
             "title": "Case Conversion",
@@ -6909,7 +7301,7 @@
       "howto": {
         "title": "How to Use",
         "steps": {
-          "step1": "<strong>Set Count</strong> — Use the slider to set the number of UUIDs you want to generate (1-100).",
+          "step1": "<strong>Set Count</strong> — Use the slider to set the number of UUIDs you want to generate (1-1,000).",
           "step2": "<strong>Configure Options</strong> — Choose uppercase/lowercase and hyphen inclusion/removal options.",
           "step3": "<strong>Generate UUIDs</strong> — Click the 'Generate' button to instantly create UUIDs.",
           "step4": "<strong>Copy Results</strong> — Use individual copy buttons or the copy all button to save to clipboard."
@@ -6960,7 +7352,7 @@
         },
         "q5": {
           "q": "Can I generate multiple UUIDs at once?",
-          "a": "Yes, this tool allows you to generate up to 100 UUIDs at once. Set the desired count and click the generate button. You can also toggle uppercase/lowercase and hyphen inclusion."
+          "a": "Yes, this tool allows you to generate up to 1,000 UUIDs at once. Set the desired count and click the generate button. You can also toggle uppercase/lowercase and hyphen inclusion."
         }
       },
       "privacy": {
@@ -6971,11 +7363,11 @@
   },
   "HashGenerator": {
     "meta": {
-      "title": "Hash Generator - MD5, SHA-256, SHA-512 Hash Tool | Tani DevTool",
-      "description": "Free online tool to generate hash values for text and files using MD5, SHA-1, SHA-256, SHA-384, SHA-512. Real-time computation, case toggle, and file hash support.",
-      "keywords": "hash generator, MD5 hash, SHA-256, SHA-512, hash converter, checksum, file hash, hash calculator, online hash, hash tool",
-      "ogTitle": "Hash Generator | MD5, SHA-256, SHA-512 Hash Tool",
-      "ogDescription": "Instantly generate hash values for text and files using MD5, SHA-1, SHA-256, SHA-384, SHA-512. Free online hash generator."
+      "title": "Hash Generator - MD5 SHA256 SHA512 Online Free | Tani DevTool",
+      "description": "Free online hash generator. Instantly compute MD5, SHA-1, SHA-256, SHA-384, SHA-512 hashes from text or files. Supports file checksum, HMAC signing, and hash verification. No install needed.",
+      "keywords": "hash generator, MD5 generator, SHA256 generator, SHA512 hash, MD5 hash, SHA-256 hash, online hash, file hash, checksum generator, file checksum, HMAC generator, hash verification, file integrity check, hash converter, hash calculator, checksum checker, SHA1 hash",
+      "ogTitle": "Hash Generator | MD5 SHA256 SHA512 Online Checksum HMAC Verify",
+      "ogDescription": "Instantly generate MD5, SHA-1, SHA-256, SHA-384, SHA-512 hashes. File checksum, HMAC signing, hash verification. Free online hash generator."
     },
     "mode": {
       "text": "Text",
@@ -7097,6 +7489,14 @@
         "q5": {
           "q": "Which hash algorithm should I use?",
           "a": "SHA-256 is the most common for file integrity checks. For security-critical applications, use SHA-256 or higher. MD5 and SHA-1 are not recommended for security but can still be used for quick checksums."
+        },
+        "q6": {
+          "q": "How do I use the HMAC generator?",
+          "a": "In text mode, click the HMAC button to reveal the Secret Key input. Once a key is entered, HMAC values are automatically computed for all algorithms: MD5, SHA-1, SHA-256, SHA-384, and SHA-512. Use it for API signing, message authentication codes (MAC), and webhook verification."
+        },
+        "q7": {
+          "q": "How do I verify a file checksum?",
+          "a": "Switch to file mode and drag & drop your file to instantly compute MD5, SHA-1, SHA-256, SHA-384, and SHA-512 checksums. Use verify mode to paste an expected hash value and compare it against the computed result — a green match confirms the file has not been tampered with."
         }
       },
       "privacy": {
@@ -7604,10 +8004,22 @@
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "2026 Latest Rates", "desc": "Reflects 2026 rates: National Pension 4.75%, Health 3.595%, Long-term Care 13.14%, Employment 0.9%." },
-          "feat2": { "title": "Employee vs Employer", "desc": "Compare employee and employer contributions side by side." },
-          "feat3": { "title": "Company Size Options", "desc": "Reflects different employment insurance rates by company size." },
-          "feat4": { "title": "Net Salary Estimate", "desc": "Instantly see estimated net salary after all deductions." }
+          "feat1": {
+            "title": "2026 Latest Rates",
+            "desc": "Reflects 2026 rates: National Pension 4.75%, Health 3.595%, Long-term Care 13.14%, Employment 0.9%."
+          },
+          "feat2": {
+            "title": "Employee vs Employer",
+            "desc": "Compare employee and employer contributions side by side."
+          },
+          "feat3": {
+            "title": "Company Size Options",
+            "desc": "Reflects different employment insurance rates by company size."
+          },
+          "feat4": {
+            "title": "Net Salary Estimate",
+            "desc": "Instantly see estimated net salary after all deductions."
+          }
         }
       },
       "howto": {
@@ -7622,10 +8034,22 @@
       "usecases": {
         "title": "Use Cases",
         "list": {
-          "uc1": { "title": "Salary Negotiation", "desc": "Calculate actual take-home pay during salary negotiations." },
-          "uc2": { "title": "Labor Cost Planning", "desc": "Employers calculate total labor costs including employer contributions." },
-          "uc3": { "title": "Job Preparation", "desc": "New graduates estimate expected salary and insurance deductions." },
-          "uc4": { "title": "Job Change Comparison", "desc": "Compare insurance changes when switching jobs with different salaries." }
+          "uc1": {
+            "title": "Salary Negotiation",
+            "desc": "Calculate actual take-home pay during salary negotiations."
+          },
+          "uc2": {
+            "title": "Labor Cost Planning",
+            "desc": "Employers calculate total labor costs including employer contributions."
+          },
+          "uc3": {
+            "title": "Job Preparation",
+            "desc": "New graduates estimate expected salary and insurance deductions."
+          },
+          "uc4": {
+            "title": "Job Change Comparison",
+            "desc": "Compare insurance changes when switching jobs with different salaries."
+          }
         }
       },
       "faq": {
@@ -7722,10 +8146,22 @@
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "Bidirectional Calculation", "desc": "Convert contract→net or net→contract amount automatically." },
-          "feat2": { "title": "Tax Breakdown", "desc": "Shows income tax (3.0%) and local tax (0.3%) separately with exact amounts." },
-          "feat3": { "title": "Monthly/Yearly Summary", "desc": "Displays yearly estimates (x12) for contract amount, tax, and net payment." },
-          "feat4": { "title": "Real-time Calculation & Copy", "desc": "Results update instantly as you type, with individual and full copy buttons for each item." }
+          "feat1": {
+            "title": "Bidirectional Calculation",
+            "desc": "Convert contract→net or net→contract amount automatically."
+          },
+          "feat2": {
+            "title": "Tax Breakdown",
+            "desc": "Shows income tax (3.0%) and local tax (0.3%) separately with exact amounts."
+          },
+          "feat3": {
+            "title": "Monthly/Yearly Summary",
+            "desc": "Displays yearly estimates (x12) for contract amount, tax, and net payment."
+          },
+          "feat4": {
+            "title": "Real-time Calculation & Copy",
+            "desc": "Results update instantly as you type, with individual and full copy buttons for each item."
+          }
         }
       },
       "howto": {
@@ -7740,10 +8176,22 @@
       "usecases": {
         "title": "Use Cases",
         "list": {
-          "uc1": { "title": "Rate Negotiation", "desc": "Reverse-calculate the contract rate based on your desired net payment for freelance projects." },
-          "uc2": { "title": "Income Management", "desc": "Pre-calculate net income from monthly freelance earnings to plan expenses and savings." },
-          "uc3": { "title": "Invoice Preparation", "desc": "Calculate the exact invoice amount needed to receive your desired net payment." },
-          "uc4": { "title": "Tax Filing Prep", "desc": "Track annual withholding totals to prepare for May comprehensive income tax filing." }
+          "uc1": {
+            "title": "Rate Negotiation",
+            "desc": "Reverse-calculate the contract rate based on your desired net payment for freelance projects."
+          },
+          "uc2": {
+            "title": "Income Management",
+            "desc": "Pre-calculate net income from monthly freelance earnings to plan expenses and savings."
+          },
+          "uc3": {
+            "title": "Invoice Preparation",
+            "desc": "Calculate the exact invoice amount needed to receive your desired net payment."
+          },
+          "uc4": {
+            "title": "Tax Filing Prep",
+            "desc": "Track annual withholding totals to prepare for May comprehensive income tax filing."
+          }
         }
       },
       "faq": {
@@ -8230,7 +8678,15 @@
       "weekend": "Weekend",
       "holiday": "Holiday",
       "custom": "Custom",
-      "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+      "weekdays": [
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+      ]
     },
     "deadlines": {
       "title": "Deadline Manager",
@@ -8384,10 +8840,22 @@
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "Real-time Preview", "desc": "See HTML rendering results instantly as you type, enabling fast document creation." },
-          "feat2": { "title": "Split-screen Editor", "desc": "Side-by-side layout on desktop, stacked layout on mobile for convenient use on any device." },
-          "feat3": { "title": "Copy HTML Output", "desc": "Copy converted HTML code with a single click for immediate use in blogs, emails, or websites." },
-          "feat4": { "title": "Full Markdown Support", "desc": "Supports headings, bold, italic, code blocks, tables, blockquotes, lists, links, images, strikethrough, and more." }
+          "feat1": {
+            "title": "Real-time Preview",
+            "desc": "See HTML rendering results instantly as you type, enabling fast document creation."
+          },
+          "feat2": {
+            "title": "Split-screen Editor",
+            "desc": "Side-by-side layout on desktop, stacked layout on mobile for convenient use on any device."
+          },
+          "feat3": {
+            "title": "Copy HTML Output",
+            "desc": "Copy converted HTML code with a single click for immediate use in blogs, emails, or websites."
+          },
+          "feat4": {
+            "title": "Full Markdown Support",
+            "desc": "Supports headings, bold, italic, code blocks, tables, blockquotes, lists, links, images, strikethrough, and more."
+          }
         }
       },
       "howto": {
@@ -8402,10 +8870,22 @@
       "usecases": {
         "title": "Use Cases",
         "list": {
-          "uc1": { "title": "Writing README Files", "desc": "Preview and edit GitHub README.md files in real-time as you write." },
-          "uc2": { "title": "Technical Documentation", "desc": "Write API docs, guides, and wikis in Markdown and instantly verify the output." },
-          "uc3": { "title": "Blog Posting", "desc": "Draft posts for Markdown-supported blog platforms and convert them to HTML." },
-          "uc4": { "title": "Emails & Reports", "desc": "Quickly write structured documents and copy the HTML for use in emails or reports." }
+          "uc1": {
+            "title": "Writing README Files",
+            "desc": "Preview and edit GitHub README.md files in real-time as you write."
+          },
+          "uc2": {
+            "title": "Technical Documentation",
+            "desc": "Write API docs, guides, and wikis in Markdown and instantly verify the output."
+          },
+          "uc3": {
+            "title": "Blog Posting",
+            "desc": "Draft posts for Markdown-supported blog platforms and convert them to HTML."
+          },
+          "uc4": {
+            "title": "Emails & Reports",
+            "desc": "Quickly write structured documents and copy the HTML for use in emails or reports."
+          }
         }
       },
       "privacy": {
@@ -8441,11 +8921,11 @@
   },
   "RandomGenerator": {
     "meta": {
-      "title": "Random Generator - Numbers, Names, Colors, Dice, Coins | Tani DevTool",
-      "description": "Free online random generator. Generate random numbers, Korean/English names, HEX colors, dice rolls (D4-D20), and coin flips all in one place.",
-      "keywords": "random generator, random number, random name generator, random color, dice roller, coin flipper, RNG, random picker, randomizer",
-      "ogTitle": "Random Generator - Numbers/Names/Colors/Dice/Coins",
-      "ogDescription": "Free online tool for generating random numbers, names, colors, dice rolls, and coin flips."
+      "title": "Random Generator - Numbers, Names, Colors, Dice, Team Divider, Weighted Picker | Free Online",
+      "description": "Free online random generator with 8 tools: numbers, Korean/English names, HEX colors, dice (D4-D20), coin flip, shuffle, team divider, and weighted random picker.",
+      "keywords": "random generator, random number, random name generator, random color, dice roller, coin flipper, RNG, random picker, randomizer, team divider, shuffle, weighted random picker, team randomizer",
+      "ogTitle": "Random Generator 8-in-1 - Numbers, Names, Colors, Dice, Teams",
+      "ogDescription": "8 random generation tools in one: numbers, names, colors, dice, coin flip, shuffle, team divider, and weighted picker — all free online."
     },
     "tabs": {
       "number": "Number",
@@ -8552,7 +9032,7 @@
     "seo": {
       "description": {
         "title": "What is a Random Generator?",
-        "p1": "A random generator is an online tool that can randomly generate various items including numbers, names, colors, dice rolls, and coin flips. It is useful when you need to make difficult decisions in daily life, need fair draws for games or events, or need fresh color inspiration for design work.",
+        "p1": "A random generator is an online tool offering 8 random generation modes: numbers, names, colors, dice rolling, coin flipping, shuffle, team divider, and weighted picker. It is useful when you need to make difficult decisions in daily life, need fair draws for games or events, need to split groups into teams, or need fresh color inspiration for design work.",
         "p2": "All generation is processed instantly in your browser, and you can use it for free without any installation or registration. Try generating random results that match your desired conditions through various options."
       },
       "features": {
@@ -8577,13 +9057,25 @@
           "feat5": {
             "title": "Coin Flipping",
             "desc": "Shows heads and tails results with animations. Track flip history and statistics to see your results over time."
+          },
+          "feat6": {
+            "title": "Shuffle (Order Randomizer)",
+            "desc": "Enter items one per line and get a randomly shuffled order using the Fisher-Yates algorithm. Great for presentation order, duty assignments, and more."
+          },
+          "feat7": {
+            "title": "Team Divider",
+            "desc": "Enter member names and split them evenly into teams. Perfect for PE classes, group activities, and project team formation."
+          },
+          "feat8": {
+            "title": "Weighted Random Picker",
+            "desc": "Assign different weights to items for unequal probability draws. Ideal for prize draws with different odds, menu pickers, and more."
           }
         }
       },
       "howto": {
         "title": "How to Use",
         "steps": {
-          "step1": "<strong>Select Mode</strong> — Choose your desired random generation mode from the tabs: Number, Name, Color, Dice, or Coin.",
+          "step1": "<strong>Select Mode</strong> — Choose from 8 modes in the top tabs: Number, Name, Color, Dice, Coin, Shuffle, Teams, or Weighted Picker.",
           "step2": "<strong>Configure Options</strong> — Set detailed options such as range, count, and type.",
           "step3": "<strong>Generate</strong> — Click the generate button to instantly display random results.",
           "step4": "<strong>Copy Results</strong> — Click on results or use the copy button to copy to clipboard."
@@ -8618,7 +9110,7 @@
         "title": "Frequently Asked Questions",
         "q1": {
           "q": "What features does the random generator have?",
-          "a": "It provides 5 random generation features: random numbers (integer/decimal), random names (Korean/English), random colors (HEX/RGB/HSL), dice rolling (D4-D20), and coin flipping."
+          "a": "It provides 8 random generation features: numbers (integer/decimal), names (Korean/English), colors (HEX/RGB/HSL), dice rolling (D4-D20), coin flipping, shuffle, team divider, and weighted random picker."
         },
         "q2": {
           "q": "Are the generated numbers truly random?",
@@ -8626,7 +9118,7 @@
         },
         "q3": {
           "q": "How are Korean names generated?",
-          "a": "Korean names are generated by combining 20 common Korean surnames with 20 frequently used name syllables to create natural-sounding names."
+          "a": "Korean names are generated by combining 50 common Korean surnames with 60 frequently used name syllables, enabling over 40,000 unique name combinations."
         },
         "q4": {
           "q": "What types of dice are available?",
@@ -9077,10 +9569,22 @@
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "Pixel/Percentage Resize", "desc": "Resize images by specifying exact pixel dimensions or a percentage scale." },
-          "feat2": { "title": "Aspect Ratio Lock", "desc": "Maintain original proportions while resizing to prevent image distortion." },
-          "feat3": { "title": "Batch Processing", "desc": "Upload and resize multiple images at once with the same settings." },
-          "feat4": { "title": "Format Conversion", "desc": "Convert to JPG, PNG, or WebP while resizing in one step." }
+          "feat1": {
+            "title": "Pixel/Percentage Resize",
+            "desc": "Resize images by specifying exact pixel dimensions or a percentage scale."
+          },
+          "feat2": {
+            "title": "Aspect Ratio Lock",
+            "desc": "Maintain original proportions while resizing to prevent image distortion."
+          },
+          "feat3": {
+            "title": "Batch Processing",
+            "desc": "Upload and resize multiple images at once with the same settings."
+          },
+          "feat4": {
+            "title": "Format Conversion",
+            "desc": "Convert to JPG, PNG, or WebP while resizing in one step."
+          }
         }
       },
       "howto": {
@@ -9095,10 +9599,22 @@
       "usecases": {
         "title": "Use Cases",
         "list": {
-          "uc1": { "title": "Website Image Optimization", "desc": "Resize images to appropriate dimensions for faster page loading." },
-          "uc2": { "title": "Social Media Sizing", "desc": "Convert images to fit Instagram, Facebook, and other platform requirements." },
-          "uc3": { "title": "Email Attachment Size", "desc": "Reduce large images to fit within email attachment limits." },
-          "uc4": { "title": "Profile Photo Resize", "desc": "Precisely resize images to match profile picture specifications." }
+          "uc1": {
+            "title": "Website Image Optimization",
+            "desc": "Resize images to appropriate dimensions for faster page loading."
+          },
+          "uc2": {
+            "title": "Social Media Sizing",
+            "desc": "Convert images to fit Instagram, Facebook, and other platform requirements."
+          },
+          "uc3": {
+            "title": "Email Attachment Size",
+            "desc": "Reduce large images to fit within email attachment limits."
+          },
+          "uc4": {
+            "title": "Profile Photo Resize",
+            "desc": "Precisely resize images to match profile picture specifications."
+          }
         }
       },
       "privacy": {
@@ -9212,12 +9728,30 @@
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "5 Format Support", "desc": "Convert between PNG, JPG, WebP, AVIF, and HEIC (iPhone) formats with a single click." },
-          "feat2": { "title": "Auto-Convert on Upload", "desc": "Conversion starts instantly when you upload. Changing settings automatically re-converts all images." },
-          "feat3": { "title": "ZIP Batch Download", "desc": "Convert multiple images at once and download them all as a single ZIP file." },
-          "feat4": { "title": "Quality Control + Transparency Warning", "desc": "Fine-tune quality for JPG/WebP/AVIF and get automatic warnings for transparent image conversion." },
-          "feat5": { "title": "AVIF Support (Next-Gen)", "desc": "Convert to AVIF when your browser supports it — up to 50% smaller than JPG at the same quality." },
-          "feat6": { "title": "HEIC Support (iPhone Photos)", "desc": "Drag and drop HEIC/HEIF files from iPhone directly — auto-detected and converted instantly." }
+          "feat1": {
+            "title": "5 Format Support",
+            "desc": "Convert between PNG, JPG, WebP, AVIF, and HEIC (iPhone) formats with a single click."
+          },
+          "feat2": {
+            "title": "Auto-Convert on Upload",
+            "desc": "Conversion starts instantly when you upload. Changing settings automatically re-converts all images."
+          },
+          "feat3": {
+            "title": "ZIP Batch Download",
+            "desc": "Convert multiple images at once and download them all as a single ZIP file."
+          },
+          "feat4": {
+            "title": "Quality Control + Transparency Warning",
+            "desc": "Fine-tune quality for JPG/WebP/AVIF and get automatic warnings for transparent image conversion."
+          },
+          "feat5": {
+            "title": "AVIF Support (Next-Gen)",
+            "desc": "Convert to AVIF when your browser supports it — up to 50% smaller than JPG at the same quality."
+          },
+          "feat6": {
+            "title": "HEIC Support (iPhone Photos)",
+            "desc": "Drag and drop HEIC/HEIF files from iPhone directly — auto-detected and converted instantly."
+          }
         }
       },
       "howto": {
@@ -9232,12 +9766,30 @@
       "usecases": {
         "title": "Use Cases",
         "list": {
-          "uc1": { "title": "Website Performance", "desc": "Convert PNG/JPG images to WebP or AVIF for significantly faster page loading." },
-          "uc2": { "title": "iPhone Photo Sharing", "desc": "Convert HEIC photos from iPhone to JPG for universal sharing on any platform." },
-          "uc3": { "title": "Transparency Needs", "desc": "Convert JPG images to PNG to enable background editing with transparency." },
-          "uc4": { "title": "File Size Reduction", "desc": "Convert PNG to JPG/WebP/AVIF to dramatically reduce file sizes." },
-          "uc5": { "title": "Design Asset Export", "desc": "Batch convert design exports to match delivery requirements in any format." },
-          "uc6": { "title": "Blog & Social Media", "desc": "Optimize photos by converting to WebP and adjusting quality for upload size limits." }
+          "uc1": {
+            "title": "Website Performance",
+            "desc": "Convert PNG/JPG images to WebP or AVIF for significantly faster page loading."
+          },
+          "uc2": {
+            "title": "iPhone Photo Sharing",
+            "desc": "Convert HEIC photos from iPhone to JPG for universal sharing on any platform."
+          },
+          "uc3": {
+            "title": "Transparency Needs",
+            "desc": "Convert JPG images to PNG to enable background editing with transparency."
+          },
+          "uc4": {
+            "title": "File Size Reduction",
+            "desc": "Convert PNG to JPG/WebP/AVIF to dramatically reduce file sizes."
+          },
+          "uc5": {
+            "title": "Design Asset Export",
+            "desc": "Batch convert design exports to match delivery requirements in any format."
+          },
+          "uc6": {
+            "title": "Blog & Social Media",
+            "desc": "Optimize photos by converting to WebP and adjusting quality for upload size limits."
+          }
         }
       },
       "privacy": {
@@ -9324,10 +9876,22 @@
       "features": {
         "title": "Key Features",
         "list": {
-          "feat1": { "title": "Multiple Sizes", "desc": "Supports 7 standard sizes from 16x16 to 512x512." },
-          "feat2": { "title": "ICO & PNG Formats", "desc": "Generate both ICO for browsers and PNG for web apps and mobile." },
-          "feat3": { "title": "Live Preview", "desc": "Preview generated favicons at each size before downloading." },
-          "feat4": { "title": "HTML Code Snippet", "desc": "Auto-generates HTML code ready to paste into your website." }
+          "feat1": {
+            "title": "Multiple Sizes",
+            "desc": "Supports 7 standard sizes from 16x16 to 512x512."
+          },
+          "feat2": {
+            "title": "ICO & PNG Formats",
+            "desc": "Generate both ICO for browsers and PNG for web apps and mobile."
+          },
+          "feat3": {
+            "title": "Live Preview",
+            "desc": "Preview generated favicons at each size before downloading."
+          },
+          "feat4": {
+            "title": "HTML Code Snippet",
+            "desc": "Auto-generates HTML code ready to paste into your website."
+          }
         }
       },
       "howto": {
@@ -9342,10 +9906,22 @@
       "usecases": {
         "title": "Use Cases",
         "list": {
-          "uc1": { "title": "Website Branding", "desc": "Turn your company logo into a favicon to boost brand recognition." },
-          "uc2": { "title": "PWA App Icons", "desc": "Generate all required icon sizes for Progressive Web Apps at once." },
-          "uc3": { "title": "Blog Icons", "desc": "Apply a unique favicon to your personal blog for a professional look." },
-          "uc4": { "title": "Mobile Icons", "desc": "Create Apple Touch Icons and Android Chrome Icons for mobile home screens." }
+          "uc1": {
+            "title": "Website Branding",
+            "desc": "Turn your company logo into a favicon to boost brand recognition."
+          },
+          "uc2": {
+            "title": "PWA App Icons",
+            "desc": "Generate all required icon sizes for Progressive Web Apps at once."
+          },
+          "uc3": {
+            "title": "Blog Icons",
+            "desc": "Apply a unique favicon to your personal blog for a professional look."
+          },
+          "uc4": {
+            "title": "Mobile Icons",
+            "desc": "Create Apple Touch Icons and Android Chrome Icons for mobile home screens."
+          }
         }
       },
       "privacy": {

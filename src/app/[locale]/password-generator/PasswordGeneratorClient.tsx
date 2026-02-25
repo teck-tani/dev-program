@@ -76,30 +76,95 @@ function getFilteredCharSets(excludeAmbiguous: boolean) {
 }
 
 const KOREAN_WORDS = [
-    '사과','바나나','강아지','고양이','하늘','바다','산','나무','꽃','별',
-    '햇빛','달','구름','비','눈','바람','물','불','흙','돌',
-    '새','물고기','거북이','나비','코끼리','사자','호랑이','토끼','여우','곰',
-    '독수리','돌고래','펭귄','앵무새','까치','다람쥐','부엉이','무지개','폭포','숲',
-    '소나무','벚꽃','장미','해바라기','튤립','백합','국화','카네이션','연꽃','진달래',
-    '가방','우산','모자','안경','시계','거울','열쇠','지갑','필통','연필',
-    '사진','편지','풍선','노래','피아노','기타','그림','책','신발','양말',
-    '커피','우유','빵','케이크','사탕','초콜릿','아이스크림','파스타','김밥','떡볶이',
-    '라면','만두','비빔밥','치킨','피자','햄버거','샌드위치','카레','볶음밥','콩나물',
-    '향수','가을','겨울','봄','여름','천둥','행복','용기','지혜',
+    // 동물
+    '강아지','고양이','사자','호랑이','코끼리','기린','얼룩말','하마','악어','캥거루',
+    '돌고래','고래','상어','문어','오징어','펭귄','독수리','부엉이','앵무새','두루미',
+    '거북이','토끼','여우','늑대','다람쥐','너구리','고슴도치','판다','코알라','치타',
+    // 음식
+    '김밥','떡볶이','라면','비빔밥','삼겹살','갈비','냉면','순대','만두','파전',
+    '잡채','불고기','치킨','케이크','초밥','파스타','카레','샐러드','스테이크','샌드위치',
+    '아이스크림','팬케이크','마카롱','와플','타코','초콜릿','피자','녹차','라떼','커피',
+    // 자연
+    '하늘','구름','바다','강','호수','폭포','산','계곡','숲','초원',
+    '사막','빙하','섬','해변','동굴','화산','온천','노을','무지개','번개',
+    '태풍','안개','서리','이슬','소나기','폭설','파도','암벽','갈대','절벽',
+    // 식물
+    '장미','튤립','해바라기','벚꽃','소나무','대나무','선인장','연꽃','국화','진달래',
+    '은행나무','단풍','나팔꽃','매화','백합','수선화','라벤더','민들레','클로버','동백꽃',
+    // 사물/도구
+    '가방','우산','모자','시계','거울','열쇠','지갑','안경','나침반','망원경',
+    '현미경','카메라','드론','로봇','망치','사다리','노트북','이어폰','마이크','충전기',
+    '책상','침대','소파','램프','커튼','화분','액자','자전거','오토바이','기타',
+    // 색상/보석
+    '파랑','빨강','노랑','초록','보라','주황','분홍','금색','은색','하늘색',
+    '다이아몬드','루비','사파이어','수정','진주','호박','토파즈','옥','흑요석','청금석',
+    // 교통/장소
+    '기차','비행기','배','지하철','헬리콥터','로켓','요트','케이블카','스쿠터','트럭',
+    '도서관','공원','박물관','미술관','카페','영화관','식물원','수족관','천문대','체육관',
+    // 추상/감정
+    '행복','기쁨','희망','평화','사랑','용기','지혜','신뢰','자유','꿈',
+    '열정','도전','성장','배움','창의','감사','존중','겸손','인내','정직',
+    // 스포츠
+    '축구','야구','농구','수영','달리기','등산','스키','서핑','양궁','펜싱',
+    '태권도','유도','체조','골프','테니스','배드민턴','탁구','볼링','클라이밍','사이클',
+    // 날씨/계절
+    '봄','여름','가을','겨울','태양','달빛','별빛','천둥','눈보라','소용돌이',
+    // 신화/우주
+    '용','봉황','유니콘','요정','마법사','기사','공주','왕자','무사','영웅',
+    '별자리','은하수','혜성','소행성','블랙홀','에너지','빛','파동','원자','분자',
+    // 음악/예술
+    '피아노','바이올린','첼로','트럼펫','플루트','하프','오케스트라','수채화','유화','조각',
+    '도예','소설','시','연극','발레','뮤지컬','오페라','재즈','록음악','클래식',
+    // IT/현대
+    '알고리즘','네트워크','클라우드','보안','암호화','데이터','서버','모듈','인터페이스','프레임워크',
+    // 기타
+    '책','연필','풍선','노래','신발','사탕','풍경','지도','모험','탐험',
+    '발견','항해','전설','신화','동화','미래','과거','현재','우주','시간',
 ];
 
 const ENGLISH_WORDS = [
-    'apple','banana','cloud','dragon','eagle','forest','garden','harbor','island','jungle',
-    'kettle','lemon','marble','needle','ocean','pencil','quartz','rocket','silver','thunder',
-    'umbrella','violet','walnut','crystal','desert','empire','falcon','glacier','hammer','ivory',
-    'jasmine','kitten','lantern','meadow','nectar','orchid','planet','rabbit','sunset','temple',
-    'unicorn','valley','whisper','emerald','guitar','horizon','iris','juggle','kitchen','lotus',
-    'mirror','noble','olive','puzzle','salmon','tiger','voyage','wisdom','acorn','breeze',
-    'candle','dolphin','feather','golden','heaven','insect','joyful','knight','magnet','nature',
-    'orange','parrot','river','spirit','tulip','velvet','wonder','anchor','bridge','castle',
-    'diamond','energy','fountain','gentle','hunter','icicle','mango','nutmeg','pepper','ripple',
-    'shadow','trophy','vanilla','willow','yellow','zenith','basket','carpet','donkey','engine',
-    'fossil',
+    // Nature
+    'ocean','river','forest','cloud','sunset','mountain','island','desert','meadow','glacier',
+    'canyon','valley','prairie','lagoon','volcano','tundra','swamp','pebble','crystal','coral',
+    'marble','quartz','thunder','rainbow','breeze','blizzard','drizzle','aurora','eclipse','comet',
+    'nebula','galaxy','meteor','summit','horizon',
+    // Animals
+    'tiger','falcon','dolphin','rabbit','eagle','panther','jaguar','cheetah','penguin','narwhal',
+    'octopus','parrot','iguana','python','badger','ferret','otter','bison','moose','gazelle',
+    'cobra','condor','toucan','pelican','flamingo','salmon','lobster','seahorse','porcupine','platypus',
+    'wombat','quokka','lemur','meerkat','gecko',
+    // Food
+    'mango','lemon','walnut','pepper','ginger','cinnamon','vanilla','caramel','truffle','pretzel',
+    'muffin','waffle','noodle','sushi','taco','gyoza','tiramisu','macaron','parfait','gelato',
+    'sorbet','churros','fondue','pavlova','basil','paprika','turmeric','saffron','cardamom','sesame',
+    // Objects
+    'lantern','compass','anchor','helmet','goblet','mirror','candle','prism','locket','amulet',
+    'trophy','satchel','chalice','anvil','bellows','telescope','hourglass','sundial','barometer','abacus',
+    'typewriter','microphone','speaker','projector','circuit','pulley','lever','ratchet','turbine','dynamo',
+    // Colors / Materials
+    'silver','golden','crimson','indigo','violet','scarlet','azure','ivory','ebony','sapphire',
+    'emerald','cobalt','copper','bronze','platinum','titanium','chrome','magenta','teal','amber',
+    // Actions / Concepts
+    'voyage','journey','quest','mission','triumph','victory','spirit','wisdom','courage','justice',
+    'freedom','balance','harmony','mystery','wonder','magic','puzzle','cipher','secret','champion',
+    'guardian','pioneer','explorer','scholar','warrior','ranger','sentinel','herald','knight','archer',
+    // Places
+    'castle','temple','fortress','harbor','bazaar','palace','cathedral','lighthouse','observatory','archive',
+    'gallery','studio','workshop','arena','stadium','theater','library','chapel','plaza','cloister',
+    'courtyard','alcove','grotto','cavern','vault','citadel','monastery','amphitheater','colosseum','pyramid',
+    // Sports / Activities
+    'archery','fencing','rowing','climbing','cycling','surfing','skiing','diving','hiking','gliding',
+    'sprinting','jumping','sailing','boxing','wrestling','jousting','hunting','fishing','kayaking','rafting',
+    // Abstract / Misc
+    'phantom','nexus','zenith','equinox','solstice','transit','omega','sigma','delta','gamma',
+    'alpha','epsilon','lambda','theta','kappa','beacon','signal','pattern','sequence','matrix',
+    'vector','spectrum','frequency','amplitude','paradox','enigma','labyrinth','chronicle','legend','fable',
+    // Music / Art
+    'piano','violin','cello','trumpet','flute','harp','guitar','symphony','sonata','rhapsody',
+    'canvas','mosaic','fresco','etching','mural','sculpture','portrait','landscape','abstract','collage',
+    // Technology
+    'algorithm','network','cluster','module','runtime','kernel','fractal','hologram','quantum','photon',
+    'neutron','proton','electron','plasma','laser','radar','sonar','binary','decimal','hexagon',
 ];
 
 function secureRandomIndex(max: number): number {

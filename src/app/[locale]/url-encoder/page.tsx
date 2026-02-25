@@ -64,7 +64,7 @@ function generateFaqSchema(locale: string) {
     const faqData = locale === 'ko' ? [
         {
             question: "URL 인코딩이란 무엇인가요?",
-            answer: "URL 인코딩은 URL에서 사용할 수 없는 문자(한글, 특수문자 등)를 %XX 형식의 안전한 ASCII 문자로 변환하는 것입니다. 예를 들어 공백은 %20으로, 한글 '가'는 %EA%B0%80으로 변환됩니다."
+            answer: "URL 인코딩(퍼센트 인코딩)은 URL에서 사용할 수 없는 문자(한글, 특수문자 등)를 %XX 형식의 안전한 ASCII 문자로 변환하는 것입니다. 예를 들어 공백은 %20으로, 한글 '가'는 %EA%B0%80으로 변환됩니다."
         },
         {
             question: "encodeURIComponent와 encodeURI의 차이점은?",
@@ -73,11 +73,23 @@ function generateFaqSchema(locale: string) {
         {
             question: "URL 디코딩은 언제 사용하나요?",
             answer: "브라우저 주소창에서 복사한 URL이나 로그에서 %XX 형식으로 인코딩된 URL을 읽기 쉬운 형태로 변환할 때 사용합니다. 디버깅이나 데이터 분석 시 유용합니다."
+        },
+        {
+            question: "공백은 %20인가요, +인가요?",
+            answer: "URL 경로에서 공백은 %20으로 인코딩됩니다. 폼 데이터(application/x-www-form-urlencoded)에서는 +로 표현되기도 합니다. 일반적으로 %20을 사용하는 것이 안전합니다."
+        },
+        {
+            question: "이중 인코딩(Double Encoding)이란 무엇인가요?",
+            answer: "이중 인코딩은 이미 인코딩된 문자열을 다시 인코딩하는 것입니다. 예를 들어 %20(공백)이 %2520으로 변환됩니다. 이 경우 서버에서 한 번만 디코딩하면 원본이 아닌 인코딩된 문자열이 나옵니다. 이 도구는 이중 인코딩을 자동으로 감지하여 경고해줍니다."
+        },
+        {
+            question: "한글 URL이 %ED%95%9C%EA%B8%80처럼 깨져 보이는 이유는?",
+            answer: "URL에 포함된 한글·특수문자는 RFC 3986 표준에 따라 퍼센트 인코딩됩니다. 예를 들어 '한글'은 %ED%95%9C%EA%B8%80으로 변환됩니다. 브라우저 주소창에서는 읽기 편하게 디코딩된 한글로 표시되지만, 실제 요청은 인코딩된 형태로 전송됩니다. 로그나 코드에서 %XX 형식으로 보이는 한글 URL을 이 변환기에 붙여넣으면 즉시 원문으로 디코딩할 수 있습니다."
         }
     ] : [
         {
             question: "What is URL encoding?",
-            answer: "URL encoding converts characters that cannot be used in URLs (like non-ASCII characters, spaces, special characters) into safe ASCII format using %XX notation. For example, space becomes %20."
+            answer: "URL encoding (percent encoding) converts characters that cannot be used in URLs (like non-ASCII characters, spaces, special characters) into safe ASCII format using %XX notation. For example, space becomes %20, and the Korean character '가' becomes %EA%B0%80."
         },
         {
             question: "What's the difference between encodeURIComponent and encodeURI?",
@@ -85,7 +97,19 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "When should I use URL decoding?",
-            answer: "Use URL decoding when you need to read URLs copied from browser address bars or logs that contain %XX encoded characters. It's useful for debugging and data analysis."
+            answer: "Use URL decoding when you need to read URLs copied from browser address bars or logs that contain %XX encoded characters. It's useful for debugging, data analysis, and fixing broken URLs."
+        },
+        {
+            question: "Is space encoded as %20 or +?",
+            answer: "In URL paths, spaces are encoded as %20. In form data (application/x-www-form-urlencoded), spaces may be represented as +. Generally, using %20 is safer and more broadly compatible."
+        },
+        {
+            question: "What is double encoding?",
+            answer: "Double encoding occurs when an already encoded string is encoded again. For example, %20 (space) becomes %2520. If the server decodes only once, it gets the encoded string instead of the original value. This tool automatically detects double encoding and warns you."
+        },
+        {
+            question: "Why does a URL with Korean characters look like %ED%95%9C%EA%B8%80?",
+            answer: "Korean characters and other non-ASCII text in URLs are percent-encoded per RFC 3986. For example, '한글' becomes %ED%95%9C%EA%B8%80. Modern browsers decode these back to readable text in the address bar, but the actual HTTP request is sent in encoded form. Paste any %XX-encoded URL into this tool to instantly decode it."
         }
     ];
 
@@ -191,20 +215,28 @@ function generateWebAppSchema(locale: string) {
         },
         "featureList": isKo
             ? [
-                "URL 인코딩",
+                "URL 인코딩 (퍼센트 인코딩)",
                 "URL 디코딩",
                 "encodeURIComponent 지원",
                 "encodeURI 지원",
-                "한글 완벽 지원",
-                "실시간 변환"
+                "HTML 엔티티 변환",
+                "URL 파서 (쿼리 파라미터 분리)",
+                "이중 인코딩 감지",
+                "배치 처리 (여러 줄 동시 변환)",
+                "한글 URL 깨짐 해결",
+                "쿼리스트링 인코딩"
             ]
             : [
-                "URL encoding",
+                "URL encoding (percent encoding)",
                 "URL decoding",
                 "encodeURIComponent support",
                 "encodeURI support",
-                "Full Korean support",
-                "Real-time conversion"
+                "HTML entity encoding",
+                "URL parser (query parameter split)",
+                "Double encoding detection",
+                "Batch processing (multi-line)",
+                "Korean URL encoding support",
+                "Query string encoding"
             ],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"
@@ -223,7 +255,7 @@ export default async function UrlEncoderPage(props: { params: Promise<{ locale: 
     const featureKeys = ["feat1", "feat2", "feat3", "feat4"] as const;
     const howtoKeys = ["step1", "step2", "step3", "step4", "step5"] as const;
     const usecaseKeys = ["uc1", "uc2", "uc3", "uc4"] as const;
-    const faqKeys = ["q1", "q2", "q3", "q4", "q5"] as const;
+    const faqKeys = ["q1", "q2", "q3", "q4", "q5", "q6"] as const;
 
     return (
         <>

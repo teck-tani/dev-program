@@ -2652,37 +2652,41 @@ body[data-theme="dark"] .seo-faq-item p {
 
 /* ===== Share Button (공통) ===== */
 .share-btn {
-    width: 100%;
-    max-width: 360px;
-    margin: 12px auto 0;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 5px;
+    padding: 7px 15px 7px 12px;
+    border-radius: 20px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
-.share-btn:hover {
+.share-btn:hover:not(:disabled) {
+    background: #2563eb;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.45);
 }
 
-.share-btn:active {
+.share-btn:active:not(:disabled) {
     transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(59, 130, 246, 0.3);
 }
 
 body[data-theme="dark"] .share-btn {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+    background: #2563eb;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.45);
+}
+
+body[data-theme="dark"] .share-btn:hover:not(:disabled) {
+    background: #1d4ed8;
 }
 
 @media print {

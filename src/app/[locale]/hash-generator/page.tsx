@@ -81,6 +81,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "어떤 해시 알고리즘을 사용해야 하나요?",
             answer: "용도에 따라 다릅니다. 파일 무결성 확인(체크섬)에는 SHA-256이 가장 보편적입니다. 보안이 중요한 경우 SHA-256 이상(SHA-384, SHA-512)을 사용하세요. MD5와 SHA-1은 보안 용도에는 권장되지 않지만, 빠른 체크섬 용도로는 여전히 사용됩니다."
+        },
+        {
+            question: "HMAC 생성기는 어떻게 사용하나요?",
+            answer: "텍스트 모드에서 'HMAC' 버튼을 클릭하면 Secret Key 입력란이 나타납니다. 키를 입력하면 MD5, SHA-1, SHA-256, SHA-384, SHA-512 모든 알고리즘에 대해 HMAC 값이 자동 계산됩니다. API 서명, 메시지 인증 코드(MAC) 생성에 활용할 수 있습니다."
+        },
+        {
+            question: "파일 체크섬(무결성 검사)은 어떻게 하나요?",
+            answer: "파일 모드로 전환 후 파일을 드래그&드롭하거나 선택하면 MD5, SHA-1, SHA-256, SHA-384, SHA-512 체크섬이 동시에 계산됩니다. 검증 모드에서는 원본 텍스트와 기대 해시값을 입력해 일치 여부를 즉시 확인할 수 있어 파일 무결성 검사에 활용하기 좋습니다."
         }
     ] : [
         {
@@ -102,6 +110,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "Which hash algorithm should I use?",
             answer: "It depends on the use case. SHA-256 is the most common for file integrity checks (checksums). For security-critical applications, use SHA-256 or higher (SHA-384, SHA-512). MD5 and SHA-1 are not recommended for security purposes but are still used for quick checksums."
+        },
+        {
+            question: "How do I use the HMAC generator?",
+            answer: "In text mode, click the 'HMAC' button to reveal the Secret Key input. Once a key is entered, HMAC values are automatically computed for all algorithms: MD5, SHA-1, SHA-256, SHA-384, and SHA-512. Use it for API signing, message authentication codes (MAC), and webhook verification."
+        },
+        {
+            question: "How do I verify a file checksum?",
+            answer: "Switch to file mode and drag & drop your file to instantly compute MD5, SHA-1, SHA-256, SHA-384, and SHA-512 checksums. Use verify mode to paste an expected hash value and compare it against the computed result — a green match confirms the file has not been tampered with."
         }
     ];
 
@@ -199,7 +215,9 @@ function generateWebAppSchema(locale: string) {
             ? [
                 "MD5, SHA-1, SHA-256, SHA-384, SHA-512 해시 생성",
                 "실시간 해시 계산 (입력 즉시)",
-                "파일 해시 계산 (드래그&드롭)",
+                "파일 해시 계산·체크섬 생성 (드래그&드롭, 최대 10개)",
+                "HMAC 서명 생성 (MD5/SHA 전 알고리즘)",
+                "해시 검증 모드 (파일 무결성 확인)",
                 "대문자/소문자 토글",
                 "각 알고리즘별 복사 버튼",
                 "모든 처리 브라우저 내 완료 (서버 전송 없음)"
@@ -207,7 +225,9 @@ function generateWebAppSchema(locale: string) {
             : [
                 "MD5, SHA-1, SHA-256, SHA-384, SHA-512 hash generation",
                 "Real-time hash computation (instant)",
-                "File hash calculation (drag & drop)",
+                "File checksum generation (drag & drop, up to 10 files)",
+                "HMAC signing (all algorithms)",
+                "Hash verification mode (file integrity check)",
                 "Uppercase/lowercase toggle",
                 "Copy button for each algorithm",
                 "All processing done in browser (no server transmission)"
@@ -229,7 +249,7 @@ export default async function HashGeneratorPage(props: { params: Promise<{ local
     const featureKeys = ["feat1", "feat2", "feat3", "feat4"] as const;
     const howtoKeys = ["step1", "step2", "step3", "step4"] as const;
     const usecaseKeys = ["uc1", "uc2", "uc3", "uc4"] as const;
-    const faqKeys = ["q1", "q2", "q3", "q4", "q5"] as const;
+    const faqKeys = ["q1", "q2", "q3", "q4", "q5", "q6", "q7"] as const;
 
     return (
         <>

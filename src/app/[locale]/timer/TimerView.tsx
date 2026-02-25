@@ -915,7 +915,7 @@ export default function TimerView() {
                             <button onClick={handleShare} className={`${styles.featureBtn} ${shareCopied ? styles.featureActive : ''}`}>
                                 🔗 {shareCopied ? t('share.copied') : t('share.copy')}
                             </button>
-                            <ShareButton shareText={getShareText()} className={styles.featureBtn} />
+                            <ShareButton shareText={getShareText()} />
                         </>
                     )}
                     <button onClick={() => setVoiceCountdown(prev => !prev)} className={`${styles.featureBtn} ${voiceCountdown ? styles.featureActive : ''}`}>

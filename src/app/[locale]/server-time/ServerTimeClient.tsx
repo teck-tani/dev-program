@@ -510,7 +510,7 @@ export default function ServerTimeClient() {
               {copied ? t("copied") : t("copyTime")}
             </button>
             <span className={styles.infoDivider}>·</span>
-            <ShareButton shareText={getShareText()} className={styles.copyBtn} />
+            <ShareButton shareText={getShareText()} />
           </div>
         </div>
 

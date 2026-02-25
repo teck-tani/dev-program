@@ -2,9 +2,8 @@
 
 import { Link, usePathname } from "@/navigation";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { FaHome, FaBars, FaTimes, FaCog, FaExpand, FaCompress, FaSun, FaMoon } from "react-icons/fa";
+import { FaHome, FaBars, FaTimes, FaCog, FaExpand, FaCompress } from "react-icons/fa";
 import { useTranslations } from "next-intl";
-import { useTheme } from "@/contexts/ThemeContext";
 import { getCategoriesWithTools, findToolByPathname } from "@/config/tools";
 import SettingsDropdown from "./SettingsDropdown";
 
@@ -15,7 +14,6 @@ export default function Header() {
   const t = useTranslations('Header');
   const tTools = useTranslations('Index.tools');
   const pathname = usePathname();
-  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -81,9 +79,6 @@ export default function Header() {
       <header className="new-header">
         <div className="header-container">
           <div className="header-left">
-            <Link href="/" className="header-action-btn" aria-label="홈" prefetch={false}>
-              <FaHome />
-            </Link>
             <button
               className="header-menu-btn"
               onClick={() => setMobileMenuOpen(true)}
@@ -106,14 +101,6 @@ export default function Header() {
                 {isFullscreen ? <FaCompress /> : <FaExpand />}
               </button>
             )}
-            <button
-              className="header-action-btn"
-              onClick={toggleTheme}
-              aria-label={theme === 'dark' ? "라이트 모드" : "다크 모드"}
-              title={theme === 'dark' ? "라이트 모드" : "다크 모드"}
-            >
-              {theme === 'dark' ? <FaSun /> : <FaMoon />}
-            </button>
             <button
               className="header-action-btn"
               onClick={(e) => {

@@ -42,6 +42,49 @@ function fieldToExpression(field: FieldConfig, fieldName: string): string {
     }
 }
 
+function validateCronField(part: string, min: number, max: number): boolean {
+    if (part === '*') return true;
+    if (part.includes('/')) {
+        const [left, right] = part.split('/');
+        const step = Number(right);
+        if (!right || isNaN(step) || step < 1) return false;
+        if (left !== '*') {
+            const n = Number(left);
+            if (isNaN(n) || n < min || n > max) return false;
+        }
+        return true;
+    }
+    if (part.includes('-')) {
+        const [s, e] = part.split('-');
+        const start = Number(s), end = Number(e);
+        if (isNaN(start) || isNaN(end) || start < min || end > max || start >= end) return false;
+        return true;
+    }
+    if (part.includes(',')) {
+        return part.split(',').every(v => {
+            const n = Number(v.trim());
+            return !isNaN(n) && n >= min && n <= max;
+        });
+    }
+    const n = Number(part);
+    return !isNaN(n) && n >= min && n <= max;
+}
+
+function validateCronExpression(expr: string): 'valid' | 'invalid' | 'empty' {
+    const trimmed = expr.trim();
+    if (!trimmed) return 'empty';
+    const parts = trimmed.split(/\s+/);
+    if (parts.length !== 5) return 'invalid';
+    const defs = [
+        { min: 0, max: 59 }, { min: 0, max: 23 }, { min: 1, max: 31 },
+        { min: 1, max: 12 }, { min: 0, max: 6 },
+    ];
+    for (let i = 0; i < 5; i++) {
+        if (!validateCronField(parts[i], defs[i].min, defs[i].max)) return 'invalid';
+    }
+    return 'valid';
+}
+
 const PRESETS = [
     { key: 'everyMinute', cron: '* * * * *' },
     { key: 'every5Min', cron: '*/5 * * * *' },
@@ -168,6 +211,7 @@ export default function CronGeneratorClient() {
 
     const [copied, setCopied] = useState(false);
     const [manualInput, setManualInput] = useState('');
+    const [manualStatus, setManualStatus] = useState<'empty' | 'valid' | 'invalid'>('empty');
     const [showNextRuns, setShowNextRuns] = useState(true);
     const [timezone, setTimezone] = useState(() => {
         try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return 'UTC'; }
@@ -340,9 +384,13 @@ export default function CronGeneratorClient() {
 
     const handleManualApply = () => {
         const trimmed = manualInput.trim();
-        if (trimmed.split(' ').length === 5) {
+        const status = validateCronExpression(trimmed);
+        if (status === 'valid') {
             setFields(parseCronToFields(trimmed));
             setManualInput('');
+            setManualStatus('empty');
+        } else {
+            setManualStatus('invalid');
         }
     };
 
@@ -431,197 +479,59 @@ ${description ? `→ ${description}` : ''}
 
     return (
         <div className="container" style={{ maxWidth: "1000px", padding: "20px" }}>
-            <section style={{ textAlign: "center", marginBottom: "40px" }}>
-                <h1 style={{ marginBottom: "20px" }}>{t('title')}</h1>
-                <p style={{ color: isDark ? "#94a3b8" : "#666", fontSize: "1.1rem", maxWidth: "700px", margin: "0 auto" }}
-                    dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }} />
-            </section>
-
-            {/* Cron 결과 표시 */}
-            <div style={{
-                background: '#1e293b', borderRadius: '12px', padding: '25px',
-                marginBottom: '20px', textAlign: 'center'
-            }}>
-                <div style={{
-                    display: 'flex', justifyContent: 'center', gap: '12px',
-                    flexWrap: 'wrap', marginBottom: '15px'
-                }}>
-                    {cronParts.map((part, idx) => (
-                        <div key={idx} style={{ textAlign: 'center' }}>
-                            <div style={{
-                                fontFamily: "'Consolas', 'Monaco', monospace",
-                                fontSize: '2rem', fontWeight: 700, color: '#60a5fa',
-                                background: '#334155', borderRadius: '8px',
-                                padding: '8px 16px', minWidth: '60px'
-                            }}>
-                                {part}
-                            </div>
-                            <div style={{ color: '#94a3b8', fontSize: '0.75rem', marginTop: '4px' }}>
-                                {partLabels[idx]}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div style={{
-                    fontFamily: "'Consolas', 'Monaco', monospace",
-                    fontSize: '1.1rem', color: '#e2e8f0', marginBottom: '12px',
-                    background: '#0f172a', padding: '10px 20px', borderRadius: '8px',
-                    display: 'inline-block'
-                }}>
-                    {cronExpression}
-                </div>
-                {description && (
-                    <div style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '12px' }}>
-                        {description}
-                    </div>
-                )}
-                {/* Timezone + Seconds toggle */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <select
-                        value={timezone}
-                        onChange={(e) => setTimezone(e.target.value)}
-                        style={{
-                            padding: '6px 10px', borderRadius: '6px', fontSize: '0.8rem',
-                            border: '1px solid #334155', background: '#0f172a', color: '#e2e8f0',
-                            flex: '1 1 200px', minWidth: 0,
-                        }}
-                    >
-                        {timezoneList.map(tz => (
-                            <option key={tz} value={tz}>{tz}</option>
-                        ))}
-                    </select>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#94a3b8', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                        <input
-                            type="checkbox"
-                            checked={enableSeconds}
-                            onChange={(e) => setEnableSeconds(e.target.checked)}
-                            style={{ accentColor: '#4A90D9' }}
-                        />
-                        {lang === 'ko' ? '초 단위 (6-field)' : 'Seconds (6-field)'}
-                    </label>
-                </div>
-
-                {/* Seconds field display */}
-                {enableSeconds && (
-                    <div style={{
-                        background: '#0f172a', borderRadius: '6px', padding: '8px 12px',
-                        marginBottom: '10px', fontSize: '0.8rem', color: '#94a3b8',
-                    }}>
-                        {lang === 'ko' ? '💡 Spring/Quartz: ' : '💡 Spring/Quartz: '}
-                        <code style={{ color: '#fbbf24', fontFamily: "'Consolas', monospace" }}>
-                            {fieldToExpression(secondsField, 'second')} {cronExpression}
-                        </code>
-                    </div>
-                )}
-
-                {/* Validation errors */}
-                {Object.keys(fieldErrors).length > 0 && (
-                    <div style={{
-                        background: 'rgba(239,68,68,0.15)', borderRadius: '6px', padding: '8px 12px',
-                        marginBottom: '10px', fontSize: '0.8rem', color: '#fca5a5',
-                    }}>
-                        {Object.entries(fieldErrors).map(([name, range]) => (
-                            <div key={name}>⚠️ {name}: {lang === 'ko' ? `유효 범위 ${range}` : `valid range: ${range}`}</div>
-                        ))}
-                    </div>
-                )}
-
-                {/* Next execution times */}
-                {showNextRuns && (() => {
-                    const nextRuns = getNextExecutions(cronExpression, 5);
-                    if (nextRuns.length === 0) return null;
-                    return (
-                        <div style={{
-                            background: '#0f172a', borderRadius: '8px', padding: '12px 16px',
-                            marginBottom: '12px', textAlign: 'left'
-                        }}>
-                            <div style={{
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                marginBottom: '8px'
-                            }}>
-                                <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>
-                                    {t('nextRuns')} ({timezone})
-                                </span>
-                                <button
-                                    onClick={() => setShowNextRuns(false)}
-                                    style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: '0.8rem' }}
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                            {nextRuns.map((d, i) => (
-                                <div key={i} style={{
-                                    color: '#e2e8f0', fontSize: '0.85rem',
-                                    fontFamily: "'Consolas', monospace",
-                                    padding: '3px 0',
-                                    borderBottom: i < nextRuns.length - 1 ? '1px solid #1e293b' : 'none'
-                                }}>
-                                    {d.toLocaleString(undefined, { timeZone: timezone })}
-                                </div>
-                            ))}
-                        </div>
-                    );
-                })()}
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    <button
-                        onClick={handleCopy}
-                        style={{
-                            padding: '10px 24px',
-                            background: copied ? '#22c55e' : '#4A90D9',
-                            color: 'white', border: 'none', borderRadius: '8px',
-                            fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer'
-                        }}
-                    >
-                        {copied ? t('copied') : t('copyBtn')}
-                    </button>
-                    <ShareButton shareText={getShareText()} disabled={!cronExpression} />
-                    <button
-                        onClick={handleReset}
-                        style={{
-                            padding: '10px 24px', background: '#475569',
-                            color: 'white', border: 'none', borderRadius: '8px',
-                            fontSize: '0.95rem', cursor: 'pointer'
-                        }}
-                    >
-                        {t('resetBtn')}
-                    </button>
-                </div>
-            </div>
-
             {/* 수동 입력 */}
             <div style={{
                 background: isDark ? '#1e293b' : 'white', borderRadius: '10px',
                 boxShadow: isDark ? 'none' : '0 2px 15px rgba(0,0,0,0.1)', padding: '15px 20px',
-                marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'center',
-                flexWrap: 'wrap'
+                marginBottom: '20px'
             }}>
-                <label style={{ fontWeight: 500, fontSize: '0.95rem', whiteSpace: 'nowrap', color: isDark ? '#f1f5f9' : undefined }}>
-                    {t('manualInput')}:
-                </label>
-                <input
-                    type="text"
-                    value={manualInput}
-                    onChange={(e) => setManualInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleManualApply()}
-                    placeholder="* * * * *"
-                    style={{
-                        flex: 1, padding: '8px 12px', border: isDark ? '1px solid #334155' : '1px solid #ddd',
-                        borderRadius: '6px', fontFamily: "'Consolas', monospace",
-                        fontSize: '1rem', minWidth: '150px',
-                        color: isDark ? '#e2e8f0' : '#1f2937',
-                        background: isDark ? '#0f172a' : '#fff'
-                    }}
-                />
-                <button
-                    onClick={handleManualApply}
-                    style={{
-                        padding: '8px 16px', background: '#4A90D9', color: 'white',
-                        border: 'none', borderRadius: '6px', fontSize: '0.9rem',
-                        cursor: 'pointer', fontWeight: 500
-                    }}
-                >
-                    {t('applyBtn')}
-                </button>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <label style={{ fontWeight: 500, fontSize: '0.95rem', whiteSpace: 'nowrap', color: isDark ? '#f1f5f9' : undefined }}>
+                        {t('manualInput')}:
+                    </label>
+                    <input
+                        type="text"
+                        value={manualInput}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            setManualInput(val);
+                            setManualStatus(validateCronExpression(val));
+                        }}
+                        onKeyDown={(e) => e.key === 'Enter' && handleManualApply()}
+                        placeholder="* * * * *"
+                        style={{
+                            flex: 1, padding: '8px 12px', minWidth: '150px',
+                            border: `1px solid ${manualStatus === 'invalid' ? '#ef4444' : manualStatus === 'valid' ? '#22c55e' : isDark ? '#334155' : '#ddd'}`,
+                            borderRadius: '6px', fontFamily: "'Consolas', monospace",
+                            fontSize: '1rem',
+                            color: isDark ? '#e2e8f0' : '#1f2937',
+                            background: isDark ? '#0f172a' : '#fff',
+                            outline: 'none',
+                            transition: 'border-color 0.15s',
+                        }}
+                    />
+                    <button
+                        onClick={handleManualApply}
+                        style={{
+                            padding: '8px 16px',
+                            background: manualStatus === 'valid' ? '#22c55e' : '#4A90D9',
+                            color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.9rem',
+                            cursor: 'pointer', fontWeight: 500, transition: 'background 0.15s',
+                        }}
+                    >
+                        {t('applyBtn')}
+                    </button>
+                </div>
+                {manualStatus === 'invalid' && (
+                    <p style={{ margin: '6px 0 0 0', fontSize: '0.8rem', color: '#ef4444' }}>
+                        {t('invalidExpr')}
+                    </p>
+                )}
+                {manualStatus === 'valid' && (
+                    <p style={{ margin: '6px 0 0 0', fontSize: '0.8rem', color: '#22c55e' }}>
+                        {t('validExpr')}
+                    </p>
+                )}
             </div>
 
             {/* 프리셋 */}
@@ -653,6 +563,174 @@ ${description ? `→ ${description}` : ''}
                             {t(`presets.${preset.key}`)}
                         </button>
                     ))}
+                </div>
+            </div>
+
+            {/* Cron 결과 표시 */}
+            <div style={{
+                background: isDark ? '#1e293b' : '#f1f5f9', borderRadius: '12px', padding: '25px',
+                marginBottom: '20px', textAlign: 'center',
+                border: isDark ? 'none' : '1px solid #e2e8f0'
+            }}>
+                <div style={{
+                    display: 'flex', justifyContent: 'center', gap: '12px',
+                    flexWrap: 'wrap', marginBottom: '15px'
+                }}>
+                    {cronParts.map((part, idx) => (
+                        <div key={idx} style={{ textAlign: 'center' }}>
+                            <div style={{
+                                fontFamily: "'Consolas', 'Monaco', monospace",
+                                fontSize: '2rem', fontWeight: 700, color: '#60a5fa',
+                                background: isDark ? '#334155' : '#dbeafe', borderRadius: '8px',
+                                padding: '8px 16px', minWidth: '60px'
+                            }}>
+                                {part}
+                            </div>
+                            <div style={{ color: isDark ? '#94a3b8' : '#6b7280', fontSize: '0.75rem', marginTop: '4px' }}>
+                                {partLabels[idx]}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div style={{
+                    fontFamily: "'Consolas', 'Monaco', monospace",
+                    fontSize: '1.1rem', color: isDark ? '#e2e8f0' : '#1e293b', marginBottom: '12px',
+                    background: isDark ? '#0f172a' : '#e2e8f0', padding: '10px 20px', borderRadius: '8px',
+                    display: 'inline-block'
+                }}>
+                    {cronExpression}
+                </div>
+                {description && (
+                    <div style={{ color: isDark ? '#94a3b8' : '#4b5563', fontSize: '0.95rem', marginBottom: '12px' }}>
+                        {description}
+                    </div>
+                )}
+                {/* Timezone + Seconds toggle */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <select
+                        value={timezone}
+                        onChange={(e) => setTimezone(e.target.value)}
+                        style={{
+                            padding: '6px 10px', borderRadius: '6px', fontSize: '0.8rem',
+                            border: `1px solid ${isDark ? '#334155' : '#cbd5e1'}`,
+                            background: isDark ? '#0f172a' : '#ffffff', color: isDark ? '#e2e8f0' : '#1f2937',
+                            flex: '1 1 200px', minWidth: 0,
+                        }}
+                    >
+                        {timezoneList.map(tz => (
+                            <option key={tz} value={tz}>{tz}</option>
+                        ))}
+                    </select>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#94a3b8', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                        <input
+                            type="checkbox"
+                            checked={enableSeconds}
+                            onChange={(e) => setEnableSeconds(e.target.checked)}
+                            style={{ accentColor: '#4A90D9' }}
+                        />
+                        {lang === 'ko' ? '초 단위 (6-field)' : 'Seconds (6-field)'}
+                    </label>
+                </div>
+
+                {/* Seconds field display */}
+                {enableSeconds && (
+                    <div style={{
+                        background: isDark ? '#0f172a' : '#e2e8f0', borderRadius: '6px', padding: '8px 12px',
+                        marginBottom: '10px', fontSize: '0.8rem', color: isDark ? '#94a3b8' : '#4b5563',
+                    }}>
+                        {lang === 'ko' ? '💡 Spring/Quartz: ' : '💡 Spring/Quartz: '}
+                        <code style={{ color: '#fbbf24', fontFamily: "'Consolas', monospace" }}>
+                            {fieldToExpression(secondsField, 'second')} {cronExpression}
+                        </code>
+                    </div>
+                )}
+
+                {/* Validation errors */}
+                {Object.keys(fieldErrors).length > 0 && (
+                    <div style={{
+                        background: 'rgba(239,68,68,0.15)', borderRadius: '6px', padding: '8px 12px',
+                        marginBottom: '10px', fontSize: '0.8rem', color: '#fca5a5',
+                    }}>
+                        {Object.entries(fieldErrors).map(([name, range]) => (
+                            <div key={name}>⚠️ {name}: {lang === 'ko' ? `유효 범위 ${range}` : `valid range: ${range}`}</div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Next execution times */}
+                {showNextRuns && (() => {
+                    const nextRuns = getNextExecutions(cronExpression, 5);
+                    if (nextRuns.length === 0) return null;
+                    return (
+                        <div style={{
+                            background: isDark ? '#0f172a' : '#e2e8f0', borderRadius: '8px', padding: '12px 16px',
+                            marginBottom: '12px', textAlign: 'left'
+                        }}>
+                            <div style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                marginBottom: '8px'
+                            }}>
+                                <span style={{ color: isDark ? '#94a3b8' : '#4b5563', fontSize: '0.8rem', fontWeight: 600 }}>
+                                    {t('nextRuns')} ({timezone})
+                                </span>
+                                <button
+                                    onClick={() => setShowNextRuns(false)}
+                                    style={{ background: 'none', border: 'none', color: isDark ? '#475569' : '#9ca3af', cursor: 'pointer', fontSize: '0.8rem' }}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            {nextRuns.map((d, i) => (
+                                <div key={i} style={{
+                                    color: isDark ? '#e2e8f0' : '#1f2937', fontSize: '0.85rem',
+                                    fontFamily: "'Consolas', monospace",
+                                    padding: '3px 0',
+                                    borderBottom: i < nextRuns.length - 1 ? `1px solid ${isDark ? '#1e293b' : '#cbd5e1'}` : 'none'
+                                }}>
+                                    {d.toLocaleString(undefined, { timeZone: timezone })}
+                                </div>
+                            ))}
+                        </div>
+                    );
+                })()}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                        onClick={handleCopy}
+                        style={{
+                            flex: 1,
+                            padding: '10px 8px',
+                            background: copied ? '#22c55e' : '#4A90D9',
+                            color: 'white', border: 'none', borderRadius: '8px',
+                            fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        {copied ? t('copied') : t('copyBtn')}
+                    </button>
+                    <ShareButton
+                        shareText={getShareText()}
+                        disabled={!cronExpression}
+                        style={{
+                            flex: 1.4,
+                            padding: '10px 8px', background: '#6366f1',
+                            color: 'white', border: 'none', borderRadius: '8px',
+                            fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+                            whiteSpace: 'nowrap'
+                        }}
+                    />
+                    <button
+                        onClick={handleReset}
+                        style={{
+                            flex: 1,
+                            padding: '10px 8px', background: '#475569',
+                            color: 'white', border: 'none', borderRadius: '8px',
+                            fontSize: '0.9rem', cursor: 'pointer',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        {t('resetBtn')}
+                    </button>
                 </div>
             </div>
 

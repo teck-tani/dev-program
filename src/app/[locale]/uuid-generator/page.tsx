@@ -78,7 +78,7 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "한 번에 여러 UUID를 생성할 수 있나요?",
-            answer: "네, 이 도구에서는 한 번에 최대 100개까지 UUID를 생성할 수 있습니다. 생성 개수를 설정하고 생성 버튼을 누르면 됩니다. 대문자/소문자, 하이픈 포함 여부도 선택할 수 있습니다."
+            answer: "네, 이 도구에서는 한 번에 최대 1,000개까지 UUID를 생성할 수 있습니다. 생성 개수를 설정하고 생성 버튼을 누르면 됩니다. 대문자/소문자, 하이픈 포함 여부도 선택할 수 있습니다."
         }
     ] : [
         {
@@ -99,7 +99,7 @@ function generateFaqSchema(locale: string) {
         },
         {
             question: "Can I generate multiple UUIDs at once?",
-            answer: "Yes, this tool allows you to generate up to 100 UUIDs at once. Set the desired count and click the generate button. You can also toggle uppercase/lowercase and hyphen inclusion."
+            answer: "Yes, this tool allows you to generate up to 1,000 UUIDs at once. Set the desired count and click the generate button. You can also toggle uppercase/lowercase and hyphen inclusion."
         }
     ];
 
@@ -131,7 +131,7 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "생성 옵션 설정",
-                "text": "생성할 UUID 개수(1~100개), 대소문자, 하이픈 포함 여부를 설정합니다."
+                "text": "생성할 UUID 개수(1~1,000개), 대소문자, 하이픈 포함 여부를 설정합니다."
             },
             {
                 "@type": "HowToStep",
@@ -152,7 +152,7 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "Set Options",
-                "text": "Configure the number of UUIDs to generate (1-100), case format, and hyphen inclusion."
+                "text": "Configure the number of UUIDs to generate (1-1,000), case format, and hyphen inclusion."
             },
             {
                 "@type": "HowToStep",
@@ -179,10 +179,10 @@ function generateWebAppSchema(locale: string) {
     return {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": isKo ? "UUID 생성기" : "UUID Generator",
+        "name": isKo ? "UUID 생성기 / GUID 생성기" : "UUID Generator / GUID Generator",
         "description": isKo
-            ? "UUID v4를 빠르게 생성하는 무료 온라인 도구. 대량 생성, 대소문자 변환, 하이픈 옵션을 지원합니다."
-            : "Free online tool to quickly generate UUID v4. Supports bulk generation, case conversion, and hyphen options.",
+            ? "UUID v1·v3·v4·v5·v7을 무료로 생성하는 온라인 도구. 최대 1,000개 대량 생성, UUID 유효성 검사, GUID 생성 지원."
+            : "Free online tool to generate UUID v1, v3, v4, v5, v7. Bulk generation up to 1,000, UUID validator, GUID generator.",
         "url": `${baseUrl}/${locale}/uuid-generator`,
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
@@ -193,20 +193,28 @@ function generateWebAppSchema(locale: string) {
         },
         "featureList": isKo
             ? [
-                "UUID v4 생성",
-                "한 번에 최대 100개 대량 생성",
+                "UUID v1·v3·v4·v5·v7 생성",
+                "GUID 생성",
+                "한 번에 최대 1,000개 대량 생성",
+                "UUID 유효성 검사(버전·변형·타임스탬프 파싱)",
                 "대문자/소문자 변환",
                 "하이픈 포함/제거",
                 "개별 복사 및 전체 복사",
-                "생성 히스토리"
+                "생성 히스토리",
+                "NIL UUID / MAX UUID",
+                ".txt 파일 다운로드"
             ]
             : [
-                "UUID v4 generation",
-                "Bulk generation up to 100 at once",
+                "UUID v1·v3·v4·v5·v7 generation",
+                "GUID generation",
+                "Bulk generation up to 1,000 at once",
+                "UUID validator (version, variant, timestamp parsing)",
                 "Uppercase/lowercase conversion",
                 "Hyphen inclusion/removal",
                 "Individual and bulk copy",
-                "Generation history"
+                "Generation history",
+                "NIL UUID / MAX UUID",
+                ".txt file download"
             ],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"

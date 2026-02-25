@@ -230,8 +230,7 @@ function jsonToYaml(data: unknown, indent: number = 0): string {
                 const objLines = val.split('\n');
                 lines.push(pad + '- ' + objLines[0].trimStart());
                 for (let i = 1; i < objLines.length; i++) {
-                    lines.push(pad + '  ' + objLines[i].trimStart().padStart(objLines[i].trimStart().length));
-                    // Re-indent: each nested line gets extra 2 spaces
+                    lines.push(pad + '  ' + objLines[i].trimStart());
                 }
             } else {
                 lines.push(pad + '- ' + val);
@@ -482,13 +481,14 @@ function highlightTypeScript(ts: string, isDark: boolean): string {
 // ============================================================
 
 function JsonTreeNode({
-    keyName, value, depth, expandAll, isDark,
+    keyName, value, depth, expandAll, isDark, itemLabel,
 }: {
     keyName: string | number | null;
     value: unknown;
     depth: number;
     expandAll: boolean | null;
     isDark: boolean;
+    itemLabel: string;
 }) {
     const [expanded, setExpanded] = useState(depth < 2);
     const c = isDark ? darkColors : lightColors;
@@ -543,7 +543,7 @@ function JsonTreeNode({
                 <span style={{ color: c.bracket }}>{bracket[0]}</span>
                 {!actualExpanded && (
                     <span style={{ color: isDark ? '#475569' : '#9ca3af', fontSize: '0.8rem' }}>
-                        {' '}{count} {count === 1 ? 'item' : 'items'}{' '}
+                        {' '}{count} {itemLabel}{' '}
                     </span>
                 )}
                 {!actualExpanded && <span style={{ color: c.bracket }}>{bracket[1]}</span>}
@@ -551,7 +551,7 @@ function JsonTreeNode({
             {actualExpanded && (
                 <>
                     {entries.map(([k, v], idx) => (
-                        <JsonTreeNode key={`${k}-${idx}`} keyName={k} value={v} depth={depth + 1} expandAll={expandAll} isDark={isDark} />
+                        <JsonTreeNode key={`${k}-${idx}`} keyName={k} value={v} depth={depth + 1} expandAll={expandAll} isDark={isDark} itemLabel={itemLabel} />
                     ))}
                     <div style={{ paddingLeft: '16px', lineHeight: '1.6' }}>
                         <span style={{ color: c.bracket }}>{bracket[1]}</span>
@@ -599,14 +599,17 @@ export default function JsonFormatterClient() {
 
     // File upload handler
     const handleFileUpload = useCallback((file: File) => {
-        if (!file.name.endsWith('.json') && !file.type.includes('json')) return;
+        if (!file.name.endsWith('.json') && !file.type.includes('json')) {
+            setError(t('error.fileType'));
+            return;
+        }
         const reader = new FileReader();
         reader.onload = (e) => {
             const text = e.target?.result as string;
             if (text) setInput(text);
         };
         reader.readAsText(file);
-    }, []);
+    }, [t]);
 
     const handleDrop = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -716,6 +719,25 @@ export default function JsonFormatterClient() {
         setErrorDetail(null);
         setRepairMsg(null);
     }, []);
+
+    // Paste auto-format handler
+    const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+        const text = e.clipboardData.getData('text');
+        if (!text.trim()) return;
+        try {
+            let parsed = JSON.parse(text.trim());
+            if (sortKeys) parsed = sortKeysRecursive(parsed);
+            e.preventDefault();
+            const formatted = JSON.stringify(parsed, null, indentSize);
+            setInput(formatted);
+            setOutput(formatted);
+            setParsedData(parsed);
+            setStats({ lines: formatted.split('\n').length, chars: formatted.length, size: formatBytes(new Blob([formatted]).size) });
+            clearState();
+        } catch {
+            // 유효하지 않은 JSON이면 기본 붙여넣기 동작 허용
+        }
+    }, [indentSize, sortKeys, clearState]);
 
     // ---- Action Handlers ----
     const formatJson = useCallback(() => {
@@ -977,7 +999,7 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '1.1rem', fontWeight: 600, color: '#3b82f6',
                         }}>
-                            📂 Drop .json file here
+                            📂 {t('input.dropHere')}
                         </div>
                     )}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
@@ -1004,6 +1026,7 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
                         }}
                         onFocus={(e) => { if (!error) e.target.style.borderColor = '#3b82f6'; }}
                         onBlur={(e) => { if (!error) e.target.style.borderColor = isDark ? '#334155' : '#e5e7eb'; }}
+                        onPaste={handlePaste}
                         spellCheck={false}
                     />
 
@@ -1137,7 +1160,7 @@ ${inLen.toLocaleString()}${t('stats.chars')} → ${outLen.toLocaleString()}${t('
                     {viewMode === 'tree' && (
                         hasValidOutput && parsedData !== null ? (
                             <div style={{ ...outputPreStyle, whiteSpace: 'normal', wordBreak: 'normal' }}>
-                                <JsonTreeNode keyName={null} value={parsedData} depth={0} expandAll={expandAll} isDark={isDark} />
+                                <JsonTreeNode keyName={null} value={parsedData} depth={0} expandAll={expandAll} isDark={isDark} itemLabel={t('tree.items')} />
                             </div>
                         ) : (
                             <div style={{

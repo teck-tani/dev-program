@@ -351,7 +351,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                 </div>
             )}
 
-            {encodeType === 'html' && (
+            {(encodeType === 'html' || (encodeType === 'url' && batchMode)) && (
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
                     <button onClick={fillExample} style={{
                         padding: "8px 16px", background: "#e0e7ff", color: "#3730a3",
@@ -448,12 +448,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                                 <FaCopy size={11} />
                                 {copied ? t('copied') : t('copy')}
                             </button>
-                            <ShareButton shareText={getShareText()} disabled={!output} style={{
-                                display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px",
-                                background: isDark ? "#1e3a5f" : "#e0e7ff", color: isDark ? "#93c5fd" : "#3730a3",
-                                border: "none", borderRadius: "6px", fontSize: "0.8rem", fontWeight: 600,
-                                cursor: output ? "pointer" : "not-allowed", whiteSpace: "nowrap",
-                            }} iconSize={12} />
+                            <ShareButton shareText={getShareText()} disabled={!output} />
                         </div>
                     </div>
                 </div>

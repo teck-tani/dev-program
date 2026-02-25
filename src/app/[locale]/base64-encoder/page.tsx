@@ -63,11 +63,7 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
 function generateFaqSchema(locale: string) {
     const faqData = locale === 'ko' ? [
         {
-            question: "Base64 인코딩이란 무엇인가요?",
-            answer: "Base64는 바이너리 데이터를 ASCII 문자열로 변환하는 인코딩 방식입니다. 이메일 첨부파일, 웹 API, 데이터 전송 등에서 바이너리 데이터를 안전하게 전송하기 위해 사용됩니다."
-        },
-        {
-            question: "Base64는 암호화인가요?",
+            question: "Base64 인코딩은 암호화인가요?",
             answer: "아니요, Base64는 암호화가 아닌 인코딩입니다. 누구나 쉽게 디코딩할 수 있으므로 민감한 데이터 보호에는 적합하지 않습니다. 데이터 전송 형식 변환 목적으로만 사용해야 합니다."
         },
         {
@@ -75,21 +71,25 @@ function generateFaqSchema(locale: string) {
             answer: "URL-Safe Base64는 표준 Base64에서 URL에 안전하지 않은 문자(+, /, =)를 안전한 문자(-, _)로 대체한 변형입니다. URL 파라미터나 파일명에 Base64 문자열을 사용할 때 유용합니다."
         },
         {
+            question: "Base64로 인코딩하면 크기가 왜 커지나요?",
+            answer: "Base64는 6비트를 8비트 ASCII 문자로 변환하므로, 인코딩 후 데이터 크기가 약 33% 증가합니다. (3바이트 → 4문자)"
+        },
+        {
             question: "URL-Safe Base64와 표준 Base64의 차이점은 무엇인가요?",
             answer: "표준 Base64는 +, /, = 문자를 사용하지만, 이 문자들은 URL에서 특별한 의미를 가집니다. URL-Safe Base64는 +를 -로, /를 _로 대체하고, 패딩(=)을 제거하여 URL이나 파일명에 안전하게 사용할 수 있도록 합니다."
         }
     ] : [
         {
-            question: "What is Base64 encoding?",
-            answer: "Base64 is an encoding scheme that converts binary data into ASCII string format. It's used to safely transmit binary data in email attachments, web APIs, and data transfer."
-        },
-        {
-            question: "Is Base64 encryption?",
+            question: "Is Base64 encoding encryption?",
             answer: "No, Base64 is encoding, not encryption. Anyone can easily decode it, so it's not suitable for protecting sensitive data. It should only be used for data format conversion purposes."
         },
         {
             question: "What is URL-Safe Base64?",
             answer: "URL-Safe Base64 is a variant that replaces unsafe URL characters (+, /, =) with safe characters (-, _). It's useful when using Base64 strings in URL parameters or filenames."
+        },
+        {
+            question: "Why does Base64 encoding increase size?",
+            answer: "Base64 converts 6 bits into 8-bit ASCII characters, so the encoded data size increases by approximately 33%. (3 bytes → 4 characters)"
         },
         {
             question: "What is the difference between URL-Safe and standard Base64?",
@@ -118,61 +118,61 @@ function generateHowToSchema(locale: string) {
     return {
         "@context": "https://schema.org",
         "@type": "HowTo",
-        "name": isKo ? "Base64 인코딩/디코딩 방법" : "How to Encode/Decode Base64",
+        "name": isKo ? "Base64 온라인 인코딩·디코딩 사용법" : "How to Use the Online Base64 Encoder & Decoder",
         "description": isKo
-            ? "텍스트나 파일을 Base64로 인코딩하거나 디코딩하는 방법"
-            : "How to encode or decode text and files to/from Base64",
+            ? "무료 온라인 Base64 변환기를 사용하여 텍스트·이미지·파일을 인코딩하거나 디코딩하는 방법. URL-Safe 모드 설정 포함."
+            : "How to encode or decode text, images, and files using the free online Base64 converter. Includes URL-Safe mode setup.",
         "step": isKo ? [
             {
                 "@type": "HowToStep",
-                "name": "모드 선택",
-                "text": "인코딩 또는 디코딩 모드를 선택합니다."
+                "name": "인코딩/디코딩 모드 선택",
+                "text": "상단에서 인코딩(텍스트→Base64) 또는 디코딩(Base64→텍스트) 모드를 선택합니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "텍스트 입력",
-                "text": "변환할 텍스트를 입력창에 붙여넣거나 파일을 업로드합니다."
+                "name": "텍스트 입력 또는 파일 업로드",
+                "text": "변환할 텍스트를 입력창에 붙여넣거나, 파일 업로드 버튼 또는 드래그 앤 드롭으로 이미지·파일을 추가합니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "옵션 설정",
-                "text": "필요한 경우 URL-Safe 옵션을 활성화합니다."
+                "name": "URL-Safe 옵션 설정",
+                "text": "URL 파라미터나 파일명에 사용할 경우 URL-Safe 모드를 활성화합니다. +, /, = 문자가 -, _로 대체됩니다."
             },
             {
                 "@type": "HowToStep",
                 "name": "변환 실행",
-                "text": "변환 버튼을 클릭하여 결과를 확인합니다."
+                "text": "실시간 자동 변환이 활성화된 경우 입력 즉시 결과가 표시되며, 수동 모드라면 변환 버튼을 클릭합니다."
             },
             {
                 "@type": "HowToStep",
-                "name": "결과 복사",
-                "text": "복사 버튼을 클릭하여 결과를 클립보드에 복사합니다."
+                "name": "결과 복사 또는 다운로드",
+                "text": "복사 버튼으로 결과를 클립보드에 복사하거나, 다운로드 버튼으로 파일로 저장합니다."
             }
         ] : [
             {
                 "@type": "HowToStep",
-                "name": "Select Mode",
-                "text": "Choose encode or decode mode."
+                "name": "Select Encode or Decode Mode",
+                "text": "Choose encode (text to Base64) or decode (Base64 to text) mode at the top."
             },
             {
                 "@type": "HowToStep",
-                "name": "Enter Text",
-                "text": "Paste text to convert or upload a file."
+                "name": "Enter Text or Upload File",
+                "text": "Paste text into the input box, or upload images and files via the upload button or drag and drop."
             },
             {
                 "@type": "HowToStep",
-                "name": "Set Options",
-                "text": "Enable URL-Safe option if needed."
+                "name": "Configure URL-Safe Option",
+                "text": "Enable URL-Safe mode if you need to use the result in URL parameters or filenames. This replaces +, /, = with -, _."
             },
             {
                 "@type": "HowToStep",
                 "name": "Convert",
-                "text": "Click the convert button to see the result."
+                "text": "With auto-convert enabled, the result appears instantly as you type. Otherwise, click the convert button."
             },
             {
                 "@type": "HowToStep",
-                "name": "Copy Result",
-                "text": "Click copy to copy the result to clipboard."
+                "name": "Copy or Download Result",
+                "text": "Click copy to save the result to your clipboard, or download it as a file."
             }
         ]
     };
@@ -185,10 +185,10 @@ function generateWebAppSchema(locale: string) {
     return {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": isKo ? "Base64 인코더/디코더" : "Base64 Encoder/Decoder",
+        "name": isKo ? "Base64 인코더 디코더 온라인 변환기" : "Base64 Encoder Decoder Online Converter",
         "description": isKo
-            ? "텍스트와 파일을 Base64로 인코딩하거나 디코딩하는 무료 온라인 도구. URL-Safe 옵션 지원."
-            : "Free online tool to encode or decode text and files to/from Base64. URL-Safe option supported.",
+            ? "텍스트·이미지·파일을 Base64로 인코딩하거나 디코딩하는 무료 온라인 변환기. URL-Safe 모드, 드래그&드롭, 변환 히스토리, UTF-8·한글 완벽 지원. 광고 없음."
+            : "Free online Base64 encoder and decoder. Encode or decode text, images, and files. Supports URL-Safe mode, drag & drop, conversion history, and full UTF-8 support. No ads.",
         "url": `${baseUrl}/${locale}/base64-encoder`,
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
@@ -199,20 +199,26 @@ function generateWebAppSchema(locale: string) {
         },
         "featureList": isKo
             ? [
-                "텍스트 Base64 인코딩",
-                "Base64 디코딩",
-                "URL-Safe Base64 지원",
-                "파일 업로드 지원",
-                "UTF-8 완벽 지원",
-                "실시간 변환"
+                "텍스트 Base64 인코딩/디코딩",
+                "이미지·파일 Base64 변환",
+                "URL-Safe Base64 지원 (-, _ 문자)",
+                "드래그 앤 드롭 파일 업로드",
+                "UTF-8·한글 완벽 지원",
+                "실시간 자동 변환",
+                "변환 히스토리 (최근 10개)",
+                "이미지 Data URI 미리보기",
+                "결과 복사 및 파일 다운로드"
             ]
             : [
-                "Text Base64 encoding",
-                "Base64 decoding",
-                "URL-Safe Base64 support",
-                "File upload support",
-                "Full UTF-8 support",
-                "Real-time conversion"
+                "Text Base64 encode and decode",
+                "Image and file Base64 conversion",
+                "URL-Safe Base64 support (-, _ characters)",
+                "Drag and drop file upload",
+                "Full UTF-8 and Unicode support",
+                "Real-time auto conversion",
+                "Conversion history (last 10 entries)",
+                "Image Data URI preview",
+                "Copy result and file download"
             ],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"

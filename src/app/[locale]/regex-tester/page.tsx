@@ -79,8 +79,8 @@ function generateFaqSchema(locale: string) {
             answer: "네, 완전히 무료이며 회원가입이나 설치 없이 바로 사용할 수 있습니다. 입력한 데이터는 서버로 전송되지 않습니다."
         },
         {
-            question: "어떤 정규식 문법을 지원하나요?",
-            answer: "이 도구는 JavaScript(ECMAScript)의 정규식 엔진을 사용합니다. 대부분의 표준 정규식 문법(문자 클래스, 수량자, 앵커, 룩어헤드/룩비하인드 등)을 지원합니다."
+            question: "한글 정규식도 지원하나요?",
+            answer: "네, 유니코드 기반의 한글 정규식을 완벽히 지원합니다. [가-힣]으로 한글 전체를, [ㄱ-ㅎ]으로 자음, [ㅏ-ㅣ]로 모음을 매칭할 수 있습니다. 이모지·보조 문자 처리에는 u(유니코드) 플래그를 활성화하세요. '한글 문자' 프리셋으로 빠르게 적용할 수 있습니다."
         }
     ] : [
         {
@@ -100,8 +100,8 @@ function generateFaqSchema(locale: string) {
             answer: "Yes, it is completely free with no registration or installation required. Your input data is never sent to any server."
         },
         {
-            question: "What regex syntax is supported?",
-            answer: "This tool uses JavaScript's (ECMAScript) regex engine. It supports most standard regex syntax including character classes, quantifiers, anchors, lookahead/lookbehind, and more."
+            question: "Does this tool support Korean (Hangul) regex patterns?",
+            answer: "Yes, full Unicode and Korean regex is supported. Use [가-힣] to match Korean characters, [ㄱ-ㅎ] for consonants, or [ㅏ-ㅣ] for vowels. Enable the u (unicode) flag when working with emoji or supplementary characters. A 'Korean Characters' preset is built in for quick access."
         }
     ];
 

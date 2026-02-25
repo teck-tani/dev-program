@@ -261,7 +261,7 @@ export default function UuidGeneratorClient() {
                     newUuids.push(formatUuid(raw, uppercase, withHyphens));
                 }
                 setUuids(newUuids);
-                setHistory((prev) => [...newUuids, ...prev].slice(0, 100));
+                setHistory((prev) => [...newUuids, ...prev].slice(0, 1000));
                 setCopiedIndex(null);
             } finally {
                 setGenerating(false);
@@ -273,7 +273,7 @@ export default function UuidGeneratorClient() {
                 newUuids.push(formatUuid(raw, uppercase, withHyphens));
             }
             setUuids(newUuids);
-            setHistory((prev) => [...newUuids, ...prev].slice(0, 100));
+            setHistory((prev) => [...newUuids, ...prev].slice(0, 1000));
             setCopiedIndex(null);
         }
     }, [count, uppercase, withHyphens, version, generateByVersion, isNameBased, nameInput, resolveNamespace, namespace]);
@@ -422,6 +422,19 @@ export default function UuidGeneratorClient() {
                             </div>
                         </div>
 
+                        {/* v3 non-standard notice */}
+                        {version === 'v3' && (
+                            <div style={{
+                                marginBottom: "16px", padding: "10px 14px", borderRadius: "10px",
+                                background: isDark ? "#1c1917" : "#fffbeb",
+                                border: isDark ? "1px solid #78350f" : "1px solid #fcd34d",
+                                color: isDark ? "#fbbf24" : "#92400e",
+                                fontSize: "0.8rem", lineHeight: 1.5
+                            }}>
+                                {t("version.v3Notice")}
+                            </div>
+                        )}
+
                         {/* v3/v5 Namespace & Name Input */}
                         {isNameBased && (
                             <div style={{
@@ -506,12 +519,12 @@ export default function UuidGeneratorClient() {
                                     {count}
                                 </span>
                             </div>
-                            <input type="range" min={1} max={100} value={count}
+                            <input type="range" min={1} max={1000} value={count}
                                 onChange={(e) => setCount(Number(e.target.value))}
                                 style={{ width: "100%", height: "6px", cursor: "pointer", accentColor: "#2563eb" }}
                             />
                             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: isDark ? "#64748b" : "#999", marginTop: "4px" }}>
-                                <span>1</span><span>100</span>
+                                <span>1</span><span>1,000</span>
                             </div>
                         </div>
 

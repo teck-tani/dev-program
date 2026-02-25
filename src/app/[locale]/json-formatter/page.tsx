@@ -68,13 +68,13 @@ function generateHowToSchema(locale: string) {
             ? "JSON 데이터를 보기 좋게 정리하고 검증하는 방법"
             : "How to format and validate JSON data",
         "step": isKo ? [
-            { "@type": "HowToStep", "name": "JSON 붙여넣기", "text": "포맷팅하려는 JSON 데이터를 입력창에 붙여넣으세요." },
-            { "@type": "HowToStep", "name": "자동 복구 또는 정리", "text": "깨진 JSON은 '자동 복구' 버튼으로 수정하고, '정리' 버튼으로 포맷팅합니다." },
-            { "@type": "HowToStep", "name": "변환 뷰 확인", "text": "텍스트, 트리, YAML, CSV, TypeScript 등 다양한 뷰 모드로 결과를 확인하세요." },
+            { "@type": "HowToStep", "name": "JSON 붙여넣기 (자동 포맷팅)", "text": "유효한 JSON을 붙여넣으면 버튼 없이 자동으로 예쁘게 정리됩니다." },
+            { "@type": "HowToStep", "name": "자동복구 또는 정리 클릭", "text": "깨진 JSON은 '자동 복구' 버튼으로 오류를 수정하고, '정리(Beautify)'로 들여쓰기를 적용하세요." },
+            { "@type": "HowToStep", "name": "뷰 모드 전환", "text": "텍스트, 트리, YAML, CSV, TypeScript 등 다양한 뷰 모드로 결과를 확인하세요." },
             { "@type": "HowToStep", "name": "결과 복사/다운로드", "text": "복사 또는 다운로드 버튼으로 원하는 형식의 결과를 저장하세요." }
         ] : [
-            { "@type": "HowToStep", "name": "Paste JSON", "text": "Paste the JSON data you want to format into the input field." },
-            { "@type": "HowToStep", "name": "Auto-Repair or Format", "text": "Use 'Auto-Repair' to fix broken JSON, then click 'Format' to beautify it." },
+            { "@type": "HowToStep", "name": "Paste JSON (Auto-Formats!)", "text": "Paste valid JSON and it auto-formats instantly — no button needed!" },
+            { "@type": "HowToStep", "name": "Auto-Repair or Format", "text": "Use 'Auto-Repair' to fix broken JSON errors, or click 'Format (Beautify)' to apply indentation manually." },
             { "@type": "HowToStep", "name": "Switch View Modes", "text": "Explore results in Text, Tree, YAML, CSV, or TypeScript view modes." },
             { "@type": "HowToStep", "name": "Copy or Download", "text": "Copy or download the result in your preferred format." }
         ]
@@ -110,6 +110,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "Escape/Unescape는 무엇인가요?",
             answer: "Escape는 JSON 문자열을 다른 코드에 삽입할 수 있도록 이스케이프 처리합니다. Unescape는 이스케이프된 문자열을 원래 JSON으로 복원합니다."
+        },
+        {
+            question: "JSON 붙여넣기 시 자동으로 정리되나요?",
+            answer: "네! 유효한 JSON을 붙여넣으면 자동으로 포맷팅됩니다. 별도로 버튼을 누를 필요 없이 깔끔하게 정리된 JSON을 바로 확인할 수 있습니다."
+        },
+        {
+            question: "JSON을 예쁘게 보는 방법은?",
+            answer: "JSON 데이터를 입력창에 붙여넣으면 자동 포맷팅됩니다. 트리 뷰 모드로 전환하면 계층 구조를 더욱 시각적으로 탐색할 수 있으며, 들여쓰기 2/4칸 또는 탭을 선택할 수 있습니다."
         }
     ] : [
         {
@@ -139,6 +147,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "What is Escape/Unescape?",
             answer: "Escape converts a JSON string for embedding in code. Unescape restores an escaped string back to its original JSON form."
+        },
+        {
+            question: "Does JSON auto-format when I paste it?",
+            answer: "Yes! If you paste valid JSON, it automatically formats it for you — no need to click any button. The formatted result appears instantly in the output panel."
+        },
+        {
+            question: "How do I make JSON look pretty and readable?",
+            answer: "Paste your JSON into the input field and it will auto-format instantly. You can also click the 'Format' button to apply indentation. Switch to Tree view for a visual, collapsible hierarchy of your data."
         }
     ];
 
@@ -160,15 +176,15 @@ function generateWebAppSchema(locale: string) {
         "@type": "WebApplication",
         "name": isKo ? "JSON 포맷터" : "JSON Formatter",
         "description": isKo
-            ? "JSON 포맷팅, 자동 복구, YAML/CSV/TypeScript 변환까지 지원하는 무료 온라인 도구"
-            : "Free online tool for JSON formatting, auto-repair, and conversion to YAML, CSV, and TypeScript",
+            ? "붙여넣기만 해도 자동 포맷팅! JSON 정리·검증·자동복구, YAML/CSV/TypeScript 변환까지 지원하는 무료 온라인 JSON 도구"
+            : "Paste and auto-format instantly! Free online JSON formatter with auto-repair, YAML/CSV/TypeScript conversion, tree view, and JSONPath query",
         "url": `${baseUrl}/${locale}/json-formatter`,
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
         "featureList": isKo
-            ? ["JSON 포맷팅", "문법 검증", "JSON 자동 복구", "JSON→YAML 변환", "JSON→CSV 변환", "TypeScript 인터페이스 생성", "JSON 이스케이프/언이스케이프", "JSONPath 쿼리", "트리 뷰", "키 정렬"]
-            : ["JSON formatting", "Syntax validation", "JSON auto-repair", "JSON to YAML conversion", "JSON to CSV conversion", "TypeScript interface generation", "JSON escape/unescape", "JSONPath query", "Tree view", "Key sorting"],
+            ? ["JSON 자동 포맷팅 (붙여넣기)", "JSON 포맷팅 (Beautify)", "문법 검증", "JSON 압축 (Minify)", "JSON 자동 복구", "JSON→YAML 변환", "JSON→CSV 변환", "TypeScript 인터페이스 생성", "JSON 이스케이프/언이스케이프", "JSONPath 쿼리", "트리 뷰", "키 정렬", "에러 위치 표시", "파일 업로드/다운로드"]
+            : ["Auto-format on paste", "JSON formatting (Beautify)", "Syntax validation", "JSON minify", "JSON auto-repair", "JSON to YAML conversion", "JSON to CSV conversion", "TypeScript interface generation", "JSON escape/unescape", "JSONPath query", "Tree view", "Key sorting", "Error location display", "File upload/download"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "2.0"
     };
@@ -238,7 +254,7 @@ export default async function JsonFormatterPage({ params }: { params: Promise<{ 
                     {/* 4. FAQ */}
                     <section className="seo-section">
                         <h2 className="seo-section-title">{t('faq.title')}</h2>
-                        {(['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'] as const).map((qKey, i) => (
+                        {(['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9'] as const).map((qKey, i) => (
                             <details key={qKey} className="seo-faq-item">
                                 <summary>{t(`faq.${qKey}`)}</summary>
                                 <p>{t(`faq.a${i + 1}`)}</p>

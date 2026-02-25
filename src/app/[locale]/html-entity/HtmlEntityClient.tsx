@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import { FaCopy, FaCheck, FaExchangeAlt, FaTrash } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
@@ -74,6 +74,7 @@ function decodeHtmlEntities(text: string): string {
 
 export default function HtmlEntityClient() {
     const t = useTranslations('HtmlEntity');
+    const locale = useLocale();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
 
@@ -88,7 +89,7 @@ export default function HtmlEntityClient() {
     const [copiedEntity, setCopiedEntity] = useState<string | null>(null);
     const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const isKo = t('encode') === '인코딩';
+    const isKo = locale === 'ko';
 
     const convert = useCallback((text: string, currentMode: 'encode' | 'decode', format: EncodeFormat) => {
         if (!text) { setOutput(""); setError(""); return; }
@@ -189,6 +190,9 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
 
     const formatBtnStyle = (active: boolean) => ({
         padding: "6px 12px",
+        minHeight: "36px",
+        display: "flex",
+        alignItems: "center",
         border: "1px solid",
         borderColor: active ? "#2563eb" : isDark ? "#334155" : "#ddd",
         borderRadius: "6px",
@@ -200,7 +204,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
     });
 
     return (
-        <div className="container" style={{ maxWidth: "900px", padding: "20px" }}>
+        <div className="container" style={{ maxWidth: "1100px", padding: "20px" }}>
             {/* Mode Toggle */}
             <div style={{
                 display: "flex", justifyContent: "center", gap: "10px",
@@ -254,14 +258,14 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
             {/* Main Content */}
             <div style={{
                 display: "grid", gridTemplateColumns: "1fr auto 1fr",
-                gap: "15px", alignItems: "stretch", marginBottom: "20px"
+                gap: "20px", alignItems: "stretch", marginBottom: "24px"
             }} className="converter-grid">
                 {/* Input */}
                 <div style={{
-                    background: cardBg, borderRadius: "12px", boxShadow: cardShadow,
-                    padding: "20px", display: "flex", flexDirection: "column"
+                    background: cardBg, borderRadius: "14px", boxShadow: cardShadow,
+                    padding: "24px", display: "flex", flexDirection: "column"
                 }}>
-                    <label style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333", fontSize: "0.95rem", marginBottom: "10px" }}>
+                    <label style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333", fontSize: "0.95rem", marginBottom: "12px" }}>
                         {t('inputLabel')}
                     </label>
                     <textarea
@@ -269,12 +273,12 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                         onChange={(e) => handleInputChange(e.target.value)}
                         placeholder={mode === 'encode' ? t('inputPlaceholderEncode') : t('inputPlaceholderDecode')}
                         style={{
-                            flex: 1, minHeight: "200px", padding: "15px",
+                            flex: 1, minHeight: "280px", padding: "16px",
                             border: `1px solid ${isDark ? "#334155" : "#e0e0e0"}`,
-                            borderRadius: "8px", fontSize: "0.95rem", fontFamily: "monospace",
+                            borderRadius: "10px", fontSize: "1rem", fontFamily: "monospace",
                             resize: "vertical", outline: "none",
                             color: isDark ? "#e2e8f0" : "#1f2937",
-                            background: isDark ? "#0f172a" : "#fff", lineHeight: "1.6"
+                            background: isDark ? "#0f172a" : "#fff", lineHeight: "1.7"
                         }}
                     />
                     <div style={{ marginTop: "10px", fontSize: "0.85rem", color: isDark ? "#64748b" : "#888" }}>
@@ -305,8 +309,8 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
 
                 {/* Output */}
                 <div style={{
-                    background: cardBg, borderRadius: "12px", boxShadow: cardShadow,
-                    padding: "20px", display: "flex", flexDirection: "column"
+                    background: cardBg, borderRadius: "14px", boxShadow: cardShadow,
+                    padding: "24px", display: "flex", flexDirection: "column"
                 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                         <label style={{ fontWeight: "600", color: isDark ? "#f1f5f9" : "#333", fontSize: "0.95rem" }}>
@@ -317,7 +321,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                                 onClick={() => handleCopy()}
                                 disabled={!output}
                                 style={{
-                                    display: "flex", alignItems: "center", gap: "6px", padding: "6px 14px",
+                                    display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px",
                                     background: copied ? "#22c55e" : (isDark ? "#334155" : "#f0f0f0"),
                                     color: copied ? "white" : (isDark ? "#f1f5f9" : "#333"),
                                     border: "none", borderRadius: "6px",
@@ -328,19 +332,34 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                                 {copied ? <FaCheck size={12} /> : <FaCopy size={12} />}
                                 {copied ? t('copied') : t('copy')}
                             </button>
-                            <ShareButton shareText={getShareText()} disabled={!output} />
+                            <ShareButton
+                                shareText={getShareText()}
+                                disabled={!output}
+                                style={{
+                                    display: "flex", alignItems: "center", gap: "6px",
+                                    padding: "8px 16px",
+                                    background: isDark ? "#334155" : "#f0f0f0",
+                                    color: isDark ? "#f1f5f9" : "#333",
+                                    border: "none", borderRadius: "6px",
+                                    cursor: output ? "pointer" : "not-allowed",
+                                    fontSize: "0.85rem", opacity: output ? 1 : 0.5,
+                                    fontWeight: 500, margin: 0, width: "auto",
+                                    boxShadow: "none",
+                                }}
+                                iconSize={12}
+                            />
                         </div>
                     </div>
                     <textarea
                         value={output}
                         readOnly
                         style={{
-                            flex: 1, minHeight: "200px", padding: "15px",
+                            flex: 1, minHeight: "280px", padding: "16px",
                             border: `1px solid ${isDark ? "#334155" : "#e0e0e0"}`,
-                            borderRadius: "8px", fontSize: "0.95rem", fontFamily: "monospace",
+                            borderRadius: "10px", fontSize: "1rem", fontFamily: "monospace",
                             resize: "vertical", outline: "none",
                             background: isDark ? "#0f172a" : "#fafafa",
-                            color: isDark ? "#e2e8f0" : "#1f2937", lineHeight: "1.6"
+                            color: isDark ? "#e2e8f0" : "#1f2937", lineHeight: "1.7"
                         }}
                     />
                     <div style={{ marginTop: "10px", fontSize: "0.85rem", color: isDark ? "#64748b" : "#888" }}>
@@ -479,7 +498,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                 </div>
 
                 {/* Entity Grid */}
-                <div style={{
+                <div className="entity-grid" style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
                     gap: "8px",
@@ -494,17 +513,25 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                             <div
                                 key={idx}
                                 onClick={() => handleEntityCopy(entity.char, key)}
-                                title={`${isKo ? entity.descKo : entity.descEn}\n${entity.named || `&#${entity.code};`}\nClick to copy`}
+                                className="entity-card"
                                 style={{
                                     background: isCopied ? (isDark ? "rgba(34,197,94,0.2)" : "#ecfdf5") : (isDark ? "#0f172a" : "#f8fafc"),
                                     border: `1px solid ${isCopied ? "#22c55e" : isDark ? "#1e293b" : "#e2e8f0"}`,
                                     borderRadius: "8px",
-                                    padding: "10px 6px",
+                                    padding: "10px 6px 10px",
                                     textAlign: "center",
                                     cursor: "pointer",
                                     transition: "all 0.15s",
+                                    position: "relative",
                                 }}
                             >
+                                <div style={{
+                                    position: "absolute", top: "5px", right: "5px",
+                                    color: isCopied ? "#22c55e" : isDark ? "#475569" : "#cbd5e1",
+                                    lineHeight: 1,
+                                }}>
+                                    {isCopied ? <FaCheck size={9} /> : <FaCopy size={9} />}
+                                </div>
                                 <div style={{
                                     fontSize: "1.4rem",
                                     marginBottom: "4px",
@@ -513,7 +540,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                                     {entity.char === "\u00A0" ? "⎵" : entity.char}
                                 </div>
                                 <div style={{
-                                    fontSize: "0.65rem",
+                                    fontSize: "0.72rem",
                                     fontFamily: "monospace",
                                     color: "#2563eb",
                                     marginBottom: "2px",
@@ -524,7 +551,7 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                                     {entity.named || `&#${entity.code};`}
                                 </div>
                                 <div style={{
-                                    fontSize: "0.6rem",
+                                    fontSize: "0.68rem",
                                     color: isDark ? "#64748b" : "#9ca3af",
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
@@ -548,6 +575,11 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
             </section>
 
             <style jsx>{`
+                .entity-card:hover {
+                    background: ${isDark ? "#1e293b" : "#f1f5f9"} !important;
+                    border-color: ${isDark ? "#334155" : "#cbd5e1"} !important;
+                    transform: translateY(-1px);
+                }
                 @media (max-width: 768px) {
                     .converter-grid {
                         grid-template-columns: 1fr !important;
@@ -556,6 +588,12 @@ ${modeLabel}: ${input.length.toLocaleString()}자 → ${output.length.toLocaleSt
                         flex-direction: row !important;
                         justify-content: center !important;
                         padding: 10px 0 !important;
+                    }
+                    .converter-grid textarea {
+                        min-height: 140px !important;
+                    }
+                    .entity-grid {
+                        max-height: 320px !important;
                     }
                 }
             `}</style>

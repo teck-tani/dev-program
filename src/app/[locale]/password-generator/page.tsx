@@ -81,6 +81,18 @@ function generateFaqSchema(locale: string) {
         {
             question: "비밀번호를 여러 개 한 번에 생성할 수 있나요?",
             answer: "네, 한 번에 최대 10개까지 비밀번호를 생성할 수 있습니다. 생성 갯수를 설정한 후 생성 버튼을 누르면 동일한 옵션(길이, 문자 종류)으로 여러 비밀번호가 동시에 생성됩니다."
+        },
+        {
+            question: "내 비밀번호가 해킹 데이터베이스에 유출됐는지 어떻게 확인하나요?",
+            answer: "비밀번호 생성 후 '유출 확인' 버튼을 클릭하면 HIBP(Have I Been Pwned) 데이터베이스와 대조합니다. k-익명성 기법을 사용하므로 SHA-1 해시의 앞 5자리만 전송되며 비밀번호 원문은 절대 전송되지 않습니다."
+        },
+        {
+            question: "패스프레이즈란 무엇이고, 일반 비밀번호보다 안전한가요?",
+            answer: "패스프레이즈는 '여름-고양이-바다-행복'처럼 여러 단어를 조합한 비밀번호입니다. 기억하기 쉬우면서도 단어 수를 늘려 높은 보안 강도를 얻을 수 있습니다. 한국어와 영어 패스프레이즈를 모두 지원합니다."
+        },
+        {
+            question: "은행이나 카드 비밀번호로 사용할 안전한 숫자 PIN을 만들 수 있나요?",
+            answer: "프리셋에서 'PIN'을 선택하면 숫자만으로 구성된 비밀번호를 빠르게 생성할 수 있습니다. 단, 4자리 PIN은 매우 취약하므로 은행 앱 비밀번호에는 '은행용' 프리셋(12자, 대소문자+숫자)을 권장합니다."
         }
     ] : [
         {
@@ -102,6 +114,18 @@ function generateFaqSchema(locale: string) {
         {
             question: "Can I generate multiple passwords at once?",
             answer: "Yes, you can generate up to 10 passwords at once. Set the desired count and click the generate button to create multiple passwords with the same options (length, character types) simultaneously."
+        },
+        {
+            question: "How do I check if my password has been exposed in a data breach?",
+            answer: "Click the 'Check Breach' button after generating a password to cross-reference it against the HIBP database. Using the k-anonymity technique, only the first 5 characters of the SHA-1 hash are sent — your actual password is never transmitted."
+        },
+        {
+            question: "What is a passphrase and is it more secure than a regular password?",
+            answer: "A passphrase is a password made of multiple words, like 'summer-cat-ocean-happy'. It's easy to remember while being long enough to resist brute-force attacks. Both Korean and English passphrases are supported."
+        },
+        {
+            question: "Can I generate a safe numeric PIN for banking or credit cards?",
+            answer: "Yes, select the 'PIN' preset to quickly generate a number-only password. For bank app passwords that support letters, we recommend the 'Banking' preset (12 characters, uppercase + lowercase + numbers)."
         }
     ];
 
@@ -139,7 +163,7 @@ function generateHowToSchema(locale: string) {
             {
                 "@type": "HowToStep",
                 "name": "문자 옵션 선택",
-                "text": "대문자(A-Z), 소문자(a-z), 숫자(0-9), 특수문자(!@#$%...) 중 포함할 문자 종류를 선택합니다."
+                "text": "대문자(A-Z), 소문자(a-z), 숫자(0-9), 특수문자(!@#$%...) 중 포함할 문자 종류를 선택합니다. 패스프레이즈를 원하면 생성 방식을 '패스프레이즈'로 전환하세요."
             },
             {
                 "@type": "HowToStep",
@@ -150,6 +174,11 @@ function generateHowToSchema(locale: string) {
                 "@type": "HowToStep",
                 "name": "복사 및 사용",
                 "text": "생성된 비밀번호 옆의 복사 버튼을 클릭하여 클립보드에 복사한 후, 원하는 서비스에 붙여넣어 사용합니다."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "유출 여부 확인 (선택)",
+                "text": "'유출 확인' 버튼을 클릭하여 HIBP 데이터베이스에서 해당 비밀번호가 기존 유출 사고에 포함됐는지 즉시 확인합니다."
             }
         ] : [
             {
@@ -159,8 +188,8 @@ function generateHowToSchema(locale: string) {
             },
             {
                 "@type": "HowToStep",
-                "name": "Select Character Options",
-                "text": "Choose which character types to include: uppercase (A-Z), lowercase (a-z), numbers (0-9), and symbols (!@#$%...)."
+                "name": "Select Options",
+                "text": "Choose which character types to include: uppercase (A-Z), lowercase (a-z), numbers (0-9), and symbols. For a passphrase, switch the mode to 'Passphrase'."
             },
             {
                 "@type": "HowToStep",
@@ -171,6 +200,11 @@ function generateHowToSchema(locale: string) {
                 "@type": "HowToStep",
                 "name": "Copy and Use",
                 "text": "Click the copy button next to the generated password to copy it to your clipboard, then paste it into the service you need."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Check for Breaches (Optional)",
+                "text": "Click the 'Check Breach' button to instantly verify whether the generated password has appeared in known data breach databases via HIBP."
             }
         ]
     };
@@ -200,18 +234,24 @@ function generateWebAppSchema(locale: string) {
                 "암호학적으로 안전한 난수 생성 (Web Crypto API)",
                 "비밀번호 길이 8~128자 설정",
                 "대문자/소문자/숫자/특수문자 옵션",
-                "비밀번호 강도 실시간 표시",
+                "비밀번호 강도 실시간 표시 (엔트로피 기반)",
                 "한 번에 최대 10개 생성",
                 "클립보드 복사 기능",
+                "HIBP 유출 비밀번호 검증 (k-익명성 프로토콜)",
+                "한국어·영어 패스프레이즈 생성",
+                "스마트 프리셋 (은행용/WiFi용/PIN/일반)",
                 "세션 내 생성 히스토리"
             ]
             : [
                 "Cryptographically secure random generation (Web Crypto API)",
                 "Password length 8-128 characters",
                 "Uppercase/lowercase/numbers/symbols options",
-                "Real-time password strength indicator",
+                "Real-time password strength indicator (entropy-based)",
                 "Generate up to 10 passwords at once",
                 "Clipboard copy function",
+                "HIBP breach verification (k-anonymity protocol)",
+                "Korean and English passphrase generation",
+                "Smart presets (Banking / WiFi / PIN / General)",
                 "In-session generation history"
             ],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
@@ -228,10 +268,10 @@ export default async function PasswordGeneratorPage(props: { params: Promise<{ l
     const howToSchema = generateHowToSchema(locale);
     const webAppSchema = generateWebAppSchema(locale);
 
-    const featureKeys = ["feat1", "feat2", "feat3", "feat4"] as const;
-    const howtoKeys = ["step1", "step2", "step3", "step4"] as const;
+    const featureKeys = ["feat1", "feat2", "feat3", "feat4", "feat5", "feat6"] as const;
+    const howtoKeys = ["step1", "step2", "step3", "step4", "step5"] as const;
     const usecaseKeys = ["uc1", "uc2", "uc3", "uc4"] as const;
-    const faqKeys = ["q1", "q2", "q3", "q4", "q5"] as const;
+    const faqKeys = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8"] as const;
 
     return (
         <>

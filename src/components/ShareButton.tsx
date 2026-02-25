@@ -23,7 +23,7 @@ export default function ShareButton({
     copiedLabel,
     disabled = false,
     style,
-    iconSize = 16,
+    iconSize = 18,
 }: ShareButtonProps) {
     const t = useTranslations("Common");
     const [hasWebShare, setHasWebShare] = useState(false);
@@ -33,8 +33,8 @@ export default function ShareButton({
         setHasWebShare(!!navigator.share);
     }, []);
 
-    const defaultLabel = buttonLabel ?? t("share");
-    const defaultCopied = copiedLabel ?? t("copied");
+    const tooltipLabel = buttonLabel ?? t("share");
+    const copiedTooltip = copiedLabel ?? t("copied");
 
     const handleShare = async () => {
         if (disabled || !shareText) return;
@@ -63,11 +63,11 @@ export default function ShareButton({
     };
 
     const Icon = status === "copied" ? IoCheckmark : hasWebShare ? IoShareOutline : IoCopyOutline;
-    const label = status === "copied" ? defaultCopied : defaultLabel;
+    const label = status === "copied" ? copiedTooltip : tooltipLabel;
 
     const mergedStyle: React.CSSProperties = {
         ...style,
-        ...(disabled ? { opacity: 0.5, cursor: "not-allowed" } : {}),
+        ...(disabled ? { opacity: 0.4, cursor: "not-allowed" } : {}),
     };
 
     return (
@@ -76,9 +76,10 @@ export default function ShareButton({
             className={style ? undefined : className}
             disabled={disabled}
             style={mergedStyle}
+            aria-label={label}
         >
             <Icon size={iconSize} />
-            {label}
+            <span>{label}</span>
         </button>
     );
 }

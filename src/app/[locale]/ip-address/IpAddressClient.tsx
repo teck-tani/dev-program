@@ -71,19 +71,13 @@ export default function IpAddressClient() {
         setIsCustomLookup(false);
 
         try {
-            // Step 1: Get my IPv4 address
-            const ipRes = await fetch('https://api.ipify.org?format=json');
-            if (!ipRes.ok) throw new Error('IP fetch failed');
-            const ipData = await ipRes.json();
-            const ip = ipData.ip;
-            setIpv4(ip);
-
-            // Step 2: Fetch geolocation info with extended fields
-            const geoRes = await fetch(`https://ip-api.com/json/${ip}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,reverse,proxy,hosting,query`);
-            if (!geoRes.ok) throw new Error('Geo fetch failed');
-            const geoData = await geoRes.json();
+            // API route proxies ip-api.com (free tier is HTTP-only; must be called server-side)
+            const res = await fetch('/api/ip-info');
+            if (!res.ok) throw new Error('IP fetch failed');
+            const geoData = await res.json();
 
             if (geoData.status === 'success') {
+                setIpv4(geoData.query);
                 setIpInfo({
                     ip: geoData.query,
                     country: geoData.country,
@@ -122,7 +116,7 @@ export default function IpAddressClient() {
         setIsCustomLookup(true);
 
         try {
-            const geoRes = await fetch(`https://ip-api.com/json/${encodeURIComponent(trimmed)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,reverse,proxy,hosting,query`);
+            const geoRes = await fetch(`/api/ip-info?ip=${encodeURIComponent(trimmed)}`);
             if (!geoRes.ok) throw new Error('Geo fetch failed');
             const geoData = await geoRes.json();
 
@@ -307,9 +301,9 @@ export default function IpAddressClient() {
                         {/* IPv4 */}
                         <p style={{ fontSize: "0.8rem", opacity: 0.7, marginBottom: "4px", letterSpacing: "1px" }}>IPv4</p>
                         <p style={{
-                            fontSize: "2.8rem", fontWeight: 700, letterSpacing: "2px",
+                            fontSize: "clamp(1.6rem, 7vw, 2.8rem)", fontWeight: 700, letterSpacing: "2px",
                             fontFamily: "'Consolas', 'Monaco', 'Courier New', monospace",
-                            marginBottom: "10px", wordBreak: "break-all"
+                            marginBottom: "10px", wordBreak: "keep-all", overflowWrap: "anywhere"
                         }}>
                             {ipv4}
                         </p>

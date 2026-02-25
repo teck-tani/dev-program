@@ -78,6 +78,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "IPv4와 IPv6의 차이는 무엇인가요?",
             answer: "IPv4는 32비트 주소(예: 192.168.0.1)로 약 43억 개의 주소를 제공하고, IPv6는 128비트 주소(예: 2001:0db8::1)로 사실상 무한한 주소를 제공합니다."
+        },
+        {
+            question: "스마트폰에서도 아이피 확인이 되나요?",
+            answer: "네, 모바일 브라우저에서 접속하면 스마트폰의 공인 IP 주소도 즉시 확인할 수 있습니다. 와이파이 연결 시 공유기의 공인 IP, LTE/5G 연결 시 통신사에서 할당한 공인 IP가 표시됩니다."
+        },
+        {
+            question: "공인 IP와 사설 IP는 어떻게 다른가요?",
+            answer: "공인 IP(Public IP)는 인터넷에서 식별 가능한 고유 주소로 ISP가 할당합니다. 사설 IP(Private IP)는 공유기 내부에서만 사용되는 주소(예: 192.168.x.x)입니다. 이 도구에서 확인되는 IP는 공인 IP입니다."
         }
     ] : [
         {
@@ -95,6 +103,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "What is the difference between IPv4 and IPv6?",
             answer: "IPv4 uses 32-bit addresses (e.g., 192.168.0.1) providing about 4.3 billion addresses. IPv6 uses 128-bit addresses (e.g., 2001:0db8::1) providing virtually unlimited addresses."
+        },
+        {
+            question: "Can I check my IP address on a smartphone?",
+            answer: "Yes! Just open this page in your mobile browser. On Wi-Fi, your router's public IP is displayed. On LTE/5G, the public IP assigned by your carrier is shown."
+        },
+        {
+            question: "What is the difference between a public IP and a private IP?",
+            answer: "A public IP is your internet-facing address assigned by your ISP, visible globally — this is what this tool shows. A private IP (e.g., 192.168.x.x) is used only within your local network and is not visible on the internet."
         }
     ];
 
@@ -264,7 +280,7 @@ export default async function IpAddressPage({ params }: { params: Promise<{ loca
                 {/* 5. FAQ */}
                 <section className="seo-section">
                     <h2 className="seo-section-title">{t("seo.faq.title")}</h2>
-                    {(["q1", "q2", "q3", "q4"] as const).map((key) => (
+                    {(["q1", "q2", "q3", "q4", "q5", "q6"] as const).map((key) => (
                         <details key={key} className="seo-faq-item">
                             <summary>{t(`seo.faq.list.${key}.q`)}</summary>
                             <p>{t(`seo.faq.list.${key}.a`)}</p>

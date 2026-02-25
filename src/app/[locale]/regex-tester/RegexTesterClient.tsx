@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useTheme } from "@/contexts/ThemeContext";
 import ShareButton from "@/components/ShareButton";
 
@@ -195,6 +195,52 @@ function explainPattern(pattern: string, lang: "ko" | "en"): TokenExplanation[] 
     return explanations;
 }
 
+// Friendly error message parser
+function getErrorMessage(rawError: string, lang: "ko" | "en"): string {
+    const msg = rawError.toLowerCase();
+    if (msg.includes("unterminated character class") || msg.includes("missing ]")) {
+        return lang === "ko"
+            ? "문자 클래스 [...] 가 닫히지 않았습니다. ] 를 확인하세요."
+            : "Unterminated character class. Check for a missing ].";
+    }
+    if (msg.includes("invalid group") || msg.includes("invalid named capture") || msg.includes("invalid capture")) {
+        return lang === "ko"
+            ? "잘못된 그룹 문법입니다. 명명 그룹: (?<이름>...), 비캡처: (?:...)"
+            : "Invalid group syntax. Named group: (?<name>...), non-capturing: (?:...)";
+    }
+    if (msg.includes("nothing to repeat") || msg.includes("quantifier without")) {
+        return lang === "ko"
+            ? "수량자(*, +, ?)가 반복할 대상 없이 사용되었습니다. 패턴 시작 또는 다른 수량자 바로 뒤에 올 수 없습니다."
+            : "Quantifier (*, +, ?) used without a preceding element to repeat.";
+    }
+    if (msg.includes("unmatched )") || msg.includes("unbalanced parenthesis")) {
+        return lang === "ko"
+            ? "여분의 닫는 괄호 ) 가 있습니다. 괄호 쌍을 확인하세요."
+            : "Unmatched closing parenthesis ). Check your bracket pairs.";
+    }
+    if (msg.includes("missing )") || msg.includes("unterminated group")) {
+        return lang === "ko"
+            ? "여는 괄호 ( 에 대응하는 닫는 괄호가 없습니다."
+            : "Missing closing parenthesis ). Check your bracket pairs.";
+    }
+    if (msg.includes("invalid escape") || msg.includes("invalid unicode")) {
+        return lang === "ko"
+            ? "잘못된 이스케이프 시퀀스입니다. u 플래그 사용 시 \\uXXXX 형식을 확인하세요."
+            : "Invalid escape sequence. When using the u flag, check \\uXXXX format.";
+    }
+    if (msg.includes("range out of order") || msg.includes("invalid range")) {
+        return lang === "ko"
+            ? "문자 범위가 잘못되었습니다. 예: [z-a] → [a-z] 로 수정하세요."
+            : "Invalid character range in character class. Example: [z-a] → [a-z].";
+    }
+    if (msg.includes("duplicate flag") || msg.includes("invalid flag")) {
+        return lang === "ko"
+            ? "잘못되었거나 중복된 플래그가 있습니다. 유효한 플래그: g, i, m, s, u"
+            : "Invalid or duplicate flag. Valid flags: g, i, m, s, u";
+    }
+    return lang === "ko" ? "유효하지 않은 정규식입니다." : "Invalid regular expression.";
+}
+
 // Backtracking risk detection with solution tips
 interface BacktrackResult {
     hasRisk: boolean;
@@ -204,23 +250,43 @@ interface BacktrackResult {
 function detectBacktrackRisk(pattern: string): BacktrackResult {
     const tips: { ko: string; en: string }[] = [];
 
-    // (a+)+, (a*)+, (a*)*,  (a+)* patterns
+    // (a+)+, (a*)+, (a*)*, (a+)* — nested quantifiers
     if (/\(.+[+*]\)\s*[+*]/.test(pattern)) {
         tips.push({
             ko: "중첩 수량자 감지: (x+)+ → x+ 또는 비캡처 그룹 (?:x)+ 로 변경하세요",
             en: "Nested quantifier detected: (x+)+ → use x+ or non-capturing (?:x)+"
         });
     }
+
+    // (a|b)+ or (a|b)* — OR group with outer quantifier (alternation overlap risk)
     if (/\([^)]*\|[^)]*\)\s*[+*]/.test(pattern)) {
         tips.push({
-            ko: "OR 그룹 + 수량자 감지: 각 대안이 겹치지 않는지 확인하세요",
-            en: "OR group with quantifier: ensure alternatives don't overlap"
+            ko: "OR 그룹 + 수량자 감지: 각 대안이 겹치지 않는지 확인하세요 (예: (a|ab)+ → 위험)",
+            en: "OR group with quantifier: ensure alternatives don't overlap (e.g. (a|ab)+ is dangerous)"
         });
     }
-    if (/(\.\*){2,}/.test(pattern)) {
+
+    // .*.* or .+.+ — multiple consecutive greedy wildcards
+    if (/(\.\*|\.\+).*(\.\*|\.\+)/.test(pattern)) {
         tips.push({
-            ko: "연속 .* 감지: 게으른 수량자 .*? 사용을 고려하세요",
-            en: "Multiple .* detected: consider using lazy quantifier .*?"
+            ko: "연속 .*/. + 감지: 범위를 제한하거나 게으른 수량자(.*?, .+?)를 사용하세요",
+            en: "Multiple greedy wildcards detected: limit scope or use lazy quantifiers (.*?, .+?)"
+        });
+    }
+
+    // \d+\d+ or \w+\w+ — same class quantifiers repeated
+    if (/(\\\w\+|\\\w\*).*(\\\w\+|\\\w\*)/.test(pattern)) {
+        tips.push({
+            ko: "동일 클래스 수량자 반복 감지: \\d+\\d+ → \\d{2,} 형식으로 합치세요",
+            en: "Repeated same-class quantifiers: \\d+\\d+ → merge into \\d{2,}"
+        });
+    }
+
+    // a{n,m}{n,m} — stacked repeat quantifiers
+    if (/\{[\d,]+\}\s*\{[\d,]+\}/.test(pattern)) {
+        tips.push({
+            ko: "중첩 반복 수량자 감지: {n,m}{n,m} → 범위를 하나로 합치세요",
+            en: "Stacked repeat quantifiers: {n,m}{n,m} → merge into a single range"
         });
     }
 
@@ -309,7 +375,8 @@ export default function RegexTesterClient() {
     const t = useTranslations("RegexTester");
     const { theme } = useTheme();
     const isDark = theme === "dark";
-    const lang = t("action.copy") === "복사" ? "ko" : "en";
+    const locale = useLocale();
+    const lang = (locale === "ko" ? "ko" : "en") as "ko" | "en";
 
     const [pattern, setPattern] = useState("");
     const [flags, setFlags] = useState<Set<string>>(new Set(["g"]));
@@ -361,11 +428,13 @@ export default function RegexTesterClient() {
         }
     }, [pattern, flagsStr]);
 
-    // Execution time measurement
-    const { matches, executionTime } = useMemo(() => {
-        if (!regex || !testString) return { matches: [] as MatchResult[], executionTime: 0 };
+    // Execution time measurement (ReDoS protection: 500ms hard limit)
+    const MAX_EXEC_MS = 500;
+    const { matches, executionTime, timedOut } = useMemo(() => {
+        if (!regex || !testString) return { matches: [] as MatchResult[], executionTime: 0, timedOut: false };
         const start = performance.now();
         const results: MatchResult[] = [];
+        let isTimedOut = false;
         if (flagsStr.includes("g")) {
             let match;
             const r = new RegExp(regex.source, regex.flags);
@@ -380,6 +449,10 @@ export default function RegexTesterClient() {
                     r.lastIndex++;
                 }
                 if (results.length > 10000) break;
+                if (performance.now() - start > MAX_EXEC_MS) {
+                    isTimedOut = true;
+                    break;
+                }
             }
         } else {
             const match = regex.exec(testString);
@@ -393,7 +466,7 @@ export default function RegexTesterClient() {
             }
         }
         const end = performance.now();
-        return { matches: results, executionTime: end - start };
+        return { matches: results, executionTime: end - start, timedOut: isTimedOut };
     }, [regex, testString, flagsStr]);
 
     // Backtracking risk
@@ -468,18 +541,11 @@ export default function RegexTesterClient() {
     const handleCopy = useCallback(async (text: string, key: string) => {
         try {
             await navigator.clipboard.writeText(text);
-            setCopied(key);
-            setTimeout(() => setCopied(null), 2000);
         } catch {
-            const textarea = document.createElement("textarea");
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textarea);
-            setCopied(key);
-            setTimeout(() => setCopied(null), 2000);
+            // clipboard API unavailable — silent fail
         }
+        setCopied(key);
+        setTimeout(() => setCopied(null), 2000);
     }, []);
 
     // Copy all matches
@@ -567,6 +633,7 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                         value={pattern}
                         onChange={(e) => setPattern(e.target.value)}
                         placeholder={t("input.patternPlaceholder")}
+                        maxLength={1000}
                         style={{ ...inputStyle, flex: 1 }}
                     />
                     <span style={{
@@ -586,7 +653,7 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                         marginBottom: "12px",
                         fontFamily: "'Consolas', monospace",
                     }}>
-                        {t("error.invalid")}: {error}
+                        {getErrorMessage(error, lang)}
                     </div>
                 )}
 
@@ -832,6 +899,7 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                     onChange={(e) => setTestString(e.target.value)}
                     placeholder={t("input.testStringPlaceholder")}
                     rows={5}
+                    maxLength={50000}
                     style={{
                         ...inputStyle,
                         resize: "vertical",
@@ -948,7 +1016,7 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                             fontFamily: "'Consolas', monospace",
                             color: executionTime > 100 ? (isDark ? "#fca5a5" : "#dc2626") : (isDark ? "#60a5fa" : "#4A90D9"),
                         }}>
-                            {executionTime.toFixed(1)}<span style={{ fontSize: "0.8rem" }}>ms</span>
+                            {executionTime < 0.01 ? "<0.01" : executionTime < 10 ? executionTime.toFixed(2) : executionTime.toFixed(1)}<span style={{ fontSize: "0.8rem" }}>ms</span>
                         </span>
                         <span style={{ fontSize: "0.75rem", color: isDark ? "#94a3b8" : "#64748b" }}>
                             {lang === "ko" ? "실행 시간" : "Time"}
@@ -981,6 +1049,28 @@ ${matches.length > 0 ? `${matches.length} match${matches.length > 1 ? 'es' : ''}
                             </span>
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* Timeout Warning */}
+            {timedOut && (
+                <div style={{
+                    background: isDark ? "rgba(239,68,68,0.15)" : "#fef2f2",
+                    border: isDark ? "1px solid rgba(239,68,68,0.3)" : "1px solid #fecaca",
+                    borderRadius: "8px",
+                    padding: "10px 14px",
+                    marginBottom: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontSize: "0.85rem",
+                    color: isDark ? "#fca5a5" : "#dc2626",
+                    fontWeight: 600,
+                }}>
+                    <span style={{ fontSize: "1.1rem" }}>⏱️</span>
+                    {lang === "ko"
+                        ? `실행 시간 초과 (${MAX_EXEC_MS}ms). 패턴이 너무 복잡하거나 입력이 너무 깁니다. 백트래킹 위험 패턴을 확인하세요.`
+                        : `Execution timeout (${MAX_EXEC_MS}ms). Pattern may be too complex or input too long. Check for backtracking-prone patterns.`}
                 </div>
             )}
 

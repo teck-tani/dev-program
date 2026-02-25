@@ -64,16 +64,24 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 function generateFaqSchema(locale: string) {
     const faqData = locale === 'ko' ? [
         {
-            question: "Cron 표현식이란 무엇인가요?",
-            answer: "Cron 표현식은 리눅스/유닉스 시스템에서 작업을 자동으로 예약 실행하기 위한 시간 표현 형식입니다. 5개의 필드(분, 시, 일, 월, 요일)로 구성되며, 각 필드에 숫자나 특수문자를 사용하여 실행 시점을 지정합니다."
+            question: "Cron 표현식(크론탭)이란 무엇인가요?",
+            answer: "크론탭(crontab)은 리눅스/유닉스 시스템에서 작업을 자동으로 예약 실행하기 위한 스케줄러입니다. Cron 표현식은 분(0-59), 시(0-23), 일(1-31), 월(1-12), 요일(0-6) 5개 필드로 구성되며, */5 * * * * (5분마다), 0 0 * * * (매일 자정) 등의 형태로 사용합니다."
         },
         {
             question: "Cron 표현식의 각 필드는 어떤 범위를 가지나요?",
-            answer: "분(0-59), 시(0-23), 일(1-31), 월(1-12), 요일(0-6, 0=일요일)의 범위를 가집니다."
+            answer: "분(0-59), 시(0-23), 일(1-31), 월(1-12), 요일(0-6, 0=일요일)의 범위를 가집니다. 특수문자 *(전체), /(간격), -(범위), ,(여러 값)을 조합하여 크론탭 스케줄을 세밀하게 설정할 수 있습니다."
         },
         {
             question: "이 도구에서 생성한 Cron 표현식은 어디에 사용할 수 있나요?",
             answer: "Linux crontab, Proxmox 스케줄러, Jenkins, GitHub Actions, AWS CloudWatch, Kubernetes CronJob 등 대부분의 스케줄링 시스템에서 사용할 수 있습니다."
+        },
+        {
+            question: "Spring Boot / Quartz Scheduler에서 Cron 표현식은 어떻게 사용하나요?",
+            answer: "Spring @Scheduled와 Quartz Scheduler는 초(0-59)가 앞에 추가된 6-field Cron 표현식을 사용합니다. 예: @Scheduled(cron = \"0 0 9 * * MON-FRI\") → 평일 오전 9시 실행. 이 도구에서 '초 단위(6-field)' 체크박스를 켜면 Spring/Quartz용 표현식을 확인할 수 있습니다."
+        },
+        {
+            question: "GitHub Actions의 cron 스케줄은 어떻게 설정하나요?",
+            answer: "GitHub Actions의 on.schedule.cron에 표준 5-field Cron 표현식을 입력합니다. 단, GitHub Actions는 UTC 기준으로 실행됩니다. 한국 시간(KST, UTC+9) 오전 9시에 실행하려면 '0 0 * * 1-5'처럼 UTC 기준으로 입력해야 합니다. 이 도구의 타임존 선택기에서 Asia/Seoul을 선택해 실행 시간을 미리 확인하세요."
         },
         {
             question: "입력한 데이터가 서버로 전송되나요?",
@@ -81,16 +89,24 @@ function generateFaqSchema(locale: string) {
         }
     ] : [
         {
-            question: "What is a Cron expression?",
-            answer: "A Cron expression is a time-based scheduling format used in Linux/Unix systems to automate recurring tasks. It consists of 5 fields (minute, hour, day of month, month, day of week) using numbers and special characters to define execution timing."
+            question: "What is a Cron expression (crontab)?",
+            answer: "Crontab is a time-based job scheduler in Linux/Unix that runs tasks automatically. A cron expression has 5 fields: minute (0-59), hour (0-23), day of month (1-31), month (1-12), day of week (0-6). Examples: */5 * * * * (every 5 min), 0 0 * * * (daily midnight)."
         },
         {
             question: "What ranges do each Cron field accept?",
-            answer: "Minute (0-59), Hour (0-23), Day of Month (1-31), Month (1-12), Day of Week (0-6, where 0=Sunday)."
+            answer: "Minute (0-59), Hour (0-23), Day of Month (1-31), Month (1-12), Day of Week (0-6, where 0=Sunday). Special characters: * (every), / (step), - (range), , (multiple values)."
         },
         {
             question: "Where can I use the generated Cron expression?",
             answer: "You can use it in Linux crontab, Proxmox scheduler, Jenkins, GitHub Actions, AWS CloudWatch, Kubernetes CronJob, and most scheduling systems."
+        },
+        {
+            question: "How do I use cron expressions in Spring Boot / Quartz Scheduler?",
+            answer: "Spring @Scheduled and Quartz Scheduler use a 6-field cron expression with an additional seconds field at the beginning. Example: @Scheduled(cron = \"0 0 9 * * MON-FRI\") runs every weekday at 9 AM. Enable the '6-field (Seconds)' toggle in this tool to see Spring/Quartz-compatible expressions."
+        },
+        {
+            question: "How do I set up a cron schedule in GitHub Actions?",
+            answer: "Use on.schedule.cron with a standard 5-field cron expression. GitHub Actions runs on UTC — to run at 9 AM KST (UTC+9), set '0 0 * * 1-5'. Use this tool's timezone selector to verify your next execution times before deploying."
         },
         {
             question: "Is my data sent to any server?",
@@ -118,10 +134,10 @@ function generateWebAppSchema(locale: string) {
     return {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": isKo ? "Cron 표현식 생성기" : "Cron Expression Generator",
+        "name": isKo ? "크론탭 생성기" : "Cron Expression Generator",
         "description": isKo
-            ? "UI로 클릭하여 Cron 표현식을 쉽게 생성하는 무료 온라인 도구"
-            : "Free online tool to easily generate Cron expressions with a visual UI",
+            ? "UI 클릭으로 Cron 표현식을 생성·검증하는 무료 크론탭 생성기"
+            : "Free cron expression generator — build and instantly validate crontab expressions with visual UI",
         "url": `${baseUrl}/${locale}/cron-generator`,
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Any",
@@ -131,8 +147,8 @@ function generateWebAppSchema(locale: string) {
             "priceCurrency": "KRW"
         },
         "featureList": isKo
-            ? ["Cron 표현식 시각적 생성", "프리셋 제공", "실시간 미리보기", "한국어 설명", "복사 기능"]
-            : ["Visual Cron expression builder", "Preset templates", "Real-time preview", "Human-readable description", "Copy to clipboard"],
+            ? ["Cron 표현식 시각적 생성", "표현식 즉시 유효성 검사", "프리셋 10종", "실시간 실행 시간 미리보기", "Spring/Quartz 6-field 지원", "복사 기능"]
+            : ["Visual Cron expression builder", "Instant expression validator", "10 preset templates", "Real-time next-run preview", "Spring/Quartz 6-field support", "Copy to clipboard"],
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
         "softwareVersion": "1.0"
     };
@@ -264,7 +280,7 @@ export default async function CronGeneratorPage({ params }: { params: Promise<{ 
                 {/* 5. FAQ */}
                 <section className="seo-section">
                     <h2 className="seo-section-title">{tFaq("title")}</h2>
-                    {(["what", "range", "where", "privacy"] as const).map((key) => (
+                    {(["what", "range", "where", "spring", "github", "privacy"] as const).map((key) => (
                         <details key={key} className="seo-faq-item">
                             <summary>{tFaq(`list.${key}.q`)}</summary>
                             <p>{tFaq(`list.${key}.a`)}</p>

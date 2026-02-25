@@ -82,7 +82,15 @@
       "Bash(python:*)",
       "Bash(\"C:/tani/dev-program/textdiff-debug.js\":*)",
       "Bash(\"C:/tani/dev-program/textdiff-remain.js\":*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(sed \"s/t\\(''//g\")",
+      "Bash(sed \"s/t\\(\"\"//g\")",
+      "Bash(sed \"s/t\\\\.raw\\(''//g\")",
+      "Bash(sed \"s/t\\\\.raw\\(\"\"//g\")",
+      "Bash(sed \"s/''\\)//g\")",
+      "Bash(sed \"s/\"\"\\)//g\")",
+      "Bash(sed -n '354,374p' src/app/[locale]/base64-encoder/Base64Client.tsx)",
+      "Bash(sed -n '216,241p' src/app/[locale]/base64-encoder/Base64Client.tsx)"
     ],
     "additionalDirectories": [
       "c:\\tani\\dev-program\\src\\app\\[locale]"

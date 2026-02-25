@@ -78,6 +78,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "키워드 대문자 변환은 무엇인가요?",
             answer: "SQL 키워드(SELECT, FROM, WHERE 등)를 자동으로 대문자로 변환하는 기능입니다. SQL 가독성을 높이기 위한 일반적인 컨벤션입니다."
+        },
+        {
+            question: "MySQL, PostgreSQL 포맷터로도 사용할 수 있나요?",
+            answer: "네, MySQL 포맷터, PostgreSQL 포맷터, Oracle, SQL Server(T-SQL), SQLite 등 6가지 SQL 방언을 지원합니다. SQL 종류 선택에서 원하는 엔진을 선택하면 해당 방언에 맞는 포맷팅이 적용됩니다."
+        },
+        {
+            question: "모바일에서도 SQL 정렬이 가능한가요?",
+            answer: "네, 스마트폰·태블릿에서도 완전히 사용 가능합니다. 모바일 화면에서는 입력/결과 영역이 세로로 배치되어 터치 입력이 편리합니다."
         }
     ] : [
         {
@@ -95,6 +103,14 @@ function generateFaqSchema(locale: string) {
         {
             question: "What does uppercase keywords mean?",
             answer: "It automatically converts SQL keywords (SELECT, FROM, WHERE, etc.) to uppercase. This is a common convention to improve SQL readability."
+        },
+        {
+            question: "Can I use it as a MySQL or PostgreSQL formatter?",
+            answer: "Yes, it supports 6 SQL dialects: MySQL formatter, PostgreSQL formatter, Oracle, SQL Server (T-SQL), SQLite, and Standard SQL. Select your desired engine from the SQL Dialect dropdown."
+        },
+        {
+            question: "Does it work on mobile devices?",
+            answer: "Yes, it is fully responsive and works on smartphones and tablets. On mobile, the input and output panels stack vertically for comfortable touch-based SQL formatting."
         }
     ];
 
@@ -264,7 +280,7 @@ export default async function SqlFormatterPage({ params }: { params: Promise<{ l
                 {/* 5. FAQ */}
                 <section className="seo-section">
                     <h2 className="seo-section-title">{tFaq("title")}</h2>
-                    {(["support", "oneline", "privacy", "uppercase"] as const).map((key) => (
+                    {(["support", "oneline", "privacy", "uppercase", "dialect", "mobile"] as const).map((key) => (
                         <details key={key} className="seo-faq-item">
                             <summary>{tFaq(`list.${key}.q`)}</summary>
                             <p>{tFaq(`list.${key}.a`)}</p>

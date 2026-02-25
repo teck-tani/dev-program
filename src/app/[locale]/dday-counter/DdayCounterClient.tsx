@@ -463,7 +463,7 @@ export default function DdayCounterClient() {
             {events.length > 0 && (
               <div className={styles.headerActions}>
                 <button className={styles.icalBtn} onClick={exportAllIcal}>{t("exportIcal")}</button>
-                <ShareButton shareText={getShareText()} className={styles.icalBtn} />
+                <ShareButton shareText={getShareText()} />
               </div>
             )}
           </div>
