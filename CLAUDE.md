@@ -13,10 +13,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 사용자가 직접 검수 완료한 도구 → 코드/번역/SEO 일체 변경 금지
 - 수정은 사용자가 명시적으로 요청한 경우에만 허용
 
-
 ## Project Overview
 
-**teck-tani.com** - A Korean/English bilingual utility web tools collection (online calculator, clock, encoder, converter, etc.)
+**teck-tani.com** - Korean/English bilingual utility web tools collection (56 tools across 6 categories). Deployed on Vercel.
 
 ## Commands
 
@@ -27,26 +26,39 @@ npm run start    # Start production server
 npm run lint     # Run ESLint
 ```
 
+No test runner is configured (Playwright dev dependency exists but no config).
+
 ## Architecture
 
 ### Framework & Stack
-- **Next.js 16** with App Router
+- **Next.js 16** with App Router (SSG via `generateStaticParams` + `force-static`)
+- **React 19**
 - **Tailwind CSS 4** for styling
 - **next-intl** for i18n (Korean/English)
-- **TypeScript**
+- **TypeScript** (strict mode, path alias `@/*` → `./src/*`)
 
 ### Routing & Locales
 - All pages under `src/app/[locale]/` - URL pattern: `/ko/tool-name`, `/en/tool-name`
-- Supported locales: `ko` (default), `en`
+- Supported locales: `ko` (default), `en` — `localePrefix: 'always'`
 - Locale config in `src/navigation.ts`
+- `src/middleware.ts` converts 307 redirects to 301 for SEO, handles locale detection
+
+### Tool Registry — Single Source of Truth
+**`src/config/tools.ts`** is the central registry for all 56 tools.
+- `ALL_TOOLS` array defines every tool's `href`, `labelKey`, `icon`, `category`
+- 6 categories: `calculators`, `time`, `image`, `text`, `life`, `devtools`
+- Exports: `getToolsByCategory()`, `getCategoriesWithTools()`, `findToolByPathname()`, `getAllToolHrefs()`
+- Header, homepage, and sitemap all derive from this file
 
 ### Adding a New Tool
 
-1. **Create page directory**: `src/app/[locale]/[tool-name]/`
+1. **Add to tool registry**: `src/config/tools.ts` → `ALL_TOOLS` array (href, labelKey, icon, category)
+
+2. **Create page directory**: `src/app/[locale]/[tool-name]/`
    - `page.tsx` - Server component with metadata, SEO, JSON-LD schemas
    - `[ToolName]Client.tsx` - Client component with `"use client"` directive
 
-2. **Page template pattern** (see `base64-encoder/page.tsx`):
+3. **Page template pattern** (see `base64-encoder/page.tsx`):
    ```typescript
    export function generateStaticParams() {
      return locales.map((locale) => ({ locale }));
@@ -59,26 +71,34 @@ npm run lint     # Run ESLint
    }
    ```
 
-3. **Add translations** in `messages/ko.json` and `messages/en.json`:
+4. **Add translations** in `messages/ko.json` and `messages/en.json`:
    - `Index.tools.[toolKey]` - Tool name for homepage cards
    - `[ToolName].meta.*` - SEO metadata (title, description, keywords, ogTitle, ogDescription)
    - `[ToolName].*` - All UI text
 
-4. **Add to Header menu**: `src/components/Header.tsx` → `menuCategories` array
-   - Categories: `calculators`, `time`, `utilities`
-
-5. **Optional: Add to homepage**: `src/app/[locale]/page.tsx` → `toolCategories` array
+5. **Verify Header/homepage**: Tools appear in Header menu and homepage automatically via `src/config/tools.ts` categories.
 
 6. **GitHub 공개 저장소 업데이트**: `https://github.com/teck-tani/teck-tani.com` README.md에 새 도구 추가
-   - 로컬 경로: `C:/Users/dckwon/teck-tani-landing/README.md`
    - 해당 카테고리 테이블에 한국어 도구명 + `/ko/` 링크 추가 후 push
 
 ### Key Files
+- `src/config/tools.ts` - **Central tool registry** (ALL_TOOLS, categories, lookup helpers)
+- `src/config/index.ts` - API URLs, GA ID, DB config
+- `src/config/server.ts` - API keys (server-only import)
 - `src/navigation.ts` - Locale routing setup, exports `Link`, `locales`
+- `src/middleware.ts` - i18n middleware with 301 redirect optimization
 - `src/i18n/request.ts` - next-intl config, loads messages
-- `src/components/Header.tsx` - Navigation menu with `menuCategories`
-- `messages/ko.json`, `messages/en.json` - All translations
-- `src/app/sitemap.ts` - Dynamic sitemap generation
+- `src/components/Header.tsx` - Navigation with mobile drawer, fullscreen toggle, settings
+- `src/contexts/ThemeContext.tsx` - Dark/light theme (localStorage + `data-theme` attribute on body)
+- `messages/ko.json`, `messages/en.json` - All translations (~560KB ko, ~500KB en)
+- `src/app/globals.css` - Global styles including `.seo-*` classes (~53KB)
+- `src/app/sitemap.ts` - Dynamic sitemap generation (derives from `getAllToolHrefs()`)
+
+### Layout Provider Chain (`src/app/[locale]/layout.tsx`)
+```
+NextIntlClientProvider → ThemeProvider → PWARegister + LazyGTM + GoogleAdsense + FeedbackButton
+```
+Layout only loads `Common`, `Index`, `Header`, `Footer` message namespaces (~6KB) to avoid sending full translation files to client.
 
 ### Translation Pattern
 ```typescript
@@ -90,6 +110,19 @@ const t = useTranslations('ToolName');
 t('keyName')           // Simple key
 t.raw('htmlContent')   // For HTML content (use with dangerouslySetInnerHTML)
 ```
+
+### Theme System
+- `ThemeContext.tsx` stores theme in `localStorage.globalTheme`
+- Applies `data-theme="dark"` or `data-theme="light"` on `<body>`
+- CSS targets: `body[data-theme="dark"] .seo-card { ... }`
+- Prevents hydration mismatch with mount check
+
+### API Routes (`src/app/api/`)
+- `/api/exchange-rate` + `/api/exchange-rate/history` - Korea Exim Bank exchange rates
+- `/api/lotto` + `/api/lotto/update` - Lottery number data
+- `/api/holidays` - Korean public holidays
+- `/api/ip-info` - IP geolocation proxy
+- `/api/server-time` - Server timestamp
 
 ### UI Layout Rules
 - **제목은 헤더(Header)에만 표시** — 본문(page.tsx)에 별도의 제목(h1)/부제를 넣지 않는다. 헤더 컴포넌트가 이미 도구명을 보여주므로 중복 금지.
@@ -121,6 +154,11 @@ t.raw('htmlContent')   // For HTML content (use with dangerouslySetInnerHTML)
 - 모든 텍스트는 `messages/ko.json`, `messages/en.json`에 번역 키로 관리 (하드코딩 금지)
 - HTML이 필요한 경우 `t.raw()` + `dangerouslySetInnerHTML` 패턴 사용
 - `<article>` 태그로 감싸서 시맨틱 HTML 유지
+- 공통 `.seo-*` CSS 클래스 사용 (`globals.css` 정의, 다크모드 자동 대응)
 
-
-공학용계산기 공학용계산기어플 무료공학용계산기 웹계산기 공대생필수템 기사자격증 엔지니어 반응형웹 다크모드 개발자블로그
+### Performance Optimizations (in `next.config.ts`)
+- `optimizePackageImports` for `react-icons`, `mathjs`, `recharts`, `pdf-lib`, `jszip`, etc.
+- Asset caching: 1-year `Cache-Control` headers for static files
+- Image optimization: AVIF & WebP formats
+- Production console.log removal
+- Legacy URL 301 redirects: `/pay-cal` → `/dutch-pay`, `/lotto` → `/lotto-generator`, `/clock/timer` → `/timer`
