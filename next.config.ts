@@ -17,16 +17,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   redirects: async () => [
-    // === 레거시 URL 리다이렉트 (다국어 전환 이전 경로) ===
-    // bare path (locale 없음) → /ko/ 기본
+    // === 레거시 URL 리다이렉트 ===
     {
       source: '/pay-cal',
       destination: '/ko/dutch-pay',
-      permanent: true,
-    },
-    {
-      source: '/clock/timer',
-      destination: '/ko/timer',
       permanent: true,
     },
     {
@@ -39,15 +33,9 @@ const nextConfig: NextConfig = {
       destination: '/ko/lotto-generator',
       permanent: true,
     },
-    // locale-prefixed 레거시 경로 → 올바른 경로로 301
     {
       source: '/:locale(ko|en)/pay-cal',
       destination: '/:locale/dutch-pay',
-      permanent: true,
-    },
-    {
-      source: '/:locale(ko|en)/clock/timer',
-      destination: '/:locale/timer',
       permanent: true,
     },
     {
@@ -58,6 +46,47 @@ const nextConfig: NextConfig = {
     {
       source: '/:locale(ko|en)/lotto',
       destination: '/:locale/lotto-generator',
+      permanent: true,
+    },
+    // === 시계 도구 → clock-tani.com으로 리다이렉트 ===
+    {
+      source: '/clock',
+      destination: 'https://clock-tani.com/ko/clock',
+      permanent: true,
+    },
+    {
+      source: '/clock/timer',
+      destination: 'https://clock-tani.com/ko/timer',
+      permanent: true,
+    },
+    {
+      source: '/:locale(ko|en)/clock',
+      destination: 'https://clock-tani.com/:locale/clock',
+      permanent: true,
+    },
+    {
+      source: '/:locale(ko|en)/stopwatch',
+      destination: 'https://clock-tani.com/:locale/stopwatch',
+      permanent: true,
+    },
+    {
+      source: '/:locale(ko|en)/timer',
+      destination: 'https://clock-tani.com/:locale/timer',
+      permanent: true,
+    },
+    {
+      source: '/:locale(ko|en)/alarm',
+      destination: 'https://clock-tani.com/:locale/alarm',
+      permanent: true,
+    },
+    {
+      source: '/:locale(ko|en)/server-time',
+      destination: 'https://clock-tani.com/:locale/server-time',
+      permanent: true,
+    },
+    {
+      source: '/:locale(ko|en)/dday-counter',
+      destination: 'https://clock-tani.com/:locale/dday-counter',
       permanent: true,
     },
   ],

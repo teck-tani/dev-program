@@ -1,11 +1,11 @@
 import {
-    FaBarcode, FaCalculator, FaClock, FaSmile, FaDice,
+    FaBarcode, FaCalculator, FaSmile, FaDice,
     FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent,
-    FaUserClock, FaStopwatch, FaHourglassHalf, FaCode,
+    FaUserClock, FaCode,
     FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette,
     FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase,
-    FaTerminal, FaYoutube, FaGlobe, FaQrcode, FaBell,
-    FaServer, FaCalendarAlt, FaSearch, FaWeight, FaFileInvoiceDollar, FaLock,
+    FaTerminal, FaYoutube, FaGlobe, FaQrcode,
+    FaSearch, FaWeight, FaFileInvoiceDollar, FaLock,
     FaHandHoldingUsd, FaHome, FaFingerprint, FaShieldAlt, FaHistory, FaKey,
     FaTag, FaIdCard, FaBriefcase, FaChartLine,
     FaHashtag, FaAlignLeft, FaFileCode, FaCube, FaHeart, FaCalendarCheck,
@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
-export type CategoryKey = 'calculators' | 'time' | 'image' | 'text' | 'life' | 'devtools';
+export type CategoryKey = 'calculators' | 'image' | 'text' | 'life' | 'devtools';
 
 export interface ToolDef {
     href: string;
@@ -30,7 +30,7 @@ export interface CategoryDef {
 // ===== 단일 소스 오브 트루스 =====
 // 새 도구 추가 시: 여기에 추가 + messages/ko.json & en.json에 번역만 추가하면 됨
 export const ALL_TOOLS: ToolDef[] = [
-    // 계산기 (11)
+    // 계산기 (16)
     { href: '/calculator', labelKey: 'calculator', icon: FaCalculator, category: 'calculators' },
     { href: '/money-converter', labelKey: 'exchange', icon: FaExchangeAlt, category: 'calculators' },
     { href: '/severance-calculator', labelKey: 'severance', icon: FaPiggyBank, category: 'calculators' },
@@ -47,14 +47,6 @@ export const ALL_TOOLS: ToolDef[] = [
     { href: '/insurance-calculator', labelKey: 'insuranceCalculator', icon: FaIdCard, category: 'calculators' },
     { href: '/freelancer-tax', labelKey: 'freelancerTax', icon: FaBriefcase, category: 'calculators' },
     { href: '/stock-calculator', labelKey: 'stockCalculator', icon: FaChartLine, category: 'calculators' },
-
-    // 시간 (6)
-    { href: '/clock', labelKey: 'clock', icon: FaClock, category: 'time' },
-    { href: '/stopwatch', labelKey: 'stopwatch', icon: FaStopwatch, category: 'time' },
-    { href: '/timer', labelKey: 'timer', icon: FaHourglassHalf, category: 'time' },
-    { href: '/alarm', labelKey: 'alarm', icon: FaBell, category: 'time' },
-    { href: '/server-time', labelKey: 'serverTime', icon: FaServer, category: 'time' },
-    { href: '/dday-counter', labelKey: 'ddayCounter', icon: FaCalendarAlt, category: 'time' },
 
     // 이미지/미디어 (7)
     { href: '/barcode', labelKey: 'barcode', icon: FaBarcode, category: 'image' },
@@ -101,7 +93,6 @@ export const ALL_TOOLS: ToolDef[] = [
 
 export const CATEGORIES: CategoryDef[] = [
     { key: 'calculators', icon: FaCalculator },
-    { key: 'time', icon: FaClock },
     { key: 'image', icon: FaFileImage },
     { key: 'text', icon: FaFont },
     { key: 'life', icon: FaDice },

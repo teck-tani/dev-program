@@ -1,25 +1,19 @@
 "use client";
 
 import { Link, usePathname } from "@/navigation";
-import { useState, useEffect, useCallback, useRef } from "react";
-import { FaHome, FaBars, FaTimes, FaCog, FaExpand, FaCompress } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
+import { FaHome, FaBars, FaTimes, FaCog } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { getCategoriesWithTools, findToolByPathname } from "@/config/tools";
 import SettingsDropdown from "./SettingsDropdown";
-
-// 전체화면 버튼을 표시할 페이지 목록
-const FULLSCREEN_PAGES = ['/clock', '/stopwatch', '/timer'];
 
 export default function Header() {
   const t = useTranslations('Header');
   const tTools = useTranslations('Index.tools');
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const activeMenuRef = useRef<HTMLAnchorElement>(null);
-
-  const showFullscreenBtn = FULLSCREEN_PAGES.some(page => pathname.includes(page));
 
   const categoriesWithTools = getCategoriesWithTools();
 
@@ -41,22 +35,6 @@ export default function Header() {
       }, 100);
     }
   }, [mobileMenuOpen]);
-
-  const toggleFullScreen = useCallback(() => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -91,16 +69,6 @@ export default function Header() {
           <div className="header-center-title">{pageTitle}</div>
 
           <div className="header-actions">
-            {showFullscreenBtn && (
-              <button
-                className="header-action-btn"
-                onClick={toggleFullScreen}
-                aria-label={isFullscreen ? "전체화면 해제" : "전체화면"}
-                title={isFullscreen ? "전체화면 해제" : "전체화면"}
-              >
-                {isFullscreen ? <FaCompress /> : <FaExpand />}
-              </button>
-            )}
             <button
               className="header-action-btn"
               onClick={(e) => {
