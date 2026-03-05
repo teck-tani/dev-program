@@ -32,10 +32,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
             languages: {
                 'ko': `${baseUrl}/ko/business-day-calculator`,
                 'en': `${baseUrl}/en/business-day-calculator`,
-                'x-default': `${baseUrl}/ko/business-day-calculator`,
             },
         },
         openGraph: {
+            images: [{ url: `${baseUrl}/og-default.png`, width: 1200, height: 630 }],
             title: t('ogTitle'),
             description: t('ogDescription'),
             url,

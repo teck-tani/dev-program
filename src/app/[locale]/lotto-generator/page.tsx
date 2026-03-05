@@ -29,10 +29,10 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
             languages: {
                 'ko': `${baseUrl}/ko/lotto-generator`,
                 'en': `${baseUrl}/en/lotto-generator`,
-                'x-default': `${baseUrl}/ko/lotto-generator`,
             },
         },
         openGraph: {
+            images: [{ url: `${baseUrl}/og-default.png`, width: 1200, height: 630 }],
             title: t('ogTitle'),
             description: t('ogDescription'),
             url,

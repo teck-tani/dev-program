@@ -28,10 +28,10 @@ export async function generateMetadata(props: { params: Promise<{ locale: string
             languages: {
                 'ko': `${baseUrl}/ko/image-resize`,
                 'en': `${baseUrl}/en/image-resize`,
-                'x-default': `${baseUrl}/ko/image-resize`,
             },
         },
         openGraph: {
+            images: [{ url: `${baseUrl}/og-default.png`, width: 1200, height: 630 }],
             title: t('ogTitle'),
             description: t('ogDescription'),
             url,

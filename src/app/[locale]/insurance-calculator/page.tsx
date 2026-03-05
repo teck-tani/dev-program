@@ -29,10 +29,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
             languages: {
                 'ko': `${baseUrl}/ko/insurance-calculator`,
                 'en': `${baseUrl}/en/insurance-calculator`,
-                'x-default': `${baseUrl}/ko/insurance-calculator`,
             },
         },
         openGraph: {
+            images: [{ url: `${baseUrl}/og-default.png`, width: 1200, height: 630 }],
             title: t('ogTitle'),
             description: t('ogDescription'),
             url,

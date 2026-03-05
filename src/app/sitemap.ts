@@ -22,7 +22,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 languages: {
                     ko: `${baseUrl}/ko${tool}`,
                     en: `${baseUrl}/en${tool}`,
-                    'x-default': `${baseUrl}/ko${tool}`,
                 },
             },
         }))

@@ -66,7 +66,7 @@ export default function Header() {
             </button>
           </div>
 
-          <div className="header-center-title">{pageTitle}</div>
+          <h1 className="header-center-title">{pageTitle}</h1>
 
           <div className="header-actions">
             <button

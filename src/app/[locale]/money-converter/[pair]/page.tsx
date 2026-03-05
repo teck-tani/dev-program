@@ -41,10 +41,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
             languages: {
                 'ko': `${baseUrl}/ko/money-converter/${pair}`,
                 'en': `${baseUrl}/en/money-converter/${pair}`,
-                'x-default': `${baseUrl}/ko/money-converter/${pair}`,
             },
         },
         openGraph: {
+            images: [{ url: `${baseUrl}/og-default.png`, width: 1200, height: 630 }],
             title: t('ogTitle', { fromCode, toCode }),
             description: t('ogDesc', { fromName, toName }),
             url,

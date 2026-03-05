@@ -28,12 +28,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     metadataBase: new URL(baseUrl),
     title: t('defaultTitle'),
     description: t('defaultDescription'),
+    openGraph: {
+      images: [{ url: `${baseUrl}/og-default.png`, width: 1200, height: 630 }],
+    },
     alternates: {
       canonical: `${baseUrl}/${locale}`,
       languages: {
         'ko': `${baseUrl}/ko`,
         'en': `${baseUrl}/en`,
-        'x-default': `${baseUrl}/ko`,
       },
     },
   };

@@ -31,10 +31,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
             languages: {
                 'ko': `${baseUrl}/ko/ip-address`,
                 'en': `${baseUrl}/en/ip-address`,
-                'x-default': `${baseUrl}/ko/ip-address`,
             },
         },
         openGraph: {
+            images: [{ url: `${baseUrl}/og-default.png`, width: 1200, height: 630 }],
             title: t('ogTitle'),
             description: t('ogDescription'),
             url,

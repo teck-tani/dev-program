@@ -20,7 +20,8 @@ const handleRequest = createMiddleware({
   locales,
   localePrefix: 'always', // URL에 항상 언어 접두사(/ko, /en)를 포함하도록 강제 설정
   defaultLocale: 'ko',
-  localeDetection: false
+  localeDetection: false,
+  alternateLinks: false // hreflang은 각 page.tsx metadata에서 관리 (HTTP Link 헤더 중복 방지)
 });
 
 export const config = {
