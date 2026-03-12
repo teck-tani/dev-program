@@ -1,12 +1,13 @@
 # WORK_LOG.md — teck-tani.com 작업 추적
 
-> 최종 업데이트: 2026-03-05 (시계 도구 6개 clock-tani.com으로 분리)
+> 최종 업데이트: 2026-03-12 (이미지/미디어 도구 7개 img-tani.com으로 분리)
 
 ---
 
-## 확정 도구 (50개) → FINALIZED_TOOLS.md 참고
+## 확정 도구 (43개) → FINALIZED_TOOLS.md 참고
 
 > 시계 관련 6개(clock, stopwatch, timer, alarm, server-time, dday-counter)는 clock-tani.com으로 분리됨
+> 이미지/미디어 7개(barcode, qr-generator, image-compressor, image-resize, image-converter, favicon-generator, youtube-thumbnail)는 img-tani.com으로 분리됨
 
 | # | 도구명 | 경로 | 확정일 | 색인요청 |
 |---|--------|------|--------|----------|

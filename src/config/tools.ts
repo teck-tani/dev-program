@@ -1,17 +1,16 @@
 import {
-    FaBarcode, FaSmile, FaDice,
+    FaSmile, FaDice,
     FaCode,
-    FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette,
+    FaFilePdf, FaFont, FaRuler, FaHdd, FaPalette,
     FaLink, FaColumns, FaRandom, FaDatabase,
-    FaTerminal, FaYoutube, FaGlobe, FaQrcode,
+    FaTerminal, FaGlobe,
     FaSearch, FaLock,
     FaFingerprint, FaShieldAlt, FaHistory, FaKey,
-    FaHashtag, FaAlignLeft, FaFileCode, FaCube, FaHeart, FaCalendarCheck,
-    FaExpand, FaFileImage, FaIcons
+    FaHashtag, FaAlignLeft, FaFileCode, FaCube, FaHeart, FaCalendarCheck
 } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
-export type CategoryKey = 'image' | 'text' | 'life' | 'devtools';
+export type CategoryKey = 'text' | 'life' | 'devtools';
 
 export interface ToolDef {
     href: string;
@@ -28,15 +27,6 @@ export interface CategoryDef {
 // ===== 단일 소스 오브 트루스 =====
 // 새 도구 추가 시: 여기에 추가 + messages/ko.json & en.json에 번역만 추가하면 됨
 export const ALL_TOOLS: ToolDef[] = [
-    // 이미지/미디어 (7)
-    { href: '/barcode', labelKey: 'barcode', icon: FaBarcode, category: 'image' },
-    { href: '/qr-generator', labelKey: 'qrGenerator', icon: FaQrcode, category: 'image' },
-    { href: '/image-compressor', labelKey: 'imageCompressor', icon: FaCompress, category: 'image' },
-    { href: '/image-resize', labelKey: 'imageResize', icon: FaExpand, category: 'image' },
-    { href: '/image-converter', labelKey: 'imageConverter', icon: FaFileImage, category: 'image' },
-    { href: '/favicon-generator', labelKey: 'faviconGenerator', icon: FaIcons, category: 'image' },
-    { href: '/youtube-thumbnail', labelKey: 'youtubeThumbnail', icon: FaYoutube, category: 'image' },
-
     // 텍스트/변환 (8)
     { href: '/special-characters', labelKey: 'emoji', icon: FaSmile, category: 'text' },
     { href: '/character-counter', labelKey: 'characterCounter', icon: FaFont, category: 'text' },
@@ -72,7 +62,6 @@ export const ALL_TOOLS: ToolDef[] = [
 ];
 
 export const CATEGORIES: CategoryDef[] = [
-    { key: 'image', icon: FaFileImage },
     { key: 'text', icon: FaFont },
     { key: 'life', icon: FaDice },
     { key: 'devtools', icon: FaCode },
