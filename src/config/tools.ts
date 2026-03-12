@@ -1,19 +1,17 @@
 import {
-    FaBarcode, FaCalculator, FaSmile, FaDice,
-    FaMoneyBillWave, FaExchangeAlt, FaPiggyBank, FaPercent,
-    FaUserClock, FaCode,
+    FaBarcode, FaSmile, FaDice,
+    FaCode,
     FaFilePdf, FaFont, FaRuler, FaHdd, FaCompress, FaPalette,
-    FaLink, FaColumns, FaRandom, FaFemale, FaUsers, FaDatabase,
+    FaLink, FaColumns, FaRandom, FaDatabase,
     FaTerminal, FaYoutube, FaGlobe, FaQrcode,
-    FaSearch, FaWeight, FaFileInvoiceDollar, FaLock,
-    FaHandHoldingUsd, FaHome, FaFingerprint, FaShieldAlt, FaHistory, FaKey,
-    FaTag, FaIdCard, FaBriefcase, FaChartLine,
+    FaSearch, FaLock,
+    FaFingerprint, FaShieldAlt, FaHistory, FaKey,
     FaHashtag, FaAlignLeft, FaFileCode, FaCube, FaHeart, FaCalendarCheck,
     FaExpand, FaFileImage, FaIcons
 } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
-export type CategoryKey = 'calculators' | 'image' | 'text' | 'life' | 'devtools';
+export type CategoryKey = 'image' | 'text' | 'life' | 'devtools';
 
 export interface ToolDef {
     href: string;
@@ -30,24 +28,6 @@ export interface CategoryDef {
 // ===== 단일 소스 오브 트루스 =====
 // 새 도구 추가 시: 여기에 추가 + messages/ko.json & en.json에 번역만 추가하면 됨
 export const ALL_TOOLS: ToolDef[] = [
-    // 계산기 (16)
-    { href: '/calculator', labelKey: 'calculator', icon: FaCalculator, category: 'calculators' },
-    { href: '/money-converter', labelKey: 'exchange', icon: FaExchangeAlt, category: 'calculators' },
-    { href: '/severance-calculator', labelKey: 'severance', icon: FaPiggyBank, category: 'calculators' },
-    { href: '/interest-calculator', labelKey: 'interest', icon: FaPercent, category: 'calculators' },
-    { href: '/salary-calculator', labelKey: 'salary', icon: FaMoneyBillWave, category: 'calculators' },
-    { href: '/korean-age-calculator', labelKey: 'age', icon: FaUserClock, category: 'calculators' },
-    { href: '/ovulation-calculator', labelKey: 'ovulationCalculator', icon: FaFemale, category: 'calculators' },
-    { href: '/dutch-pay', labelKey: 'dutchPay', icon: FaUsers, category: 'calculators' },
-    { href: '/bmi-calculator', labelKey: 'bmiCalculator', icon: FaWeight, category: 'calculators' },
-    { href: '/vat-calculator', labelKey: 'vatCalculator', icon: FaFileInvoiceDollar, category: 'calculators' },
-    { href: '/loan-calculator', labelKey: 'loanCalculator', icon: FaHandHoldingUsd, category: 'calculators' },
-    { href: '/rent-conversion', labelKey: 'rentConversion', icon: FaHome, category: 'calculators' },
-    { href: '/discount-calculator', labelKey: 'discountCalculator', icon: FaTag, category: 'calculators' },
-    { href: '/insurance-calculator', labelKey: 'insuranceCalculator', icon: FaIdCard, category: 'calculators' },
-    { href: '/freelancer-tax', labelKey: 'freelancerTax', icon: FaBriefcase, category: 'calculators' },
-    { href: '/stock-calculator', labelKey: 'stockCalculator', icon: FaChartLine, category: 'calculators' },
-
     // 이미지/미디어 (7)
     { href: '/barcode', labelKey: 'barcode', icon: FaBarcode, category: 'image' },
     { href: '/qr-generator', labelKey: 'qrGenerator', icon: FaQrcode, category: 'image' },
@@ -92,7 +72,6 @@ export const ALL_TOOLS: ToolDef[] = [
 ];
 
 export const CATEGORIES: CategoryDef[] = [
-    { key: 'calculators', icon: FaCalculator },
     { key: 'image', icon: FaFileImage },
     { key: 'text', icon: FaFont },
     { key: 'life', icon: FaDice },

@@ -12,17 +12,12 @@ const nextConfig: NextConfig = {
   },
   // 무거운 라이브러리의 배럴 파일 임포트 최적화
   experimental: {
-    optimizePackageImports: ['react-icons', 'mathjs', 'recharts', 'pdf-lib', 'jszip', 'html2canvas', 'sql-formatter', 'korean-lunar-calendar'],
+    optimizePackageImports: ['react-icons', 'pdf-lib', 'jszip', 'html2canvas', 'sql-formatter'],
   },
   poweredByHeader: false,
   compress: true,
   redirects: async () => [
     // === 레거시 URL 리다이렉트 ===
-    {
-      source: '/pay-cal',
-      destination: '/ko/dutch-pay',
-      permanent: true,
-    },
     {
       source: '/spell-checker',
       destination: '/ko',
@@ -31,11 +26,6 @@ const nextConfig: NextConfig = {
     {
       source: '/lotto',
       destination: '/ko/lotto-generator',
-      permanent: true,
-    },
-    {
-      source: '/:locale(ko|en)/pay-cal',
-      destination: '/:locale/dutch-pay',
       permanent: true,
     },
     {
